@@ -1,3 +1,5 @@
+package com.xeomar.razor;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,6 +114,18 @@ public class FileUtil {
 		}
 
 		return String.valueOf( coefficient ) + unit;
+	}
+
+	public static String getExtension( Path path ) {
+		if( path == null ) return null;
+		return getExtension( path.getFileName().toString() );
+	}
+
+	public static String getExtension( String name ) {
+		if( name == null ) return null;
+		int index = name.lastIndexOf( '.' );
+		if( index < 0 ) return "";
+		return name.substring( index + 1 );
 	}
 
 	/**

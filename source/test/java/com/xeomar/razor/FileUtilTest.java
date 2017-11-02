@@ -1,3 +1,5 @@
+package com.xeomar.razor;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,6 +89,20 @@ public class FileUtilTest {
 
 		assertEquals( "1023PiB", FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() - 1 ) );
 		assertEquals( "1.0EiB", FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() ) );
+	}
+
+	@Test
+	public void testGetExtensionWithFile() throws Exception {
+		assertEquals( "Incorrect extension.", null, FileUtil.getExtension( (Path)null ) );
+		assertEquals( "Incorrect extension.", "", FileUtil.getExtension( Paths.get( "test" ) ) );
+		assertEquals( "Incorrect extension.", "txt", FileUtil.getExtension( Paths.get( "test.txt" ) ) );
+	}
+
+	@Test
+	public void testGetExtensionWithName() throws Exception {
+		assertEquals( "Incorrect extension.", null, FileUtil.getExtension( (String)null ) );
+		assertEquals( "Incorrect extension.", "", FileUtil.getExtension( "test" ) );
+		assertEquals( "Incorrect extension.", "txt", FileUtil.getExtension( "test.txt" ) );
 	}
 
 	@Test

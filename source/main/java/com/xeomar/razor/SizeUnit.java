@@ -1,3 +1,5 @@
+package com.xeomar.razor;
+
 public enum SizeUnit {
 
 	B(1),
