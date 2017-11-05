@@ -137,8 +137,8 @@ public class OperatingSystem {
 		return fileSystemCaseSensitive;
 	}
 
-	public static final Process startProcessElevated( String programName, ProcessBuilder builder ) throws IOException {
-		if( !OperatingSystem.isProcessElevated() ) elevateProcessBuilder( programName, builder );
+	public static final Process startProcessElevated( String title, ProcessBuilder builder ) throws IOException {
+		if( !OperatingSystem.isProcessElevated() ) elevateProcessBuilder( title, builder );
 		return builder.start();
 	}
 
@@ -150,13 +150,13 @@ public class OperatingSystem {
 	/**
 	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
 	 *
-	 * @param programName The name of the program requesting elevated privileges
+	 * @param title The name of the program requesting elevated privileges
 	 * @param builder
 	 * @return
 	 * @throws IOException
 	 */
-	public static final ProcessBuilder elevateProcessBuilder( String programName, ProcessBuilder builder ) throws IOException {
-		List<String> command = getElevateCommands( programName );
+	public static final ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
+		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
 		builder.command( command );
 		return builder;
@@ -467,7 +467,7 @@ public class OperatingSystem {
 		}
 	}
 
-	private static final List<String> getElevateCommands( String programName ) throws IOException {
+	private static final List<String> getElevateCommands( String title ) throws IOException {
 		List<String> commands = new ArrayList<String>();
 
 		if( isMac() ) {
@@ -478,7 +478,7 @@ public class OperatingSystem {
 			if( gksudo.exists() ) {
 				commands.add( "/usr/bin/gksudo" );
 				commands.add( "-D" );
-				commands.add( programName );
+				commands.add( title );
 				commands.add( "--" );
 			} else if( kdesudo.exists() ) {
 				commands.add( "/usr/bin/kdesudo" );
@@ -486,7 +486,7 @@ public class OperatingSystem {
 			} else {
 				commands.add( "xterm" );
 				commands.add( "-title" );
-				commands.add( programName );
+				commands.add( title );
 				commands.add( "-e" );
 				commands.add( "sudo" );
 			}
