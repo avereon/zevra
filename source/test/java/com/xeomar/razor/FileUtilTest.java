@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class FileUtilTest {
@@ -29,80 +29,80 @@ public class FileUtilTest {
 
 	@Test
 	public void testGetHumanSize() throws Exception {
-		assertEquals( "0B", FileUtil.getHumanSize( 0 ) );
-		assertEquals( "1B", FileUtil.getHumanSize( 1 ) );
-		assertEquals( "12B", FileUtil.getHumanSize( 12 ) );
-		assertEquals( "123B", FileUtil.getHumanSize( 123 ) );
-		assertEquals( "1.2KB", FileUtil.getHumanSize( 1234 ) );
-		assertEquals( "12KB", FileUtil.getHumanSize( 12345 ) );
-		assertEquals( "123KB", FileUtil.getHumanSize( 123456 ) );
-		assertEquals( "1.2MB", FileUtil.getHumanSize( 1234567 ) );
-		assertEquals( "12MB", FileUtil.getHumanSize( 12345678 ) );
-		assertEquals( "123MB", FileUtil.getHumanSize( 123456789 ) );
+		assertThat( FileUtil.getHumanSize( 0 ), is( "0B" ) );
+		assertThat( FileUtil.getHumanSize( 1 ), is( "1B" ) );
+		assertThat( FileUtil.getHumanSize( 12 ), is( "12B" ) );
+		assertThat( FileUtil.getHumanSize( 123 ), is( "123B" ) );
+		assertThat( FileUtil.getHumanSize( 1234 ), is( "1.2KB" ) );
+		assertThat( FileUtil.getHumanSize( 12345 ), is( "12KB" ) );
+		assertThat( FileUtil.getHumanSize( 123456 ), is( "123KB" ) );
+		assertThat( FileUtil.getHumanSize( 1234567 ), is( "1.2MB" ) );
+		assertThat( FileUtil.getHumanSize( 12345678 ), is( "12MB" ) );
+		assertThat( FileUtil.getHumanSize( 123456789 ), is( "123MB" ) );
 
-		assertEquals( "999B", FileUtil.getHumanSize( SizeUnit.KB.getSize() - 1 ) );
-		assertEquals( "1.0KB", FileUtil.getHumanSize( SizeUnit.KB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.KB.getSize() - 1 ), is( "999B" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.KB.getSize() ), is( "1.0KB" ) );
 
-		assertEquals( "999KB", FileUtil.getHumanSize( SizeUnit.MB.getSize() - 1 ) );
-		assertEquals( "1.0MB", FileUtil.getHumanSize( SizeUnit.MB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.MB.getSize() - 1 ), is( "999KB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.MB.getSize() ), is( "1.0MB" ) );
 
-		assertEquals( "999MB", FileUtil.getHumanSize( SizeUnit.GB.getSize() - 1 ) );
-		assertEquals( "1.0GB", FileUtil.getHumanSize( SizeUnit.GB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.GB.getSize() - 1 ), is( "999MB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.GB.getSize() ), is( "1.0GB" ) );
 
-		assertEquals( "999GB", FileUtil.getHumanSize( SizeUnit.TB.getSize() - 1 ) );
-		assertEquals( "1.0TB", FileUtil.getHumanSize( SizeUnit.TB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.TB.getSize() - 1 ), is( "999GB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.TB.getSize() ), is( "1.0TB" ) );
 
-		assertEquals( "999TB", FileUtil.getHumanSize( SizeUnit.PB.getSize() - 1 ) );
-		assertEquals( "1.0PB", FileUtil.getHumanSize( SizeUnit.PB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.PB.getSize() - 1 ), is( "999TB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.PB.getSize() ), is( "1.0PB" ) );
 
-		assertEquals( "999PB", FileUtil.getHumanSize( SizeUnit.EB.getSize() - 1 ) );
-		assertEquals( "1.0EB", FileUtil.getHumanSize( SizeUnit.EB.getSize() ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.EB.getSize() - 1 ), is( "999PB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnit.EB.getSize() ), is( "1.0EB" ) );
 	}
 
 	@Test
 	public void testGetHumanBinSize() throws Exception {
-		assertEquals( "0B", FileUtil.getHumanBinSize( 0 ) );
-		assertEquals( "1B", FileUtil.getHumanBinSize( 1 ) );
-		assertEquals( "12B", FileUtil.getHumanBinSize( 12 ) );
-		assertEquals( "123B", FileUtil.getHumanBinSize( 123 ) );
-		assertEquals( "1.2KiB", FileUtil.getHumanBinSize( 1234 ) );
-		assertEquals( "12KiB", FileUtil.getHumanBinSize( 12345 ) );
-		assertEquals( "120KiB", FileUtil.getHumanBinSize( 123456 ) );
-		assertEquals( "1.2MiB", FileUtil.getHumanBinSize( 1234567 ) );
-		assertEquals( "11MiB", FileUtil.getHumanBinSize( 12345678 ) );
-		assertEquals( "117MiB", FileUtil.getHumanBinSize( 123456789 ) );
+		assertThat( FileUtil.getHumanBinSize( 0 ), is( "0B" ) );
+		assertThat( FileUtil.getHumanBinSize( 1 ), is( "1B" ) );
+		assertThat( FileUtil.getHumanBinSize( 12 ), is( "12B" ) );
+		assertThat( FileUtil.getHumanBinSize( 123 ), is( "123B" ) );
+		assertThat( FileUtil.getHumanBinSize( 1234 ), is( "1.2KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( 12345 ), is( "12KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( 123456 ), is( "120KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( 1234567 ), is( "1.2MiB" ) );
+		assertThat( FileUtil.getHumanBinSize( 12345678 ), is( "11MiB" ) );
+		assertThat( FileUtil.getHumanBinSize( 123456789 ), is( "117MiB" ) );
 
-		assertEquals( "1023B", FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() - 1 ) );
-		assertEquals( "1.0KiB", FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() - 1 ), is( "1023B" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() ), is( "1.0KiB" ) );
 
-		assertEquals( "1023KiB", FileUtil.getHumanBinSize( SizeUnit.MiB.getSize() - 1 ) );
-		assertEquals( "1.0MiB", FileUtil.getHumanBinSize( SizeUnit.MiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.MiB.getSize() - 1 ), is( "1023KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.MiB.getSize() ), is( "1.0MiB" ) );
 
-		assertEquals( "1023MiB", FileUtil.getHumanBinSize( SizeUnit.GiB.getSize() - 1 ) );
-		assertEquals( "1.0GiB", FileUtil.getHumanBinSize( SizeUnit.GiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.GiB.getSize() - 1 ), is( "1023MiB" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.GiB.getSize() ), is( "1.0GiB" ) );
 
-		assertEquals( "1023GiB", FileUtil.getHumanBinSize( SizeUnit.TiB.getSize() - 1 ) );
-		assertEquals( "1.0TiB", FileUtil.getHumanBinSize( SizeUnit.TiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.TiB.getSize() - 1 ), is( "1023GiB" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.TiB.getSize() ), is( "1.0TiB" ) );
 
-		assertEquals( "1023TiB", FileUtil.getHumanBinSize( SizeUnit.PiB.getSize() - 1 ) );
-		assertEquals( "1.0PiB", FileUtil.getHumanBinSize( SizeUnit.PiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.PiB.getSize() - 1 ), is( "1023TiB" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.PiB.getSize() ), is( "1.0PiB" ) );
 
-		assertEquals( "1023PiB", FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() - 1 ) );
-		assertEquals( "1.0EiB", FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() - 1 ), is( "1023PiB" ) );
+		assertThat( FileUtil.getHumanBinSize( SizeUnit.EiB.getSize() ), is( "1.0EiB" ) );
 	}
 
 	@Test
-	public void testGetExtensionWithFile() throws Exception {
-		assertEquals( "Incorrect extension.", null, FileUtil.getExtension( (Path)null ) );
-		assertEquals( "Incorrect extension.", "", FileUtil.getExtension( Paths.get( "test" ) ) );
-		assertEquals( "Incorrect extension.", "txt", FileUtil.getExtension( Paths.get( "test.txt" ) ) );
+	public void testGetExtensionWithPath() throws Exception {
+		assertThat( FileUtil.getExtension( (Path)null ), is( nullValue() ) );
+		assertThat( FileUtil.getExtension( Paths.get( "test" ) ), is( "" ) );
+		assertThat( FileUtil.getExtension( Paths.get( "test.txt" ) ), is( "txt" ) );
 	}
 
 	@Test
 	public void testGetExtensionWithName() throws Exception {
-		assertEquals( "Incorrect extension.", null, FileUtil.getExtension( (String)null ) );
-		assertEquals( "Incorrect extension.", "", FileUtil.getExtension( "test" ) );
-		assertEquals( "Incorrect extension.", "txt", FileUtil.getExtension( "test.txt" ) );
+		assertThat( FileUtil.getExtension( (String)null ), is( nullValue() ) );
+		assertThat( FileUtil.getExtension( "test" ), is( "" ) );
+		assertThat( FileUtil.getExtension( "test.txt" ), is( "txt" ) );
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class FileUtilTest {
 		String name = folder.getFileName().toString();
 		Path check = Paths.get( System.getProperty( "java.io.tmpdir" ), name );
 		assertThat( Files.exists( check ), is( true ) );
-		assertEquals( check, folder );
+		assertThat( folder, is( check ) );
 		Files.deleteIfExists( folder );
 	}
 

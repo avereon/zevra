@@ -1,27 +1,27 @@
 package com.xeomar.razor;
 
-import com.xeomar.razor.SizeUnit;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SizeUnitTest {
 
 	@Test
 	public void testConstants() throws Exception {
-		assertEquals( 1000L, SizeUnit.KB.getSize() );
-		assertEquals( 1000000L, SizeUnit.MB.getSize() );
-		assertEquals( 1000000000L, SizeUnit.GB.getSize() );
-		assertEquals( 1000000000000L, SizeUnit.TB.getSize() );
-		assertEquals( 1000000000000000L, SizeUnit.PB.getSize() );
-		assertEquals( 1000000000000000000L, SizeUnit.EB.getSize() );
+		assertThat( SizeUnit.KB.getSize(), is( 1000L ) );
+		assertThat( SizeUnit.MB.getSize(), is( 1000000L ) );
+		assertThat( SizeUnit.GB.getSize(), is( 1000000000L ) );
+		assertThat( SizeUnit.TB.getSize(), is( 1000000000000L ) );
+		assertThat( SizeUnit.PB.getSize(), is( 1000000000000000L ) );
+		assertThat( SizeUnit.EB.getSize(), is( 1000000000000000000L ) );
 
-		assertEquals( 1024L, SizeUnit.KiB.getSize() );
-		assertEquals( 1048576L, SizeUnit.MiB.getSize() );
-		assertEquals( 1073741824L, SizeUnit.GiB.getSize() );
-		assertEquals( 1099511627776L, SizeUnit.TiB.getSize() );
-		assertEquals( 1125899906842624L, SizeUnit.PiB.getSize() );
-		assertEquals( 1152921504606846976L, SizeUnit.EiB.getSize() );
+		assertThat( SizeUnit.KiB.getSize(), is( 1024L ) );
+		assertThat( SizeUnit.MiB.getSize(), is( 1048576L ) );
+		assertThat( SizeUnit.GiB.getSize(), is( 1073741824L ) );
+		assertThat( SizeUnit.TiB.getSize(), is( 1099511627776L ) );
+		assertThat( SizeUnit.PiB.getSize(), is( 1125899906842624L ) );
+		assertThat( SizeUnit.EiB.getSize(), is( 1152921504606846976L ) );
 	}
 
 }

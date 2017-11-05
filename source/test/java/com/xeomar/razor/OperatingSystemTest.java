@@ -5,8 +5,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class OperatingSystemTest {
@@ -18,209 +18,212 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testLinux() throws Exception {
-		init( "Linux", "x86_64", "2.6.32_45" );
-		assertTrue( OperatingSystem.isLinux() );
-		assertFalse( OperatingSystem.isMac() );
-		assertTrue( OperatingSystem.isUnix() );
-		assertFalse( OperatingSystem.isWindows() );
-		assertEquals( "2.6.32_45", OperatingSystem.getVersion() );
-		assertEquals( "x86_64", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.LINUX, OperatingSystem.getFamily() );
-		assertEquals( "java", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		assertThat( OperatingSystem.isLinux(), is( true ) );
+		assertThat( OperatingSystem.isMac(), is( false ) );
+		assertThat( OperatingSystem.isUnix(), is( true ) );
+		assertThat( OperatingSystem.isWindows(), is( false ) );
+		assertThat( OperatingSystem.getVersion(), is( "2.6.32_45" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86_64" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.LINUX ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
 	}
 
 	@Test
 	public void testMac() throws Exception {
-		init( "Mac OS X", "ppc", "10" );
-		assertFalse( OperatingSystem.isLinux() );
-		assertTrue( OperatingSystem.isMac() );
-		assertTrue( OperatingSystem.isUnix() );
-		assertFalse( OperatingSystem.isWindows() );
-		assertEquals( "10", OperatingSystem.getVersion() );
-		assertEquals( "ppc", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.MACOSX, OperatingSystem.getFamily() );
-		assertEquals( "java", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Mac OS X", "ppc", "10" );
+		assertThat( OperatingSystem.isLinux(), is( false ) );
+		assertThat( OperatingSystem.isMac(), is( true ) );
+		assertThat( OperatingSystem.isUnix(), is( true ) );
+		assertThat( OperatingSystem.isWindows(), is( false ) );
+		assertThat( OperatingSystem.getVersion(), is( "10" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "ppc" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
 	}
 
 	@Test
 	public void testWindows7() throws Exception {
-		init( "Windows 7", "x86", "6.1" );
-		assertFalse( OperatingSystem.isLinux() );
-		assertFalse( OperatingSystem.isMac() );
-		assertFalse( OperatingSystem.isUnix() );
-		assertTrue( OperatingSystem.isWindows() );
-		assertEquals( "6.1", OperatingSystem.getVersion() );
-		assertEquals( "x86", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.WINDOWS, OperatingSystem.getFamily() );
-		assertEquals( "javaw", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Windows 7", "x86", "6.1" );
+		assertThat( OperatingSystem.isLinux(), is( false ) );
+		assertThat( OperatingSystem.isMac(), is( false ) );
+		assertThat( OperatingSystem.isUnix(), is( false ) );
+		assertThat( OperatingSystem.isWindows(), is( true ) );
+		assertThat( OperatingSystem.getVersion(), is( "6.1" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 	}
 
 	@Test
 	public void testWindows8() throws Exception {
-		init( "Windows 8", "x86", "6.2" );
-		assertFalse( OperatingSystem.isLinux() );
-		assertFalse( OperatingSystem.isMac() );
-		assertFalse( OperatingSystem.isUnix() );
-		assertTrue( OperatingSystem.isWindows() );
-		assertEquals( "6.2", OperatingSystem.getVersion() );
-		assertEquals( "x86", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.WINDOWS, OperatingSystem.getFamily() );
-		assertEquals( "javaw", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Windows 8", "x86", "6.2" );
+		assertThat( OperatingSystem.isLinux(), is( false ) );
+		assertThat( OperatingSystem.isMac(), is( false ) );
+		assertThat( OperatingSystem.isUnix(), is( false ) );
+		assertThat( OperatingSystem.isWindows(), is( true ) );
+		assertThat( OperatingSystem.getVersion(), is( "6.2" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 	}
 
 	@Test
 	public void testWindows8_1() throws Exception {
-		init( "Windows 8.1", "x86", "6.3" );
-		assertFalse( OperatingSystem.isLinux() );
-		assertFalse( OperatingSystem.isMac() );
-		assertFalse( OperatingSystem.isUnix() );
-		assertTrue( OperatingSystem.isWindows() );
-		assertEquals( "6.3", OperatingSystem.getVersion() );
-		assertEquals( "x86", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.WINDOWS, OperatingSystem.getFamily() );
-		assertEquals( "javaw", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Windows 8.1", "x86", "6.3" );
+		assertThat( OperatingSystem.isLinux(), is( false ) );
+		assertThat( OperatingSystem.isMac(), is( false ) );
+		assertThat( OperatingSystem.isUnix(), is( false ) );
+		assertThat( OperatingSystem.isWindows(), is( true ) );
+		assertThat( OperatingSystem.getVersion(), is( "6.3" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 	}
 
 	@Test
 	public void testWindows10() throws Exception {
-		init( "Windows 10", "x86", "10" );
-		assertFalse( OperatingSystem.isLinux() );
-		assertFalse( OperatingSystem.isMac() );
-		assertFalse( OperatingSystem.isUnix() );
-		assertTrue( OperatingSystem.isWindows() );
-		assertEquals( "10", OperatingSystem.getVersion() );
-		assertEquals( "x86", OperatingSystem.getSystemArchitecture() );
-		assertEquals( OperatingSystem.Family.WINDOWS, OperatingSystem.getFamily() );
-		assertEquals( "javaw", OperatingSystem.getJavaExecutableName() );
+		OperatingSystem.init( "Windows 10", "x86", "10.0" );
+		assertThat( OperatingSystem.isLinux(), is( false ) );
+		assertThat( OperatingSystem.isMac(), is( false ) );
+		assertThat( OperatingSystem.isUnix(), is( false ) );
+		assertThat( OperatingSystem.isWindows(), is( true ) );
+		assertThat( OperatingSystem.getVersion(), is( "10.0" ) );
+		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
+		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
+		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 	}
 
 	@Test
 	public void testIsProcessElevatedMac() throws Exception {
-		OperatingSystemTest.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10" );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertFalse( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertTrue( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
 
 	@Test
 	public void testIsProcessElevatedUnix() throws Exception {
-		OperatingSystemTest.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertFalse( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertTrue( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
 
 	@Test
 	public void testIsProcessElevatedWindows() throws Exception {
-		OperatingSystemTest.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1" );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertFalse( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertTrue( OperatingSystem.isProcessElevated() );
+		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
 
 	@Test
 	public void testElevateProcessMac() throws Exception {
-		OperatingSystemTest.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10" );
 		ProcessBuilder builder = new ProcessBuilder( "textmate" );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate" );
 
 		OperatingSystem.elevateProcessBuilder( "textmate", builder );
-		assertEquals( 2, builder.command().size() );
-		assertEquals( elevate.getCanonicalPath(), builder.command().get( 0 ) );
-		assertEquals( "textmate", builder.command().get( 1 ) );
+		assertThat( builder.command().get( 0 ), is( elevate.getCanonicalPath() ) );
+		assertThat( builder.command().get( 1 ), is( "textmate" ) );
+		assertThat( builder.command().size(), is( 2 ) );
 	}
 
 	@Test
 	public void testElevateProcessUnix() throws Exception {
 		String program = "vi";
-		OperatingSystemTest.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
 		ProcessBuilder builder = new ProcessBuilder( program );
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
 		File gksudo = new File( "/usr/bin/gksudo" );
 		File kdesudo = new File( "/usr/bin/kdesudo" );
 		if( gksudo.exists() ) {
-			assertEquals( 5, builder.command().size() );
-			assertEquals( gksudo.toString(), builder.command().get( 0 ) );
-			assertEquals( program, builder.command().get( 4 ) );
+			assertThat( builder.command().get( 0 ), is( gksudo.toString() ) );
+			assertThat( builder.command().get( 1 ), is( "-D" ) );
+			assertThat( builder.command().get( 2 ), is( program ) );
+			assertThat( builder.command().get( 3 ), is( "--" ) );
+			assertThat( builder.command().get( 4 ), is( program ) );
+			assertThat( builder.command().size(), is( 5 ) );
 		} else if( kdesudo.exists() ) {
-			assertEquals( 3, builder.command().size() );
-			assertEquals( kdesudo.toString(), builder.command().get( 0 ) );
-			assertEquals( program, builder.command().get( 2 ) );
+			assertThat( builder.command().get( 0 ), is( kdesudo.toString() ) );
+			assertThat( builder.command().get( 2 ), is( program ) );
+			assertThat( builder.command().size(), is( 3 ) );
 		} else {
-			assertEquals( 6, builder.command().size() );
-			assertEquals( "xterm", builder.command().get( 0 ) );
-			assertEquals( "-title", builder.command().get( 1 ) );
-			assertEquals( program, builder.command().get( 2 ) );
-			assertEquals( "-e", builder.command().get( 3 ) );
-			assertEquals( "sudo", builder.command().get( 4 ) );
-			assertEquals( program, builder.command().get( 5 ) );
+			assertThat( builder.command().get( 0 ), is( "xterm" ) );
+			assertThat( builder.command().get( 1 ), is( "-title" ) );
+			assertThat( builder.command().get( 2 ), is( program ) );
+			assertThat( builder.command().get( 3 ), is( "-e" ) );
+			assertThat( builder.command().get( 4 ), is( "sudo" ) );
+			assertThat( builder.command().get( 5 ), is( program ) );
+			assertThat( builder.command().size(), is( 6 ) );
 		}
 	}
 
 	@Test
 	public void testElevateProcessWindows() throws Exception {
-		OperatingSystemTest.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1" );
 		ProcessBuilder builder = new ProcessBuilder( "notepad.exe" );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" );
 
 		OperatingSystem.elevateProcessBuilder( "Notepad", builder );
 
 		int index = 0;
-		assertEquals( 3, builder.command().size() );
-		assertEquals( "wscript", builder.command().get( index++ ) );
-		assertEquals( elevate.getCanonicalPath(), builder.command().get( index++ ) );
-		assertEquals( "notepad.exe", builder.command().get( index++ ) );
+		assertThat( builder.command().get( index++ ), is( "wscript" ) );
+		assertThat( builder.command().get( index++ ), is( elevate.getCanonicalPath() ) );
+		assertThat( builder.command().get( index++ ), is( "notepad.exe" ) );
+		assertThat( builder.command().size(), is( index ) );
 	}
 
 	@Test
 	public void testReduceProcessMac() throws Exception {
-		OperatingSystemTest.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10" );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "textmate" );
 
 		OperatingSystem.reduceProcessBuilder( builder );
 
 		int index = 0;
-		assertEquals( 5, builder.command().size() );
-		assertEquals( "su", builder.command().get( index++ ) );
-		assertEquals( "-", builder.command().get( index++ ) );
-		assertEquals( System.getenv( "SUDO_USER" ), builder.command().get( index++ ) );
-		assertEquals( "--", builder.command().get( index++ ) );
-		assertEquals( "textmate", builder.command().get( index++ ) );
+		assertThat( builder.command().get( index++ ), is( "su" ) );
+		assertThat( builder.command().get( index++ ), is( "-" ) );
+		assertThat( builder.command().get( index++ ), is( System.getenv( "SUDO_USER" ) ) );
+		assertThat( builder.command().get( index++ ), is( "--" ) );
+		assertThat( builder.command().get( index++ ), is( "textmate" ) );
+		assertThat(  builder.command().size(), is( index ) );
 	}
 
 	@Test
 	public void testReduceProcessUnix() throws Exception {
-		OperatingSystemTest.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "vi" );
 
 		OperatingSystem.reduceProcessBuilder( builder );
 
 		int index = 0;
-		assertEquals( 5, builder.command().size() );
-		assertEquals( "su", builder.command().get( index++ ) );
-		assertEquals( "-", builder.command().get( index++ ) );
-		assertEquals( System.getenv( "SUDO_USER" ), builder.command().get( index++ ) );
-		assertEquals( "--", builder.command().get( index++ ) );
-		assertEquals( "vi", builder.command().get( index++ ) );
+		assertThat( builder.command().get( index++ ), is( "su" ) );
+		assertThat( builder.command().get( index++ ), is( "-" ) );
+		assertThat( builder.command().get( index++ ), is( System.getenv( "SUDO_USER" ) ) );
+		assertThat( builder.command().get( index++ ), is( "--" ) );
+		assertThat( builder.command().get( index++ ), is( "vi" ) );
+		assertThat( builder.command().size(), is( index ) );
 	}
 
 	@Test
 	public void testReduceProcessWindows() throws Exception {
-		OperatingSystemTest.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1" );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( OperatingSystem.getJavaExecutablePath(), "-jar", "C:\\Program Files\\Escape\\program.jar", "-update", "false" );
 
@@ -236,29 +239,19 @@ public class OperatingSystemTest {
 	}
 
 	@Test
-	public void testGetJavaExecutableName() {
-		assertEquals( OperatingSystem.isWindows() ? "javaw" : "java", OperatingSystem.getJavaExecutableName() );
-	}
-
-	@Test
 	public void testGetJavaExecutablePath() {
 		String java = OperatingSystem.isWindows() ? "javaw" : "java";
-		assertEquals( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + java, OperatingSystem.getJavaExecutablePath() );
+		String javaPath = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + java;
+		assertThat( OperatingSystem.getJavaExecutablePath(), is( javaPath ) );
 	}
 
 	@Test
 	public void testResolveNativeLibPath() throws Exception {
-		init( "Windows 8", "x86", "6.2" );
-		assertEquals( "win/x86/rxtxSerial.dll", OperatingSystem.resolveNativeLibPath( "rxtxSerial" ) );
+		OperatingSystem.init( "Windows 8", "x86", "6.2" );
+		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "win/x86/rxtxSerial.dll" ) );
 
-		init( "Linux", "x86_64", "2.6.32_45" );
-		assertEquals( "linux/x86_64/librxtxSerial.so", OperatingSystem.resolveNativeLibPath( "rxtxSerial" ) );
-	}
-
-	private static void init( String name, String arch, String version ) throws Exception {
-		Method initMethod = OperatingSystem.class.getDeclaredMethod( "init", String.class, String.class, String.class );
-		initMethod.setAccessible( true );
-		initMethod.invoke( null, name, arch, version );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "linux/x86_64/librxtxSerial.so" ) );
 	}
 
 }

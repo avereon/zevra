@@ -63,56 +63,6 @@ public class OperatingSystem {
 		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), System.getProperty( "os.version" ) );
 	}
 
-	/**
-	 * The init() method is intentionally private, and separate from the static initializer, so the initializing logic can be tested.
-	 *
-	 * @param name The os name from System.getProperty( "os.name" ).
-	 * @param arch The os arch from System.getProperty( "os.arch" ).
-	 * @param version The os version from System.getProperty( "os.version" ).
-	 */
-	private static final void init( String name, String arch, String version ) {
-		OperatingSystem.name = name;
-		OperatingSystem.arch = arch;
-
-		// Determine the OS family.
-		if( name.contains( "Linux" ) ) {
-			family = Family.LINUX;
-		} else if( name.contains( "Windows" ) ) {
-			family = Family.WINDOWS;
-		} else if( name.contains( "OS/2" ) ) {
-			family = Family.OS2;
-		} else if( name.contains( "SunOS" ) | name.contains( "Solaris" ) | name.contains( "HP-UX" ) | name.contains( "AIX" ) | name.contains( "FreeBSD" ) ) {
-			family = Family.UNIX;
-		} else if( name.contains( "Mac OS" ) ) {
-			if( name.contains( "Mac OS X" ) ) {
-				family = Family.MACOSX;
-			} else {
-				family = Family.MAC;
-			}
-		} else {
-			family = Family.UNKNOWN;
-		}
-
-		// Determine the OS architecture.
-		if( arch.matches( "x86" ) || arch.matches( "i.86" ) ) {
-			OperatingSystem.architecture = Architecture.X86;
-		} else if( "x86_64".equals( arch ) || "amd64".equals( arch ) ) {
-			OperatingSystem.architecture = Architecture.X64;
-		} else if( "ppc".equals( arch ) || "PowerPC".equals( arch ) ) {
-			OperatingSystem.architecture = Architecture.PPC;
-		} else {
-			OperatingSystem.architecture = Architecture.UNKNOWN;
-		}
-
-		// Store the version.
-		OperatingSystem.version = version;
-
-		// Case sensitive file system.
-		File fileOne = new File( "TeStFiLe" );
-		File fileTwo = new File( "tEsTfIlE" );
-		fileSystemCaseSensitive = !fileOne.equals( fileTwo );
-	}
-
 	public static final String getName() {
 		return name;
 	}
@@ -410,6 +360,57 @@ public class OperatingSystem {
 
 	static final void clearProcessElevatedFlag() {
 		elevated = null;
+	}
+
+	/**
+	 * The init() method is intentionally package private, and separate from the
+	 * static initializer, so the initialization logic can be tested.
+	 *
+	 * @param name The os name from System.getProperty( "os.name" ).
+	 * @param arch The os arch from System.getProperty( "os.arch" ).
+	 * @param version The os version from System.getProperty( "os.version" ).
+	 */
+	static final void init( String name, String arch, String version ) {
+		OperatingSystem.name = name;
+		OperatingSystem.arch = arch;
+
+		// Determine the OS family.
+		if( name.contains( "Linux" ) ) {
+			family = Family.LINUX;
+		} else if( name.contains( "Windows" ) ) {
+			family = Family.WINDOWS;
+		} else if( name.contains( "OS/2" ) ) {
+			family = Family.OS2;
+		} else if( name.contains( "SunOS" ) | name.contains( "Solaris" ) | name.contains( "HP-UX" ) | name.contains( "AIX" ) | name.contains( "FreeBSD" ) ) {
+			family = Family.UNIX;
+		} else if( name.contains( "Mac OS" ) ) {
+			if( name.contains( "Mac OS X" ) ) {
+				family = Family.MACOSX;
+			} else {
+				family = Family.MAC;
+			}
+		} else {
+			family = Family.UNKNOWN;
+		}
+
+		// Determine the OS architecture.
+		if( arch.matches( "x86" ) || arch.matches( "i.86" ) ) {
+			OperatingSystem.architecture = Architecture.X86;
+		} else if( "x86_64".equals( arch ) || "amd64".equals( arch ) ) {
+			OperatingSystem.architecture = Architecture.X64;
+		} else if( "ppc".equals( arch ) || "PowerPC".equals( arch ) ) {
+			OperatingSystem.architecture = Architecture.PPC;
+		} else {
+			OperatingSystem.architecture = Architecture.UNKNOWN;
+		}
+
+		// Store the version.
+		OperatingSystem.version = version;
+
+		// Case sensitive file system.
+		File fileOne = new File( "TeStFiLe" );
+		File fileTwo = new File( "tEsTfIlE" );
+		fileSystemCaseSensitive = !fileOne.equals( fileTwo );
 	}
 
 	private static final String mapLibraryName( String libname ) {
