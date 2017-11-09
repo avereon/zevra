@@ -1,8 +1,11 @@
 package com.xeomar.razor;
 
-import java.io.IOException;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileUtil {
 
@@ -126,6 +129,39 @@ public class FileUtil {
 		int index = name.lastIndexOf( '.' );
 		if( index < 0 ) return "";
 		return name.substring( index + 1 );
+	}
+
+	public static Path removeExtension( Path file ) {
+		if( file == null ) return null;
+		return Paths.get( removeExtension( file.toString() ) );
+	}
+
+	public static String removeExtension( String name ) {
+		if( name == null ) return null;
+		int index = name.lastIndexOf( '.' );
+		if( index < 0 ) return name;
+		return name.substring( 0, index );
+	}
+
+	public static void save( String data, File target ) throws IOException {
+		save( data, target, "UTF-8" );
+	}
+
+	public static void save( String data, File target, String encoding ) throws IOException {
+		OutputStream output = new FileOutputStream( target );
+		IOUtils.write( data, output, encoding );
+		IOUtils.closeQuietly( output );
+	}
+
+	public static String load( File source ) throws IOException {
+		return load( source, "UTF-8" );
+	}
+
+	public static String load( File source, String encoding ) throws IOException {
+		FileInputStream input = new FileInputStream( source );
+		String string = IOUtils.toString( input, encoding );
+		IOUtils.closeQuietly( input );
+		return string;
 	}
 
 	/**

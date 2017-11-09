@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,6 +104,27 @@ public class FileUtilTest {
 		assertThat( FileUtil.getExtension( (String)null ), is( nullValue() ) );
 		assertThat( FileUtil.getExtension( "test" ), is( "" ) );
 		assertThat( FileUtil.getExtension( "test.txt" ), is( "txt" ) );
+	}
+
+	@Test
+	public void testRemoveExtensionWithPath() throws Exception {
+		assertThat( FileUtil.removeExtension( (Path)null ), is( nullValue() ) );
+		assertThat( FileUtil.removeExtension( Paths.get( "test" ) ), is( Paths.get( "test" ) ) );
+		assertThat( FileUtil.removeExtension( Paths.get( "test.txt" ) ), is( Paths.get( "test" ) ) );
+	}
+
+	@Test
+	public void testRemoveExtensionWithName() throws Exception {
+		assertThat( FileUtil.removeExtension( (String)null ), is( nullValue() ) );
+		assertThat( FileUtil.removeExtension( "test" ), is( "test" ) );
+		assertThat( FileUtil.removeExtension( "test.txt" ), is( "test" ) );
+	}
+
+	@Test
+	public void testSaveAndLoad() throws Exception {
+		File file = File.createTempFile( PREFIX, "Test" );
+		FileUtil.save( file.toString(), file );
+		assertThat( FileUtil.load( file ), is( file.toString() ) );
 	}
 
 	@Test
