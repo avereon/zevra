@@ -6,18 +6,14 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+@SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 
 	private static final Logger log = LoggerFactory.getLogger( TextUtil.class );
@@ -28,70 +24,43 @@ public final class TextUtil {
 
 	public static final int RIGHT = 1;
 
-	public static final String DEFAULT_ENCODING = "UTF-8";
+	public static final String ENCODING = "UTF-8";
 
-	public static final Charset DEFAULT_CHARSET = Charset.forName( TextUtil.DEFAULT_ENCODING );
+	public static final Charset CHARSET = Charset.forName( TextUtil.ENCODING );
 
 	private static final char DEFAULT_PAD_CHAR = ' ';
 
-	public static final boolean isEmpty( String string ) {
-		if( string == null ) return true;
-		if( string.trim().length() == 0 ) return true;
-		return false;
-	}
-
-	public static final boolean areEqual( String string1, String string2 ) {
-		if( string1 == null && string2 == null ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
-		return string1.equals( string2 );
-	}
-
-	public static final boolean areEqualIgnoreCase( String string1, String string2 ) {
-		if( string1 == null && string2 == null ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
-		return string1.equalsIgnoreCase( string2 );
-	}
-
-	public static final boolean areSame( String string1, String string2 ) {
-		if( isEmpty( string1 ) && isEmpty( string2 ) ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
-		return string1.equals( string2 );
-	}
-
-	public static final int compare( String string1, String string2 ) {
+	public static int compare( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return 0;
-		if( string1 == null && string2 != null ) return -1;
-		if( string1 != null && string2 == null ) return 1;
+		if( string1 == null ) return -1;
+		if( string2 == null ) return 1;
 		return string1.compareTo( string2 );
 	}
 
-	public static final int compareIgnoreCase( String string1, String string2 ) {
+	public static int compareIgnoreCase( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return 0;
-		if( string1 == null && string2 != null ) return -1;
-		if( string1 != null && string2 == null ) return 1;
+		if( string1 == null ) return -1;
+		if( string2 == null ) return 1;
 		return string1.compareToIgnoreCase( string2 );
 	}
 
-	public static final String cleanNull( String string ) {
+	public static String cleanNull( String string ) {
 		if( string == null ) return null;
 		string = string.trim();
 		return "".equals( string ) ? null : string;
 	}
 
-	public static final String cleanEmpty( String string ) {
+	public static String cleanEmpty( String string ) {
 		return string == null ? "" : string.trim();
 	}
 
 	/**
 	 * Concatenate multiple objects together using a fast string building object.
 	 *
-	 * @param objects
-	 * @return
+	 * @param objects The objects to concatenate
+	 * @return The concatenated string
 	 */
-	public static final String concatenate( Object... objects ) {
+	public static String concatenate( Object... objects ) {
 		StringBuilder builder = new StringBuilder();
 
 		for( Object object : objects ) {
@@ -101,73 +70,43 @@ public final class TextUtil {
 		return builder.toString();
 	}
 
-	/**
-	 * Return the string representation of the MD5 sum of the specified string. This method is implemented using NIO buffers so it should be efficient for large strings without causing memory or CPU issues.
-	 *
-	 * @param string
-	 * @return
-	 */
-	public static final byte[] getMD5Sum( String string ) {
-		if( string == null ) return null;
-
-		int width = 512;
-		try {
-			byte[] buffer = new byte[ width ];
-			MessageDigest digest = MessageDigest.getInstance( "MD5" );
-			CharBuffer chars = CharBuffer.wrap( string );
-			ByteBuffer bytes = ByteBuffer.allocateDirect( width );
-
-			CharsetEncoder encoder = Charset.forName( DEFAULT_ENCODING ).newEncoder();
-			while( chars.hasRemaining() ) {
-				encoder.encode( chars, bytes, false );
-				bytes.flip();
-				bytes.get( buffer, 0, bytes.limit() );
-				digest.update( buffer, 0, bytes.limit() );
-				bytes.flip();
-			}
-			return digest.digest();
-		} catch( NoSuchAlgorithmException exception ) {
-			return null;
-		}
-	}
-
-	public static final String toString( Object[] array ) {
+	public static String toString( Object[] array ) {
 		return toString( Arrays.asList( array ) );
 	}
 
-	public static final String toString( Object[] array, int offset ) {
+	public static String toString( Object[] array, int offset ) {
 		return toString( array, offset, array.length - offset );
 	}
 
-	public static final String toString( Object[] array, int offset, int length ) {
+	public static String toString( Object[] array, int offset, int length ) {
 		Object[] items = new Object[ length ];
 		System.arraycopy( array, offset, items, 0, length );
 		return toString( Arrays.asList( items ) );
 	}
 
-	public static final String toString( Object[] array, String delimiter ) {
+	public static String toString( Object[] array, String delimiter ) {
 		return toString( Arrays.asList( array ), delimiter );
 	}
 
-	public static final String toString( Object[] array, String delimiter, int offset ) {
+	public static String toString( Object[] array, String delimiter, int offset ) {
 		return toString( array, delimiter, offset, array.length - offset );
 	}
 
-	public static final String toString( Object[] array, String delimiter, int offset, int length ) {
+	public static String toString( Object[] array, String delimiter, int offset, int length ) {
 		Object[] items = new Object[ length ];
 		System.arraycopy( array, offset, items, 0, length );
 		return toString( Arrays.asList( items ), delimiter );
 	}
 
-	public static final String toString( List<? extends Object> list ) {
+	public static String toString( List<?> list ) {
 		return toString( list, "[", "]" );
 	}
 
-	public static final String toString( List<? extends Object> list, String delimiter ) {
+	public static String toString( List<?> list, String delimiter ) {
 		return toString( list, delimiter, null );
 	}
 
-	public static final String toString( List<? extends Object> list, String prefix, String suffix ) {
+	public static String toString( List<?> list, String prefix, String suffix ) {
 		if( list == null ) return null;
 
 		boolean delimiter = suffix == null;
@@ -194,14 +133,13 @@ public final class TextUtil {
 	 * @param data The byte to convert.
 	 * @return A printable string representation of the byte.
 	 */
-	public static final String toPrintableString( byte data ) {
-		String result = null;
-		int dataAsInt = data;
-		if( dataAsInt >= 32 && dataAsInt <= 126 ) {
-			result = String.valueOf( (char)dataAsInt );
+	public static String toPrintableString( byte data ) {
+		String result;
+		if( (int)data >= 32 && (int)data <= 126 ) {
+			result = String.valueOf( (char)(int)data );
 		} else {
-			short value = (short)dataAsInt;
-			result = "[" + String.valueOf( (int)(value < 0 ? value + 256 : value) ) + "]";
+			short value = (short)(int)data;
+			result = "[" + String.valueOf( (value < 0 ? value + 256 : value) ) + "]";
 			if( value == 13 ) result += "\n";
 		}
 
@@ -218,21 +156,21 @@ public final class TextUtil {
 	 * @param data The character to convert.
 	 * @return A printable string representation of the character.
 	 */
-	public static final String toPrintableString( char data ) {
+	public static String toPrintableString( char data ) {
 
 		if( data >= 32 && data <= 126 ) {
 			return String.valueOf( data );
 		} else {
 			short value = (short)data;
-			return "[" + String.valueOf( (int)(value < 0 ? value + 65536 : value) ) + "]";
+			return "[" + String.valueOf( (value < 0 ? value + 65536 : value) ) + "]";
 		}
 	}
 
-	public static final String toPrintableString( byte[] data ) {
+	public static String toPrintableString( byte[] data ) {
 		return toPrintableString( data, 0, data.length );
 	}
 
-	public static final String toPrintableString( byte[] data, int offset, int length ) {
+	public static String toPrintableString( byte[] data, int offset, int length ) {
 		if( data == null ) return null;
 		StringBuilder builder = new StringBuilder();
 		int count = offset + length;
@@ -243,17 +181,16 @@ public final class TextUtil {
 		return builder.toString();
 	}
 
-	public static final String toPrintableString( char[] data ) {
+	public static String toPrintableString( char[] data ) {
 		if( data == null ) return null;
 		StringBuilder builder = new StringBuilder();
-		int count = data.length;
-		for( int index = 0; index < count; index++ ) {
-			builder.append( toPrintableString( data[ index ] ) );
+		for( char aData : data ) {
+			builder.append( toPrintableString( aData ) );
 		}
 		return builder.toString();
 	}
 
-	public static final String toPrintableString( String data ) {
+	public static String toPrintableString( String data ) {
 		return toPrintableString( data.toCharArray() );
 	}
 
@@ -263,13 +200,12 @@ public final class TextUtil {
 	 * @param bytes The bytes to convert to hex.
 	 * @return A hex encoded string of the byte array.
 	 */
-	public static final String toHexEncodedString( byte[] bytes ) {
-		int value = 0;
-		int count = bytes.length;
-		String string = null;
+	public static String toHexEncodedString( byte[] bytes ) {
+		int value;
+		String string;
 		StringBuilder builder = new StringBuilder();
-		for( int index = 0; index < count; index++ ) {
-			value = bytes[ index ];
+		for( byte aByte : bytes ) {
+			value = aByte;
 			string = Integer.toHexString( value < 0 ? value + 256 : value );
 			if( string.length() == 1 ) builder.append( "0" );
 			builder.append( string );
@@ -280,33 +216,32 @@ public final class TextUtil {
 	/**
 	 * Encode a string to a hex string.
 	 *
-	 * @param string
-	 * @return
+	 * @param string The string to encode
+	 * @return The hex encoded string
 	 */
-	public static final String hexEncode( String string ) {
+	public static String hexEncode( String string ) {
 		return secureHexEncode( string.toCharArray() );
 	}
 
 	/**
 	 * Decode a hex string to a string.
 	 *
-	 * @param string
-	 * @return
+	 * @param string The hex encoded string to decode
+	 * @return The decoded string
 	 */
-	public static final String hexDecode( String string ) {
+	public static String hexDecode( String string ) {
 		char[] value = secureHexDecode( string );
 		return value == null ? null : new String( value );
 	}
 
-	public static final String secureHexByteEncode( byte[] bytes ) {
+	public static String secureHexByteEncode( byte[] bytes ) {
 		if( bytes == null ) return null;
 
-		int value = 0;
-		int count = bytes.length;
-		String string = null;
+		int value;
+		String string;
 		StringBuilder builder = new StringBuilder();
-		for( int index = 0; index < count; index++ ) {
-			value = bytes[ index ];
+		for( byte aByte : bytes ) {
+			value = aByte;
 			string = Integer.toHexString( value < 0 ? value + 256 : value );
 			if( string.length() == 1 ) builder.append( "0" );
 			builder.append( string );
@@ -315,7 +250,7 @@ public final class TextUtil {
 		return builder.toString();
 	}
 
-	public static final byte[] secureHexByteDecode( String string ) {
+	public static byte[] secureHexByteDecode( String string ) {
 		if( string == null ) return null;
 
 		int count = string.length();
@@ -340,17 +275,16 @@ public final class TextUtil {
 	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can inspect the JVM memory. Security sensitive information should always be collected
 	 * and stored in a char array instead.
 	 *
-	 * @param chars
-	 * @return
+	 * @param chars The characters to hex encode
+	 * @return The hex encoded string
 	 */
-	public static final String secureHexEncode( char[] chars ) {
+	public static String secureHexEncode( char[] chars ) {
 		if( chars == null ) return null;
 
-		int count = chars.length;
-		String string = null;
+		String string;
 		StringBuilder builder = new StringBuilder();
-		for( int index = 0; index < count; index++ ) {
-			string = Integer.toHexString( chars[ index ] );
+		for( char aChar : chars ) {
+			string = Integer.toHexString( aChar );
 			builder.append( rightJustify( string, 4, '0' ) );
 		}
 
@@ -364,10 +298,10 @@ public final class TextUtil {
 	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can inspect the JVM memory. Security sensitive information should always be collected
 	 * and stored in a char array instead.
 	 *
-	 * @param string
-	 * @return
+	 * @param string The hex encoded string to decode
+	 * @return The decoded characters
 	 */
-	public static final char[] secureHexDecode( String string ) {
+	public static char[] secureHexDecode( String string ) {
 		if( string == null ) return null;
 
 		int count = string.length();
@@ -384,7 +318,8 @@ public final class TextUtil {
 		return chars;
 	}
 
-	public static final boolean isInteger( String text ) {
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
+	public static boolean isInteger( String text ) {
 		if( text == null ) return false;
 
 		try {
@@ -395,7 +330,8 @@ public final class TextUtil {
 		return true;
 	}
 
-	public static final boolean isLong( String text ) {
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
+	public static boolean isLong( String text ) {
 		if( text == null ) return false;
 
 		try {
@@ -406,7 +342,8 @@ public final class TextUtil {
 		return true;
 	}
 
-	public static final boolean isFloat( String text ) {
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
+	public static boolean isFloat( String text ) {
 		if( text == null ) return false;
 
 		try {
@@ -417,7 +354,8 @@ public final class TextUtil {
 		return true;
 	}
 
-	public static final boolean isDouble( String text ) {
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
+	public static boolean isDouble( String text ) {
 		if( text == null ) return false;
 
 		try {
@@ -428,22 +366,22 @@ public final class TextUtil {
 		return true;
 	}
 
-	public static final String capitalize( String string ) {
+	public static String capitalize( String string ) {
 		if( string == null ) return null;
 		char[] chars = string.toCharArray();
 		if( chars.length > 0 ) chars[ 0 ] = Character.toUpperCase( chars[ 0 ] );
 		return new String( chars );
 	}
 
-	public static final String justify( int alignment, String text, int width ) {
+	public static String justify( int alignment, String text, int width ) {
 		return justify( alignment, text, width, DEFAULT_PAD_CHAR );
 	}
 
-	public static final String justify( int alignment, String text, int width, char chr ) {
+	public static String justify( int alignment, String text, int width, char chr ) {
 		return justify( alignment, text, width, chr, 0 );
 	}
 
-	public static final String justify( int alignment, String text, int width, char chr, int pad ) {
+	public static String justify( int alignment, String text, int width, char chr, int pad ) {
 		switch( alignment ) {
 			case CENTER:
 				return centerJustify( text, width, chr, pad );
@@ -454,26 +392,26 @@ public final class TextUtil {
 		}
 	}
 
-	public static final String pad( int width ) {
+	public static String pad( int width ) {
 		return pad( width, DEFAULT_PAD_CHAR );
 	}
 
-	public static final String pad( int width, char chr ) {
+	public static String pad( int width, char chr ) {
 		if( width <= 0 ) return "";
 		char[] pad = new char[ width ];
 		Arrays.fill( pad, chr );
 		return new String( pad );
 	}
 
-	public static final String leftJustify( String text, int width ) {
+	public static String leftJustify( String text, int width ) {
 		return leftJustify( text, width, DEFAULT_PAD_CHAR );
 	}
 
-	public static final String leftJustify( String text, int width, char chr ) {
+	public static String leftJustify( String text, int width, char chr ) {
 		return leftJustify( text, width, chr, 0 );
 	}
 
-	public static final String leftJustify( String text, int width, char chr, int pad ) {
+	public static String leftJustify( String text, int width, char chr, int pad ) {
 		if( text == null ) return pad( width );
 		if( text.length() > width ) return text.substring( 0, width );
 
@@ -489,15 +427,15 @@ public final class TextUtil {
 		return builder.toString();
 	}
 
-	public static final String centerJustify( String text, int width ) {
+	public static String centerJustify( String text, int width ) {
 		return centerJustify( text, width, DEFAULT_PAD_CHAR );
 	}
 
-	public static final String centerJustify( String text, int width, char chr ) {
+	public static String centerJustify( String text, int width, char chr ) {
 		return centerJustify( text, width, chr, 0 );
 	}
 
-	public static final String centerJustify( String text, int width, char chr, int pad ) {
+	public static String centerJustify( String text, int width, char chr, int pad ) {
 		if( text == null ) return pad( width );
 		if( text.length() > width ) return text.substring( 0, width );
 
@@ -521,11 +459,11 @@ public final class TextUtil {
 		return builder.toString();
 	}
 
-	public static final String rightJustify( String text, int width ) {
+	public static String rightJustify( String text, int width ) {
 		return rightJustify( text, width, DEFAULT_PAD_CHAR );
 	}
 
-	public static final String rightJustify( String text, int width, char chr ) {
+	public static String rightJustify( String text, int width, char chr ) {
 		return rightJustify( text, width, chr, 0 );
 	}
 
@@ -589,11 +527,11 @@ public final class TextUtil {
 		return result;
 	}
 
-	public static final String findLine( List<String> lines, String pattern ) {
+	public static String findLine( List<String> lines, String pattern ) {
 		return findLine( lines, pattern, 0 );
 	}
 
-	public static final String findLine( List<String> lines, String pattern, int start ) {
+	public static String findLine( List<String> lines, String pattern, int start ) {
 		Pattern p = Pattern.compile( pattern );
 
 		int count = lines.size();
@@ -605,12 +543,12 @@ public final class TextUtil {
 		return null;
 	}
 
-	public static final List<String> findLines( List<String> lines, String pattern ) {
+	public static List<String> findLines( List<String> lines, String pattern ) {
 		return findLines( lines, pattern, 0 );
 	}
 
-	public static final List<String> findLines( List<String> lines, String pattern, int start ) {
-		List<String> result = new ArrayList<String>();
+	public static List<String> findLines( List<String> lines, String pattern, int start ) {
+		List<String> result = new ArrayList<>();
 
 		Pattern p = Pattern.compile( pattern );
 
@@ -623,11 +561,11 @@ public final class TextUtil {
 		return result;
 	}
 
-	public static final int findLineIndex( List<String> lines, String pattern ) {
+	public static int findLineIndex( List<String> lines, String pattern ) {
 		return findLineIndex( lines, pattern, 0 );
 	}
 
-	public static final int findLineIndex( List<String> lines, String pattern, int start ) {
+	public static int findLineIndex( List<String> lines, String pattern, int start ) {
 		Pattern p = Pattern.compile( pattern );
 
 		int count = lines.size();
@@ -638,11 +576,11 @@ public final class TextUtil {
 		return -1;
 	}
 
-	public static final String prepend( String content, String text ) {
+	public static String prepend( String content, String text ) {
 		if( content == null ) return null;
 		if( text == null || "".equals( text ) ) return content;
 
-		String line = null;
+		String line;
 		LineParser parser = new LineParser( content );
 		StringBuilder result = new StringBuilder();
 
@@ -655,11 +593,11 @@ public final class TextUtil {
 		return result.toString();
 	}
 
-	public static final String append( String content, String text ) {
+	public static String append( String content, String text ) {
 		if( content == null ) return null;
 		if( text == null || "".equals( text ) ) return content;
 
-		String line = null;
+		String line;
 		LineParser parser = new LineParser( content );
 		StringBuilder result = new StringBuilder();
 
@@ -672,7 +610,7 @@ public final class TextUtil {
 		return result.toString();
 	}
 
-	public static final String reline( String text, int width ) {
+	public static String reline( String text, int width ) {
 		if( text == null ) return null;
 
 		StringBuilder line = new StringBuilder();

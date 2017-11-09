@@ -27,7 +27,7 @@ public class HashUtil {
 	}
 
 	public static final String hash( String text, HashStrategy strategy ) {
-		return hash( text.getBytes( TextUtil.DEFAULT_CHARSET ), strategy );
+		return hash( text.getBytes( TextUtil.CHARSET ), strategy );
 	}
 
 	public static final String hash( byte[] bytes ) {

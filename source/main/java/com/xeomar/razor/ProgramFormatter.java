@@ -22,7 +22,7 @@ public class ProgramFormatter extends Formatter {
 	@Override
 	public String format( LogRecord record ) {
 		// Timestamp
-		Instant instant = Instant.ofEpochMilli( record.getMillis());
+		Instant instant = Instant.ofEpochMilli( record.getMillis() );
 		ZonedDateTime timestamp = ZonedDateTime.ofInstant( instant, ZoneId.systemDefault() );
 
 		// Source
@@ -88,7 +88,9 @@ public class ProgramFormatter extends Formatter {
 	}
 
 	private static String getSimpleFormat( Function<String, String> defaultPropertyGetter ) {
-		String format = getLoggingProperty( FORMAT_PROPERTY_KEY );
+		String format = null;
+		if( format == null ) format = defaultPropertyGetter.apply( FORMAT_PROPERTY_KEY );
+		if( format == null ) format = getLoggingProperty( FORMAT_PROPERTY_KEY );
 		if( format == null ) format = DEFAULT_FORMAT;
 		return format;
 	}

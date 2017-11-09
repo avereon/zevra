@@ -4,6 +4,6 @@ import java.io.InputStream;
 
 public interface HashStrategy {
 
-	public String hash( InputStream input );
+	String hash( InputStream input );
 
 }

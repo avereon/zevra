@@ -1,6 +1,5 @@
 package com.xeomar.razor;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -10,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TextUtilTest {
 
@@ -115,18 +112,6 @@ public class TextUtilTest {
 		assertEquals( "Count: 10", TextUtil.concatenate( "Count: ", 10 ) );
 		assertEquals( "Flag: false", TextUtil.concatenate( "Flag: ", false ) );
 		assertEquals( "Test String", TextUtil.concatenate( "Test", " ", "String" ) );
-	}
-
-	@Test
-	public void testGetMD5Sum() {
-		assertEquals( null, TextUtil.getMD5Sum( null ) );
-		assertEquals( "d41d8cd98f00b204e9800998ecf8427e", TextUtil.toHexEncodedString( TextUtil.getMD5Sum( "" ) ) );
-		assertEquals( "7215ee9c7d9dc229d2921a40e899ec5f", TextUtil.toHexEncodedString( TextUtil.getMD5Sum( " " ) ) );
-		assertEquals( "ae2b1fca515949e5d54fb22b8ed95575", TextUtil.toHexEncodedString( TextUtil.getMD5Sum( "testing" ) ) );
-
-		char[] data = new char[ 8192 ];
-		Arrays.fill( data, 't' );
-		assertEquals( "aea6ce04bb28d644a8d4e0bc6a319b54", TextUtil.toHexEncodedString( TextUtil.getMD5Sum( new String( data ) ) ) );
 	}
 
 	@Test
@@ -369,7 +354,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testCountLines() {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		for( int index = 0; index < 5; index++ ) {
 			lines.add( "Test line " + index );
 		}
@@ -383,7 +368,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testFindLine() {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		for( int index = 0; index < 5; index++ ) {
 			lines.add( "Test line " + index );
 		}
@@ -398,12 +383,12 @@ public class TextUtilTest {
 
 	@Test
 	public void testFindLines() {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		for( int index = 0; index < 5; index++ ) {
 			lines.add( "Test line " + index );
 		}
 
-		List<String> result = null;
+		List<String> result;
 
 		result = TextUtil.findLines( lines, "Test line" );
 		assertEquals( 0, result.size() );
@@ -423,7 +408,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testFindLineIndex() {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		for( int index = 0; index < 5; index++ ) {
 			lines.add( "Test line " + index );
 		}
@@ -562,7 +547,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testListToString() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 
 		list.add( 0 );
 		list.add( 1 );
@@ -575,7 +560,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testListToStringWithDelimiter() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 
 		list.add( 0 );
 		list.add( 1 );
@@ -588,7 +573,7 @@ public class TextUtilTest {
 
 	@Test
 	public void testListToStringWithPrefixAndSuffix() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 
 		list.add( 0 );
 		list.add( 1 );
