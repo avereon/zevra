@@ -6,63 +6,62 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TextUtilTest {
 
-	@Test
-	public void testIsEmpty() {
-		assertTrue( TextUtil.isEmpty( null ) );
-		assertTrue( TextUtil.isEmpty( "" ) );
-		assertTrue( TextUtil.isEmpty( " " ) );
-		assertFalse( TextUtil.isEmpty( "." ) );
-	}
-
-	@Test
-	public void testAreEqual() {
-		assertTrue( TextUtil.areEqual( null, null ) );
-		assertTrue( TextUtil.areEqual( "", "" ) );
-		assertTrue( TextUtil.areEqual( " ", " " ) );
-		assertTrue( TextUtil.areEqual( "a", "a" ) );
-
-		assertFalse( TextUtil.areEqual( null, "" ) );
-		assertFalse( TextUtil.areEqual( "", null ) );
-		assertFalse( TextUtil.areEqual( "a", "b" ) );
-		assertFalse( TextUtil.areEqual( "b", "a" ) );
-	}
-
-	@Test
-	public void testAreEqualIgnoreCase() {
-		assertTrue( TextUtil.areEqualIgnoreCase( null, null ) );
-		assertTrue( TextUtil.areEqualIgnoreCase( "", "" ) );
-		assertTrue( TextUtil.areEqualIgnoreCase( " ", " " ) );
-		assertTrue( TextUtil.areEqualIgnoreCase( "A", "a" ) );
-		assertTrue( TextUtil.areEqualIgnoreCase( "a", "A" ) );
-
-		assertFalse( TextUtil.areEqualIgnoreCase( null, "" ) );
-		assertFalse( TextUtil.areEqualIgnoreCase( "", null ) );
-		assertFalse( TextUtil.areEqual( "A", "b" ) );
-		assertFalse( TextUtil.areEqual( "B", "a" ) );
-	}
-
-	@Test
-	public void testAreSame() {
-		assertTrue( TextUtil.areSame( null, null ) );
-		assertTrue( TextUtil.areSame( "", "" ) );
-		assertTrue( TextUtil.areSame( " ", " " ) );
-		assertTrue( TextUtil.areSame( "a", "a" ) );
-
-		assertTrue( TextUtil.areSame( null, "" ) );
-		assertTrue( TextUtil.areSame( "", null ) );
-		assertTrue( TextUtil.areSame( null, " " ) );
-
-		assertFalse( TextUtil.areSame( null, "a" ) );
-		assertFalse( TextUtil.areSame( "", "a" ) );
-		assertFalse( TextUtil.areSame( " ", "a" ) );
-	}
+//	@Test
+//	public void testIsEmpty() {
+//		assertTrue( TextUtil.isEmpty( null ) );
+//		assertTrue( TextUtil.isEmpty( "" ) );
+//		assertTrue( TextUtil.isEmpty( " " ) );
+//		assertFalse( TextUtil.isEmpty( "." ) );
+//	}
+//
+//	@Test
+//	public void testAreEqual() {
+//		assertTrue( TextUtil.areEqual( null, null ) );
+//		assertTrue( TextUtil.areEqual( "", "" ) );
+//		assertTrue( TextUtil.areEqual( " ", " " ) );
+//		assertTrue( TextUtil.areEqual( "a", "a" ) );
+//
+//		assertFalse( TextUtil.areEqual( null, "" ) );
+//		assertFalse( TextUtil.areEqual( "", null ) );
+//		assertFalse( TextUtil.areEqual( "a", "b" ) );
+//		assertFalse( TextUtil.areEqual( "b", "a" ) );
+//	}
+//
+//	@Test
+//	public void testAreEqualIgnoreCase() {
+//		assertTrue( TextUtil.areEqualIgnoreCase( null, null ) );
+//		assertTrue( TextUtil.areEqualIgnoreCase( "", "" ) );
+//		assertTrue( TextUtil.areEqualIgnoreCase( " ", " " ) );
+//		assertTrue( TextUtil.areEqualIgnoreCase( "A", "a" ) );
+//		assertTrue( TextUtil.areEqualIgnoreCase( "a", "A" ) );
+//
+//		assertFalse( TextUtil.areEqualIgnoreCase( null, "" ) );
+//		assertFalse( TextUtil.areEqualIgnoreCase( "", null ) );
+//		assertFalse( TextUtil.areEqual( "A", "b" ) );
+//		assertFalse( TextUtil.areEqual( "B", "a" ) );
+//	}
+//
+//	@Test
+//	public void testAreSame() {
+//		assertTrue( TextUtil.areSame( null, null ) );
+//		assertTrue( TextUtil.areSame( "", "" ) );
+//		assertTrue( TextUtil.areSame( " ", " " ) );
+//		assertTrue( TextUtil.areSame( "a", "a" ) );
+//
+//		assertTrue( TextUtil.areSame( null, "" ) );
+//		assertTrue( TextUtil.areSame( "", null ) );
+//		assertTrue( TextUtil.areSame( null, " " ) );
+//
+//		assertFalse( TextUtil.areSame( null, "a" ) );
+//		assertFalse( TextUtil.areSame( "", "a" ) );
+//		assertFalse( TextUtil.areSame( " ", "a" ) );
+//	}
 
 	@Test
 	public void testCompare() {
