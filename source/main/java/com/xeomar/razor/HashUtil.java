@@ -4,14 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class HashUtil {
 
-	private static final Logger log = LoggerFactory.getLogger(HashUtil.class);
+	private static final Logger log = LoggerFactory.getLogger( HashUtil.class );
 
-	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256") );
+	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 
 	public static final HashStrategy SHA2 = new DigestStrategy( new MessageDigestWrapper( "SHA-256" ) );
 
@@ -37,6 +38,14 @@ public class HashUtil {
 
 	public static final String hash( byte[] bytes, HashStrategy strategy ) {
 		return hash( new ByteArrayInputStream( bytes ), strategy );
+	}
+
+	public static final String hash( Path path ) {
+		return hash( path.toFile(), DEFAULT_STRATEGY );
+	}
+
+	public static final String hash( Path path, HashStrategy strategy ) {
+		return hash( path.toFile(), strategy );
 	}
 
 	public static final String hash( File file ) {
@@ -99,12 +108,12 @@ public class HashUtil {
 		public String hash( InputStream input ) {
 			if( input == null ) return null;
 
-			byte[] buffer = new byte[4096];
+			byte[] buffer = new byte[ 4096 ];
 			digest.reset();
 
 			int count = 0;
 			try {
-				while( ( count = input.read( buffer ) ) > -1 ) {
+				while( (count = input.read( buffer )) > -1 ) {
 					digest.update( buffer, 0, count );
 				}
 			} catch( IOException exception ) {

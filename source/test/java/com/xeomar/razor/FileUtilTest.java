@@ -1,14 +1,17 @@
 package com.xeomar.razor;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -122,9 +125,75 @@ public class FileUtilTest {
 
 	@Test
 	public void testSaveAndLoad() throws Exception {
-		File file = File.createTempFile( PREFIX, "Test" );
-		FileUtil.save( file.toString(), file );
-		assertThat( FileUtil.load( file ), is( file.toString() ) );
+		Path path = Files.createTempFile( PREFIX, "Test" );
+		FileUtil.save( path.toString(), path );
+		assertThat( FileUtil.load( path ), is( path.toString() ) );
+	}
+
+	@Test
+	public void testZipAndUnzip() throws Exception {
+		Path sourceData = Paths.get( "source/test/java" );
+		Path zip = Paths.get( "target/test.source.zip" );
+		Path targetData = Paths.get( "target/test/data" );
+
+		// Make a list of relativized paths
+		List<String> paths = Files.walk( sourceData ).map( file -> {
+			String entryPath = sourceData.relativize( file ).toString();
+			if( Files.isDirectory( file ) ) entryPath += "/";
+			return entryPath;
+		} ).collect( Collectors.toList() );
+
+		// Initialize for zip tests
+		Files.deleteIfExists( zip );
+		assertThat( Files.exists( zip ), is( false ) );
+
+		// Zip the data
+		FileUtil.zip( sourceData, zip );
+		assertThat( Files.exists( zip ), is( true ) );
+
+		try( ZipFile zipFile = new ZipFile( zip.toFile() ) ) {
+			// Check that all paths are in the zip file
+			zipFile.stream().forEach( entry -> assertThat( paths.contains( entry.getName() ), is( true ) ) );
+
+			// Initialize for unzip tests
+			assertThat( FileUtil.delete( targetData ), is( true ) );
+			assertThat( Files.exists( targetData ), is( false ) );
+			Files.createDirectories( targetData );
+			assertThat( Files.exists( targetData ), is( true ) );
+
+			// Unzip the data
+			FileUtil.unzip( zip, targetData );
+
+			// Check that all the zip entries are in the target
+			zipFile.stream().forEach( entry -> assertThat( Files.exists( targetData.resolve( entry.getName() ) ), is( true ) ) );
+
+			// Check that the target files match the source files
+			Files.walk( sourceData ).forEach( path -> assertThat( Files.exists( targetData.resolve( sourceData.relativize( path ) ) ), is( true ) ) );
+		} finally {
+			if( Files.exists( targetData ) ) FileUtils.forceDelete( targetData.toFile() );
+			assertThat( Files.exists( targetData ), is( false ) );
+		}
+	}
+
+	@Test
+	public void testListPaths() throws Exception {
+		Path sourceRoot = Files.createTempDirectory( getClass().getSimpleName() );
+		try {
+			Path sourceFile1 = Files.createTempFile( sourceRoot, getClass().getSimpleName(), "" );
+			Path sourceFile2 = Files.createTempFile( sourceRoot, getClass().getSimpleName(), "" );
+			Path sourceSubFolder = Files.createTempDirectory( sourceRoot, getClass().getSimpleName() );
+			Path sourceFile3 = Files.createTempFile( sourceSubFolder, getClass().getSimpleName(), "" );
+			Path sourceFile4 = Files.createTempFile( sourceSubFolder, getClass().getSimpleName(), "" );
+
+			List<Path> paths = FileUtil.listPaths( sourceRoot );
+
+			for( Path expected : List.of( sourceRoot, sourceFile1, sourceFile2, sourceSubFolder, sourceFile3, sourceFile4 ) ) {
+				assertThat( paths.contains( expected ), is( true ) );
+			}
+			assertThat( paths.size(), is( 6 ) );
+		} finally {
+			FileUtils.forceDelete( sourceRoot.toFile() );
+		}
 	}
 
 	@Test

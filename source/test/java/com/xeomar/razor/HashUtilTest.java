@@ -3,6 +3,8 @@ package com.xeomar.razor;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class HashUtilTest extends TestCase {
 
@@ -14,12 +16,20 @@ public class HashUtilTest extends TestCase {
 
 	public void testHashWithFile() throws Exception {
 		assertNull( HashUtil.hash( (File)null ) );
-		File empty = File.createTempFile( "HashUtil", "test" );
-		assertEquals( "da39a3ee5e6b4b0d3255bfef95601890afd80709", HashUtil.hash( empty ) );
+		Path empty = Files.createTempFile( "HashUtil", "test" );
+		try {
+			assertEquals( "da39a3ee5e6b4b0d3255bfef95601890afd80709", HashUtil.hash( empty ) );
+		} finally {
+			FileUtil.delete( empty );
+		}
 
-		File test = File.createTempFile( "HashUtil", "test" );
-		FileUtil.save( "test", test );
-		assertEquals( "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", HashUtil.hash( test ) );
+		Path test = Files.createTempFile( "HashUtil", "test" );
+		try {
+			FileUtil.save( "test", test );
+			assertEquals( "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", HashUtil.hash( test ) );
+		} finally {
+			FileUtil.delete( test );
+		}
 	}
 
 	public void testHashUsingSha3() {
