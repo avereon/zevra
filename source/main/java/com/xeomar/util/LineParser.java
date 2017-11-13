@@ -1,4 +1,4 @@
-package com.xeomar.razor;
+package com.xeomar.util;
 
 public class LineParser {
 

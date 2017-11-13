@@ -1,4 +1,4 @@
-package com.xeomar.razor;
+package com.xeomar.util;
 
 import org.junit.Before;
 import org.junit.Test;

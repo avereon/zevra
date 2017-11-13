@@ -1,4 +1,4 @@
-package com.xeomar.razor;
+package com.xeomar.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

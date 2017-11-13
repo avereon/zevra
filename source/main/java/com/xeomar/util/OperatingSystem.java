@@ -1,4 +1,4 @@
-package com.xeomar.razor;
+package com.xeomar.util;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

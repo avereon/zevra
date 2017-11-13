@@ -1,4 +1,4 @@
-package com.xeomar.razor;
+package com.xeomar.util;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 
 public class FileUtilTest {
 
-	private static final String PREFIX = "com-xeomar-razor-test-";
+	private static final String PREFIX = "com-xeomar-util-test-";
 
 	@Before
 	public void setup() throws Exception {
