@@ -45,7 +45,7 @@ public class JavaUtilTest {
 	@Test
 	public void testGetShortClassNameWithClass() {
 		assertThat( JavaUtil.getShortClassName( Object.class ), is( "j.l.Object" ) );
-		assertThat( JavaUtil.getShortClassName( JavaUtil.class ), is( "c.x.r.JavaUtil" ) );
+		assertThat( JavaUtil.getShortClassName( JavaUtil.class ), is( "c.x.u.JavaUtil" ) );
 	}
 
 	@Test
