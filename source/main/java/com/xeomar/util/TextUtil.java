@@ -30,6 +30,33 @@ public final class TextUtil {
 
 	private static final char DEFAULT_PAD_CHAR = ' ';
 
+	public static final boolean isEmpty( String string ) {
+		if( string == null ) return true;
+		if( string.trim().length() == 0 ) return true;
+		return false;
+	}
+
+	public static final boolean areEqual( String string1, String string2 ) {
+		if( string1 == null && string2 == null ) return true;
+		if( string1 == null && string2 != null ) return false;
+		if( string1 != null && string2 == null ) return false;
+		return string1.equals( string2 );
+	}
+
+	public static final boolean areEqualIgnoreCase( String string1, String string2 ) {
+		if( string1 == null && string2 == null ) return true;
+		if( string1 == null && string2 != null ) return false;
+		if( string1 != null && string2 == null ) return false;
+		return string1.equalsIgnoreCase( string2 );
+	}
+
+	public static final boolean areSame( String string1, String string2 ) {
+		if( isEmpty( string1 ) && isEmpty( string2 ) ) return true;
+		if( string1 == null && string2 != null ) return false;
+		if( string1 != null && string2 == null ) return false;
+		return string1.equals( string2 );
+	}
+
 	public static int compare( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return 0;
 		if( string1 == null ) return -1;

@@ -8,60 +8,62 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class TextUtilTest {
 
-//	@Test
-//	public void testIsEmpty() {
-//		assertTrue( TextUtil.isEmpty( null ) );
-//		assertTrue( TextUtil.isEmpty( "" ) );
-//		assertTrue( TextUtil.isEmpty( " " ) );
-//		assertFalse( TextUtil.isEmpty( "." ) );
-//	}
-//
-//	@Test
-//	public void testAreEqual() {
-//		assertTrue( TextUtil.areEqual( null, null ) );
-//		assertTrue( TextUtil.areEqual( "", "" ) );
-//		assertTrue( TextUtil.areEqual( " ", " " ) );
-//		assertTrue( TextUtil.areEqual( "a", "a" ) );
-//
-//		assertFalse( TextUtil.areEqual( null, "" ) );
-//		assertFalse( TextUtil.areEqual( "", null ) );
-//		assertFalse( TextUtil.areEqual( "a", "b" ) );
-//		assertFalse( TextUtil.areEqual( "b", "a" ) );
-//	}
-//
-//	@Test
-//	public void testAreEqualIgnoreCase() {
-//		assertTrue( TextUtil.areEqualIgnoreCase( null, null ) );
-//		assertTrue( TextUtil.areEqualIgnoreCase( "", "" ) );
-//		assertTrue( TextUtil.areEqualIgnoreCase( " ", " " ) );
-//		assertTrue( TextUtil.areEqualIgnoreCase( "A", "a" ) );
-//		assertTrue( TextUtil.areEqualIgnoreCase( "a", "A" ) );
-//
-//		assertFalse( TextUtil.areEqualIgnoreCase( null, "" ) );
-//		assertFalse( TextUtil.areEqualIgnoreCase( "", null ) );
-//		assertFalse( TextUtil.areEqual( "A", "b" ) );
-//		assertFalse( TextUtil.areEqual( "B", "a" ) );
-//	}
-//
-//	@Test
-//	public void testAreSame() {
-//		assertTrue( TextUtil.areSame( null, null ) );
-//		assertTrue( TextUtil.areSame( "", "" ) );
-//		assertTrue( TextUtil.areSame( " ", " " ) );
-//		assertTrue( TextUtil.areSame( "a", "a" ) );
-//
-//		assertTrue( TextUtil.areSame( null, "" ) );
-//		assertTrue( TextUtil.areSame( "", null ) );
-//		assertTrue( TextUtil.areSame( null, " " ) );
-//
-//		assertFalse( TextUtil.areSame( null, "a" ) );
-//		assertFalse( TextUtil.areSame( "", "a" ) );
-//		assertFalse( TextUtil.areSame( " ", "a" ) );
-//	}
+	@Test
+	public void testIsEmpty() {
+		assertThat( TextUtil.isEmpty( null ), is( true ) );
+		assertThat( TextUtil.isEmpty( "" ), is( true ) );
+		assertThat( TextUtil.isEmpty( " " ), is( true ) );
+		assertThat( TextUtil.isEmpty( "." ), is( false ) );
+	}
+
+	@Test
+	public void testAreEqual() {
+		assertThat( TextUtil.areEqual( null, null ), is( true ) );
+		assertThat( TextUtil.areEqual( "", "" ), is( true ) );
+		assertThat( TextUtil.areEqual( " ", " " ), is( true ) );
+		assertThat( TextUtil.areEqual( "a", "a" ), is( true ) );
+
+		assertThat( TextUtil.areEqual( null, "" ), is( false ) );
+		assertThat( TextUtil.areEqual( "", null ), is( false ) );
+		assertThat( TextUtil.areEqual( "a", "b" ), is( false ) );
+		assertThat( TextUtil.areEqual( "b", "a" ), is( false ) );
+	}
+
+	@Test
+	public void testAreEqualIgnoreCase() {
+		assertThat( TextUtil.areEqualIgnoreCase( null, null ), is( true ) );
+		assertThat( TextUtil.areEqualIgnoreCase( "", "" ), is( true ) );
+		assertThat( TextUtil.areEqualIgnoreCase( " ", " " ), is( true ) );
+		assertThat( TextUtil.areEqualIgnoreCase( "A", "a" ), is( true ) );
+		assertThat( TextUtil.areEqualIgnoreCase( "a", "A" ), is( true ) );
+
+		assertThat( TextUtil.areEqualIgnoreCase( null, "" ), is( false ) );
+		assertThat( TextUtil.areEqualIgnoreCase( "", null ), is( false ) );
+		assertThat( TextUtil.areEqual( "A", "b" ), is( false ) );
+		assertThat( TextUtil.areEqual( "B", "a" ), is( false ) );
+	}
+
+	@Test
+	public void testAreSame() {
+		assertThat( TextUtil.areSame( null, null ), is( true ) );
+		assertThat( TextUtil.areSame( "", "" ), is( true ) );
+		assertThat( TextUtil.areSame( " ", " " ), is( true ) );
+		assertThat( TextUtil.areSame( "a", "a" ), is( true ) );
+
+		assertThat( TextUtil.areSame( null, "" ), is( true ) );
+		assertThat( TextUtil.areSame( "", null ), is( true ) );
+		assertThat( TextUtil.areSame( null, " " ), is( true ) );
+
+		assertThat( TextUtil.areSame( null, "a" ), is( false ) );
+		assertThat( TextUtil.areSame( "", "a" ), is( false ) );
+		assertThat( TextUtil.areSame( " ", "a" ), is( false ) );
+	}
 
 	@Test
 	public void testCompare() {
