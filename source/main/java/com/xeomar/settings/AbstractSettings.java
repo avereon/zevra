@@ -1,6 +1,6 @@
 package com.xeomar.settings;
 
-import com.xeomar.util.Paths;
+import com.xeomar.util.PathUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Settings getNode( String parent, String name ) {
-		return getNode( Paths.resolve( parent, name ) );
+		return getNode( PathUtil.resolve( parent, name ) );
 	}
 
 	@Override
@@ -117,10 +117,10 @@ public abstract class AbstractSettings implements Settings {
 
 	String getNodePath( String root, String path ) {
 		// Resolve the path
-		String nodePath = Paths.isAbsolute( path ) ? path : Paths.resolve( root, path );
+		String nodePath = PathUtil.isAbsolute( path ) ? path : PathUtil.resolve( root, path );
 
 		// Normalize the path
-		return Paths.normalize( nodePath );
+		return PathUtil.normalize( nodePath );
 	}
 
 }

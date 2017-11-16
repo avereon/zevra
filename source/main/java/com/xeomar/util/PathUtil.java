@@ -3,7 +3,7 @@ package com.xeomar.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Paths {
+public class PathUtil {
 
 	private static final String SEPARATOR = "/";
 

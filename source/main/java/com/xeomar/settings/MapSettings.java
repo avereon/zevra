@@ -1,6 +1,6 @@
 package com.xeomar.settings;
 
-import com.xeomar.util.Paths;
+import com.xeomar.util.PathUtil;
 import com.xeomar.util.TextUtil;
 
 import java.util.*;
@@ -40,7 +40,7 @@ public class MapSettings extends AbstractSettings {
 
 	@Override
 	public String getName() {
-		return Paths.getName( path );
+		return PathUtil.getName( path );
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class MapSettings extends AbstractSettings {
 
 		for( String childPath : root.settings.keySet() ) {
 			if( !childPath.startsWith( path ) ) continue;
-			String child = Paths.getChild( path, childPath );
+			String child = PathUtil.getChild( path, childPath );
 			if( !TextUtil.isEmpty( child ) ) children.add( child );
 		}
 
