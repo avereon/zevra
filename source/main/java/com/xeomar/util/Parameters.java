@@ -4,78 +4,23 @@ import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
- * The Parameters class is used to convert command line parameters into an
- * object.
+ * The Parameters class is used to convert command line parameters into an object.
  * <p>
- * <h2>Single Value Parameters</h2>Single value parameters start with
- * &quot;-&quot; and may be followed by an optional value. If the parameter is
- * not followed by a value but instead is followed by another parameter, the
- * value for the parameter is set to &quot;true&quot;. <blockquote> Examples:
- * <table border="1" cellspacing="0">
- * <tr>
- * <th align="left"><code>-test</code></th>
- * <td>Sets the <code>test</code> parameter to <code>true</code>.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>-level debug</code></th>
- * <td>Sets the <code>level</code> parameter to <code>debug</code>.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>-test -level debug</code></th>
- * <td>Sets the <code>test</code> parameter to <code>true</code> and the
- * <code>level</code> parameter to <code>debug</code>.</td>
- * </tr>
- * </table>
- * </blockquote>
+ * <h2>Single Value Parameters</h2>Single value parameters start with &quot;-&quot; and may be followed by an optional value. If the parameter is not followed by a value but instead is followed by another parameter, the value for the
+ * parameter is set to &quot;true&quot;. <blockquote> Examples: <table border="1" cellspacing="0"> <tr> <th align="left"><code>-test</code></th> <td>Sets the <code>test</code> parameter to <code>true</code>.</td> </tr> <tr> <th
+ * align="left"><code>-level debug</code></th> <td>Sets the <code>level</code> parameter to <code>debug</code>.</td> </tr> <tr> <th align="left"><code>-test -level debug</code></th> <td>Sets the <code>test</code> parameter to
+ * <code>true</code> and the <code>level</code> parameter to <code>debug</code>.</td> </tr> </table> </blockquote>
  * <p>
- * <h2>Multiple Value Parameters</h2>Multiple value parameters start with
- * &quot;--&quot; and may be followed by an optional list of values. If the
- * parameter is not followed by a value but instead is followed by another
- * parameter, the value for the parameter is set to &quot;true&quot;.
- * <blockquote> Examples:
- * <table border="1" cellspacing="0">
- * <tr>
- * <th align="left"><code>--levels</code></th>
- * <td>Sets the <code>levels</code> parameter to <code>true</code>.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>--levels debug info warn</code></th>
- * <td>Sets the <code>levels</code> parameter to the list
- * <code>[debug, info, warn]</code>.</td>
- * </tr>
- * </table>
- * </blockquote>
- * <h2>Files</h2> File names are specified after all parameters have been
- * specified. A file name is a non-parameter value or value after the terminator
- * &quot;--&quot; string. Be aware that once the Parameters class thinks that it
- * has found a file name, all parameters after that are considered file names.
- * <blockquote> Examples:
- * <table border="1" cellspacing="0">
- * <tr>
- * <th align="left"><code>apple.txt</code></th>
- * <td>Adds the file <code>apple.txt</code> to the list of files.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>-test -- apple.txt</code></th>
- * <td>Sets the <code>test</code> parameter to <code>true</code> and adds the
- * file <code>apple.txt</code> to the list of files.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>-level debug apple.txt</code></th>
- * <td>Sets the <code>level</code> parameter to <code>debug</code> and adds the
- * file <code>apple.txt</code> to the list of files.</td>
- * </tr>
- * <tr>
- * <th align="left"><code>apple.txt -level debug</code></th>
- * <td>Add the files <code>apple.txt</code>, <code>-level</code>, and
- * <code>debug</code> to the list of files.</td>
- * </tr>
- * </table>
- * </blockquote>
+ * <h2>Multiple Value Parameters</h2>Multiple value parameters start with &quot;--&quot; and may be followed by an optional list of values. If the parameter is not followed by a value but instead is followed by another parameter, the value
+ * for the parameter is set to &quot;true&quot;. <blockquote> Examples: <table border="1" cellspacing="0"> <tr> <th align="left"><code>--levels</code></th> <td>Sets the <code>levels</code> parameter to <code>true</code>.</td> </tr> <tr> <th
+ * align="left"><code>--levels debug info warn</code></th> <td>Sets the <code>levels</code> parameter to the list <code>[debug, info, warn]</code>.</td> </tr> </table> </blockquote> <h2>Files</h2> File names are specified after all
+ * parameters have been specified. A file name is a non-parameter value or value after the terminator &quot;--&quot; string. Be aware that once the Parameters class thinks that it has found a file name, all parameters after that are
+ * considered file names. <blockquote> Examples: <table border="1" cellspacing="0"> <tr> <th align="left"><code>apple.txt</code></th> <td>Adds the file <code>apple.txt</code> to the list of files.</td> </tr> <tr> <th
+ * align="left"><code>-test -- apple.txt</code></th> <td>Sets the <code>test</code> parameter to <code>true</code> and adds the file <code>apple.txt</code> to the list of files.</td> </tr> <tr> <th align="left"><code>-level debug
+ * apple.txt</code></th> <td>Sets the <code>level</code> parameter to <code>debug</code> and adds the file <code>apple.txt</code> to the list of files.</td> </tr> <tr> <th align="left"><code>apple.txt -level debug</code></th> <td>Add the
+ * files <code>apple.txt</code>, <code>-level</code>, and <code>debug</code> to the list of files.</td> </tr> </table> </blockquote>
  * <p>
- * <h2>Validation</h2> The Parameters class can validate command line parameters
- * by passing a set of valid parameters to the parse() method. If a parameter is
- * specified in the command line that does not match the valid set an
+ * <h2>Validation</h2> The Parameters class can validate command line parameters by passing a set of valid parameters to the parse() method. If a parameter is specified in the command line that does not match the valid set an
  * InvalidParameterException is thrown.
  * <p>
  *
@@ -87,9 +32,9 @@ public class Parameters {
 
 	public static final String DOUBLE = "--";
 
-	private String[] originalCommands;
+	private List<String> originalCommands;
 
-	private String[] resolvedCommands;
+	private List<String> resolvedCommands;
 
 	private Set<String> flags;
 
@@ -97,38 +42,49 @@ public class Parameters {
 
 	private List<String> uris;
 
-	private Parameters( String[] originalCommands, String[] resolvedCommands, Set<String> flags, Map<String, List<String>> values, List<String> uris ) {
-		this.originalCommands = Arrays.copyOf( originalCommands, originalCommands.length );
-		this.resolvedCommands = resolvedCommands;
+	private Parameters( List<String> originalCommands, List<String> resolvedCommands, Set<String> flags, Map<String, List<String>> values, List<String> uris ) {
+		this.originalCommands = new ArrayList<>( originalCommands );
+		this.resolvedCommands = new ArrayList<>( resolvedCommands );
 		this.flags = flags;
 		this.values = values;
 		this.uris = uris;
 	}
 
-	public static final Parameters create() {
+	public static Parameters create() {
 		return parse( new String[ 0 ] );
 	}
 
-	public static final Parameters parse( String[] commands ) {
+	public static Parameters parse( String[] commands ) {
 		return parse( commands, (Set<String>)null );
 	}
 
-	public static final Parameters parse( String[] commands, String... validCommands ) {
-		return parse( commands, new HashSet<String>( Arrays.asList( validCommands ) ) );
+	public static Parameters parse( List<String> commands ) {
+		return parse( commands.toArray( new String[ commands.size() ] ) );
 	}
 
-	public static final Parameters parse( String[] commands, Set<String> validCommands ) {
-		Set<String> flags = new HashSet<String>();
-		Map<String, List<String>> values = new HashMap<String, List<String>>();
-		List<String> uris = new ArrayList<String>();
+	public static Parameters parse( String[] commands, String... validCommands ) {
+		return parse( commands, new HashSet<>( Arrays.asList( validCommands ) ) );
+	}
 
-		String[] resolved = new String[ commands.length ];
-		System.arraycopy( commands, 0, resolved, 0, commands.length );
+	public static Parameters parse( List<String> commands, String... validCommands ) {
+		return parse( commands.toArray( new String[ commands.size() ] ), validCommands );
+	}
+
+	public static Parameters parse( String[] commands, Set<String> validCommands ) {
+		return parse( List.of( commands ), validCommands );
+	}
+
+	public static Parameters parse( List<String> commands, Set<String> validCommands ) {
+		Set<String> flags = new HashSet<>();
+		Map<String, List<String>> values = new HashMap<>();
+		List<String> uris = new ArrayList<>();
+
+		List<String> resolved = new ArrayList<>( commands );
 
 		boolean terminated = false;
 
-		for( int index = 0; index < commands.length; index++ ) {
-			String command = commands[ index ];
+		for( int index = 0; index < commands.size(); index++ ) {
+			String command = commands.get( index );
 
 			if( command == null ) throw new IllegalArgumentException( "Null command at index: " + index );
 
@@ -139,8 +95,8 @@ public class Parameters {
 
 				List<String> valueList = values.get( removePrefix( command ) );
 				if( valueList == null ) valueList = new ArrayList<String>();
-				while( (commands.length > index + 1) && (!commands[ index + 1 ].startsWith( SINGLE )) ) {
-					String value = commands[ index + 1 ];
+				while( (commands.size() > index + 1) && (!commands.get( index + 1 ).startsWith( SINGLE )) ) {
+					String value = commands.get( index + 1 );
 					if( value.startsWith( "\\-" ) ) value = value.substring( 1 );
 					valueList.add( value );
 					index++;
@@ -153,9 +109,9 @@ public class Parameters {
 				if( validCommands != null && !validCommands.contains( command ) ) throw new InvalidParameterException( "Unknown command: " + command );
 
 				List<String> valueList = values.get( removePrefix( command ) );
-				if( valueList == null ) valueList = new ArrayList<String>();
-				if( (commands.length > index + 1) && (!commands[ index + 1 ].startsWith( SINGLE )) ) {
-					valueList.add( commands[ index + 1 ] );
+				if( valueList == null ) valueList = new ArrayList<>();
+				if( (commands.size() > index + 1) && (!commands.get( index + 1 ).startsWith( SINGLE )) ) {
+					valueList.add( commands.get( index + 1 ) );
 					index++;
 				}
 				if( valueList.size() == 0 ) valueList.add( "true" );
@@ -164,12 +120,13 @@ public class Parameters {
 				values.put( removePrefix( command ), valueList );
 			} else {
 				terminated = true;
-				uris.add( resolved[ index ] = UriUtil.resolve( command ).toString() );
+				resolved.set( index, UriUtil.resolve( command ).toString() );
+				uris.add( resolved.get( index ) );
 			}
 
 		}
 
-		return new Parameters( commands, resolved, flags, values, uris );
+		return new Parameters( commands,  resolved, flags, values, uris );
 	}
 
 	public int size() {
@@ -187,9 +144,7 @@ public class Parameters {
 	}
 
 	/**
-	 * Returns the parameter value as a boolean. The boolean returned represents
-	 * the value true if the parameter value is not null and is equal, ignoring
-	 * case, to the string "true".
+	 * Returns the parameter value as a boolean. The boolean returned represents the value true if the parameter value is not null and is equal, ignoring case, to the string "true".
 	 *
 	 * @param flag
 	 * @return
@@ -199,11 +154,8 @@ public class Parameters {
 	}
 
 	/**
-	 * Returns the parameter value as a boolean if it was defined on the command
-	 * line. The boolean returned represents the value true if the parameter value
-	 * is not null and is equal, ignoring case, to the string "true". If the
-	 * parameter was not specified on the command line then the default value is
-	 * returned.
+	 * Returns the parameter value as a boolean if it was defined on the command line. The boolean returned represents the value true if the parameter value is not null and is equal, ignoring case, to the string "true". If the parameter was
+	 * not specified on the command line then the default value is returned.
 	 *
 	 * @param flag
 	 * @param defaultValue
@@ -236,12 +188,12 @@ public class Parameters {
 		return uris;
 	}
 
-	public String[] getResolvedCommands() {
-		return resolvedCommands;
+	public List<String> getOriginalCommands() {
+		return originalCommands;
 	}
 
-	public String[] getOriginalCommands() {
-		return originalCommands;
+	public List<String> getResolvedCommands() {
+		return resolvedCommands;
 	}
 
 	@Override
@@ -273,11 +225,11 @@ public class Parameters {
 
 		Parameters that = (Parameters)object;
 
-		if( this.resolvedCommands.length != that.resolvedCommands.length ) return false;
+		if( this.resolvedCommands.size() != that.resolvedCommands.size() ) return false;
 
-		int count = this.resolvedCommands.length;
+		int count = this.resolvedCommands.size();
 		for( int index = 0; index < count; index++ ) {
-			if( !TextUtil.areEqual( this.resolvedCommands[ index ], that.resolvedCommands[ index ] ) ) return false;
+			if( !TextUtil.areEqual( this.resolvedCommands.get( index ), that.resolvedCommands.get( index ) ) ) return false;
 		}
 
 		return true;

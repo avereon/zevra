@@ -15,7 +15,7 @@ public class ParametersTest {
 	@Test
 	public void testNull() throws Exception {
 		try {
-			Parameters.parse( null );
+			Parameters.parse( (List<String>)null );
 			Assert.fail( "Parameters.parse(null) should throw a NullPointerException." );
 		} catch( NullPointerException exception ) {
 			// 
@@ -221,8 +221,10 @@ public class ParametersTest {
 		try {
 			Parameters.parse( args );
 			Assert.fail( "Null values should cause an exception" );
-		} catch( IllegalArgumentException exception ) {
-			assertThat( exception.getMessage(), is( "Null command at index: 0" ) );
+		} catch( NullPointerException exception ) {
+			assertThat( exception.getMessage(), is( nullValue() ) );
+		} catch( Exception exception ) {
+			Assert.fail( "Unexpected exception " + exception );
 		}
 	}
 
@@ -349,18 +351,12 @@ public class ParametersTest {
 
 	@Test
 	public void testGetOriginalCommands() throws Exception {
-		String[] args = new String[]{ "-flag", "-key", "value", "file" };
+		List<String> args = List.of( "-flag", "-key", "value", "file" );
 		Parameters parameters = Parameters.parse( args );
-		String[] commands = parameters.getOriginalCommands();
+		List<String> commands = parameters.getOriginalCommands();
 
 		assertThat( parameters.getOriginalCommands(), not( Matchers.sameInstance( args ) ) );
-
-		int index = 0;
-		assertThat( commands[ index++ ], is( "-flag" ) );
-		assertThat( commands[ index++ ], is( "-key" ) );
-		assertThat( commands[ index++ ], is( "value" ) );
-		assertThat( commands[ index++ ], is( "file" ) );
-		assertThat( index, is( 4 ) );
+		assertThat( commands, contains( "-flag", "-key", "value", "file" ) );
 	}
 
 	@Test
