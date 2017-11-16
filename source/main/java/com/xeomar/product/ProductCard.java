@@ -66,6 +66,8 @@ public class ProductCard {
 		this.description = values.getProperty( "description" );
 		this.copyrightSummary = values.getProperty( "copyright" );
 		this.licenseSummary = values.getProperty( "license" );
+
+		updateKey();
 	}
 
 	@SuppressWarnings( "unchecked" )
