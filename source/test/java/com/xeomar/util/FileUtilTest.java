@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -128,6 +129,163 @@ public class FileUtilTest {
 		Path path = Files.createTempFile( PREFIX, "Test" );
 		FileUtil.save( path.toString(), path );
 		assertThat( FileUtil.load( path ), is( path.toString() ) );
+	}
+
+	@Test
+	public void testCopyWithNonExistantFiles() throws Exception {
+		assertThat( FileUtil.copy( Paths.get( "/nonexistant" ), Paths.get( "/nonexistant" ) ), is( false ) );
+	}
+
+	@Test
+	public void testCopyFileToFile() throws Exception {
+		long time = System.currentTimeMillis();
+		Path source = Files.createTempFile( PREFIX, "copyFileToFileSource" );
+		Path target = Files.createTempFile( PREFIX, "copyFileToFileTarget" );
+		FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
+		DataOutputStream output = new DataOutputStream( fileOutput );
+		output.writeLong( time );
+		output.close();
+
+		assertThat( FileUtil.copy( source, target ), is( true ) );
+
+		FileInputStream fileInput = new FileInputStream( target.toFile() );
+		DataInputStream input = new DataInputStream( fileInput );
+		assertThat( input.readLong(), is( time ) );
+		input.close();
+
+		source.toFile().deleteOnExit();
+		target.toFile().deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFileToNewFile() throws Exception {
+		long time = System.currentTimeMillis();
+		Path source = Files.createTempFile( PREFIX, "copyFileToFileSource" );
+		Path temp = Files.createTempFile( PREFIX, "copyFileToFileTarget" );
+		Path target = temp.getParent().resolve( "copyFileToNewFileTarget" );
+		FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
+		DataOutputStream output = new DataOutputStream( fileOutput );
+		output.writeLong( time );
+		output.close();
+
+		assertThat( FileUtil.copy( source, target ), is( true ) );
+
+		FileInputStream fileInput = new FileInputStream( target.toFile() );
+		DataInputStream input = new DataInputStream( fileInput );
+		assertThat( input.readLong(), is( time ) );
+		input.close();
+
+		source.toFile().deleteOnExit();
+		temp.toFile().deleteOnExit();
+		target.toFile().deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFileToFolder() throws Exception {
+//		long time = System.currentTimeMillis();
+//		Path source = Files.createTempFile( PREFIX, "copyFileToFolderSource" );
+//		Path target = FileUtil.createTempFolder( PREFIX, "copyFileToFolderTarget" );
+//		FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
+//		DataOutputStream output = new DataOutputStream( fileOutput );
+//		output.writeLong( time );
+//		output.close();
+//
+//		assertThat( FileUtil.copy( source, target ), is( true ) );
+//
+//		Path child = target.resolve( source.getFileName() );
+//		FileInputStream fileInput = new FileInputStream( child.toFile() );
+//		DataInputStream input = new DataInputStream( fileInput );
+//		assertThat( input.readLong(), is( time ) );
+//		input.close();
+//
+//		source.toFile().deleteOnExit();
+//		target.toFile().deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFolderToFile() throws Exception {
+		//		File source = FileUtil.createTempFolder( PREFIX, "copyFolderToFileSource" );
+		//		File target = File.createTempFile( PREFIX, "copyFolderToFileTarget" );
+		//		assertThat( FileUtil.copy( source, target ), is( false ) );
+		//		assertThat( source.exists(), is( true ) );
+		//		assertThat( target.exists(), is( true ) );
+		//
+		//		source.deleteOnExit();
+		//		target.deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFolderToFolder() throws Exception {
+		//		File parent0 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderParent0" );
+		//		File parent1 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderParent1", parent0 );
+		//		File leaf0 = File.createTempFile( PREFIX, "copyFolderToFolderLeaf0", parent0 );
+		//		File leaf1 = File.createTempFile( PREFIX, "copyFolderToFolderLeaf1", parent0 );
+		//		File leaf2 = File.createTempFile( PREFIX, "copyFolderToFolderLeaf2", parent1 );
+		//		File leaf3 = File.createTempFile( PREFIX, "copyFolderToFolderLeaf3", parent1 );
+		//		assertThat( parent0.listFiles().length, is( 3 ) );
+		//		assertThat( parent1.listFiles().length, is( 2 ) );
+		//
+		//		File target = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderTarget" );
+		//
+		//		assertThat( FileUtil.copy( parent0, target, false ), is( true ) );
+		//
+		//		File target1 = new File( target, parent1.getName() );
+		//		assertThat( target.listFiles().length, is( 3 ) );
+		//		assertThat( target1.listFiles().length, is( 2 ) );
+		//		assertThat( new File( target, leaf0.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target, leaf1.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target1, leaf2.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target1, leaf3.getName() ).exists(), is( true ) );
+		//
+		//		parent0.deleteOnExit();
+		//		parent1.deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFolderToFolderWithSourceFolder() throws Exception {
+		//		Path parent0 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderParent0" );
+		//		Path parent1 = FileUtil.createTempFolder( parent0, PREFIX, "copyFolderToFolderParent1" );
+		//		Path leaf0 = Files.createTempFile( parent0, PREFIX, "copyFolderToFolderLeaf0" );
+		//		Path leaf1 = Files.createTempFile( parent0, PREFIX, "copyFolderToFolderLeaf1" );
+		//		Path leaf2 = Files.createTempFile( parent1, PREFIX, "copyFolderToFolderLeaf2" );
+		//		Path leaf3 = Files.createTempFile( parent1, PREFIX, "copyFolderToFolderLeaf3" );
+		//		assertThat( Files.list( parent0 ).count(), is( 3 ) );
+		//		assertThat( Files.list( parent1 ).count(), is( 2 ) );
+		//
+		//		Path target = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderTarget" );
+
+		//		assertThat( FileUtil.copy( parent0, target, true ), is( true ) );
+		//
+		//		File target0 = new File( target, parent0.getName() );
+		//		File target1 = new File( target0, parent1.getName() );
+		//		assertThat( target0.listFiles().length, is( 3 ) );
+		//		assertThat( target1.listFiles().length, is( 2 ) );
+		//		assertThat( new File( target0, leaf0.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target0, leaf1.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target1, leaf2.getName() ).exists(), is( true ) );
+		//		assertThat( new File( target1, leaf3.getName() ).exists(), is( true ) );
+		//
+		//		parent0.deleteOnExit();
+		//		parent1.deleteOnExit();
+	}
+
+	@Test
+	public void testCopyFileToOutputStream() throws Exception {
+		//		long time = System.currentTimeMillis();
+		//		File source = File.createTempFile( PREFIX, "copyFileToFileSource" );
+		//		ByteArrayOutputStream target = new ByteArrayOutputStream();
+		//		FileOutputStream fileOutput = new FileOutputStream( source );
+		//		DataOutputStream output = new DataOutputStream( fileOutput );
+		//		output.writeLong( time );
+		//		output.close();
+		//
+		//		assertThat( FileUtil.copy( source, target ), is( 8 ) );
+		//
+		//		DataInputStream input = new DataInputStream( new ByteArrayInputStream( target.toByteArray() ) );
+		//		assertThat( input.readLong(), is( time ) );
+		//		input.close();
+		//
+		//		source.deleteOnExit();
 	}
 
 	@Test

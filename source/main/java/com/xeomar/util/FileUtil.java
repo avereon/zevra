@@ -2,13 +2,11 @@ package com.xeomar.util;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,6 +168,70 @@ public class FileUtil {
 		}
 	}
 
+	public static boolean copy( Path source, Path target ) throws IOException {
+		return copy( source, target, false );
+	}
+
+	public static boolean copy( Path source, Path target, boolean keepSourceFolder ) throws IOException {
+		// Cannot copy a folder to a file
+		if( Files.isDirectory( source ) && Files.isRegularFile( target ) ) return false;
+
+		// Copy file sources to file targets
+		if( Files.isRegularFile( source ) && Files.isRegularFile( target ) ) {
+			try( FileInputStream input = new FileInputStream( source.toFile() ); FileOutputStream output = new FileOutputStream( target.toFile() ) ) {
+				IOUtils.copy( input, output );
+			}
+			return true;
+		}
+
+		// Copy file sources to folder targets
+		if( Files.isRegularFile( source ) && Files.isDirectory( target ) ) {
+			Path newTarget = target.resolve( source.getFileName() );
+			Files.createFile( newTarget );
+			return copy( source, newTarget, false );
+		}
+
+		// Copy folder sources to folder targets
+		if( Files.isDirectory( source ) && Files.isDirectory( target ) ) {
+			Path newTarget = target;
+			if( keepSourceFolder ) {
+				newTarget = target.resolve( source.getFileName() );
+				Files.createDirectories( newTarget );
+			}
+
+			boolean result = true;
+			for( Path path : Files.list( source ).collect( Collectors.toList() ) ) {
+				result = result & copy( path, newTarget, true );
+			}
+			return result;
+		}
+
+		// Copy file source to new file target
+		if( Files.isRegularFile( source ) ) {
+			Path parent = target.getParent();
+			if( !Files.exists( parent ) ) Files.createDirectories( target.getParent() );
+			Files.createFile( target );
+			return copy( source, target, false );
+		}
+
+		return false;
+	}
+
+	public static long copy( Path file, OutputStream target ) throws IOException {
+		try( FileInputStream source = new FileInputStream( file.toFile() ) ) {
+			return IOUtils.copy( source, target );
+		}
+	}
+
+	public static boolean move( Path source, Path target ) throws IOException {
+		try {
+			Files.move( source, target, StandardCopyOption.ATOMIC_MOVE );
+		} catch( IOException exception ) {
+			if( copy( source, target ) && delete( source ) ) return true;
+		}
+		return false;
+	}
+
 	public static void zip( Path source, Path target ) throws IOException {
 		try( ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
 			for( Path sourcePath : Files.walk( source ).collect( Collectors.toList() ) ) {
@@ -178,7 +240,7 @@ public class FileUtil {
 
 				if( folder ) {
 					// Folders need to have a trailing slash
-					zip.putNextEntry( new ZipEntry( zipEntryPath +"/") );
+					zip.putNextEntry( new ZipEntry( zipEntryPath + "/" ) );
 				} else {
 					zip.putNextEntry( new ZipEntry( zipEntryPath ) );
 					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
@@ -250,6 +312,41 @@ public class FileUtil {
 	 */
 	public static Path createTempFolder( Path path, String prefix ) throws IOException {
 		return Files.createTempDirectory( path, prefix );
+	}
+
+	/**
+	 * Create a temporary folder.
+	 *
+	 * @param prefix The temporary folder prefix
+	 * @param suffix The temporary folder
+	 * @return A temporary folder path
+	 * @throws IOException If an error occurs
+	 */
+	public static Path createTempFolder( String prefix, String suffix ) throws IOException {
+		Path path = Files.createTempFile( prefix, suffix );
+		Files.deleteIfExists( path );
+		if( Files.exists( path ) ) return null;
+		Files.createDirectories( path );
+		if( !Files.exists( path ) ) return null;
+		return path;
+	}
+
+	/**
+	 * Create a temporary folder.
+	 *
+	 * @param parent The parent folder of the temporary folder
+	 * @param prefix The temporary folder prefix
+	 * @param suffix The temporary folder
+	 * @return A temporary folder path
+	 * @throws IOException If an error occurs
+	 */
+	public static Path createTempFolder( Path parent, String prefix, String suffix ) throws IOException {
+		Path path = Files.createTempFile( parent, prefix, suffix );
+		Files.deleteIfExists( path );
+		if( Files.exists( path ) ) return null;
+		Files.createDirectories( path );
+		if( !Files.exists( path ) ) return null;
+		return path;
 	}
 
 }
