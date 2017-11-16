@@ -1,4 +1,4 @@
-package com.xeomar.util;
+package com.xeomar.product;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

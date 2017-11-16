@@ -42,7 +42,7 @@ public class Release implements Comparable<Release> {
 		this.date = date;
 	}
 
-	public static final Release create( String version, String timestamp ) {
+	public static Release create( String version, String timestamp ) {
 		Date date = null;
 		try {
 			date = new SimpleDateFormat( DATE_FORMAT ).parse( timestamp );

@@ -1,10 +1,10 @@
-package com.xeomar.util;
+package com.xeomar.product;
 
 import java.io.File;
 
 public interface Product {
 
-	ProductMetadata getMetadata();
+	ProductCard getCard();
 
 	ClassLoader getClassLoader();
 
