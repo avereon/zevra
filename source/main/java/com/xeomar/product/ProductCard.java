@@ -3,19 +3,26 @@ package com.xeomar.product;
 import com.xeomar.util.Contributor;
 import com.xeomar.util.Maintainer;
 import com.xeomar.util.Release;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
- * This class must load the product metadata very quickly.
+ * This class must load the product card very quickly. The meta data can load more slowly.
  */
 // TODO Use Lombok when it is supported in Java 9
 public class ProductCard {
+
+	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
+
+	// FIXME Rename files to .card and .meta
+	private static final String CARD = "/META-INF/product.properties";
+
+	private static final String META = "/META-INF/product.yaml";
 
 	private String productKey;
 
@@ -47,10 +54,14 @@ public class ProductCard {
 
 	private List<Contributor> contributors;
 
-	public ProductCard() throws IOException {
-		InputStream stream = getClass().getResourceAsStream( "/META-INF/product.properties" );
+	public ProductCard() {
+		InputStream stream = getClass().getResourceAsStream( CARD );
 		Properties values = new Properties();
-		values.load( stream );
+		try {
+			values.load( stream );
+		} catch( IOException exception ) {
+			log.error( "Error loading product card", exception );
+		}
 
 		this.group = values.getProperty( "group" );
 		this.artifact = values.getProperty( "artifact" );
@@ -72,7 +83,7 @@ public class ProductCard {
 
 	@SuppressWarnings( "unchecked" )
 	public void loadContributors() {
-		InputStream stream = getClass().getResourceAsStream( "/META-INF/product.yaml" );
+		InputStream stream = getClass().getResourceAsStream( META );
 		Map<String, Object> values = (Map<String, Object>)new Yaml().load( stream );
 		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
 		this.contributors = (List<Contributor>)values.get( "contributors" );
@@ -206,6 +217,36 @@ public class ProductCard {
 		 * effects.
 		 */
 		productKey = group + "." + artifact;
+	}
+
+	private String[] getPlatformResourceUris( String path ) {
+		String os = System.getProperty( "os.name" );
+		String arch = System.getProperty( "os.arch" );
+
+		String[] uris;
+		Set<String> resources = new HashSet<>();
+
+		//		path += "/@uri";
+		//
+		//		// Determine the resources.
+		//		Node[] nodes = descriptor.getNodes( ProductCard.RESOURCES_PATH );
+		//		for( Node node : nodes ) {
+		//			Descriptor resourcesDescriptor = new Descriptor( node );
+		//			Node osNameNode = node.getAttributes().getNamedItem( "os" );
+		//			Node osArchNode = node.getAttributes().getNamedItem( "arch" );
+		//
+		//			String osName = osNameNode == null ? null : osNameNode.getTextContent();
+		//			String osArch = osArchNode == null ? null : osArchNode.getTextContent();
+		//
+		//			// Determine what resources should not be included.
+		//			if( osName != null && !os.startsWith( osName ) ) continue;
+		//			if( osArch != null && !arch.equals( osArch ) ) continue;
+		//
+		//			uris = resourcesDescriptor.getValues( path );
+		//			if( uris != null ) resources.addAll( Arrays.asList( uris ) );
+		//		}
+
+		return resources.toArray( new String[resources.size()] );
 	}
 
 }
