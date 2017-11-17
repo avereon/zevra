@@ -1,20 +1,23 @@
 package com.xeomar.util;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
+
+	private static final Logger log = LoggerFactory.getLogger( FileUtil.class );
 
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
@@ -200,8 +203,10 @@ public class FileUtil {
 			}
 
 			boolean result = true;
-			for( Path path : Files.list( source ).collect( Collectors.toList() ) ) {
-				result = result & copy( path, newTarget, true );
+			try ( Stream<Path> list = Files.list( source ) ) {
+				for( Path path : list.collect( Collectors.toList() ) ) {
+					result = result & copy( path, newTarget, true );
+				}
 			}
 			return result;
 		}
@@ -233,8 +238,8 @@ public class FileUtil {
 	}
 
 	public static void zip( Path source, Path target ) throws IOException {
-		try( ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
-			for( Path sourcePath : Files.walk( source ).collect( Collectors.toList() ) ) {
+		try( Stream<Path> paths = Files.walk( source ); ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
+			for( Path sourcePath : paths.collect( Collectors.toList() ) ) {
 				boolean folder = Files.isDirectory( sourcePath );
 				String zipEntryPath = source.relativize( sourcePath ).toString();
 
@@ -274,21 +279,40 @@ public class FileUtil {
 	}
 
 	public static List<Path> listPaths( Path file ) throws IOException {
-		return Files.walk( file ).collect( Collectors.toList() );
+		try( Stream<Path> paths = Files.walk( file ) ) {
+			return paths.collect( Collectors.toList() );
+		}
 	}
 
 	public static boolean delete( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return true;
 
-		Files.walk( path ).sorted( Comparator.reverseOrder() ).forEach( file -> {
-			try {
-				Files.delete( file );
-			} catch( IOException exception ) {
-				// Intentionally ignore exception
-			}
-		} );
+		try( Stream<Path> paths = Files.walk( path ) ) {
+			paths.sorted( Comparator.reverseOrder() ).forEach( file -> {
+				try {
+					Files.delete( file );
+				} catch( IOException exception ) {
+					log.error( "Error deleting " + path );
+				}
+			} );
+		}
 
 		return !Files.exists( path );
+	}
+
+	public static void deleteOnExit( Path path ) throws IOException {
+		if( !Files.exists( path ) ) return;
+		try( Stream<Path> paths = Files.walk( path ) ) {
+			paths.sorted( Comparator.reverseOrder() ).forEach( file -> file.toFile().deleteOnExit() );
+		}
+	}
+
+	public static Path createTempFile( String prefix, String suffix, FileAttribute... attributes ) throws IOException {
+		return Files.createTempFile( prefix, suffix, attributes );
+	}
+
+	public static Path createTempFile( Path parent, String prefix, String suffix, FileAttribute... attributes ) throws IOException {
+		return Files.createTempFile( parent, prefix, suffix, attributes );
 	}
 
 	/**
@@ -325,9 +349,9 @@ public class FileUtil {
 	public static Path createTempFolder( String prefix, String suffix ) throws IOException {
 		Path path = Files.createTempFile( prefix, suffix );
 		Files.deleteIfExists( path );
-		if( Files.exists( path ) ) return null;
+		if( Files.exists( path ) ) throw new IOException( "Unable to create temp folder" );
 		Files.createDirectories( path );
-		if( !Files.exists( path ) ) return null;
+		if( !Files.exists( path ) ) throw new IOException( "Unable to create temp folder" );
 		return path;
 	}
 
@@ -343,9 +367,9 @@ public class FileUtil {
 	public static Path createTempFolder( Path parent, String prefix, String suffix ) throws IOException {
 		Path path = Files.createTempFile( parent, prefix, suffix );
 		Files.deleteIfExists( path );
-		if( Files.exists( path ) ) return null;
+		if( Files.exists( path ) ) throw new IOException( "Unable to create temp folder" );
 		Files.createDirectories( path );
-		if( !Files.exists( path ) ) return null;
+		if( !Files.exists( path ) ) throw new IOException( "Unable to create temp folder" );
 		return path;
 	}
 
