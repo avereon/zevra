@@ -28,9 +28,11 @@ import java.util.*;
  */
 public class Parameters {
 
-	public static final String SINGLE = "-";
+	private static final String SINGLE = "-";
 
-	public static final String DOUBLE = "--";
+	private static final String DOUBLE = "--";
+
+	private static final String EQUALS = "=";
 
 	private List<String> originalCommands;
 
@@ -93,15 +95,26 @@ public class Parameters {
 			} else if( !terminated && command.startsWith( DOUBLE ) ) {
 				if( validCommands != null && !validCommands.contains( command ) ) throw new InvalidParameterException( "Unknown parameter: " + command );
 
-				List<String> valueList = values.get( removePrefix( command ) );
-				if( valueList == null ) valueList = new ArrayList<String>();
-				while( (commands.size() > index + 1) && (!commands.get( index + 1 ).startsWith( SINGLE )) ) {
-					String value = commands.get( index + 1 );
-					if( value.startsWith( "\\-" ) ) value = value.substring( 1 );
+				List<String> valueList;
+				if( command.contains( EQUALS )) {
+					String[] parts = command.split( "=" );
+					command = parts[0];
+					String value = parts[1];
+
+					valueList = values.get( removePrefix( command ) );
+					if( valueList == null ) valueList = new ArrayList<>();
 					valueList.add( value );
-					index++;
+				} else {
+					valueList = values.get( removePrefix( command ) );
+					if( valueList == null ) valueList = new ArrayList<>();
+					while( (commands.size() > index + 1) && (!commands.get( index + 1 ).startsWith( SINGLE )) ) {
+						String value = commands.get( index + 1 );
+						if( value.startsWith( "\\-" ) ) value = value.substring( 1 );
+						valueList.add( value );
+						index++;
+					}
+					if( valueList.size() == 0 ) valueList.add( "true" );
 				}
-				if( valueList.size() == 0 ) valueList.add( "true" );
 
 				flags.add( command );
 				values.put( removePrefix( command ), valueList );
@@ -123,7 +136,6 @@ public class Parameters {
 				resolved.set( index, UriUtil.resolve( command ).toString() );
 				uris.add( resolved.get( index ) );
 			}
-
 		}
 
 		return new Parameters( commands,  resolved, flags, values, uris );

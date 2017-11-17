@@ -229,6 +229,16 @@ public class ParametersTest {
 	}
 
 	@Test
+	public void testParseWithJavaFxFlag() throws Exception {
+		String[] commands = new String[]{ "--execmode=dev" };
+		Parameters parameters = Parameters.parse( commands );
+
+		assertThat( parameters.getOriginalCommands(), contains( commands ) );
+		assertThat( parameters.getFlags(), contains( "--execmode" ) );
+		assertThat( parameters.get( "execmode" ), is( "dev" ) );
+	}
+
+	@Test
 	public void testGet() throws Exception {
 		String[] args = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( args );

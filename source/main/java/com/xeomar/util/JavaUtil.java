@@ -1,5 +1,8 @@
 package com.xeomar.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -8,11 +11,13 @@ import java.util.*;
 
 public final class JavaUtil {
 
+	private static final Logger log = LoggerFactory.getLogger( JavaUtil.class );
+
 	public static boolean isTest() {
 		try {
 			JavaUtil.class.getClassLoader().loadClass( "org.junit.Assert" );
 			return true;
-		}catch( Throwable throwable ) {
+		} catch( Throwable throwable ) {
 			return false;
 		}
 	}
@@ -104,43 +109,35 @@ public final class JavaUtil {
 	}
 
 	public static List<URI> getClasspath() {
-		try {
 			return parseClasspath( System.getProperty( "class.path" ) );
-		} catch( URISyntaxException exception ) {
-			return null;
-		}
 	}
 
-	public static List<URI> parseClasspath( String classpath ) throws URISyntaxException {
+	public static List<URI> parseClasspath( String classpath ) {
 		return parseClasspath( classpath, File.pathSeparator );
 	}
 
 	/**
-	 * Parse the relative URI strings from the specified classpath in system
-	 * property format. See <a href=
-	 * "http://java.sun.com/javase/6/docs/technotes/tools/windows/classpath.html"
-	 * >Setting the Windows Classpath</a> or <a href=
-	 * "http://java.sun.com/javase/6/docs/technotes/tools/solaris/classpath.html"
-	 * >Setting the Unix Classpath</a>
+	 * Parse the relative URI strings from the specified classpath in system property format. See <a href= "http://java.sun.com/javase/6/docs/technotes/tools/windows/classpath.html" >Setting the Windows Classpath</a> or <a href=
+	 * "http://java.sun.com/javase/6/docs/technotes/tools/solaris/classpath.html" >Setting the Unix Classpath</a>
 	 */
-	public static List<URI> parseClasspath( String classpath, String separator ) throws URISyntaxException {
-		ArrayList<URI> list = new ArrayList<URI>();
+	public static List<URI> parseClasspath( String classpath, String separator ) {
+		ArrayList<URI> list = new ArrayList<>();
 		if( classpath == null ) return list;
 
 		URI uri = null;
-		String token = null;
+		String token;
 		StringTokenizer tokenizer = new StringTokenizer( classpath, separator );
 		while( tokenizer.hasMoreTokens() ) {
 			token = tokenizer.nextToken();
 
 			try {
 				uri = new URI( URLDecoder.decode( token, "UTF-8" ) );
-			} catch( URISyntaxException excpetion ) {
+			} catch( URISyntaxException exception ) {
 				uri = new File( token ).toURI();
 			} catch( UnsupportedEncodingException exception ) {
 				// Intentionally ignore exception because UTF-8 is always supported.
 			}
-			if( uri.getScheme() == null ) uri = new File( token ).toURI();
+			if( uri != null && uri.getScheme() == null ) uri = new File( token ).toURI();
 
 			list.add( uri );
 		}
@@ -149,13 +146,10 @@ public final class JavaUtil {
 	}
 
 	/**
-	 * Parse the relative URLs from the specified classpath in JAR file manifest
-	 * format. See <a href=
-	 * "http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes"
-	 * >Setting the JAR Manifest Class-Path Attribute</a>
+	 * Parse the relative URLs from the specified classpath in JAR file manifest format. See <a href= "http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes" >Setting the JAR Manifest Class-Path Attribute</a>
 	 */
-	public static List<URL> parseManifestClasspath( URI base, String classpath ) throws IOException, MalformedURLException, URISyntaxException {
-		List<URL> urls = new ArrayList<URL>();
+	public static List<URL> parseManifestClasspath( URI base, String classpath ) throws IOException, URISyntaxException {
+		List<URL> urls = new ArrayList<>();
 
 		if( base == null || classpath == null ) return urls;
 
@@ -184,24 +178,11 @@ public final class JavaUtil {
 		return cause;
 	}
 
-	public static void dumpSystemProperties() {
-		Properties properties = System.getProperties();
-		List<String> keys = new ArrayList<String>( properties.size() );
-		for( Object key : System.getProperties().keySet() ) {
-			keys.add( key.toString() );
-		}
-		Collections.sort( keys );
-
-		for( String key : keys ) {
-			System.out.println( key + " = " + properties.get( key ) );
-		}
-	}
-
 	public static void printClassLoader( Object object ) {
 		if( object instanceof Class ) {
-			//Log.write( Log.TRACE, "Class loader for ", getClassName( (Class<?>)object ), ": ", ( (Class<?>)object ).getClassLoader() );
+			log.trace( "Class loader for " + getClassName( (Class<?>)object ) + ": " + ((Class<?>)object).getClassLoader() );
 		} else {
-			//Log.write( Log.TRACE, "Class loader for ", getClassName( object.getClass() ), ": ", getClassLoader( object ) );
+			log.trace( "Class loader for " + getClassName( object.getClass() ) + ": " + getClassLoader( object ) );
 		}
 	}
 
@@ -212,14 +193,9 @@ public final class JavaUtil {
 	public static void printSystemProperties() {
 		Properties properties = System.getProperties();
 		List<String> keys = new ArrayList<>();
-		for( Object object : properties.keySet() ) {
-			keys.add( object.toString() );
-		}
+		System.getProperties().keySet().forEach( entry -> keys.add( entry.toString() ) );
 		Collections.sort( keys );
-		for( String key : keys ) {
-			String value = properties.getProperty( key );
-			System.out.println( key + "=" + value );
-		}
+		keys.forEach( key -> System.out.println( key + "=" + properties.getProperty( key ) ) );
 	}
 
 }
