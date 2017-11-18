@@ -53,6 +53,8 @@ public class ProductCard {
 
 	private List<Contributor> contributors;
 
+	private Map<String, String> resources;
+
 	public ProductCard() {
 		InputStream stream = getClass().getResourceAsStream( CARD );
 		Properties values = new Properties();
@@ -81,11 +83,13 @@ public class ProductCard {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public void loadContributors() {
+	public void loadMeta() {
 		InputStream stream = getClass().getResourceAsStream( META );
 		Map<String, Object> values = (Map<String, Object>)new Yaml().load( stream );
+
 		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
 		this.contributors = (List<Contributor>)values.get( "contributors" );
+		this.resources = (Map<String, String>)values.get( "resources" );
 	}
 
 	public String getProductKey() {
@@ -208,6 +212,10 @@ public class ProductCard {
 		return Release.create( version, timestamp );
 	}
 
+	public String[] getResourceUris( String type ) {
+		return getPlatformResourceUris( type );
+	}
+
 	private void updateKey() {
 		/*
 		 * The use of '.' as the separator is the most benign of the characters
@@ -245,7 +253,7 @@ public class ProductCard {
 		//			if( uris != null ) resources.addAll( Arrays.asList( uris ) );
 		//		}
 
-		return resources.toArray( new String[resources.size()] );
+		return resources.toArray( new String[ resources.size() ] );
 	}
 
 }
