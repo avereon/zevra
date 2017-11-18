@@ -19,10 +19,9 @@ public class ProductCard {
 
 	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
 
-	// FIXME Rename files to .card and .meta
-	private static final String CARD = "/META-INF/product.properties";
+	private static final String CARD = "/META-INF/product.card";
 
-	private static final String META = "/META-INF/product.yaml";
+	private static final String META = "/META-INF/product.meta";
 
 	private String productKey;
 
