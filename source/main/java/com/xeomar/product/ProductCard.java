@@ -238,7 +238,7 @@ public class ProductCard {
 		//		// Determine the resources.
 		//		Node[] nodes = descriptor.getNodes( ProductCard.RESOURCES_PATH );
 		//		for( Node node : nodes ) {
-		//			Descriptor resourcesDescriptor = new Descriptor( node );
+		//			XmlDescriptor resourcesDescriptor = new XmlDescriptor( node );
 		//			Node osNameNode = node.getAttributes().getNamedItem( "os" );
 		//			Node osArchNode = node.getAttributes().getNamedItem( "arch" );
 		//

@@ -8,27 +8,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class DescriptorTest extends TestCase {
+public class XmlDescriptorTest extends TestCase {
 
 	public void testConstructor() throws Exception {
-		Descriptor descriptor = new Descriptor();
+		XmlDescriptor descriptor = new XmlDescriptor();
 		assertNotNull( descriptor );
 		assertNotNull( descriptor.getPaths() );
 		assertEquals( 0, descriptor.getPaths().size() );
 	}
 
 	public void testConstructorWithNullNode() throws Exception {
-		Descriptor descriptor = new Descriptor( (Node)null );
+		XmlDescriptor descriptor = new XmlDescriptor( (Node)null );
 		assertNotNull( descriptor );
 		assertNotNull( descriptor.getPaths() );
 		assertEquals( 0, descriptor.getPaths().size() );
 	}
 
 	public void testConstructorWithNullStream() throws Exception {
-		Descriptor descriptor = null;
+		XmlDescriptor descriptor = null;
 		try {
-			descriptor = new Descriptor( (InputStream)null );
-			fail( "Descriptor constructor should not allow null streams." );
+			descriptor = new XmlDescriptor( (InputStream)null );
+			fail( "XmlDescriptor constructor should not allow null streams." );
 		} catch( NullPointerException exception ) {
 			// Intentionally ignore exception.
 		}
@@ -36,38 +36,38 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testConstructorWithNode() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
-		Descriptor descriptor2 = new Descriptor( descriptor.getNode( "/test" ) );
+		XmlDescriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor2 = new XmlDescriptor( descriptor.getNode( "/test" ) );
 		assertNotNull( descriptor2 );
 		assertEquals( "test.name", descriptor2.getValue( "name" ) );
 	}
 
 	public void testConstructorWithStream() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 		assertNotNull( descriptor );
 	}
 
 	public void testGetDocument() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 		assertNotNull( descriptor.getDocument() );
 	}
 
 	public void testGetPathsWithEmptyDescriptor() throws Exception {
-		Descriptor descriptor = new Descriptor();
+		XmlDescriptor descriptor = new XmlDescriptor();
 		List<String> paths = descriptor.getPaths();
 		assertNotNull( paths );
 		assertEquals( 0, paths.size() );
 	}
 
 	public void testGetValueWithEmptyDescriptor() throws Exception {
-		Descriptor descriptor = new Descriptor();
+		XmlDescriptor descriptor = new XmlDescriptor();
 		assertEquals( null, descriptor.getValue( null ) );
 		assertEquals( null, descriptor.getValue( "" ) );
 		assertEquals( null, descriptor.getValue( "test/name" ) );
 	}
 
 	public void testGetValueWithDefaultWithEmptyDescriptor() throws Exception {
-		Descriptor descriptor = new Descriptor();
+		XmlDescriptor descriptor = new XmlDescriptor();
 		assertEquals( null, descriptor.getValue( (String)null, null ) );
 		assertEquals( "default", descriptor.getValue( (String)null, "default" ) );
 		assertEquals( null, descriptor.getValue( "test/name", null ) );
@@ -77,7 +77,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetAttributeNames() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		List<String> names = descriptor.getAttributeNames( "/test/bounds" );
 		assertEquals( 4, names.size() );
@@ -88,7 +88,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetNames() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		List<String> names = descriptor.getNames( "/test" );
 		assertEquals( 8, names.size() );
@@ -107,7 +107,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetPaths() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		List<String> paths = descriptor.getPaths();
 		assertNotNull( paths );
@@ -120,7 +120,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetNode() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		Document document = descriptor.getDocument();
 
@@ -131,7 +131,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetNodes() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( null, descriptor.getNodes( null ) );
 		assertEquals( null, descriptor.getNodes( "" ) );
@@ -143,7 +143,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetValue() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( null, descriptor.getValue( null ) );
 		assertEquals( null, descriptor.getValue( "" ) );
@@ -154,7 +154,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetValueWithDefault() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( null, descriptor.getValue( (String)null, null ) );
 		assertEquals( "default", descriptor.getValue( (String)null, "default" ) );
@@ -165,13 +165,13 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetMultilineValue() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( "This summary needs to span multiple line in order for the test to work correctly. Please ensure that this summary is wrapped roughly at characters per line so that there are three lines.", descriptor.getValue( "/test/summary" ) );
 	}
 
 	public void testGetValues() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( null, descriptor.getValues( null ) );
 		assertEquals( null, descriptor.getValues( "" ) );
@@ -184,7 +184,7 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetMultilineValues() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
+		XmlDescriptor descriptor = loadTestDescriptor();
 
 		assertEquals( null, descriptor.getValues( null ) );
 		assertEquals( null, descriptor.getValues( "" ) );
@@ -195,17 +195,17 @@ public class DescriptorTest extends TestCase {
 	}
 
 	public void testGetAttributeValueFromSubDescriptor() throws Exception {
-		Descriptor descriptor = loadTestDescriptor();
-		Descriptor subDescriptor = new Descriptor( descriptor.getNode( "/test/bounds" ) );
+		XmlDescriptor descriptor = loadTestDescriptor();
+		XmlDescriptor subDescriptor = new XmlDescriptor( descriptor.getNode( "/test/bounds" ) );
 
 		assertEquals( "15", descriptor.getValue( "/test/bounds/@h" ) );
 		assertEquals( "15", subDescriptor.getValue( "@h" ) );
 	}
 
-	private Descriptor loadTestDescriptor() throws IOException {
-		InputStream input = DescriptorTest.class.getResourceAsStream( "/descriptor.test.xml" );
+	private XmlDescriptor loadTestDescriptor() throws IOException {
+		InputStream input = XmlDescriptorTest.class.getResourceAsStream( "/descriptor.test.xml" );
 		assertNotNull( input );
-		Descriptor descriptor = new Descriptor( input );
+		XmlDescriptor descriptor = new XmlDescriptor( input );
 		assertNotNull( descriptor );
 		return descriptor;
 	}

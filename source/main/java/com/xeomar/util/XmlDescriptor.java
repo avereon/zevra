@@ -19,9 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Descriptor {
+@Deprecated
+public class XmlDescriptor {
 
-	private static final Logger log = LoggerFactory.getLogger( Descriptor.class );
+	private static final Logger log = LoggerFactory.getLogger( XmlDescriptor.class );
 
 	private Node node;
 
@@ -31,9 +32,9 @@ public class Descriptor {
 
 	private List<String> paths;
 
-	public Descriptor() {}
+	public XmlDescriptor() {}
 
-	public Descriptor( URI uri ) throws IOException {
+	public XmlDescriptor( URI uri ) throws IOException {
 		if( uri == null ) return;
 		try {
 			node = XmlUtil.loadXmlDocument( uri.toString() );
@@ -42,7 +43,7 @@ public class Descriptor {
 		}
 	}
 
-	public Descriptor( URL url ) throws IOException {
+	public XmlDescriptor( URL url ) throws IOException {
 		if( url == null ) return;
 		try {
 			node = XmlUtil.loadXmlDocument( url.toString() );
@@ -51,7 +52,7 @@ public class Descriptor {
 		}
 	}
 
-	public Descriptor( Reader reader ) throws IOException {
+	public XmlDescriptor( Reader reader ) throws IOException {
 		if( reader == null ) return;
 		try {
 			node = XmlUtil.loadXmlDocument( reader );
@@ -60,7 +61,7 @@ public class Descriptor {
 		}
 	}
 
-	public Descriptor( InputStream input ) throws IOException {
+	public XmlDescriptor( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "Input stream cannot be null." );
 		try {
 			node = XmlUtil.loadXmlDocument( input );
@@ -69,7 +70,7 @@ public class Descriptor {
 		}
 	}
 
-	public Descriptor( Node node ) {
+	public XmlDescriptor( Node node ) {
 		if( node == null ) return;
 		this.node = node;
 	}
