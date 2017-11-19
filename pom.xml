@@ -38,6 +38,8 @@
 	</repositories>
 
 	<properties>
+		<!-- The Xenon website still has to run on Java 8 -->
+		<java.version>8</java.version>
 		<project.timestamp>${maven.build.timestamp}</project.timestamp>
 		<product-name>${project.name}</product-name>
 		<product-identifier>razor</product-identifier>
