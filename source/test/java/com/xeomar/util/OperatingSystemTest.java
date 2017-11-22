@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -201,7 +202,7 @@ public class OperatingSystemTest {
 		assertThat( builder.command().get( index++ ), is( System.getenv( "SUDO_USER" ) ) );
 		assertThat( builder.command().get( index++ ), is( "--" ) );
 		assertThat( builder.command().get( index++ ), is( "textmate" ) );
-		assertThat(  builder.command().size(), is( index ) );
+		assertThat( builder.command().size(), is( index ) );
 	}
 
 	@Test
@@ -252,6 +253,24 @@ public class OperatingSystemTest {
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
 		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "linux/x86_64/librxtxSerial.so" ) );
+	}
+
+	@Test
+	public void testGetUserProgramDataFolder() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", "C:\\Users\\user\\AppData\\Roaming", null );
+		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( "C:/Users/user/AppData/Roaming" ) ) );
+
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", "/home/user/.config", null );
+		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( "/home/user/.config" ) ) );
+	}
+
+	@Test
+	public void testGetSharedProgramDataFolder() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", null, "C:\\ProgramData" );
+		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( "C:/ProgramData" ) ) );
+
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", null, "/usr/local/share/data" );
+		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( "/usr/local/share/data" ) ) );
 	}
 
 }

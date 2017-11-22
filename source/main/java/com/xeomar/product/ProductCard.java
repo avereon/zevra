@@ -9,6 +9,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -49,13 +51,15 @@ public class ProductCard {
 
 	private String licenseSummary;
 
-	private String cardUri;
+	private URI cardUri;
 
 	private String packUri;
 
 	private String mainClass;
 
 	private String javaVersion;
+
+	private Path installFolder;
 
 	private List<Maintainer> maintainers;
 
@@ -67,10 +71,10 @@ public class ProductCard {
 		loadInfo();
 	}
 
-	public void loadInfo() {
-		InputStream stream = getClass().getResourceAsStream( INFO );
+	private void loadInfo() {
 		Properties values = new Properties();
-		try {
+		try( InputStream stream = getClass().getResourceAsStream( INFO ) ) {
+			if( stream == null ) return;
 			values.load( stream );
 		} catch( IOException exception ) {
 			log.error( "Error loading product card", exception );
@@ -94,10 +98,20 @@ public class ProductCard {
 		updateKey();
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public void loadCard() {
-		InputStream stream = getClass().getResourceAsStream( CARD );
-		Map<String, Object> values = (Map<String, Object>)new Yaml().load( stream );
+	public void loadCard() throws IOException  {
+		loadCard( getClass().getResourceAsStream( CARD ) );
+	}
+
+	public void loadCard( InputStream input ) throws IOException {
+		loadCard( input , null );
+	}
+
+		@SuppressWarnings( "unchecked" )
+	public void loadCard( InputStream input, URI source ) throws IOException {
+		Map<String, Object> values;
+		try( InputStream stream = input ) {
+			values = (Map<String, Object>)new Yaml().load( stream );
+		}
 
 		this.group = (String)values.get( "group" );
 		this.artifact = (String)values.get( "artifact" );
@@ -114,12 +128,14 @@ public class ProductCard {
 		this.copyrightSummary = (String)values.get( "copyright" );
 		this.licenseSummary = (String)values.get( "license" );
 
-		this.cardUri = (String)values.get( "card" );
+		this.cardUri = URI.create( (String)values.get( "card" ) );
 		this.packUri = (String)values.get( "pack" );
 		this.javaVersion = (String)values.get( "java" );
 
 		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
 		this.contributors = (List<Contributor>)values.get( "contributors" );
+
+		if( source != null ) this.cardUri = source;
 
 		updateKey();
 	}
@@ -228,11 +244,11 @@ public class ProductCard {
 		this.licenseSummary = licenseSummary;
 	}
 
-	public String getCardUri() {
+	public URI getCardUri() {
 		return cardUri;
 	}
 
-	public void setCardUri( String cardUri ) {
+	public void setCardUri( URI cardUri ) {
 		this.cardUri = cardUri;
 	}
 
@@ -258,6 +274,14 @@ public class ProductCard {
 
 	public void setJavaVersion( String javaVersion ) {
 		this.javaVersion = javaVersion;
+	}
+
+	public Path getInstallFolder() {
+		return installFolder;
+	}
+
+	public void setInstallFolder( Path installFolder ) {
+		this.installFolder = installFolder;
 	}
 
 	public List<Maintainer> getMaintainers() {

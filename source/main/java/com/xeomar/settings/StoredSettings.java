@@ -40,6 +40,7 @@ public class StoredSettings extends AbstractSettings {
 
 	private String path;
 
+	// FIXME Switch to nio.Path
 	private File folder;
 
 	private Properties values;

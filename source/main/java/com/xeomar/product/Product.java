@@ -1,6 +1,6 @@
 package com.xeomar.product;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface Product {
 
@@ -20,6 +20,6 @@ public interface Product {
 	 *
 	 * @return The product data folder.
 	 */
-	File getDataFolder();
+	Path getDataFolder();
 
 }

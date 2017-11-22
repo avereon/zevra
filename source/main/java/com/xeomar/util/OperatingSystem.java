@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +54,10 @@ public class OperatingSystem {
 
 	private static boolean fileSystemCaseSensitive;
 
+	private static Path userProgramDataFolder;
+
+	private static Path sharedProgramDataFolder;
+
 	/**
 	 * Initialize the class.
 	 */
@@ -60,7 +66,7 @@ public class OperatingSystem {
 	}
 
 	public static void reset() {
-		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), System.getProperty( "os.version" ) );
+		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), System.getProperty( "os.version" ), null, null );
 	}
 
 	public static final String getName() {
@@ -225,140 +231,77 @@ public class OperatingSystem {
 	 *
 	 * @return
 	 */
-	public static final File getUserProgramDataFolder() {
-		File folder = null;
-		switch( family ) {
-			case WINDOWS: {
-				folder = new File( System.getenv( "appdata" ) );
-				break;
-			}
-			default: {
-				folder = new File( System.getProperty( "user.home" ), ".config" );
-				break;
-			}
-		}
-
-		try {
-			return folder.getCanonicalFile();
-		} catch( IOException exception ) {
-			log.error( "Error getting user program data folder", exception );
-		}
-
-		return null;
+	public static Path getUserProgramDataFolder() {
+		return userProgramDataFolder;
 	}
 
 	/**
-	 * Get the program data folder for the operating system using the program identifier and/or name. The program identifier is normally all lower case with no spaces. The name can be mixed case with spaces. Windows systems use the name
-	 * instead of the identifier to generate the program data folder path.
+	 * Get the program data folder for the operating system using the program
+	 * identifier and/or name. The program identifier is normally all lower case
+	 * with no spaces. The name can be mixed case with spaces. Windows systems
+	 * use the name instead of the identifier to generate the program data folder
+	 * path.
 	 *
-	 * @param identifier
-	 * @param name
-	 * @return
+	 * @param identifier The program identifier
+	 * @param name The program name
+	 * @return The user program data folder
 	 */
-	public static final File getUserProgramDataFolder( String identifier, String name ) {
-		File folder = null;
+	public static Path getUserProgramDataFolder( String identifier, String name ) {
 		switch( family ) {
 			case WINDOWS: {
-				folder = new File( getUserProgramDataFolder(), name );
-				break;
+				return getUserProgramDataFolder().resolve( name );
 			}
 			default: {
-				folder = new File( getUserProgramDataFolder(), identifier );
-				break;
+				return getUserProgramDataFolder().resolve( identifier );
 			}
 		}
-
-		try {
-			return folder.getCanonicalFile();
-		} catch( IOException exception ) {
-			log.error( "Error getting user program data folder", exception );
-		}
-
-		return null;
 	}
 
 	/**
-	 * Get the shared program data folder for the operating system. On Windows systems this is the %ALLUSERSPROFILE% location. On Linux systems this is /usr/local/share/data.
+	 * Get the shared program data folder for the operating system. On Windows
+	 * systems this is the %ALLUSERSPROFILE% location. On Linux systems this is
+	 * /usr/local/share/data.
 	 * <p>
-	 * Exapmles:
+	 * Examples:
 	 * <p>
 	 * Windows 7: C:/ProgramData/<br/> Linux: /usr/local/share/data/
 	 *
-	 * @return
+	 * @return The shared program data folder
 	 */
-	public static final File getSharedProgramDataFolder() {
-		File folder = null;
-		switch( family ) {
-			case WINDOWS: {
-				folder = new File( System.getenv( "allusersprofile" ) );
-				break;
-			}
-			case LINUX: {
-				folder = new File( "/usr/local/share/data" );
-				break;
-			}
-			default: {
-				folder = new File( System.getProperty( "user.home" ) );
-				break;
-			}
-		}
-
-		try {
-			return folder.getCanonicalFile();
-		} catch( IOException exception ) {
-			log.error( "Error getting shared program data folder", exception );
-		}
-
-		return null;
+	public static Path getSharedProgramDataFolder() {
+		return sharedProgramDataFolder;
 	}
 
 	/**
-	 * Get the shared program data folder for the operating system using the program identifier and/or name. The program identifier is normally all lower case with no spaces. The name can be mixed case with spaces. Windows systems use the
-	 * name instead of the identifier to generate the program data folder path.
+	 * Get the shared program data folder for the operating system using the
+	 * program identifier and/or name. The program identifier is normally all
+	 * lower case with no spaces. The name can be mixed case with spaces.
+	 * Windows systems use the name instead of the identifier to generate the
+	 * program data folder path.
 	 *
-	 * @param identifier
-	 * @param name
-	 * @return
+	 * @param identifier The program identifier
+	 * @param name The program name
+	 * @return The shared program data folder
 	 */
-	public static final File getSharedProgramDataFolder( String identifier, String name ) {
-		File folder = null;
+	public static Path getSharedProgramDataFolder( String identifier, String name ) {
 		switch( family ) {
 			case WINDOWS: {
-				folder = new File( getSharedProgramDataFolder(), name );
-				break;
+				return getSharedProgramDataFolder().resolve( name );
 			}
 			case LINUX: {
-				folder = new File( getSharedProgramDataFolder(), identifier );
-				break;
+				return getSharedProgramDataFolder().resolve( identifier );
 			}
 			default: {
-				folder = new File( getSharedProgramDataFolder(), "." + identifier );
-				break;
+				return getSharedProgramDataFolder().resolve( "." + identifier );
 			}
 		}
-
-		try {
-			return folder.getCanonicalFile();
-		} catch( IOException exception ) {
-			log.error( "Error getting shared program data folder", exception );
-		}
-
-		return null;
 	}
 
-	public static final String resolveNativeLibPath( String libname ) {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append( getPlatformFolder() );
-		builder.append( "/" );
-		builder.append( getArchitectureFolder() );
-		builder.append( "/" );
-		builder.append( mapLibraryName( libname ) );
-
-		return builder.toString();
+	public static String resolveNativeLibPath( String libname ) {
+		return String.format( "%s/%s/%s", getPlatformFolder(), getArchitectureFolder(), mapLibraryName( libname ) );
 	}
 
-	static final void clearProcessElevatedFlag() {
+	static void clearProcessElevatedFlag() {
 		elevated = null;
 	}
 
@@ -370,7 +313,21 @@ public class OperatingSystem {
 	 * @param arch The os arch from System.getProperty( "os.arch" ).
 	 * @param version The os version from System.getProperty( "os.version" ).
 	 */
-	static final void init( String name, String arch, String version ) {
+	static void init( String name, String arch, String version ) {
+		init( name, arch, version, null, null );
+	}
+
+	/**
+	 * The init() method is intentionally package private, and separate from the
+	 * static initializer, so the initialization logic can be tested.
+	 *
+	 * @param name The os name from System.getProperty( "os.name" ).
+	 * @param arch The os arch from System.getProperty( "os.arch" ).
+	 * @param version The os version from System.getProperty( "os.version" ).
+	 * @param userData The program user data folder
+	 * @param sharedData The program shared data folder
+	 */
+	static void init( String name, String arch, String version, String userData, String sharedData ) {
 		OperatingSystem.name = name;
 		OperatingSystem.arch = arch;
 
@@ -411,6 +368,42 @@ public class OperatingSystem {
 		File fileOne = new File( "TeStFiLe" );
 		File fileTwo = new File( "tEsTfIlE" );
 		fileSystemCaseSensitive = !fileOne.equals( fileTwo );
+
+		// User program data folder
+		if( userData == null ) {
+			switch( family ) {
+				case WINDOWS: {
+					userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
+					break;
+				}
+				default: {
+					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
+					break;
+				}
+			}
+		} else {
+			userProgramDataFolder = Paths.get( userData );
+		}
+
+		// Shared program data folder
+		if( sharedData == null ) {
+			switch( family ) {
+				case WINDOWS: {
+					sharedProgramDataFolder = Paths.get( System.getenv( "allusersprofile" ) );
+					break;
+				}
+				case LINUX: {
+					sharedProgramDataFolder = Paths.get( "/usr/local/share/data" );
+					break;
+				}
+				default: {
+					sharedProgramDataFolder =  Paths.get( System.getProperty( "user.home" ) );
+					break;
+				}
+			}
+		} else {
+			sharedProgramDataFolder = Paths.get( sharedData );
+		}
 	}
 
 	private static final String mapLibraryName( String libname ) {
