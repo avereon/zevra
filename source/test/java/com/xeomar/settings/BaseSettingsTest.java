@@ -2,6 +2,7 @@ package com.xeomar.settings;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -81,8 +82,10 @@ public abstract class BaseSettingsTest {
 		childB.flush();
 		childC.flush();
 
+		assertThat( settings.getNodes(), contains( "children" ) );
+
 		Settings children = settings.getNode( folder );
-		assertThat( children.getNodes().length, is( 3 ) );
+		assertThat( children.getNodes().size(), is( 3 ) );
 	}
 
 	@Test

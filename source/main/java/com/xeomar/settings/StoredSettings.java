@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
@@ -116,14 +117,16 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	public String[] getNodes() {
-		List<String> names = new ArrayList<>();
+	public List<String> getNodes() {
+		List<String> names = new CopyOnWriteArrayList<>();
+
 		try( Stream<Path> list = Files.list( folder ) ) {
-			list.forEach( path -> names.add( path.getFileName().toString() ) );
+			list.parallel().forEach( path -> names.add( path.getFileName().toString() ) );
 		} catch( IOException exception ) {
 			log.warn( "Unable to list paths: " + folder, exception );
 		}
-		return names.toArray( new String[ names.size() ] );
+
+		return names;
 	}
 
 	@Override
@@ -187,10 +190,11 @@ public class StoredSettings extends AbstractSettings {
 
 		root.settings.remove( getPath() );
 		try {
-			Path path = getFile();
-			if( Files.exists( path ) ) FileUtil.delete( path );
-			String[] nodes = getNodes();
-			if( nodes != null && nodes.length == 0 ) FileUtil.delete( folder );
+			// Delete the file
+			FileUtil.delete( getFile() );
+
+			// Delete the folder if empty
+			if( getNodes().size() == 0 ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
 			log.error( "Unable to delete settings folder: " + folder, exception );
 		}

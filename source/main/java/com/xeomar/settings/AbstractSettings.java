@@ -116,11 +116,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	String getNodePath( String root, String path ) {
-		// Resolve the path
-		String nodePath = PathUtil.isAbsolute( path ) ? path : PathUtil.resolve( root, path );
-
-		// Normalize the path
-		return PathUtil.normalize( nodePath );
+		return PathUtil.normalize( PathUtil.isAbsolute( path ) ? path : PathUtil.resolve( root, path ) );
 	}
 
 }

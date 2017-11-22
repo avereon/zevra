@@ -1,5 +1,6 @@
 package com.xeomar.settings;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ public interface Settings {
 	 *
 	 * @return The names of the existing child nodes
 	 */
-	String[] getNodes();
+	List<String> getNodes();
 
 	/**
 	 * Get the value keys for this settings node.

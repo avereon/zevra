@@ -71,16 +71,16 @@ public class MapSettings extends AbstractSettings {
 	}
 
 	@Override
-	public String[] getNodes() {
+	public List<String> getNodes() {
 		List<String> children = new ArrayList<>();
 
 		for( String childPath : root.settings.keySet() ) {
 			if( !childPath.startsWith( path ) ) continue;
 			String child = PathUtil.getChild( path, childPath );
-			if( !TextUtil.isEmpty( child ) ) children.add( child );
+			if( !TextUtil.isEmpty( child ) && !children.contains( child  )) children.add( child );
 		}
 
-		return children.toArray( new String[ children.size() ] );
+		return children;
 	}
 
 	@Override
