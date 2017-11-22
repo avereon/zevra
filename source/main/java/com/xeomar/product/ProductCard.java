@@ -12,16 +12,16 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * This class must load the product card very quickly. The meta data can load more slowly.
+ * This class must load the product info very quickly. The full product card can load more slowly.
  */
 // TODO Use Lombok when it is supported in Java 9
 public class ProductCard {
 
 	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
 
-	private static final String CARD = "/META-INF/product.card";
+	private static final String INFO = "/META-INF/product.info";
 
-	private static final String META = "/META-INF/product.meta";
+	private static final String CARD = "/META-INF/product.card";
 
 	private String productKey;
 
@@ -49,6 +49,14 @@ public class ProductCard {
 
 	private String licenseSummary;
 
+	private String cardUri;
+
+	private String packUri;
+
+	private String mainClass;
+
+	private String javaVersion;
+
 	private List<Maintainer> maintainers;
 
 	private List<Contributor> contributors;
@@ -56,7 +64,11 @@ public class ProductCard {
 	private Map<String, String> resources;
 
 	public ProductCard() {
-		InputStream stream = getClass().getResourceAsStream( CARD );
+		loadInfo();
+	}
+
+	public void loadInfo() {
+		InputStream stream = getClass().getResourceAsStream( INFO );
 		Properties values = new Properties();
 		try {
 			values.load( stream );
@@ -83,13 +95,33 @@ public class ProductCard {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public void loadMeta() {
-		InputStream stream = getClass().getResourceAsStream( META );
+	public void loadCard() {
+		InputStream stream = getClass().getResourceAsStream( CARD );
 		Map<String, Object> values = (Map<String, Object>)new Yaml().load( stream );
+
+		this.group = (String)values.get( "group" );
+		this.artifact = (String)values.get( "artifact" );
+		this.version = (String)values.get( "version" );
+		this.timestamp = (String)values.get( "timestamp" );
+
+		this.icon = (String)values.get( "icon" );
+		this.name = (String)values.get( "name" );
+		this.provider = (String)values.get( "provider" );
+		this.inception = (Integer)values.get( "inception" );
+
+		this.summary = (String)values.get( "summary" );
+		this.description = (String)values.get( "description" );
+		this.copyrightSummary = (String)values.get( "copyright" );
+		this.licenseSummary = (String)values.get( "license" );
+
+		this.cardUri = (String)values.get( "card" );
+		this.packUri = (String)values.get( "pack" );
+		this.javaVersion = (String)values.get( "java" );
 
 		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
 		this.contributors = (List<Contributor>)values.get( "contributors" );
-		this.resources = (Map<String, String>)values.get( "resources" );
+
+		updateKey();
 	}
 
 	public String getProductKey() {
@@ -126,6 +158,10 @@ public class ProductCard {
 
 	public void setTimestamp( String timestamp ) {
 		this.timestamp = timestamp;
+	}
+
+	public Release getRelease() {
+		return Release.create( version, timestamp );
 	}
 
 	public String getIcon() {
@@ -192,6 +228,38 @@ public class ProductCard {
 		this.licenseSummary = licenseSummary;
 	}
 
+	public String getCardUri() {
+		return cardUri;
+	}
+
+	public void setCardUri( String cardUri ) {
+		this.cardUri = cardUri;
+	}
+
+	public String getPackUri() {
+		return packUri;
+	}
+
+	public void setPackUri( String packUri ) {
+		this.packUri = packUri;
+	}
+
+	public String getMainClass() {
+		return mainClass;
+	}
+
+	public void setMainClass( String mainClass ) {
+		this.mainClass = mainClass;
+	}
+
+	public String getJavaVersion() {
+		return javaVersion;
+	}
+
+	public void setJavaVersion( String javaVersion ) {
+		this.javaVersion = javaVersion;
+	}
+
 	public List<Maintainer> getMaintainers() {
 		return maintainers;
 	}
@@ -206,10 +274,6 @@ public class ProductCard {
 
 	public void setContributors( List<Contributor> contributors ) {
 		this.contributors = contributors;
-	}
-
-	public Release getRelease() {
-		return Release.create( version, timestamp );
 	}
 
 	public String[] getResourceUris( String type ) {
@@ -229,6 +293,10 @@ public class ProductCard {
 	private String[] getPlatformResourceUris( String path ) {
 		String os = System.getProperty( "os.name" );
 		String arch = System.getProperty( "os.arch" );
+
+		// This code was originally intended to resolve os/architecture specific
+		// resources needed for a product. For the moment, this feature is not
+		// needed and this method simply returns an empty set.
 
 		String[] uris;
 		Set<String> resources = new HashSet<>();
