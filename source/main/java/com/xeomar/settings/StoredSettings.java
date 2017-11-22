@@ -1,17 +1,19 @@
 package com.xeomar.settings;
 
+import com.xeomar.util.FileUtil;
 import com.xeomar.util.LogUtil;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 public class StoredSettings extends AbstractSettings {
 
@@ -40,8 +42,7 @@ public class StoredSettings extends AbstractSettings {
 
 	private String path;
 
-	// FIXME Switch to nio.Path
-	private File folder;
+	private Path folder;
 
 	private Properties values;
 
@@ -57,15 +58,15 @@ public class StoredSettings extends AbstractSettings {
 
 	private SaveTask task;
 
-	public StoredSettings( File folder ) {
+	public StoredSettings( Path folder ) {
 		this( folder, null );
 	}
 
-	public StoredSettings( File folder, ExecutorService executor ) {
+	private StoredSettings( Path folder, ExecutorService executor ) {
 		this( null, "/", folder, null, executor );
 	}
 
-	private StoredSettings( StoredSettings root, String path, File folder, Map<String, String> values, ExecutorService executor ) {
+	private StoredSettings( StoredSettings root, String path, Path folder, Map<String, String> values, ExecutorService executor ) {
 		if( root == null ) {
 			this.settings = new ConcurrentHashMap<>();
 			this.root = this;
@@ -83,7 +84,7 @@ public class StoredSettings extends AbstractSettings {
 
 	@Override
 	public String getName() {
-		return folder.getName();
+		return folder.getFileName().toString();
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class StoredSettings extends AbstractSettings {
 	@Override
 	public boolean exists( String path ) {
 		String nodePath = getNodePath( this.path, path );
-		return new File( root.folder, nodePath ).exists();
+		return Files.exists( root.folder.resolve( nodePath ) );
 	}
 
 	@Override
@@ -109,15 +110,20 @@ public class StoredSettings extends AbstractSettings {
 		// Get or create settings node
 		Settings child = root.settings.get( nodePath );
 
-		if( child == null ) child = new StoredSettings( root, nodePath, new File( root.folder, nodePath ), values, executor );
+		if( child == null ) child = new StoredSettings( root, nodePath, root.folder.resolve( nodePath ), values, executor );
 
 		return child;
 	}
 
 	@Override
 	public String[] getNodes() {
-		String[] names = folder.list();
-		return names == null ? new String[ 0 ] : names;
+		List<String> names = new ArrayList<>();
+		try( Stream<Path> list = Files.list( folder ) ) {
+			list.forEach( path -> names.add( path.getFileName().toString() ) );
+		} catch( IOException exception ) {
+			log.warn( "Unable to list paths: " + folder, exception );
+		}
+		return names.toArray( new String[ names.size() ] );
 	}
 
 	@Override
@@ -181,12 +187,12 @@ public class StoredSettings extends AbstractSettings {
 
 		root.settings.remove( getPath() );
 		try {
-			File file = getFile();
-			if( file.exists() ) FileUtils.forceDelete( file );
-			String[] files = folder.list();
-			if( files != null && files.length == 0 ) FileUtils.forceDelete( folder );
+			Path path = getFile();
+			if( Files.exists( path ) ) FileUtil.delete( path );
+			String[] nodes = getNodes();
+			if( nodes != null && nodes.length == 0 ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
-			log.error( "Unable to delete settings file: " + folder, exception );
+			log.error( "Unable to delete settings folder: " + folder, exception );
 		}
 	}
 
@@ -196,29 +202,29 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private synchronized void load() {
-		File file = getFile();
-		if( !file.exists() ) return;
-		try( FileInputStream input = new FileInputStream( file ) ) {
+		Path path = getFile();
+		if( !Files.exists( path) ) return;
+		try( FileInputStream input = new FileInputStream( path.toFile() ) ) {
 			values.load( input );
 			fireEvent( new SettingsEvent( this, SettingsEvent.Type.LOADED, getPath() ) );
 		} catch( IOException exception ) {
-			log.error( "Error loading settings file: " + file, exception );
+			log.error( "Error loading settings file: " + path, exception );
 		}
 	}
 
 	private synchronized void save() {
-		File file = getFile();
+		Path path = getFile();
 		try {
-			FileUtils.forceMkdir( file.getParentFile() );
+			Files.createDirectories( path.getParent() );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + file, exception );
+			log.error( "Error saving settings file: " + path, exception );
 		}
-		try( FileOutputStream output = new FileOutputStream( file ) ) {
+		try( FileOutputStream output = new FileOutputStream( path.toFile() ) ) {
 			values.store( output, null );
 			lastStoreTime.set( System.currentTimeMillis() );
 			fireEvent( new SettingsEvent( this, SettingsEvent.Type.SAVED, getPath() ) );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + file, exception );
+			log.error( "Error saving settings file: " + path, exception );
 		}
 	}
 
@@ -250,8 +256,8 @@ public class StoredSettings extends AbstractSettings {
 		}
 	}
 
-	private File getFile() {
-		return new File( folder, "settings" + SETTINGS_EXTENSION );
+	private Path getFile() {
+		return folder.resolve( "settings" + SETTINGS_EXTENSION );
 	}
 
 	private class SaveTask extends TimerTask {

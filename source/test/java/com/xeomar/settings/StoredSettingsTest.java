@@ -1,25 +1,24 @@
 package com.xeomar.settings;
 
-import org.apache.commons.io.FileUtils;
+import com.xeomar.util.FileUtil;
 import org.junit.After;
 import org.junit.Before;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class StoredSettingsTest extends BaseSettingsTest {
 
-	private File file;
+	private Path path;
 
 	@Before
 	public void setup() throws Exception {
-		file = Files.createTempDirectory( SETTINGS_NAME ).toFile();
-		settings = new StoredSettings( file );
+		path = FileUtil.createTempFolder( SETTINGS_NAME );
+		settings = new StoredSettings( path );
 	}
 
 	@After
 	public void cleanup() throws Exception {
-		FileUtils.forceDeleteOnExit( file );
+		FileUtil.deleteOnExit( path );
 	}
 
 }
