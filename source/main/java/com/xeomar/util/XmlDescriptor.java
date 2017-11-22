@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Deprecated
 public class XmlDescriptor {
 
 	private static final Logger log = LoggerFactory.getLogger( XmlDescriptor.class );
@@ -199,7 +198,8 @@ public class XmlDescriptor {
 	/**
 	 * Get an array of all the values in the node that have the same path.
 	 *
-	 * @param path
+	 * @param node The node from which to get values
+	 * @param path The xpath of the values
 	 * @return An array of values with the same path.
 	 */
 	public static String[] getValues( Node node, String path ) {
