@@ -73,7 +73,7 @@ public class Parameters {
 	}
 
 	public static Parameters parse( String[] commands, Set<String> validCommands ) {
-		return parse( List.of( commands ), validCommands );
+		return parse( Arrays.asList( commands ), validCommands );
 	}
 
 	public static Parameters parse( List<String> commands, Set<String> validCommands ) {

@@ -10,6 +10,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -381,7 +382,7 @@ public class FileUtilTest {
 
 			List<Path> paths = FileUtil.listPaths( sourceRoot );
 
-			for( Path expected : List.of( sourceRoot, sourceFile1, sourceFile2, sourceSubFolder, sourceFile3, sourceFile4 ) ) {
+			for( Path expected : Arrays.asList( sourceRoot, sourceFile1, sourceFile2, sourceSubFolder, sourceFile3, sourceFile4 ) ) {
 				assertThat( paths.contains( expected ), is( true ) );
 			}
 			assertThat( paths.size(), is( 6 ) );

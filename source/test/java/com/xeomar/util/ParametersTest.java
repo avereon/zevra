@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -221,9 +222,10 @@ public class ParametersTest {
 		try {
 			Parameters.parse( args );
 			Assert.fail( "Null values should cause an exception" );
-		} catch( NullPointerException exception ) {
-			assertThat( exception.getMessage(), is( nullValue() ) );
+		} catch( IllegalArgumentException exception ) {
+			assertThat( exception.getMessage(), is( "Null command at index: 0" ) );
 		} catch( Exception exception ) {
+			exception.printStackTrace( System.out );
 			Assert.fail( "Unexpected exception " + exception );
 		}
 	}
@@ -361,7 +363,7 @@ public class ParametersTest {
 
 	@Test
 	public void testGetOriginalCommands() throws Exception {
-		List<String> args = List.of( "-flag", "-key", "value", "file" );
+		List<String> args = Arrays.asList( "-flag", "-key", "value", "file" );
 		Parameters parameters = Parameters.parse( args );
 		List<String> commands = parameters.getOriginalCommands();
 
