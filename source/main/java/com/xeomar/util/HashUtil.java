@@ -12,7 +12,7 @@ public class HashUtil {
 
 	private static final Logger log = LoggerFactory.getLogger( HashUtil.class );
 
-	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
+	//public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 
 	public static final HashStrategy SHA2 = new DigestStrategy( new MessageDigestWrapper( "SHA-256" ) );
 
