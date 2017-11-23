@@ -5,12 +5,19 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class OperatingSystemTest {
+
+	private static final String WINDOWS_USER_DATA = "C:\\Users\\user\\AppData\\Roaming";
+
+	private static final String UNIX_USER_DATA = "/home/user/.config";
+
+	private static final String WINDOWS_SHARED_DATA = "C:\\ProgramData";
+
+	private static final String UNIX_SHARED_DATA = "/usr/local/share/data";
 
 	@Before
 	public void setup() throws Exception {
@@ -19,7 +26,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testLinux() throws Exception {
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( true ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( true ) );
@@ -32,7 +39,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testMac() throws Exception {
-		OperatingSystem.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( true ) );
 		assertThat( OperatingSystem.isUnix(), is( true ) );
@@ -45,7 +52,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testWindows7() throws Exception {
-		OperatingSystem.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -58,7 +65,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testWindows8() throws Exception {
-		OperatingSystem.init( "Windows 8", "x86", "6.2" );
+		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -71,7 +78,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testWindows8_1() throws Exception {
-		OperatingSystem.init( "Windows 8.1", "x86", "6.3" );
+		OperatingSystem.init( "Windows 8.1", "x86", "6.3", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -84,7 +91,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testWindows10() throws Exception {
-		OperatingSystem.init( "Windows 10", "x86", "10.0" );
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -97,7 +104,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testIsProcessElevatedMac() throws Exception {
-		OperatingSystem.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
@@ -109,7 +116,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testIsProcessElevatedUnix() throws Exception {
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
@@ -121,7 +128,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testIsProcessElevatedWindows() throws Exception {
-		OperatingSystem.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
@@ -132,7 +139,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testElevateProcessMac() throws Exception {
-		OperatingSystem.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		ProcessBuilder builder = new ProcessBuilder( "textmate" );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate" );
 
@@ -145,7 +152,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testElevateProcessUnix() throws Exception {
 		String program = "vi";
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		ProcessBuilder builder = new ProcessBuilder( program );
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
@@ -175,7 +182,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testElevateProcessWindows() throws Exception {
-		OperatingSystem.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		ProcessBuilder builder = new ProcessBuilder( "notepad.exe" );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" );
 
@@ -190,7 +197,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testReduceProcessMac() throws Exception {
-		OperatingSystem.init( "Mac OS X", "ppc", "10" );
+		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "textmate" );
 
@@ -207,7 +214,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testReduceProcessUnix() throws Exception {
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "vi" );
 
@@ -224,7 +231,7 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testReduceProcessWindows() throws Exception {
-		OperatingSystem.init( "Windows 7", "x86", "6.1" );
+		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( OperatingSystem.getJavaExecutablePath(), "-jar", "C:\\Program Files\\Escape\\program.jar", "-update", "false" );
 
@@ -248,29 +255,29 @@ public class OperatingSystemTest {
 
 	@Test
 	public void testResolveNativeLibPath() throws Exception {
-		OperatingSystem.init( "Windows 8", "x86", "6.2" );
+		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "win/x86/rxtxSerial.dll" ) );
 
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45" );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "linux/x86_64/librxtxSerial.so" ) );
 	}
 
 	@Test
 	public void testGetUserProgramDataFolder() {
-		OperatingSystem.init( "Windows 10", "x86", "10.0", "C:\\Users\\user\\AppData\\Roaming", null );
-		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( "C:/Users/user/AppData/Roaming" ) ) );
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder().toString(), is( WINDOWS_USER_DATA ) );
 
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", "/home/user/.config", null );
-		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( "/home/user/.config" ) ) );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder().toString(), is( UNIX_USER_DATA ) );
 	}
 
 	@Test
 	public void testGetSharedProgramDataFolder() {
-		OperatingSystem.init( "Windows 10", "x86", "10.0", null, "C:\\ProgramData" );
-		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( "C:/ProgramData" ) ) );
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder().toString(), is(  WINDOWS_SHARED_DATA ) );
 
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", null, "/usr/local/share/data" );
-		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( "/usr/local/share/data" ) ) );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder().toString(), is( UNIX_SHARED_DATA ) );
 	}
 
 }

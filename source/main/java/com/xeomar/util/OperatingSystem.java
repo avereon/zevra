@@ -305,17 +305,17 @@ public class OperatingSystem {
 		elevated = null;
 	}
 
-	/**
-	 * The init() method is intentionally package private, and separate from the
-	 * static initializer, so the initialization logic can be tested.
-	 *
-	 * @param name The os name from System.getProperty( "os.name" ).
-	 * @param arch The os arch from System.getProperty( "os.arch" ).
-	 * @param version The os version from System.getProperty( "os.version" ).
-	 */
-	static void init( String name, String arch, String version ) {
-		init( name, arch, version, null, null );
-	}
+//	/**
+//	 * The init() method is intentionally package private, and separate from the
+//	 * static initializer, so the initialization logic can be tested.
+//	 *
+//	 * @param name The os name from System.getProperty( "os.name" ).
+//	 * @param arch The os arch from System.getProperty( "os.arch" ).
+//	 * @param version The os version from System.getProperty( "os.version" ).
+//	 */
+//	static void init( String name, String arch, String version ) {
+//		init( name, arch, version, null, null );
+//	}
 
 	/**
 	 * The init() method is intentionally package private, and separate from the
