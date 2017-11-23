@@ -121,6 +121,7 @@ public class StoredSettings extends AbstractSettings {
 	public List<String> getNodes() {
 		List<String> names = new CopyOnWriteArrayList<>();
 
+		if( !Files.exists( folder ) ) return names;
 		try( Stream<Path> list = Files.list( folder ) ) {
 			list.parallel().forEach( path -> names.add( path.getFileName().toString() ) );
 		} catch( IOException exception ) {
