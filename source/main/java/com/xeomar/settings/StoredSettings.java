@@ -96,7 +96,8 @@ public class StoredSettings extends AbstractSettings {
 	@Override
 	public boolean exists( String path ) {
 		String nodePath = getNodePath( this.path, path );
-		return Files.exists( root.folder.resolve( nodePath ) );
+		// The substring(1) removes the leading slash
+		return Files.exists( root.folder.resolve( nodePath.substring( 1 ) ) );
 	}
 
 	@Override
@@ -110,8 +111,8 @@ public class StoredSettings extends AbstractSettings {
 
 		// Get or create settings node
 		Settings child = root.settings.get( nodePath );
-
-		if( child == null ) child = new StoredSettings( root, nodePath, root.folder.resolve( nodePath ), values, executor );
+		// The substring(1) removes the leading slash
+		if( child == null ) child = new StoredSettings( root, nodePath, root.folder.resolve( nodePath.substring( 1 ) ), values, executor );
 
 		return child;
 	}
@@ -207,7 +208,7 @@ public class StoredSettings extends AbstractSettings {
 
 	private synchronized void load() {
 		Path path = getFile();
-		if( !Files.exists( path) ) return;
+		if( !Files.exists( path ) ) return;
 		try( FileInputStream input = new FileInputStream( path.toFile() ) ) {
 			values.load( input );
 			fireEvent( new SettingsEvent( this, SettingsEvent.Type.LOADED, getPath() ) );
