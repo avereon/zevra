@@ -21,9 +21,9 @@ public class ProductCard {
 
 	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
 
-	private static final String INFO = "/META-INF/product.info";
-
 	private static final String CARD = "/META-INF/product.card";
+
+	private static final String INFO = "/META-INF/product.info";
 
 	private String productKey;
 
