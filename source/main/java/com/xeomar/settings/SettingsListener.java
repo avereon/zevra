@@ -1,7 +1,9 @@
 package com.xeomar.settings;
 
-public interface SettingsListener {
+import com.xeomar.product.ProductEventListener;
 
-	void settingsEvent( SettingsEvent event );
+public interface SettingsListener extends ProductEventListener<SettingsEvent> {
+
+	void eventOccurred( SettingsEvent event );
 
 }

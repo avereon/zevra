@@ -1,8 +1,8 @@
 package com.xeomar.settings;
 
-import java.util.EventObject;
+import com.xeomar.product.ProductEvent;
 
-public class SettingsEvent extends EventObject {
+public class SettingsEvent extends ProductEvent {
 
 	public enum Type {
 		UPDATED,
@@ -55,10 +55,7 @@ public class SettingsEvent extends EventObject {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(  );
-		builder.append( getClass().getSimpleName() );
-		builder.append( ":" );
-		builder.append( getSource().getClass().getSimpleName() );
+		StringBuilder builder = new StringBuilder( super.toString() );
 		builder.append( ":" );
 		builder.append( type );
 		if( path != null ) {

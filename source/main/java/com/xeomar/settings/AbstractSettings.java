@@ -1,12 +1,15 @@
 package com.xeomar.settings;
 
 import com.xeomar.util.PathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractSettings implements Settings {
+
+	private static final Logger log = LoggerFactory.getLogger( AbstractSettings.class );
 
 	private Set<SettingsListener> listeners;
 
@@ -109,10 +112,8 @@ public abstract class AbstractSettings implements Settings {
 		listeners.remove( listener );
 	}
 
-	void fireEvent( SettingsEvent event ) {
-		for( SettingsListener listener : new HashSet<>( listeners ) ) {
-			listener.settingsEvent( event );
-		}
+	Set<SettingsListener> getListeners() {
+		return listeners;
 	}
 
 	String getNodePath( String root, String path ) {

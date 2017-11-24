@@ -97,7 +97,7 @@ public class MapSettings extends AbstractSettings {
 		} else {
 			values.put( key, newValue );
 		}
-		if( !Objects.equals( oldValue, value ) ) fireEvent( new SettingsEvent( this, SettingsEvent.Type.UPDATED, path, key, oldValue, newValue ) );
+		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, path, key, oldValue, newValue ).fire( getListeners() );
 	}
 
 	@Override

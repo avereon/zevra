@@ -12,6 +12,8 @@ public class DateUtil {
 
 	public static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+	public static final TimeZone LOCAL_TIME_ZONE = TimeZone.getDefault();
+
 	/**
 	 * Convenience method to get the current year for the UTC time zone.
 	 *
