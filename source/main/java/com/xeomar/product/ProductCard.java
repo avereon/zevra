@@ -51,7 +51,7 @@ public class ProductCard {
 
 	private String licenseSummary;
 
-	private URI cardUri;
+	private String cardUri;
 
 	private String packUri;
 
@@ -128,14 +128,14 @@ public class ProductCard {
 		this.copyrightSummary = (String)values.get( "copyright" );
 		this.licenseSummary = (String)values.get( "license" );
 
-		this.cardUri = URI.create( (String)values.get( "card" ) );
+		this.cardUri = (String)values.get( "card" );
 		this.packUri = (String)values.get( "pack" );
 		this.javaVersion = (String)values.get( "java" );
 
 		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
 		this.contributors = (List<Contributor>)values.get( "contributors" );
 
-		if( source != null ) this.cardUri = source;
+		if( source != null ) this.cardUri = source.toString();
 
 		updateKey();
 	}
@@ -244,11 +244,11 @@ public class ProductCard {
 		this.licenseSummary = licenseSummary;
 	}
 
-	public URI getCardUri() {
+	public String getCardUri() {
 		return cardUri;
 	}
 
-	public void setCardUri( URI cardUri ) {
+	public void setCardUri( String cardUri ) {
 		this.cardUri = cardUri;
 	}
 

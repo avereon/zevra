@@ -300,11 +300,12 @@ public class FileUtil {
 		return !Files.exists( path );
 	}
 
-	public static void deleteOnExit( Path path ) throws IOException {
-		if( !Files.exists( path ) ) return;
+	public static Path deleteOnExit( Path path ) throws IOException {
+		if( !Files.exists( path ) ) return path;
 		try( Stream<Path> paths = Files.walk( path ) ) {
 			paths.sorted( Comparator.reverseOrder() ).forEach( file -> file.toFile().deleteOnExit() );
 		}
+		return path;
 	}
 
 	public static Path createTempFile( String prefix, String suffix, FileAttribute... attributes ) throws IOException {
