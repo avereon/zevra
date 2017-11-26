@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import static java.text.MessageFormat.format;
@@ -25,8 +26,8 @@ public class ProductBundle {
 		ResourceBundle bundle = getBundle( "bundles/" + bundleKey, Locale.getDefault(), loader );
 		if( bundle.containsKey( valueKey ) ) string = format( bundle.getString( valueKey ), (Object[])values );
 		if( string == null ) {
-			string = bundleKey + ":" + valueKey;
-			log.warn( "Missing RB key: " + string, new UnknownError( string ) );
+			string = bundleKey + " > " + valueKey;
+			log.warn( "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
 		}
 
 		return string;
