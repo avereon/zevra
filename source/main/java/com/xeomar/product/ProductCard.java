@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * This class must load the product info very quickly. The full product card can load more slowly.
+ * This class must load the product "info" very quickly. The full product "card" can load more slowly.
  */
 // TODO Use Lombok when it is supported in Java 9
 public class ProductCard {

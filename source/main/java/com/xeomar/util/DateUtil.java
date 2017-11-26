@@ -79,10 +79,10 @@ public class DateUtil {
 	/**
 	 * Parse a date string with the given format and time zone.
 	 *
-	 * @param data
-	 * @param format
-	 * @param timeZone
-	 * @return
+	 * @param data The date string to parse
+	 * @param format The date format of the data
+	 * @param timeZone The timezone of the data
+	 * @return The parsed date or null if there is a parsing error
 	 */
 	public static final Date parse( String data, String format, TimeZone timeZone ) {
 		if( data == null ) return null;

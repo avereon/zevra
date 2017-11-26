@@ -1,28 +1,20 @@
 package com.xeomar.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Represents a software release which is a version and a date.
+ * Represents an artifact release, which is a version and a timestamp.
  *
  * @author Mark Soderquist
  */
 public class Release implements Comparable<Release> {
 
-	/**
-	 * All release dates are expected to be in UTC so no time zone is given in the
-	 * date format.
-	 */
-	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-	protected static final String ENCODE_DELIMITER = "  ";
+	private static final String ENCODE_DELIMITER = "  ";
 
 	private Version version;
 
-	private Date date;
+	private Date timestamp;
 
 	public Release( String version ) {
 		this( new Version( version ), null );
@@ -36,41 +28,35 @@ public class Release implements Comparable<Release> {
 		this( version, null );
 	}
 
-	public Release( Version version, Date date ) {
+	public Release( Version version, Date timestamp ) {
 		if( version == null ) throw new NullPointerException( "Version cannot be null." );
 		this.version = version;
-		this.date = date;
+		this.timestamp = timestamp;
 	}
 
 	public static Release create( String version, String timestamp ) {
-		Date date = null;
-		try {
-			date = new SimpleDateFormat( DATE_FORMAT ).parse( timestamp );
-		} catch( ParseException exception ) {
-			//
-		}
-		return new Release( new Version( version ), date );
+		return new Release( new Version( version ), DateUtil.parse( timestamp, DateUtil.DEFAULT_DATE_FORMAT ) );
 	}
 
 	public Version getVersion() {
 		return version;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getTimestamp() {
+		return timestamp;
 	}
 
-	public String getDateString() {
-		return getDateString( DateUtil.DEFAULT_TIME_ZONE );
+	public String getTimestampString() {
+		return getTimestampString( DateUtil.DEFAULT_TIME_ZONE );
 	}
 
-	public String getDateString( TimeZone zone ) {
-		if( date == null ) return "";
+	public String getTimestampString( TimeZone zone ) {
+		if( timestamp == null ) return "";
 
-		StringBuilder builder = new StringBuilder( DateUtil.format( date, Release.DATE_FORMAT, zone ) );
+		StringBuilder builder = new StringBuilder( DateUtil.format( timestamp, DateUtil.DEFAULT_DATE_FORMAT, zone ) );
 		if( !zone.equals( DateUtil.DEFAULT_TIME_ZONE ) ) {
 			builder.append( " " );
-			builder.append( zone.getDisplayName( zone.inDaylightTime( date ), TimeZone.SHORT ) );
+			builder.append( zone.getDisplayName( zone.inDaylightTime( timestamp ), TimeZone.SHORT ) );
 		}
 		return builder.toString();
 	}
@@ -88,17 +74,17 @@ public class Release implements Comparable<Release> {
 		return format( version.toHumanString(), zone );
 	}
 
-	public static final String encode( Release release ) {
+	public static String encode( Release release ) {
 		StringBuilder builder = new StringBuilder( release.version.toString() );
-		if( release.date != null ) {
+		if( release.timestamp != null ) {
 			builder.append( ENCODE_DELIMITER );
-			builder.append( release.date.getTime() );
+			builder.append( release.timestamp.getTime() );
 		}
 
 		return builder.toString();
 	}
 
-	public static final Release decode( String release ) {
+	public static Release decode( String release ) {
 		if( release == null ) return null;
 
 		int index = release.indexOf( ENCODE_DELIMITER );
@@ -111,7 +97,7 @@ public class Release implements Comparable<Release> {
 
 	@Override
 	public boolean equals( Object object ) {
-		if( !( object instanceof Release ) ) return false;
+		if( !(object instanceof Release) ) return false;
 
 		Release that = (Release)object;
 		return this.compareTo( that ) == 0;
@@ -119,7 +105,7 @@ public class Release implements Comparable<Release> {
 
 	@Override
 	public int hashCode() {
-		return version.hashCode() ^ ( date == null ? 0 : date.hashCode() );
+		return version.hashCode() ^ (timestamp == null ? 0 : timestamp.hashCode());
 	}
 
 	@Override
@@ -127,8 +113,8 @@ public class Release implements Comparable<Release> {
 		int result = this.getVersion().compareTo( that.getVersion() );
 		if( result != 0 ) return result;
 
-		if( this.date == null || that.date == null ) return 0;
-		return this.date.compareTo( that.date );
+		if( this.timestamp == null || that.timestamp == null ) return 0;
+		return this.timestamp.compareTo( that.timestamp );
 	}
 
 	private String format( String version ) {
@@ -136,15 +122,12 @@ public class Release implements Comparable<Release> {
 	}
 
 	private String format( String version, TimeZone zone ) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat( DATE_FORMAT );
-		dateFormat.setTimeZone( zone );
-
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		buffer.append( version );
-		if( date != null ) {
+		if( timestamp != null ) {
 			buffer.append( "  " );
-			buffer.append( getDateString( zone ) );
+			buffer.append( getTimestampString( zone ) );
 		}
 
 		return buffer.toString();
