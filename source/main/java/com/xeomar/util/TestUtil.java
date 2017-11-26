@@ -1,10 +1,20 @@
 package com.xeomar.util;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class TestUtil {
 
+	private static Set<String> runners;
+
 	private static Boolean test;
+
+	static {
+		runners = new HashSet<>();
+		runners.add( "org.junit.runner.JUnitCore" );
+		runners.add( "junit.framework.TestSuite" );
+	}
 
 	/**
 	 * Check if the any thread is running in the JUnit test framework. This is
@@ -23,7 +33,7 @@ public class TestUtil {
 			if( thread.getId() == 1 ) {
 				StackTraceElement[] elements = stacks.get( thread );
 				for( StackTraceElement element : elements ) {
-					if( "junit.framework.TestSuite".equals( element.getClassName() ) ) {
+					if( runners.contains( element.getClassName() ) ) {
 						result = true;
 						break;
 					}
