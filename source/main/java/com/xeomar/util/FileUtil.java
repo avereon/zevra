@@ -17,6 +17,8 @@ import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
 
+	public static final Path TEMP_FOLDER = Paths.get( System.getProperty( "java.io.tmpdir" ) );
+
 	private static final Logger log = LoggerFactory.getLogger( FileUtil.class );
 
 	/**
