@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -14,21 +15,45 @@ public class UriUtilTest {
 
 	@Test
 	public void understandUriParts() {
-		URI uri1 = URI.create( "program:product#updates" );
-		assertThat( uri1.getScheme(), is( "program" ) );
-		assertThat( uri1.getPath(), is( nullValue() ) );
-		assertThat( uri1.getQuery(), is( nullValue() ) );
-		assertThat( uri1.getFragment(), is( "updates" ) );
-		assertThat( uri1.getAuthority(), is( nullValue() ) );
-		assertThat( uri1.getSchemeSpecificPart(), is( "product" ) );
+		URI uri = URI.create( "program:product#updates" );
+		assertThat( uri.isOpaque(), is( true ) );
+		assertThat( uri.isAbsolute(), is( true ) );
+		assertThat( uri.getScheme(), is( "program" ) );
+		assertThat( uri.getUserInfo(), is( nullValue() ) );
+		assertThat( uri.getHost(), is( nullValue() ) );
+		assertThat( uri.getAuthority(), is( nullValue() ) );
+		assertThat( uri.getPath(), is( nullValue() ) );
+		assertThat( uri.getQuery(), is( nullValue() ) );
+		assertThat( uri.getFragment(), is( "updates" ) );
+		assertThat( uri.getSchemeSpecificPart(), is( "product" ) );
 
-		URI uri2 = URI.create( "http://xeomar.com/download/xenon/product/card?version=latest&refresh=false" );
-		assertThat( uri2.getScheme(), is( "http" ) );
-		assertThat( uri2.getAuthority(), is( "xeomar.com" ) );
-		assertThat( uri2.getPath(), is( "/download/xenon/product/card" ) );
-		assertThat( uri2.getQuery(), is( "version=latest&refresh=false" ) );
-		assertThat( uri2.getFragment(), is( nullValue() ) );
-		assertThat( uri2.getSchemeSpecificPart(), is( "//xeomar.com/download/xenon/product/card?version=latest&refresh=false" ) );
+		uri = URI.create( "http://xeomar.com/download/xenon/product/card?version=latest&refresh=false" );
+		assertThat( uri.isOpaque(), is( false ) );
+		assertThat( uri.isAbsolute(), is( true ) );
+		assertThat( uri.getScheme(), is( "http" ) );
+		assertThat( uri.getUserInfo(), is( nullValue() ) );
+		assertThat( uri.getHost(), is( "xeomar.com" ) );
+		assertThat( uri.getAuthority(), is( "xeomar.com" ) );
+		assertThat( uri.getPath(), is( "/download/xenon/product/card" ) );
+		assertThat( uri.getQuery(), is( "version=latest&refresh=false" ) );
+		assertThat( uri.getFragment(), is( nullValue() ) );
+		assertThat( uri.getSchemeSpecificPart(), is( "//xeomar.com/download/xenon/product/card?version=latest&refresh=false" ) );
+
+		uri = URI.create( "ssh://xeo@xeomar.com/tmp");
+		assertThat( uri.isOpaque(), is( false ) );
+		assertThat( uri.isAbsolute(), is( true ) );
+		assertThat( uri.getScheme(), is( "ssh" ) );
+		assertThat( uri.getUserInfo(), is( "xeo" ) );
+		assertThat( uri.getHost(), is( "xeomar.com" ) );
+		assertThat( uri.getAuthority(), is( "xeo@xeomar.com" ) );
+		assertThat( uri.getPath(), is( "/tmp" ) );
+		assertThat( uri.getQuery(), is( nullValue()) );
+		assertThat( uri.getFragment(), is( nullValue() ) );
+		assertThat( uri.getSchemeSpecificPart(), is( "//xeo@xeomar.com/tmp" ) );
+
+		URI a = URI.create( "program:about");
+		URI b = URI.create( "program:about#detail");
+		assertThat( a.compareTo( b ), is( lessThan( 0 ) ));
 	}
 
 	@Test
