@@ -124,20 +124,59 @@ public final class UriUtil {
 		return parameters;
 	}
 
-	public List<String> getParts( URI uri ) {
+	public static URI cleanUri( URI uri ) {
+		if( uri == null ) return null;
+
+		// Return a URI without query or fragment data
+		try {
+			if( uri.isOpaque() ) {
+				return new URI( uri.getScheme(), uri.getSchemeSpecificPart(), null );
+			} else {
+				return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), null, null );
+			}
+		} catch( URISyntaxException exception ) {
+			// Intentionally ignore exception - should never happen
+			exception.printStackTrace( System.err );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get a match score between two URIs. The lower the score, the better the
+	 * match. A score of 0 is an exact match.
+	 *
+	 * @param a A URI to compare
+	 * @param b A URI to compare
+	 * @return A match score with 0 being an exact match and higher number a worse match
+	 */
+	public static int getMatchScore( URI a, URI b ) {
+		List<String> partsA = getParts( a );
+		List<String> partsB = getParts( b );
+
+		int min = Math.min( partsA.size(), partsB.size() );
+		int max = Math.max( partsA.size(), partsB.size() );
+
+		int index = 0;
+		for( ; index < min; index++ ) {
+			if( !Objects.equals( partsA.get( index ), partsB.get( index ) ) ) return max - index;
+		}
+
+		return max - index;
+	}
+
+	static List<String> getParts( URI uri ) {
 		List<String> parts = new ArrayList<>();
 
 		if( uri.getScheme() != null ) parts.add( uri.getScheme() );
 		if( uri.isOpaque() ) {
 			if( uri.getSchemeSpecificPart() != null ) parts.add( uri.getSchemeSpecificPart() );
-			if( uri.getFragment() != null ) parts.add( uri.getFragment() );
 		} else {
 			if( uri.getUserInfo() != null ) parts.add( uri.getUserInfo() );
 			if( uri.getHost() != null ) parts.add( uri.getHost() );
-			// TODO Parse the path into parts also
-			if( uri.getPath() != null ) parts.add( uri.getPath() );
-			// NEXT
+			if( uri.getPath() != null ) parts.addAll( Arrays.asList( uri.getPath().split( "/",-1 ) ) );
 		}
+		if( uri.getFragment() != null ) parts.add( uri.getFragment() );
 
 		return parts;
 	}
