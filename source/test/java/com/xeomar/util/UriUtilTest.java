@@ -27,7 +27,7 @@ public class UriUtilTest {
 		assertThat( uri.getFragment(), is( "updates" ) );
 		assertThat( uri.getSchemeSpecificPart(), is( "product" ) );
 
-		uri = URI.create( "http://xeomar.com/download/xenon/product/card?version=latest&refresh=false" );
+		uri = URI.create( "http://xeomar.com/download/xenon/product/card?version=latest&refresh=false#name" );
 		assertThat( uri.isOpaque(), is( false ) );
 		assertThat( uri.isAbsolute(), is( true ) );
 		assertThat( uri.getScheme(), is( "http" ) );
@@ -36,7 +36,7 @@ public class UriUtilTest {
 		assertThat( uri.getAuthority(), is( "xeomar.com" ) );
 		assertThat( uri.getPath(), is( "/download/xenon/product/card" ) );
 		assertThat( uri.getQuery(), is( "version=latest&refresh=false" ) );
-		assertThat( uri.getFragment(), is( nullValue() ) );
+		assertThat( uri.getFragment(), is( "name" ) );
 		assertThat( uri.getSchemeSpecificPart(), is( "//xeomar.com/download/xenon/product/card?version=latest&refresh=false" ) );
 
 		uri = URI.create( "ssh://xeo@xeomar.com/tmp");

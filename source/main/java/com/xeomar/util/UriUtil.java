@@ -7,10 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public final class UriUtil {
 
@@ -125,6 +122,24 @@ public final class UriUtil {
 		}
 
 		return parameters;
+	}
+
+	public List<String> getParts( URI uri ) {
+		List<String> parts = new ArrayList<>();
+
+		if( uri.getScheme() != null ) parts.add( uri.getScheme() );
+		if( uri.isOpaque() ) {
+			if( uri.getSchemeSpecificPart() != null ) parts.add( uri.getSchemeSpecificPart() );
+			if( uri.getFragment() != null ) parts.add( uri.getFragment() );
+		} else {
+			if( uri.getUserInfo() != null ) parts.add( uri.getUserInfo() );
+			if( uri.getHost() != null ) parts.add( uri.getHost() );
+			// TODO Parse the path into parts also
+			if( uri.getPath() != null ) parts.add( uri.getPath() );
+			// NEXT
+		}
+
+		return parts;
 	}
 
 }
