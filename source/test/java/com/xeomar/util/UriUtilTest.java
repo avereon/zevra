@@ -6,9 +6,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class UriUtilTest {
@@ -39,7 +37,7 @@ public class UriUtilTest {
 		assertThat( uri.getFragment(), is( "name" ) );
 		assertThat( uri.getSchemeSpecificPart(), is( "//xeomar.com/download/xenon/product/card?version=latest&refresh=false" ) );
 
-		uri = URI.create( "ssh://xeo@xeomar.com/tmp");
+		uri = URI.create( "ssh://xeo@xeomar.com/tmp" );
 		assertThat( uri.isOpaque(), is( false ) );
 		assertThat( uri.isAbsolute(), is( true ) );
 		assertThat( uri.getScheme(), is( "ssh" ) );
@@ -47,13 +45,13 @@ public class UriUtilTest {
 		assertThat( uri.getHost(), is( "xeomar.com" ) );
 		assertThat( uri.getAuthority(), is( "xeo@xeomar.com" ) );
 		assertThat( uri.getPath(), is( "/tmp" ) );
-		assertThat( uri.getQuery(), is( nullValue()) );
+		assertThat( uri.getQuery(), is( nullValue() ) );
 		assertThat( uri.getFragment(), is( nullValue() ) );
 		assertThat( uri.getSchemeSpecificPart(), is( "//xeo@xeomar.com/tmp" ) );
 
-		URI a = URI.create( "program:about");
-		URI b = URI.create( "program:about#detail");
-		assertThat( a.compareTo( b ), is( lessThan( 0 ) ));
+		URI a = URI.create( "program:about" );
+		URI b = URI.create( "program:about#detail" );
+		assertThat( a.compareTo( b ), is( lessThan( 0 ) ) );
 	}
 
 	@Test
@@ -129,6 +127,143 @@ public class UriUtilTest {
 		parameters = UriUtil.parseQuery( "attr1=value1&attr2=value2" );
 		assertThat( parameters.get( "attr1" ), is( "value1" ) );
 		assertThat( parameters.get( "attr2" ), is( "value2" ) );
+	}
+
+	@Test
+	public void testCleanUri() {
+		assertThat( UriUtil.cleanUri( URI.create( "program:product#update" ) ), is( URI.create( "program:product" ) ) );
+		assertThat( UriUtil.cleanUri( URI.create( "https://absolute/path?query" ) ), is( URI.create( "https://absolute/path" ) ) );
+		assertThat( UriUtil.cleanUri( URI.create( "/absolute/path?query#fragment" ) ), is( URI.create( "/absolute/path" ) ) );
+		assertThat( UriUtil.cleanUri( URI.create( "relative/path?query#fragment" ) ), is( URI.create( "relative/path" ) ) );
+	}
+
+	@Test
+	public void testGetUriPartsWithOpaqueUri() {
+		assertThat( UriUtil.getParts( URI.create( "program:about#details" ) ), contains( "program", "about", "details" ) );
+	}
+
+	@Test
+	public void testGetUriPartsWithHierarchicalUri() {
+		assertThat( UriUtil.getParts( URI.create( "http://xeomar.com/download/razor/product/card#latest" ) ), contains( "http", "xeomar.com", "", "download", "razor", "product", "card", "latest" ) );
+		assertThat( UriUtil.getParts( URI.create( "/" ) ).size(), is( 2 ) );
+		assertThat( UriUtil.getParts( URI.create( "" ) ), contains( "" ) );
+	}
+
+	@Test
+	public void testGetUriPartsWithRelativeUri() {
+		assertThat( UriUtil.getParts( URI.create( "/download/razor/product" ) ), contains( "", "download", "razor", "product" ) );
+	}
+
+	@Test
+	public void testGetUriMatchScoreWithOpaqueUri() {
+		URI a = URI.create( "program:about" );
+		URI b = URI.create( "program:about#details" );
+		URI c = URI.create( "program:settings" );
+		URI d = URI.create( "program:settings#general" );
+
+		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
+
+		assertThat( UriUtil.getMatchScore( a, b ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( b, a ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( a, c ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( c, a ), is( 1 ) );
+
+		assertThat( UriUtil.getMatchScore( a, d ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( d, a ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( b, d ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( d, b ), is( 2 ) );
+	}
+
+	@Test
+	public void testGetUriMatchScoreWithHierarchicalUri() {
+		URI a = URI.create( "" );
+		URI b = URI.create( "/" );
+		URI c = URI.create( "ssh://user@sshhost.com" );
+		URI d = URI.create( "http://xeomar.com/download/xenon" );
+		URI e = URI.create( "http://xeomar.com/download/xenon/product/card" );
+		URI f = URI.create( "http://xeomar.com/download/xenon/product/card#latest" );
+
+		// Same matches
+		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( e, e ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( f, f ), is( 0 ) );
+
+		// Empty and root checks
+		assertThat( UriUtil.getMatchScore( a, c ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( a, d ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( a, e ), is( 7 ) );
+		assertThat( UriUtil.getMatchScore( a, f ), is( 8 ) );
+
+		assertThat( UriUtil.getMatchScore( b, c ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( b, d ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( b, e ), is( 7 ) );
+		assertThat( UriUtil.getMatchScore( b, f ), is( 8 ) );
+
+		// Different scheme
+		assertThat( UriUtil.getMatchScore( c, d ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( d, c ), is( 5 ) );
+
+		// Different path
+		assertThat( UriUtil.getMatchScore( d, e ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( d, f ), is( 3 ) );
+		assertThat( UriUtil.getMatchScore( e, f ), is( 1 ) );
+	}
+
+	@Test
+	public void testGetUriMatchScoreWithPathUri() {
+		URI a = URI.create( "" );
+		URI b = URI.create( "/" );
+		URI c = URI.create( "/root" );
+		URI d = URI.create( "/root/of/the/tree" );
+		URI e = URI.create( "root" );
+		URI f = URI.create( "root/of/the/tree" );
+		URI g = URI.create( "a/branch" );
+		URI h = URI.create( "a/branch/of/the/tree" );
+
+		// Same matches
+		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( e, e ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( f, f ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( g, g ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( h, h ), is( 0 ) );
+
+		// Empty and root checks
+		assertThat( UriUtil.getMatchScore( a, b ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( a, c ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( a, d ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( a, f ), is( 4 ) );
+
+		assertThat( UriUtil.getMatchScore( b, a ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( b, c ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( b, d ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( b, f ), is( 4 ) );
+
+		// Absolute path checks
+		assertThat( UriUtil.getMatchScore( c, d ), is( 3 ) );
+		assertThat( UriUtil.getMatchScore( c, e ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( c, f ), is( 4 ) );
+
+		assertThat( UriUtil.getMatchScore( d, c ), is( 3 ) );
+		assertThat( UriUtil.getMatchScore( d, e ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( d, f ), is( 5 ) );
+
+		// Relative path checks
+		assertThat( UriUtil.getMatchScore( e, f ), is( 3 ) );
+		assertThat( UriUtil.getMatchScore( e, g ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( e, h ), is( 5 ) );
+
+		assertThat( UriUtil.getMatchScore( f, e ), is( 3 ) );
+		assertThat( UriUtil.getMatchScore( f, g ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( f, h ), is( 5 ) );
 	}
 
 }
