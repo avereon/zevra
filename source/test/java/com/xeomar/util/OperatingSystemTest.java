@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -265,19 +266,19 @@ public class OperatingSystemTest {
 	@Test
 	public void testGetUserProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder().toString(), is( WINDOWS_USER_DATA ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( WINDOWS_USER_DATA ) ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder().toString(), is( UNIX_USER_DATA ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( UNIX_USER_DATA ) ) );
 	}
 
 	@Test
 	public void testGetSharedProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder().toString(), is(  WINDOWS_SHARED_DATA ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( WINDOWS_SHARED_DATA ) ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder().toString(), is( UNIX_SHARED_DATA ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( UNIX_SHARED_DATA ) ) );
 	}
 
 }
