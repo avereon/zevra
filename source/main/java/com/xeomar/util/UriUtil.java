@@ -125,8 +125,6 @@ public final class UriUtil {
 	}
 
 	public static URI cleanUri( URI uri ) {
-		if( uri == null ) return null;
-
 		// Return a URI without query or fragment data
 		try {
 			if( uri.isOpaque() ) {
@@ -138,7 +136,6 @@ public final class UriUtil {
 			// Intentionally ignore exception - should never happen
 			exception.printStackTrace( System.err );
 		}
-
 		return null;
 	}
 
