@@ -124,23 +124,6 @@ public final class UriUtil {
 		return parameters;
 	}
 
-	public static URI cleanUri( URI uri ) {
-		if( uri == null ) return null;
-
-		// Return a URI without query or fragment data
-		try {
-			if( uri.isOpaque() ) {
-				return new URI( uri.getScheme(), uri.getSchemeSpecificPart(), null );
-			} else {
-				return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), null, null );
-			}
-		} catch( URISyntaxException exception ) {
-			// Intentionally ignore exception - should never happen
-			exception.printStackTrace( System.err );
-		}
-		return null;
-	}
-
 	/**
 	 * Get a match score between two URIs. The lower the score, the better the
 	 * match. A score of 0 is an exact match.

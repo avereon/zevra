@@ -17,10 +17,11 @@ public class ProductEvent extends EventObject {
 		super( source );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public void fire( Set<? extends ProductEventListener> listeners ) {
 		for( ProductEventListener listener : new HashSet<>( listeners ) ) {
 			try {
-				listener.eventOccurred( this );
+				listener.handleEvent( this );
 			} catch( Throwable throwable ) {
 				log.error( "Error dispatching event: " + toString(), throwable );
 			}

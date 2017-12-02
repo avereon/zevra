@@ -130,14 +130,6 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testCleanUri() {
-		assertThat( UriUtil.cleanUri( URI.create( "program:product#update" ) ), is( URI.create( "program:product" ) ) );
-		assertThat( UriUtil.cleanUri( URI.create( "https://absolute/path?query" ) ), is( URI.create( "https://absolute/path" ) ) );
-		assertThat( UriUtil.cleanUri( URI.create( "/absolute/path?query#fragment" ) ), is( URI.create( "/absolute/path" ) ) );
-		assertThat( UriUtil.cleanUri( URI.create( "relative/path?query#fragment" ) ), is( URI.create( "relative/path" ) ) );
-	}
-
-	@Test
 	public void testGetUriPartsWithOpaqueUri() {
 		assertThat( UriUtil.getParts( URI.create( "program:about#details" ) ), contains( "program", "about", "details" ) );
 	}

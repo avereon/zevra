@@ -9,7 +9,7 @@ class SettingsEventWatcher implements SettingsListener {
 	private List<SettingsEvent> events = new CopyOnWriteArrayList<>();
 
 	@Override
-	public void eventOccurred( SettingsEvent event ) {
+	public void handleEvent( SettingsEvent event ) {
 		events.add( event );
 	}
 
