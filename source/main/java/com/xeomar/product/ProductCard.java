@@ -35,7 +35,7 @@ public class ProductCard {
 
 	private String timestamp;
 
-	private String icon;
+	private String iconUri;
 
 	private String name;
 
@@ -85,7 +85,7 @@ public class ProductCard {
 		this.version = values.getProperty( "version" );
 		this.timestamp = values.getProperty( "timestamp" );
 
-		this.icon = values.getProperty( "icon" );
+		this.iconUri = values.getProperty( "icon" );
 		this.name = values.getProperty( "name" );
 		this.provider = values.getProperty( "provider" );
 		this.inception = Integer.parseInt( values.getProperty( "inception" ) );
@@ -118,7 +118,7 @@ public class ProductCard {
 		this.version = (String)values.get( "version" );
 		this.timestamp = (String)values.get( "timestamp" );
 
-		this.icon = (String)values.get( "icon" );
+		this.iconUri = (String)values.get( "icon" );
 		this.name = (String)values.get( "name" );
 		this.provider = (String)values.get( "provider" );
 		this.inception = (Integer)values.get( "inception" );
@@ -180,12 +180,12 @@ public class ProductCard {
 		return Release.create( version, timestamp );
 	}
 
-	public String getIcon() {
-		return icon;
+	public String getIconUri() {
+		return iconUri;
 	}
 
-	public void setIcon( String icon ) {
-		this.icon = icon;
+	public void setIconUri( String iconUri ) {
+		this.iconUri = iconUri;
 	}
 
 	public String getName() {
