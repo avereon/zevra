@@ -38,12 +38,12 @@
 	</repositories>
 
 	<properties>
-		<!-- The Xenon website still has to run on Java 8 -->
+		<!-- The Xeomar website still has to run on Java 8 -->
 		<java.version>8</java.version>
 		<project.timestamp>${maven.build.timestamp}</project.timestamp>
 		<product-name>${project.name}</product-name>
 		<product-identifier>razor</product-identifier>
-		<slf4j.version>1.8.0-alpha2</slf4j.version>
+		<slf4j.version>1.8.0-beta0</slf4j.version>
 	</properties>
 
 	<dependencies>
