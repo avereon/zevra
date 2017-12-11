@@ -8,19 +8,19 @@ public class ProductCardComparator implements Comparator<ProductCard> {
 		KEY, NAME, GROUP, ARTIFACT, RELEASE
 	}
 
-	private Product service;
+	private Product product;
 
 	private Field field;
 
-	public ProductCardComparator( Product service, Field field ) {
-		this.service = service;
+	public ProductCardComparator( Product product, Field field ) {
+		this.product = product;
 		this.field = field;
 	}
 
 	@Override
 	public int compare( ProductCard card1, ProductCard card2 ) {
-		if( card1.equals( service.getCard() ) ) return -1;
-		if( card2.equals( service.getCard() ) ) return 1;
+		if( card1.equals( product.getCard() ) ) return -1;
+		if( card2.equals( product.getCard() ) ) return 1;
 
 		switch( field ) {
 			case KEY: {
