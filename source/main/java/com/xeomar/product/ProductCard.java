@@ -35,6 +35,8 @@ public class ProductCard {
 
 	private String timestamp;
 
+	private Release release;
+
 	private String iconUri;
 
 	private String name;
@@ -84,6 +86,7 @@ public class ProductCard {
 		this.artifact = values.getProperty( "artifact" );
 		this.version = values.getProperty( "version" );
 		this.timestamp = values.getProperty( "timestamp" );
+		this.release = Release.create( this.version, this.timestamp );
 
 		this.iconUri = values.getProperty( "icon" );
 		this.name = values.getProperty( "name" );
@@ -177,7 +180,7 @@ public class ProductCard {
 	}
 
 	public Release getRelease() {
-		return Release.create( version, timestamp );
+		return release;
 	}
 
 	public String getIconUri() {
@@ -346,6 +349,34 @@ public class ProductCard {
 		//		}
 
 		return resources.toArray( new String[ resources.size() ] );
+	}
+
+	@Override
+	public boolean equals( Object object ) {
+		if( !( object instanceof ProductCard ) ) return false;
+		ProductCard that = (ProductCard)object;
+		return this.group.equals( that.group ) && this.artifact.equals( that.artifact );
+	}
+
+	public boolean deepEquals( Object object ) {
+		if( !( object instanceof ProductCard ) ) return false;
+		ProductCard that = (ProductCard)object;
+
+		boolean equals = true;
+		equals = equals && this.group.equals( that.group );
+		equals = equals && this.artifact.equals( that.artifact );
+		equals = equals && this.release.equals( that.release );
+		equals = equals && this.iconUri.equals( that.iconUri );
+		equals = equals && this.name.equals( that.name );
+		equals = equals && this.provider.equals( that.provider );
+		equals = equals && this.inception == that.inception;
+		equals = equals && this.summary.equals( that.summary );
+		equals = equals && this.description.equals( that.description );
+		equals = equals && this.copyrightSummary.equals( that.copyrightSummary );
+		equals = equals && this.licenseSummary.equals( that.licenseSummary );
+		equals = equals && this.cardUri.equals( that.cardUri );
+
+		return equals;
 	}
 
 }
