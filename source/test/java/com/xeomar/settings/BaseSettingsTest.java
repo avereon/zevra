@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.*;
 
 public abstract class BaseSettingsTest {
 
-	protected static final String SETTINGS_NAME = "SettingsTest";
+	protected static final String SETTINGS_NAME = "XeomarSettingsTest";
 
 	protected Settings settings;
 

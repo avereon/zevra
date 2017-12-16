@@ -5,7 +5,7 @@ import org.junit.Before;
 public class MapSettingsTest extends BaseSettingsTest {
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		settings = new MapSettings();
 	}
 

@@ -4,6 +4,7 @@ import com.xeomar.util.PathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -11,15 +12,37 @@ public abstract class AbstractSettings implements Settings {
 
 	private static final Logger log = LoggerFactory.getLogger( AbstractSettings.class );
 
+	// The settings node values
+	private Map<String, String> values;
+
+	// The settings defaults.
+	private Map<String, String> defaultValues;
+
 	private Set<SettingsListener> listeners;
 
 	protected AbstractSettings() {
 		this.listeners = new CopyOnWriteArraySet<>();
 	}
 
+	protected abstract String getImpl( String key );
+
 	@Override
 	public Settings getNode( String parent, String name ) {
 		return getNode( PathUtil.resolve( parent, name ) );
+	}
+
+	@Override
+	public String get( String key ) {
+		return get( key, null);
+	}
+
+	@Override
+	public String get( String key, Object defaultValue ) {
+		String value = getImpl( key );
+		Map<String, String> defaultValues = getDefaultValues();
+		if( value == null && defaultValues != null ) value = defaultValues.get( key );
+		if( value == null && defaultValue != null) value = defaultValue.toString();
+		return value;
 	}
 
 	@Override

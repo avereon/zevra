@@ -101,17 +101,9 @@ public class MapSettings extends AbstractSettings {
 	}
 
 	@Override
-	public String get( String key ) {
-		return get( key, null );
-	}
-
-	@Override
-	public String get( String key, Object defaultValue ) {
+	protected String getImpl( String key ) {
 		Object object = values.get( key );
-		String value = object == null ? null : object.toString();
-		if( value == null && defaultValues != null ) value = defaultValues.get( key );
-		if( value == null ) value = defaultValue == null ? null : defaultValue.toString();
-		return value;
+		return object == null ? null : object.toString();
 	}
 
 	@Override

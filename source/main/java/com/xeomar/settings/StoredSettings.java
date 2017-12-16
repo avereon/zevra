@@ -157,24 +157,16 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	@Deprecated
-	public String get( String key ) {
-		return get( key, null );
+	protected String getImpl( String key ) {
+		return values.getProperty( key );
 	}
 
 	@Override
-	@Deprecated
-	public String get( String key, Object defaultValue ) {
-		String value = values.getProperty( key );
-		if( value == null && defaultValues != null ) value = defaultValues.get( key );
-		if( value == null ) value = defaultValue == null ? null : defaultValue.toString();
-		return value;
-	}
-
 	public Map<String, String> getDefaultValues() {
 		return defaultValues;
 	}
 
+	@Override
 	public void setDefaultValues( Map<String, String> settings ) {
 		this.defaultValues = settings;
 	}
