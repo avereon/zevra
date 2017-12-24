@@ -67,6 +67,10 @@ public class ProductCard {
 
 	private List<Contributor> contributors;
 
+	private boolean enabled;
+
+	private boolean removable;
+
 	private Map<String, String> resources;
 
 	public ProductCard() {
@@ -301,6 +305,22 @@ public class ProductCard {
 
 	public void setContributors( List<Contributor> contributors ) {
 		this.contributors = contributors;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled( boolean enabled ) {
+		this.enabled = enabled;
+	}
+
+	public boolean isRemovable() {
+		return removable;
+	}
+
+	public void setRemovable( boolean removable ) {
+		this.removable = removable;
 	}
 
 	public String[] getResourceUris( String type ) {
