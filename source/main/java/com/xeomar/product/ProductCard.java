@@ -124,6 +124,7 @@ public class ProductCard {
 		this.artifact = (String)values.get( "artifact" );
 		this.version = (String)values.get( "version" );
 		this.timestamp = (String)values.get( "timestamp" );
+		this.release = Release.create( this.version, this.timestamp );
 
 		this.iconUri = (String)values.get( "icon" );
 		this.name = (String)values.get( "name" );
@@ -369,6 +370,11 @@ public class ProductCard {
 		//		}
 
 		return resources.toArray( new String[ resources.size() ] );
+	}
+
+	@Override
+	public String toString() {
+		return getProductKey();
 	}
 
 	@Override
