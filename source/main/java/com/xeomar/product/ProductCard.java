@@ -10,7 +10,9 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -105,15 +107,15 @@ public class ProductCard {
 		updateKey();
 	}
 
-	public void loadCard() throws IOException  {
+	public void loadCard() throws IOException {
 		loadCard( getClass().getResourceAsStream( CARD ) );
 	}
 
 	public void loadCard( InputStream input ) throws IOException {
-		loadCard( input , null );
+		loadCard( input, null );
 	}
 
-		@SuppressWarnings( "unchecked" )
+	@SuppressWarnings( "unchecked" )
 	public void loadCard( InputStream input, URI source ) throws IOException {
 		Map<String, Object> values;
 		try( InputStream stream = input ) {
@@ -256,12 +258,20 @@ public class ProductCard {
 		return cardUri;
 	}
 
+	public URI getCardUri( String channel ) throws URISyntaxException {
+		return formatUri( getCardUri(), channel );
+	}
+
 	public void setCardUri( String cardUri ) {
 		this.cardUri = cardUri;
 	}
 
 	public String getPackUri() {
 		return packUri;
+	}
+
+	public URI getPackUri( String channel ) throws URISyntaxException {
+		return formatUri( getPackUri(), channel );
 	}
 
 	public void setPackUri( String packUri ) {
@@ -324,8 +334,8 @@ public class ProductCard {
 		this.removable = removable;
 	}
 
-	public String[] getResourceUris( String type ) {
-		return getPlatformResourceUris( type );
+	public String[] getResourceUris( String channel ) {
+		return getPlatformResourceUris( channel );
 	}
 
 	private void updateKey() {
@@ -338,17 +348,23 @@ public class ProductCard {
 		productKey = group + "." + artifact;
 	}
 
-	private String[] getPlatformResourceUris( String path ) {
+	private URI formatUri( String uriString, String channel ) throws URISyntaxException {
+		return new URI( MessageFormat.format( uriString, channel ) );
+	}
+
+	private String[] getPlatformResourceUris( String channel ) {
 		String os = System.getProperty( "os.name" );
 		String arch = System.getProperty( "os.arch" );
+
+		Set<String> resources = new HashSet<>();
+
+		// Add the product pack URI
+		//resources.add( getPackUri( channel ) );
 
 		// This code was originally intended to resolve os/architecture specific
 		// resources needed for a product. For the moment, this feature is not
 		// needed and this method simply returns an empty set.
-
-		String[] uris;
-		Set<String> resources = new HashSet<>();
-
+		//
 		//		path += "/@uri";
 		//
 		//		// Determine the resources.
@@ -379,13 +395,13 @@ public class ProductCard {
 
 	@Override
 	public boolean equals( Object object ) {
-		if( !( object instanceof ProductCard ) ) return false;
+		if( !(object instanceof ProductCard) ) return false;
 		ProductCard that = (ProductCard)object;
 		return this.group.equals( that.group ) && this.artifact.equals( that.artifact );
 	}
 
 	public boolean deepEquals( Object object ) {
-		if( !( object instanceof ProductCard ) ) return false;
+		if( !(object instanceof ProductCard) ) return false;
 		ProductCard that = (ProductCard)object;
 
 		boolean equals = true;
