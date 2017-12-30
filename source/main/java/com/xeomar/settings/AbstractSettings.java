@@ -4,6 +4,7 @@ import com.xeomar.util.PathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -31,9 +32,19 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public void set( String key, Object value ) {
-		// TODO Handle storing collections differently
-		String oldValue = getValue( key );
-		setValue( key, value == null ? null : String.valueOf( value ) );
+		String oldValue;
+
+		if( value instanceof Collection ) {
+			// NEXT Handle storing collections differently
+			// Find a way to store the collection as JSON
+			oldValue = null;
+			//oldValue = getValues( key );
+			//setValues( key, value );
+		} else {
+			oldValue= getValue( key );
+			setValue( key, value == null ? null : String.valueOf( value ) );
+		}
+
 		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, getPath(), key, oldValue, value ).fire( getListeners() );
 	}
 
