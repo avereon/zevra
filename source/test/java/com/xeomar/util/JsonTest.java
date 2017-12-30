@@ -1,5 +1,8 @@
 package com.xeomar.util;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,12 +13,12 @@ import java.util.Date;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class YmlTest {
+public class JsonTest {
 
 	@Test
 	public void testLoad() throws IOException {
-		InputStream input = getClass().getResourceAsStream( "/yml.text.yml" );
-		Item item = YmlUtil.load( input, Item.class );
+		InputStream input = getClass().getResourceAsStream( "/json.text.json" );
+		JsonTest.Item item = new ObjectMapper( ).readerFor( new TypeReference<JsonTest.Item>() {} ).readValue( input );
 
 		assertThat( item.getName(), is( "Xeomar" ) );
 		assertThat( item.getTimestamp().getTime(), is( 1296848535284L ) );
@@ -26,6 +29,7 @@ public class YmlTest {
 
 		private String name;
 
+		@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
 		private Date timestamp;
 
 		private URI site;
@@ -54,5 +58,6 @@ public class YmlTest {
 			this.site = site;
 		}
 	}
+
 
 }
