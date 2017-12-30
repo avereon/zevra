@@ -141,15 +141,12 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	public void set( String key, Object value ) {
-		String oldValue = values.getProperty( key );
-		String newValue = value == null ? null : String.valueOf( value );
+	protected void setValue( String key, String value ) {
 		if( value == null ) {
 			values.remove( key );
 		} else {
-			values.setProperty( key, newValue );
+			values.setProperty( key, value );
 		}
-		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, getPath(), key, oldValue, newValue ).fire( getListeners() );
 
 		lastValueTime.set( System.currentTimeMillis() );
 		if( lastDirtyTime.get() <= lastStoreTime.get() ) lastDirtyTime.set( lastValueTime.get() );
@@ -157,7 +154,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	protected String getImpl( String key ) {
+	protected String getValue( String key ) {
 		return values.getProperty( key );
 	}
 

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -24,7 +25,17 @@ public abstract class AbstractSettings implements Settings {
 		this.listeners = new CopyOnWriteArraySet<>();
 	}
 
-	protected abstract String getImpl( String key );
+	protected abstract String getValue( String key );
+
+	protected abstract void setValue( String key, String value );
+
+	@Override
+	public void set( String key, Object value ) {
+		// TODO Handle storing collections differently
+		String oldValue = getValue( key );
+		setValue( key, value == null ? null : String.valueOf( value ) );
+		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, getPath(), key, oldValue, value ).fire( getListeners() );
+	}
 
 	@Override
 	public Settings getNode( String parent, String name ) {
@@ -32,16 +43,16 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public String get( String key ) {
-		return get( key, null);
+	public String getString( String key ) {
+		return getString( key, null );
 	}
 
 	@Override
-	public String get( String key, Object defaultValue ) {
-		String value = getImpl( key );
+	public String getString( String key, String defaultValue ) {
+		String value = getValue( key );
 		Map<String, String> defaultValues = getDefaultValues();
 		if( value == null && defaultValues != null ) value = defaultValues.get( key );
-		if( value == null && defaultValue != null) value = defaultValue.toString();
+		if( value == null && defaultValue != null ) value = defaultValue.toString();
 		return value;
 	}
 
@@ -52,13 +63,9 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Boolean getBoolean( String key, Boolean defaultValue ) {
-		String value = get( key );
+		String value = getString( key );
 		if( value == null ) return defaultValue;
-		try {
-			return Boolean.parseBoolean( value );
-		} catch( NumberFormatException exception ) {
-			return null;
-		}
+		return Boolean.parseBoolean( value );
 	}
 
 	@Override
@@ -68,7 +75,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Integer getInteger( String key, Integer defaultValue ) {
-		String value = get( key );
+		String value = getString( key );
 		if( value == null ) return defaultValue;
 		try {
 			return Integer.parseInt( value );
@@ -84,7 +91,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Long getLong( String key, Long defaultValue ) {
-		String value = get( key );
+		String value = getString( key );
 		if( value == null ) return defaultValue;
 		try {
 			return Long.parseLong( value );
@@ -100,7 +107,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Float getFloat( String key, Float defaultValue ) {
-		String value = get( key );
+		String value = getString( key );
 		if( value == null ) return defaultValue;
 		try {
 			return Float.parseFloat( value );
@@ -116,7 +123,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Double getDouble( String key, Double defaultValue ) {
-		String value = get( key );
+		String value = getString( key );
 		if( value == null ) return defaultValue;
 		try {
 			return Double.parseDouble( value );

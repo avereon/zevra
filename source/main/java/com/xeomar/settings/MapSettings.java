@@ -89,19 +89,16 @@ public class MapSettings extends AbstractSettings {
 	}
 
 	@Override
-	public void set( String key, Object value ) {
-		String oldValue = values.get( key );
-		String newValue = value == null ? null : String.valueOf( value );
-		if( newValue == null ) {
+	protected void setValue( String key, String value ) {
+		if( value == null ) {
 			values.remove( key );
 		} else {
-			values.put( key, newValue );
+			values.put( key, value );
 		}
-		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, path, key, oldValue, newValue ).fire( getListeners() );
 	}
 
 	@Override
-	protected String getImpl( String key ) {
+	protected String getValue( String key ) {
 		Object object = values.get( key );
 		return object == null ? null : object.toString();
 	}

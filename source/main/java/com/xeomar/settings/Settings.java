@@ -87,7 +87,7 @@ public interface Settings {
 	 * @param key The value key
 	 * @return The value as a string
 	 */
-	String get( String key );
+	String getString( String key );
 
 	/**
 	 * Get a value from the settings object.
@@ -96,7 +96,7 @@ public interface Settings {
 	 * @param defaultValue The default value
 	 * @return The value as a string or the default value if the value does not already exist
 	 */
-	String get( String key, Object defaultValue );
+	String getString( String key, String defaultValue );
 
 	Boolean getBoolean( String key );
 
@@ -160,7 +160,7 @@ public interface Settings {
 	static void print( Settings settings ) {
 		System.out.println( "settings( " + settings.getPath() + " ) {" );
 		for( String key : settings.getKeys() ) {
-			System.out.println( "  " + key + " = " + settings.get( key ) );
+			System.out.println( "  " + key + " = " + settings.getString( key ) );
 		}
 		System.out.println( "}" );
 	}

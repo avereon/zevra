@@ -16,15 +16,15 @@ public class SettingsEvent extends ProductEvent {
 
 	private String key;
 
-	private String oldValue;
+	private Object oldValue;
 
-	private String newValue;
+	private Object newValue;
 
 	public SettingsEvent( Object source, Type type, String path ) {
 		this( source, type, path, null, null, null );
 	}
 
-	public SettingsEvent( Object source, Type type, String path, String key, String oldValue, String newValue ) {
+	public SettingsEvent( Object source, Type type, String path, String key, Object oldValue, Object newValue ) {
 		super( source );
 		this.type = type;
 		this.path = path;
@@ -45,11 +45,11 @@ public class SettingsEvent extends ProductEvent {
 		return key;
 	}
 
-	public String getOldValue() {
+	public Object getOldValue() {
 		return oldValue;
 	}
 
-	public String getNewValue() {
+	public Object getNewValue() {
 		return newValue;
 	}
 

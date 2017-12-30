@@ -107,16 +107,32 @@ public class ProductCard {
 		updateKey();
 	}
 
-	public void loadCard() throws IOException {
-		loadCard( getClass().getResourceAsStream( CARD ) );
+	public ProductCard loadCard() throws IOException {
+		return loadCard( getClass().getResourceAsStream( CARD ) );
 	}
 
-	public void loadCard( InputStream input ) throws IOException {
-		loadCard( input, null );
+	public ProductCard loadCard( InputStream input ) throws IOException {
+		return loadCard( input, null );
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public void loadCard( InputStream input, URI source ) throws IOException {
+	public ProductCard loadCard( InputStream input, URI source ) throws IOException {
+		return null;
+	}
+
+	@Deprecated
+	public void loadYaml() throws IOException {
+		loadYaml( getClass().getResourceAsStream( CARD ) );
+	}
+
+	@Deprecated
+	public void loadYaml( InputStream input ) throws IOException {
+		loadYaml( input, null );
+	}
+
+	@Deprecated
+	@SuppressWarnings( "unchecked" )
+	public void loadYaml( InputStream input, URI source ) throws IOException {
 		Map<String, Object> values;
 		try( InputStream stream = input ) {
 			values = (Map<String, Object>)new Yaml().load( stream );

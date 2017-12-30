@@ -35,7 +35,7 @@ public abstract class BaseSettingsTest {
 		// Is the settings object viable
 		peer.set( "a", "A" );
 		peer.flush();
-		assertThat( peer.get( "a" ), is( "A" ) );
+		assertThat( peer.getString( "a" ), is( "A" ) );
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public abstract class BaseSettingsTest {
 		// Is the settings object viable
 		grandchildSettings.set( "a", "A" );
 		grandchildSettings.flush();
-		assertThat( grandchildSettings.get( "a" ), is( "A" ) );
+		assertThat( grandchildSettings.getString( "a" ), is( "A" ) );
 	}
 
 	@Test
@@ -91,13 +91,13 @@ public abstract class BaseSettingsTest {
 	public void testSetStringAndGetString() {
 		String key = "key";
 		String value = "value";
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.getString( key ), is( nullValue() ) );
 
 		settings.set( key, value );
-		assertThat( settings.get( key ), is( value ) );
+		assertThat( settings.getString( key ), is( value ) );
 
 		settings.set( key, null );
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.getString( key ), is( nullValue() ) );
 	}
 
 	@Test
@@ -188,26 +188,26 @@ public abstract class BaseSettingsTest {
 		defaultValues.put( key, defaultValue );
 
 		// Start by checking the value is null
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.getString( key ), is( nullValue() ) );
 
 		settings.set( key, value );
-		assertThat( settings.get( key ), is( value ) );
+		assertThat( settings.getString( key ), is( value ) );
 
 		settings.set( key, null );
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.getString( key ), is( nullValue() ) );
 
 		// Test the default settings
 		settings.setDefaultValues( defaultValues );
-		assertThat( settings.get( key ), is( defaultValue ) );
+		assertThat( settings.getString( key ), is( defaultValue ) );
 
 		settings.set( key, value );
-		assertThat( settings.get( key ), is( value ) );
+		assertThat( settings.getString( key ), is( value ) );
 
 		settings.set( key, null );
-		assertThat( settings.get( key ), is( defaultValue ) );
+		assertThat( settings.getString( key ), is( defaultValue ) );
 
 		settings.setDefaultValues( null );
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.getString( key ), is( nullValue() ) );
 	}
 
 	@Test
