@@ -1,5 +1,6 @@
 package com.xeomar.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xeomar.util.Contributor;
@@ -19,7 +20,7 @@ import java.util.*;
 /**
  * This class must load the product "info" very quickly. The full product "card" can load more slowly.
  */
-// TODO Use Lombok when it is supported in Java 9
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard {
 
 	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
@@ -27,6 +28,8 @@ public class ProductCard {
 	private static final String CARD = "/META-INF/product.card";
 
 	private static final String INFO = "/META-INF/product.info";
+
+	// TODO Use Lombok when it is supported in Java 9
 
 	private String productKey;
 
@@ -152,51 +155,51 @@ public class ProductCard {
 		return this;
 	}
 
-//	@Deprecated
-//	public void loadYaml() throws IOException {
-//		loadYaml( getClass().getResourceAsStream( CARD ) );
-//	}
-//
-//	@Deprecated
-//	public void loadYaml( InputStream input ) throws IOException {
-//		loadYaml( input, null );
-//	}
-//
-//	@Deprecated
-//	@SuppressWarnings( "unchecked" )
-//	public void loadYaml( InputStream input, URI source ) throws IOException {
-//		Map<String, Object> values;
-//		try( InputStream stream = input ) {
-//			values = (Map<String, Object>)new Yaml().load( stream );
-//		}
-//
-//		this.group = (String)values.get( "group" );
-//		this.artifact = (String)values.get( "artifact" );
-//		this.version = (String)values.get( "version" );
-//		this.timestamp = (String)values.get( "timestamp" );
-//		this.release = Release.create( this.version, this.timestamp );
-//
-//		this.iconUri = (String)values.get( "icon" );
-//		this.name = (String)values.get( "name" );
-//		this.provider = (String)values.get( "provider" );
-//		this.inception = (Integer)values.get( "inception" );
-//
-//		this.summary = (String)values.get( "summary" );
-//		this.description = (String)values.get( "description" );
-//		this.copyrightSummary = (String)values.get( "copyright" );
-//		this.licenseSummary = (String)values.get( "license" );
-//
-//		this.cardUri = (String)values.get( "card" );
-//		this.packUri = (String)values.get( "pack" );
-//		this.javaVersion = (String)values.get( "java" );
-//
-//		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
-//		this.contributors = (List<Contributor>)values.get( "contributors" );
-//
-//		if( source != null ) this.cardUri = source.toString();
-//
-//		updateKey();
-//	}
+	//	@Deprecated
+	//	public void loadYaml() throws IOException {
+	//		loadYaml( getClass().getResourceAsStream( CARD ) );
+	//	}
+	//
+	//	@Deprecated
+	//	public void loadYaml( InputStream input ) throws IOException {
+	//		loadYaml( input, null );
+	//	}
+	//
+	//	@Deprecated
+	//	@SuppressWarnings( "unchecked" )
+	//	public void loadYaml( InputStream input, URI source ) throws IOException {
+	//		Map<String, Object> values;
+	//		try( InputStream stream = input ) {
+	//			values = (Map<String, Object>)new Yaml().load( stream );
+	//		}
+	//
+	//		this.group = (String)values.get( "group" );
+	//		this.artifact = (String)values.get( "artifact" );
+	//		this.version = (String)values.get( "version" );
+	//		this.timestamp = (String)values.get( "timestamp" );
+	//		this.release = Release.create( this.version, this.timestamp );
+	//
+	//		this.iconUri = (String)values.get( "icon" );
+	//		this.name = (String)values.get( "name" );
+	//		this.provider = (String)values.get( "provider" );
+	//		this.inception = (Integer)values.get( "inception" );
+	//
+	//		this.summary = (String)values.get( "summary" );
+	//		this.description = (String)values.get( "description" );
+	//		this.copyrightSummary = (String)values.get( "copyright" );
+	//		this.licenseSummary = (String)values.get( "license" );
+	//
+	//		this.cardUri = (String)values.get( "card" );
+	//		this.packUri = (String)values.get( "pack" );
+	//		this.javaVersion = (String)values.get( "java" );
+	//
+	//		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
+	//		this.contributors = (List<Contributor>)values.get( "contributors" );
+	//
+	//		if( source != null ) this.cardUri = source.toString();
+	//
+	//		updateKey();
+	//	}
 
 	public String getProductKey() {
 		return productKey;

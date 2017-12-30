@@ -3,7 +3,6 @@ package com.xeomar.settings;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
 
 import java.util.*;
@@ -17,6 +16,7 @@ import static org.junit.Assert.assertThat;
 public class JsonSettingsTest {
 
 	@Test
+	@SuppressWarnings( "unchecked" )
 	public void testStoreBeanMap() throws Exception {
 		// Create the beans
 		MockBean bean1 = new MockBean();
@@ -32,7 +32,6 @@ public class JsonSettingsTest {
 		expectedBeanMap.put( "c", bean3 );
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure( SerializationFeature.WRITE_NULL_MAP_VALUES, false );
 		mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
 
 		String store = mapper.writeValueAsString( expectedBeanMap );
@@ -61,7 +60,6 @@ public class JsonSettingsTest {
 		expectedBeanList.add( bean3 );
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure( SerializationFeature.WRITE_NULL_MAP_VALUES, false );
 		mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
 
 		String store = mapper.writeValueAsString( expectedBeanList );
@@ -90,7 +88,6 @@ public class JsonSettingsTest {
 		expectedBeanSet.add( bean3 );
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure( SerializationFeature.WRITE_NULL_MAP_VALUES, false );
 		mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
 
 		String store = mapper.writeValueAsString( expectedBeanSet );

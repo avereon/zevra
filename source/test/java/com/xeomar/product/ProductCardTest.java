@@ -7,6 +7,7 @@ import com.xeomar.util.Maintainer;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +120,13 @@ public class ProductCardTest {
 		assertThat( reader.readLine(), is( "  \"removable\" : false" ) );
 		assertThat( reader.readLine(), is( "}" ) );
 		assertThat( reader.readLine(), is( nullValue() ) );
+	}
 
+	@Test
+	public void testIgnoreMissingAndUnknownProperties() throws Exception {
+		String state = "{\"name\" : \"Razor\", \"extra\" : \"unknown\"}";
+		ProductCard card = ProductCard.loadCard( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ) );
+		assertThat( card.getName(), is( "Razor" ) );
 	}
 
 }
