@@ -5,7 +5,7 @@ import com.xeomar.product.ProductEvent;
 public class SettingsEvent extends ProductEvent {
 
 	public enum Type {
-		UPDATED,
+		CHANGED,
 		LOADED,
 		SAVED
 	}
@@ -16,20 +16,17 @@ public class SettingsEvent extends ProductEvent {
 
 	private String key;
 
-	private Object oldValue;
-
 	private Object newValue;
 
 	public SettingsEvent( Object source, Type type, String path ) {
-		this( source, type, path, null, null, null );
+		this( source, type, path, null, null );
 	}
 
-	public SettingsEvent( Object source, Type type, String path, String key, Object oldValue, Object newValue ) {
+	public SettingsEvent( Object source, Type type, String path, String key, Object newValue ) {
 		super( source );
 		this.type = type;
 		this.path = path;
 		this.key = key;
-		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
@@ -43,10 +40,6 @@ public class SettingsEvent extends ProductEvent {
 
 	public String getKey() {
 		return key;
-	}
-
-	public Object getOldValue() {
-		return oldValue;
 	}
 
 	public Object getNewValue() {
@@ -66,9 +59,7 @@ public class SettingsEvent extends ProductEvent {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( type == Type.UPDATED){
-			builder.append( ":" );
-			builder.append( oldValue );
+		if( type == Type.CHANGED ){
 			builder.append( ":" );
 			builder.append( newValue );
 		}

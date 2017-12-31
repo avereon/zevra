@@ -2,6 +2,7 @@ package com.xeomar.settings;
 
 import com.xeomar.util.FileUtil;
 import com.xeomar.util.LogUtil;
+import com.xeomar.util.PathUtil;
 import org.slf4j.Logger;
 
 import java.io.FileInputStream;
@@ -30,6 +31,8 @@ public class StoredSettings extends AbstractSettings {
 
 	private static final String SETTINGS_EXTENSION = ".properties";
 
+	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
+
 	private static Logger log = LogUtil.get( StoredSettings.class );
 
 	private static Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
@@ -46,8 +49,6 @@ public class StoredSettings extends AbstractSettings {
 	private Path folder;
 
 	private Properties values;
-
-	private Map<String, String> defaultValues;
 
 	private AtomicLong lastDirtyTime = new AtomicLong();
 
@@ -68,6 +69,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private StoredSettings( StoredSettings root, String path, Path folder, Map<String, String> values, ExecutorService executor ) {
+		if( folder.getFileName().equals( SETTINGS_FILE_NAME )) throw new RuntimeException( "Folder ends with " + SETTINGS_FILE_NAME );
 		if( root == null ) {
 			this.settings = new ConcurrentHashMap<>();
 			this.root = this;
@@ -85,7 +87,7 @@ public class StoredSettings extends AbstractSettings {
 
 	@Override
 	public String getName() {
-		return folder.getFileName().toString();
+		return path.equals( PathUtil.ROOT ) ? PathUtil.EMPTY : folder.getFileName().toString();
 	}
 
 	@Override
@@ -159,16 +161,6 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	public Map<String, String> getDefaultValues() {
-		return defaultValues;
-	}
-
-	@Override
-	public void setDefaultValues( Map<String, String> settings ) {
-		this.defaultValues = settings;
-	}
-
-	@Override
 	public void flush() {
 		scheduleSave( true );
 	}
@@ -197,29 +189,29 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private synchronized void load() {
-		Path path = getFile();
-		if( !Files.exists( path ) ) return;
-		try( FileInputStream input = new FileInputStream( path.toFile() ) ) {
+		Path file = getFile();
+		if( !Files.exists( file ) || Files.isDirectory( file ) ) return;
+		try( FileInputStream input = new FileInputStream( file.toFile() ) ) {
 			values.load( input );
 			new SettingsEvent( this, SettingsEvent.Type.LOADED, getPath() ).fire( getListeners() );
 		} catch( IOException exception ) {
-			log.error( "Error loading settings file: " + path, exception );
+			log.error( "Error loading settings file: " + file, exception );
 		}
 	}
 
 	private synchronized void save() {
-		Path path = getFile();
+		Path file = getFile();
 		try {
-			Files.createDirectories( path.getParent() );
+			Files.createDirectories( file.getParent() );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + path, exception );
+			log.error( "Error saving settings file: " + file, exception );
 		}
-		try( FileOutputStream output = new FileOutputStream( path.toFile() ) ) {
+		try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 			values.store( output, null );
 			lastStoreTime.set( System.currentTimeMillis() );
 			new SettingsEvent( this, SettingsEvent.Type.SAVED, getPath() ).fire( getListeners() );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + path, exception );
+			log.error( "Error saving settings file: " + file, exception );
 		}
 	}
 
@@ -252,7 +244,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private Path getFile() {
-		return folder.resolve( "settings" + SETTINGS_EXTENSION );
+		return folder.resolve( SETTINGS_FILE_NAME );
 	}
 
 	private class SaveTask extends TimerTask {

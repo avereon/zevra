@@ -1,12 +1,18 @@
 package com.xeomar.settings;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xeomar.util.PathUtil;
+import com.xeomar.util.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -14,38 +20,229 @@ public abstract class AbstractSettings implements Settings {
 
 	private static final Logger log = LoggerFactory.getLogger( AbstractSettings.class );
 
-	// The settings node values
-	private Map<String, String> values;
+	private static final Map<Class<?>, OutboundConverter> outboundConverters;
 
-	// The settings defaults.
-	private Map<String, String> defaultValues;
+	private static final Map<Class<?>, InboundConverter> inboundConverters;
+
+	private Map<String, Object> defaultValues;
 
 	private Set<SettingsListener> listeners;
+
+	static {
+		outboundConverters = new HashMap<>();
+		outboundConverters.put( Boolean.class, String::valueOf );
+		outboundConverters.put( Character.class, String::valueOf );
+		outboundConverters.put( Byte.class, String::valueOf );
+		outboundConverters.put( Short.class, String::valueOf );
+		outboundConverters.put( Integer.class, String::valueOf );
+		outboundConverters.put( Long.class, String::valueOf );
+		outboundConverters.put( Float.class, String::valueOf );
+		outboundConverters.put( Double.class, String::valueOf );
+		outboundConverters.put( String.class, (value) -> (String)value );
+		outboundConverters.put( URI.class, Object::toString );
+		outboundConverters.put( File.class, (value) -> ((File)value).toURI().toString() );
+
+		inboundConverters = new HashMap<>();
+		inboundConverters.put( Boolean.class, ( value ) -> value == null ? null : Boolean.parseBoolean( value ) );
+		inboundConverters.put( Character.class, ( value ) -> value == null ? null : value.charAt( 0 ) );
+		inboundConverters.put( Byte.class, ( value ) -> value == null ? null : Byte.parseByte( value ) );
+		inboundConverters.put( Short.class, ( value ) -> value == null ? null : Short.parseShort( value ) );
+		inboundConverters.put( Integer.class, ( value ) -> value == null ? null : Integer.parseInt( value ) );
+		inboundConverters.put( Long.class, ( value ) -> value == null ? null : Long.parseLong( value ) );
+		inboundConverters.put( Float.class, ( value ) -> value == null ? null : Float.parseFloat( value ) );
+		inboundConverters.put( Double.class, ( value ) -> value == null ? null : Double.parseDouble( value ) );
+		inboundConverters.put( String.class, ( value ) -> value );
+		inboundConverters.put( URI.class, ( value ) -> value == null ? null : URI.create( value ) );
+		inboundConverters.put( File.class, ( value ) -> value == null ? null : new File( URI.create( value ) ) );
+	}
 
 	protected AbstractSettings() {
 		this.listeners = new CopyOnWriteArraySet<>();
 	}
 
-	protected abstract String getValue( String key );
+	@Override
+	public String get( String key ) {
+		return get( key, String.class );
+	}
 
-	protected abstract void setValue( String key, String value );
+	@Override
+	public String get( String key, String defaultValue ) {
+		return get( key, String.class, defaultValue );
+	}
+
+	@Override
+	public <T> T get( String key, Class<T> type ) {
+		return get( key, new TypeReference<T>( type ) {} );
+	}
+
+	@Override
+	public <T> T get( String key, Class<T> type, T defaultValue ) {
+		return get( key, new TypeReference<T>( type ) {}, defaultValue );
+	}
+
+	@Override
+	public <T> T get( String key, TypeReference<T> type ) {
+		return get( key, type, null );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public <T> T get( String key, TypeReference<T> type, T defaultValue ) {
+		Object value;
+		Class<T> typeClass = type.getTypeClass();
+		InboundConverter converter = inboundConverters.get( typeClass );
+
+		// Unmarshall the value
+		if( converter != null ) {
+			value = converter.convert( getValue( key ) );
+			if( value == null ) value = converter.convert( getDefault( key ));
+		} else if( typeClass.isArray() ) {
+			value = unmarshallValue( getArray( key ), type, getDefault( key ) );
+		} else if( typeClass.isAssignableFrom( Collection.class ) || typeClass.isAssignableFrom( Map.class ) ) {
+			value = unmarshallValue( getCollection( key ), type, getDefault( key ) );
+		} else {
+			value = unmarshallValue( getBean( key ), type, getDefault( key ) );
+		}
+
+		// If the value is still null use the default value
+		if( value == null ) value = defaultValue;
+
+		return (T)value;
+	}
+
+	private String getDefault( String key ) {
+		Map<String, Object> defaultValues = getDefaultValues();
+		if( defaultValues == null ) return null;
+
+		Object objectValue = defaultValues.get( key );
+		return objectValue == null ? null : objectValue.toString();
+	}
 
 	@Override
 	public void set( String key, Object value ) {
-		String oldValue;
-
-		if( value instanceof Collection ) {
-			// NEXT Handle storing collections differently
-			// Find a way to store the collection as JSON
-			oldValue = null;
-			//oldValue = getValues( key );
-			//setValues( key, value );
+		if( value == null ) {
+			removeValue( key );
+		} else if( outboundConverters.keySet().contains( value.getClass() ) ) {
+			setValue( key, outboundConverters.get( value.getClass() ).convert( value ) );
+		} else if( value instanceof Collection || value instanceof Map ) {
+			setCollection( key, marshallValue( value ) );
+		} else if( value.getClass().isArray() ) {
+			setArray( key, marshallValue( value ) );
 		} else {
-			oldValue= getValue( key );
-			setValue( key, value == null ? null : String.valueOf( value ) );
+			setBean( key, marshallValue( value ) );
 		}
 
-		if( !Objects.equals( oldValue, value ) ) new SettingsEvent( this, SettingsEvent.Type.UPDATED, getPath(), key, oldValue, value ).fire( getListeners() );
+		new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
+	}
+
+	/**
+	 * Override this method to optimize retrieving simple values.
+	 *
+	 * @param key The value key
+	 * @return The marshalled simple value
+	 */
+	protected abstract String getValue( String key );
+
+	/**
+	 * Override this method to optimize retrieving bean values.
+	 *
+	 * @param key The value key
+	 * @return The marshalled bean value
+	 */
+	protected String getBean( String key ) {
+		return getValue( key );
+	}
+
+	/**
+	 * Override this method to optimize retrieving array values.
+	 *
+	 * @param key The value key
+	 * @return The marshalled array value
+	 */
+	protected String getArray( String key ) {
+		return getValue( key );
+	}
+
+	/**
+	 * Override this method to optimize retrieving collection values.
+	 *
+	 * @param key The value key
+	 * @return The marshalled collection value
+	 */
+	protected String getCollection( String key ) {
+		return getValue( key );
+	}
+
+	/**
+	 * Override this method to optimize storing simple values.
+	 *
+	 * @param key The settings value key
+	 * @param value The settings value
+	 */
+	protected abstract void setValue( String key, String value );
+
+	/**
+	 * Override this method to optimize storing bean values.
+	 *
+	 * @param key The settings value key
+	 * @param value The settings value
+	 */
+	protected void setBean( String key, String value ) {
+		setValue( key, value );
+	}
+
+	/**
+	 * Override this method to optimize storing array values.
+	 *
+	 * @param key The settings value key
+	 * @param value The settings value
+	 */
+	protected void setArray( String key, String value ) {
+		setValue( key, value );
+	}
+
+	/**
+	 * Override this method to optimize storing collection values.
+	 *
+	 * @param key The settings value key
+	 * @param value The settings value
+	 */
+	protected void setCollection( String key, String value ) {
+		setValue( key, value );
+	}
+
+	/**
+	 * Override this method to optimize removing a value without knowing what
+	 * category it belongs to.
+	 *
+	 * @param key The value key
+	 */
+	protected void removeValue( String key ) {
+		setValue( key, null );
+		setCollection( key, null );
+		setArray( key, null );
+		setBean( key, null );
+	}
+
+	protected String marshallValue( Object value ) {
+		try {
+			return new ObjectMapper().writeValueAsString( value );
+		} catch( JsonProcessingException exception ) {
+			log.warn( "Error marshalling value", exception );
+			return null;
+		}
+	}
+
+	@SuppressWarnings( "unchecked" )
+	protected <T> T unmarshallValue( String value, TypeReference<T> type, String defaultValue ) {
+		if( value == null ) value = defaultValue;
+		if( value == null ) return null;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			return (T)mapper.readerFor( mapper.constructType( type.getType() ) ).readValue( value );
+		} catch( IOException exception ) {
+			log.warn( "Error unmarshalling value", exception );
+			return null;
+		}
 	}
 
 	@Override
@@ -54,93 +251,13 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public String getString( String key ) {
-		return getString( key, null );
+	public Map<String, Object> getDefaultValues() {
+		return defaultValues;
 	}
 
 	@Override
-	public String getString( String key, String defaultValue ) {
-		String value = getValue( key );
-		Map<String, String> defaultValues = getDefaultValues();
-		if( value == null && defaultValues != null ) value = defaultValues.get( key );
-		if( value == null && defaultValue != null ) value = defaultValue.toString();
-		return value;
-	}
-
-	@Override
-	public Boolean getBoolean( String key ) {
-		return getBoolean( key, null );
-	}
-
-	@Override
-	public Boolean getBoolean( String key, Boolean defaultValue ) {
-		String value = getString( key );
-		if( value == null ) return defaultValue;
-		return Boolean.parseBoolean( value );
-	}
-
-	@Override
-	public Integer getInteger( String key ) {
-		return getInteger( key, null );
-	}
-
-	@Override
-	public Integer getInteger( String key, Integer defaultValue ) {
-		String value = getString( key );
-		if( value == null ) return defaultValue;
-		try {
-			return Integer.parseInt( value );
-		} catch( NumberFormatException exception ) {
-			return null;
-		}
-	}
-
-	@Override
-	public Long getLong( String key ) {
-		return getLong( key, null );
-	}
-
-	@Override
-	public Long getLong( String key, Long defaultValue ) {
-		String value = getString( key );
-		if( value == null ) return defaultValue;
-		try {
-			return Long.parseLong( value );
-		} catch( NumberFormatException exception ) {
-			return null;
-		}
-	}
-
-	@Override
-	public Float getFloat( String key ) {
-		return getFloat( key, null );
-	}
-
-	@Override
-	public Float getFloat( String key, Float defaultValue ) {
-		String value = getString( key );
-		if( value == null ) return defaultValue;
-		try {
-			return Float.parseFloat( value );
-		} catch( NumberFormatException exception ) {
-			return null;
-		}
-	}
-
-	@Override
-	public Double getDouble( String key ) {
-		return getDouble( key, null );
-	}
-
-	@Override
-	public Double getDouble( String key, Double defaultValue ) {
-		String value = getString( key );
-		if( value == null ) return defaultValue;
-		try {
-			return Double.parseDouble( value );
-		} catch( NumberFormatException exception ) {
-			return null;
-		}
+	public void setDefaultValues( Map<String, Object> defaultValues ) {
+		this.defaultValues = defaultValues;
 	}
 
 	@Override
@@ -159,6 +276,18 @@ public abstract class AbstractSettings implements Settings {
 
 	String getNodePath( String root, String path ) {
 		return PathUtil.normalize( PathUtil.isAbsolute( path ) ? path : PathUtil.resolve( root, path ) );
+	}
+
+	private interface OutboundConverter {
+
+		String convert( Object value );
+
+	}
+
+	private interface InboundConverter {
+
+		Object convert( String value );
+
 	}
 
 }

@@ -23,7 +23,7 @@ public class SettingsMatchers {
 
 			@Override
 			protected boolean matchesSafely( final SettingsEvent item ) {
-				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getType(), type ) && Objects.equals( item.getPath(), path ) && Objects.equals( item.getOldValue(), oldValue ) && Objects.equals( item.getNewValue(), newValue );
+				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getType(), type ) && Objects.equals( item.getPath(), path ) && Objects.equals( item.getNewValue(), newValue );
 			}
 		};
 	}
@@ -43,7 +43,7 @@ public class SettingsMatchers {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( type == SettingsEvent.Type.UPDATED ) {
+		if( type == SettingsEvent.Type.CHANGED ) {
 			builder.append( ":" );
 			builder.append( oldValue );
 			builder.append( ":" );

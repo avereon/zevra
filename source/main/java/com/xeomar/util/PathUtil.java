@@ -13,6 +13,8 @@ public class PathUtil {
 
 	public static final String EMPTY = "";
 
+	public static final String ROOT = "/";
+
 	public static boolean isAbsolute( String path ) {
 		return path != null && path.startsWith( SEPARATOR );
 	}

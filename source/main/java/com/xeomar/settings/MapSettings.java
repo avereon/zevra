@@ -19,7 +19,7 @@ public class MapSettings extends AbstractSettings {
 	private Map<String, String> values;
 
 	// The settings defaults.
-	private Map<String, String> defaultValues;
+	private Map<String, Object> defaultValues;
 
 	public MapSettings() {
 		this( null, "/", new HashMap<>() );
@@ -40,7 +40,7 @@ public class MapSettings extends AbstractSettings {
 
 	@Override
 	public String getName() {
-		return PathUtil.getName( path );
+		return path.equals( PathUtil.ROOT ) ? PathUtil.EMPTY : PathUtil.getName( path );
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class MapSettings extends AbstractSettings {
 
 	@Override
 	public Settings getNode( String path ) {
-		return getNode( path, (Map<String,String>)null );
+		return getNode( path, (Map<String, String>)null );
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class MapSettings extends AbstractSettings {
 		for( String childPath : root.settings.keySet() ) {
 			if( !childPath.startsWith( path ) ) continue;
 			String child = PathUtil.getChild( path, childPath );
-			if( !TextUtil.isEmpty( child ) && !children.contains( child  )) children.add( child );
+			if( !TextUtil.isEmpty( child ) && !children.contains( child ) ) children.add( child );
 		}
 
 		return children;
@@ -99,18 +99,7 @@ public class MapSettings extends AbstractSettings {
 
 	@Override
 	protected String getValue( String key ) {
-		Object object = values.get( key );
-		return object == null ? null : object.toString();
-	}
-
-	@Override
-	public Map<String, String> getDefaultValues() {
-		return defaultValues;
-	}
-
-	@Override
-	public void setDefaultValues( Map<String, String> values ) {
-		this.defaultValues = values;
+		return values.get( key );
 	}
 
 	@Override
