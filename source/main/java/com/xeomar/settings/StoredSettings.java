@@ -160,6 +160,10 @@ public class StoredSettings extends AbstractSettings {
 		return values.getProperty( key );
 	}
 
+	// NEXT Override setArray and/or setCollection to store state in individual files
+
+	// NEXT Override getArray and/or getCollection to retrieve state from individual files
+
 	@Override
 	public void flush() {
 		scheduleSave( true );

@@ -1,5 +1,6 @@
 package com.xeomar.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,7 @@ public class ProductCard {
 
 	// TODO Use Lombok when it is supported in Java 9
 
+	@JsonIgnore
 	private String productKey;
 
 	private String group;
@@ -41,6 +43,7 @@ public class ProductCard {
 
 	private String timestamp;
 
+	@JsonIgnore
 	private Release release;
 
 	private String iconUri;
@@ -69,8 +72,10 @@ public class ProductCard {
 
 	private Path installFolder;
 
+	@JsonIgnore
 	private List<Maintainer> maintainers;
 
+	@JsonIgnore
 	private List<Contributor> contributors;
 
 	private boolean enabled;
@@ -155,52 +160,7 @@ public class ProductCard {
 		return this;
 	}
 
-	//	@Deprecated
-	//	public void loadYaml() throws IOException {
-	//		loadYaml( getClass().getResourceAsStream( CARD ) );
-	//	}
-	//
-	//	@Deprecated
-	//	public void loadYaml( InputStream input ) throws IOException {
-	//		loadYaml( input, null );
-	//	}
-	//
-	//	@Deprecated
-	//	@SuppressWarnings( "unchecked" )
-	//	public void loadYaml( InputStream input, URI source ) throws IOException {
-	//		Map<String, Object> values;
-	//		try( InputStream stream = input ) {
-	//			values = (Map<String, Object>)new Yaml().load( stream );
-	//		}
-	//
-	//		this.group = (String)values.get( "group" );
-	//		this.artifact = (String)values.get( "artifact" );
-	//		this.version = (String)values.get( "version" );
-	//		this.timestamp = (String)values.get( "timestamp" );
-	//		this.release = Release.create( this.version, this.timestamp );
-	//
-	//		this.iconUri = (String)values.get( "icon" );
-	//		this.name = (String)values.get( "name" );
-	//		this.provider = (String)values.get( "provider" );
-	//		this.inception = (Integer)values.get( "inception" );
-	//
-	//		this.summary = (String)values.get( "summary" );
-	//		this.description = (String)values.get( "description" );
-	//		this.copyrightSummary = (String)values.get( "copyright" );
-	//		this.licenseSummary = (String)values.get( "license" );
-	//
-	//		this.cardUri = (String)values.get( "card" );
-	//		this.packUri = (String)values.get( "pack" );
-	//		this.javaVersion = (String)values.get( "java" );
-	//
-	//		this.maintainers = (List<Maintainer>)values.get( "maintainers" );
-	//		this.contributors = (List<Contributor>)values.get( "contributors" );
-	//
-	//		if( source != null ) this.cardUri = source.toString();
-	//
-	//		updateKey();
-	//	}
-
+	@JsonIgnore
 	public String getProductKey() {
 		return productKey;
 	}
@@ -211,6 +171,7 @@ public class ProductCard {
 
 	public void setGroup( String group ) {
 		this.group = group;
+		updateKey();
 	}
 
 	public String getArtifact() {
@@ -219,6 +180,7 @@ public class ProductCard {
 
 	public void setArtifact( String artifact ) {
 		this.artifact = artifact;
+		updateKey();
 	}
 
 	public String getVersion() {
@@ -396,7 +358,7 @@ public class ProductCard {
 		 * result in invalid file paths, setting paths, and other undesired side
 		 * effects.
 		 */
-		productKey = group + "." + artifact;
+		if( group != null && artifact != null ) productKey = group + "." + artifact;
 	}
 
 	private URI formatUri( String uriString, String channel ) throws URISyntaxException {
