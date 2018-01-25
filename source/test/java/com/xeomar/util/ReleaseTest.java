@@ -81,9 +81,9 @@ public class ReleaseTest {
 
 	@Test
 	public void testToHumanStringWithTimeZone() {
-		TimeZone zone = TimeZone.getTimeZone( "America/Phoenix" );
+		TimeZone zone = TimeZone.getTimeZone( "Antarctica/South_Pole" );
 		assertEquals( "1.2.3 Update 04", new Release( versionString ).toHumanString( zone ) );
-		assertEquals( "1.2.3 Update 04  1969-12-31 17:00:00 MST", new Release( new Version( versionString ), new Date( 0 ) ).toHumanString( zone ) );
+		assertEquals( "1.2.3 Update 04  1970-01-01 12:00:00 NZST", new Release( new Version( versionString ), new Date( 0 ) ).toHumanString( zone ) );
 	}
 
 	@Test
