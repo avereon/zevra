@@ -3,13 +3,14 @@ package com.xeomar.product;
 import com.xeomar.util.LogUtil;
 import org.slf4j.Logger;
 
+import java.lang.invoke.MethodHandles;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ProductEvent extends EventObject {
 
-	private static Logger log = LogUtil.get( ProductEvent.class );
+	private static Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private Object source;
 
