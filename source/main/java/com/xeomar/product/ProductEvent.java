@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class ProductEvent extends EventObject {
 
-	private static Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private Object source;
 

@@ -2,6 +2,7 @@ package com.xeomar.settings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xeomar.util.LogUtil;
 import com.xeomar.util.PathUtil;
 import com.xeomar.util.TypeReference;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractSettings implements Settings {
 
-	private static final Logger log = LoggerFactory.getLogger( AbstractSettings.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private static final Map<Class<?>, OutboundConverter> outboundConverters;
 

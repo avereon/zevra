@@ -12,6 +12,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class XmlDescriptor {
 
-	private static final Logger log = LoggerFactory.getLogger( XmlDescriptor.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private Node node;
 

@@ -18,10 +18,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 public class XmlUtil {
 
-	private static final Logger log = LoggerFactory.getLogger( XmlUtil.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private static final int DEFAULT_INDENT = 2;
 

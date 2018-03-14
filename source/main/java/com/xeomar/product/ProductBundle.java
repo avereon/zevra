@@ -1,8 +1,10 @@
 package com.xeomar.product;
 
+import com.xeomar.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -12,7 +14,7 @@ import static java.util.ResourceBundle.getBundle;
 
 public class ProductBundle {
 
-	private static final Logger log = LoggerFactory.getLogger( ProductBundle.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private ClassLoader loader;
 

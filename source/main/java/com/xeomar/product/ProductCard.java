@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xeomar.util.Contributor;
+import com.xeomar.util.LogUtil;
 import com.xeomar.util.Maintainer;
 import com.xeomar.util.Release;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -24,7 +26,7 @@ import java.util.*;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard {
 
-	private static final Logger log = LoggerFactory.getLogger( ProductCard.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private static final String CARD = "/META-INF/product.card";
 

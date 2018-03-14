@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 
-	private static final Logger log = LoggerFactory.getLogger( TextUtil.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	public static final int LEFT = -1;
 

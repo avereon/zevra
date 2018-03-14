@@ -3,12 +3,13 @@ package com.xeomar.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.security.MessageDigest;
 import java.util.Random;
 
 public class IdGenerator {
 
-	private static final Logger log = LoggerFactory.getLogger( IdGenerator.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private static final Random RANDOM = new Random();
 

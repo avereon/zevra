@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -33,7 +34,7 @@ public class StoredSettings extends AbstractSettings {
 
 	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
 
-	private static Logger log = LogUtil.get( StoredSettings.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	private static Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
 

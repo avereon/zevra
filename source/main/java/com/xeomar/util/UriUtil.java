@@ -5,13 +5,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
 public final class UriUtil {
 
-	private static final Logger log = LoggerFactory.getLogger( UriUtil.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	/**
 	 * Resolve an absolute URI from a string. The string may be in any of the following formats: <ul> <li>Absolute URI</li> <li>Relative URI</li> <li>Windows Path (Windows only)</li> <li>Windows UNC (Windows only)</li> </ul> Every reasonable

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.*;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
@@ -19,7 +20,7 @@ public class FileUtil {
 
 	public static final Path TEMP_FOLDER = Paths.get( System.getProperty( "java.io.tmpdir" ) );
 
-	private static final Logger log = LoggerFactory.getLogger( FileUtil.class );
+	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
