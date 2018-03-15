@@ -15,7 +15,7 @@ public class LogUtil {
 		return LoggerFactory.getLogger( clazz );
 	}
 
-	public static void configureLogging( Object source, String level ) {
+	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
 		// Logging level conversion
 		// SLF4J - Java
 		// ---------------
@@ -24,6 +24,8 @@ public class LogUtil {
 		// INFO  - INFO
 		// DEBUG - FINE
 		// TRACE - FINEST
+
+		String level = parameters.get( LogFlag.LOG_LEVEL );
 
 		StringBuilder builder = new StringBuilder();
 		// Add the log console handler
