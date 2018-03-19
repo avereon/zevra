@@ -12,8 +12,10 @@ public class TestUtil {
 
 	static {
 		runners = new HashSet<>();
+		runners.add( "org.junit.runners.ParentRunner");
 		runners.add( "org.junit.runner.JUnitCore" );
 		runners.add( "junit.framework.TestSuite" );
+		runners.add( "org.apache.maven.surefire.junit4.JUnit4Provider");
 	}
 
 	/**
