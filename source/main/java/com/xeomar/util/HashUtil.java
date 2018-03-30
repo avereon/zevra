@@ -56,21 +56,11 @@ public class HashUtil {
 	public static final String hash( File file, HashStrategy strategy ) {
 		if( file == null || !file.exists() || !file.isFile() ) return null;
 
-		FileInputStream input = null;
-		try {
-			input = new FileInputStream( file );
+		try( FileInputStream input = new FileInputStream( file ) ) {
 			return hash( input, strategy );
-		} catch( FileNotFoundException exception ) {
+		} catch( IOException exception ) {
 			log.error( "Error reading file " + file, exception );
 			return null;
-		} finally {
-			if( input != null ) {
-				try {
-					input.close();
-				} catch( IOException exception ) {
-					log.error( "Error closing file " + file, exception );
-				}
-			}
 		}
 	}
 
