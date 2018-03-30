@@ -2,7 +2,6 @@ package com.xeomar.util;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -206,7 +205,7 @@ public class FileUtil {
 			}
 
 			boolean result = true;
-			try ( Stream<Path> list = Files.list( source ) ) {
+			try( Stream<Path> list = Files.list( source ) ) {
 				for( Path path : list.collect( Collectors.toList() ) ) {
 					result = result & copy( path, newTarget, true );
 				}
@@ -290,14 +289,16 @@ public class FileUtil {
 	public static boolean delete( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return true;
 
+		// Walk the folders
+		if( Files.isDirectory( path ) ) {
+			try( Stream<Path> paths = Files.list( path ) ) {
+				for( Path folder : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) deleteOnExit( folder );
+			}
+		}
+
+		// Delete the files
 		try( Stream<Path> paths = Files.walk( path ) ) {
-			paths.sorted( Comparator.reverseOrder() ).forEach( file -> {
-				try {
-					Files.delete( file );
-				} catch( IOException exception ) {
-					log.error( "Error deleting " + path );
-				}
-			} );
+			for( Path file : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) Files.delete( file );
 		}
 
 		return !Files.exists( path );
@@ -305,6 +306,11 @@ public class FileUtil {
 
 	public static Path deleteOnExit( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return path;
+		if( Files.isDirectory( path ) ) {
+			try( Stream<Path> paths = Files.list( path ) ) {
+				for( Path folder : paths.collect( Collectors.toList() ) ) deleteOnExit( folder );
+			}
+		}
 		try( Stream<Path> paths = Files.walk( path ) ) {
 			paths.sorted( Comparator.reverseOrder() ).forEach( file -> file.toFile().deleteOnExit() );
 		}
