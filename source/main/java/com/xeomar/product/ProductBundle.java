@@ -18,7 +18,7 @@ public class ProductBundle {
 
 	private ClassLoader loader;
 
-	public ProductBundle( ClassLoader loader ) throws Exception {
+	public ProductBundle( ClassLoader loader ) {
 		this.loader = loader;
 	}
 
