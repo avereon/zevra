@@ -2,7 +2,7 @@ package com.xeomar.util;
 
 import org.junit.Test;
 
-import java.awt.geom.Rectangle2D;
+//import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -50,12 +50,12 @@ public class JavaUtilTest {
 
 	@Test
 	public void testGetKeySafeClassNameWithString() {
-		assertThat( JavaUtil.getKeySafeClassName( "java.awt.geom.Rectangle2D$Double" ), is( "java.awt.geom.Rectangle2D.Double" ) );
+		assertThat( JavaUtil.getKeySafeClassName( "com.xeomar.util.JavaUtilTest$InternalClass" ), is( "com.xeomar.util.JavaUtilTest.InternalClass" ) );
 	}
 
 	@Test
 	public void testGetKeySafeClassNameWithClass() {
-		assertThat( JavaUtil.getKeySafeClassName( Rectangle2D.Double.class ), is( "java.awt.geom.Rectangle2D.Double" ) );
+		assertThat( JavaUtil.getKeySafeClassName( JavaUtilTest.InternalClass.class ), is( "com.xeomar.util.JavaUtilTest.InternalClass" ) );
 	}
 
 	@Test
@@ -135,5 +135,7 @@ public class JavaUtilTest {
 		assertThat( JavaUtil.getRootCause( two ), is( one ) );
 		assertThat( JavaUtil.getRootCause( three ), is( one ) );
 	}
+
+	private static class InternalClass {}
 
 }
