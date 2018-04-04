@@ -123,7 +123,7 @@ public class ProductCardTest {
 	@Test
 	public void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Razor\", \"extra\" : \"unknown\"}";
-		ProductCard card = ProductCard.loadCard( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ) );
+		ProductCard card = new ProductCard().load( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ), null );
 		assertThat( card.getName(), is( "Razor" ) );
 	}
 

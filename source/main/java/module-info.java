@@ -1,4 +1,4 @@
-module com.xeomar.util {
+module com.xeomar.razor {
 
 	requires org.slf4j;
 	requires commons.io;

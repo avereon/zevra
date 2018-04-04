@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 
 /**
  * This class is used to create type reference objects that can be used
- * to reference a parameterized type in special circumstances. Once example
+ * to reference a parameterized type in special circumstances. One example
  * is for use when unmarshalling complex data types:
  * <p>
  * Settings example:

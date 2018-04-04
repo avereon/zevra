@@ -28,11 +28,9 @@ public class ProductCard {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
-	private static final String CARD = "/META-INF/product.card";
+	public static final String CARD = "/META-INF/product.card";
 
-	private static final String INFO = "/META-INF/product.info";
-
-	// TODO Use Lombok when it is supported in Java 9
+	public static final String INFO = "/META-INF/product.info";
 
 	@JsonIgnore
 	private String productKey;
@@ -86,18 +84,13 @@ public class ProductCard {
 
 	private Map<String, String> resources;
 
-	public ProductCard() {
-		loadInfo();
-	}
+	public ProductCard() {}
 
-	private void loadInfo() {
+	public ProductCard init( InputStream input ) throws IOException {
+		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
+
 		Properties values = new Properties();
-		try( InputStream stream = getClass().getResourceAsStream( INFO ) ) {
-			if( stream == null ) return;
-			values.load( stream );
-		} catch( IOException exception ) {
-			log.error( "Error loading product card", exception );
-		}
+		values.load( input );
 
 		this.group = values.getProperty( "group" );
 		this.artifact = values.getProperty( "artifact" );
@@ -115,50 +108,13 @@ public class ProductCard {
 		this.copyrightSummary = values.getProperty( "copyright" );
 		this.licenseSummary = values.getProperty( "license" );
 
-		updateKey();
+		this.updateKey();
+
+		return this;
 	}
 
-	public static ProductCard loadCard() throws IOException {
-		return loadCard( ProductCard.class.getResourceAsStream( CARD ) );
-	}
-
-	public static ProductCard loadCard( InputStream input ) throws IOException {
-		return new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
-	}
-
-	public ProductCard updateWith( ProductCard card, URI source ) {
-		this.group = card.group;
-		this.artifact = card.artifact;
-		this.version = card.version;
-		this.timestamp = card.timestamp;
-		this.release = Release.create( this.version, this.timestamp );
-
-		this.iconUri = card.iconUri;
-		this.name = card.name;
-		this.provider = card.provider;
-		this.inception = card.inception;
-
-		this.summary = card.summary;
-		this.description = card.description;
-		this.copyrightSummary = card.copyrightSummary;
-		this.licenseSummary = card.licenseSummary;
-
-		this.cardUri = card.cardUri;
-		this.packUri = card.packUri;
-		this.javaVersion = card.javaVersion;
-
-		this.maintainers = card.maintainers;
-		this.contributors = card.contributors;
-
-		this.enabled = card.enabled;
-		this.removable = card.removable;
-
-		this.resources = card.resources;
-
-		if( source != null ) this.cardUri = source.toString();
-
-		updateKey();
-
+	public ProductCard load( InputStream input, URI source ) throws IOException {
+		updateWith( fromJson( input ), source );
 		return this;
 	}
 
@@ -351,6 +307,46 @@ public class ProductCard {
 
 	public String[] getResourceUris( String channel ) {
 		return getPlatformResourceUris( channel );
+	}
+
+	private ProductCard fromJson( InputStream input ) throws IOException {
+		return new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
+	}
+
+	private ProductCard updateWith( ProductCard card, URI source ) {
+		this.group = card.group;
+		this.artifact = card.artifact;
+		this.version = card.version;
+		this.timestamp = card.timestamp;
+		this.release = Release.create( this.version, this.timestamp );
+
+		this.iconUri = card.iconUri;
+		this.name = card.name;
+		this.provider = card.provider;
+		this.inception = card.inception;
+
+		this.summary = card.summary;
+		this.description = card.description;
+		this.copyrightSummary = card.copyrightSummary;
+		this.licenseSummary = card.licenseSummary;
+
+		this.cardUri = card.cardUri;
+		this.packUri = card.packUri;
+		this.javaVersion = card.javaVersion;
+
+		this.maintainers = card.maintainers;
+		this.contributors = card.contributors;
+
+		this.enabled = card.enabled;
+		this.removable = card.removable;
+
+		this.resources = card.resources;
+
+		if( source != null ) this.cardUri = source.toString();
+
+		updateKey();
+
+		return this;
 	}
 
 	private void updateKey() {
