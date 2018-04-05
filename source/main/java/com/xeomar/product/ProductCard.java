@@ -9,7 +9,6 @@ import com.xeomar.util.LogUtil;
 import com.xeomar.util.Maintainer;
 import com.xeomar.util.Release;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,6 +85,12 @@ public class ProductCard {
 
 	public ProductCard() {}
 
+	public ProductCard init( Class<?> source ) throws IOException {
+		try( InputStream input = source.getResourceAsStream( INFO ) ) {
+			return init( input );
+		}
+	}
+
 	public ProductCard init( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
 
@@ -113,8 +118,51 @@ public class ProductCard {
 		return this;
 	}
 
+	public ProductCard load( Class<? extends Product> product ) throws IOException {
+		return load( product, null );
+	}
+
+	public ProductCard load( Class<? extends Product> product, URI base ) throws IOException {
+		try( InputStream input = product.getResourceAsStream( CARD ) ) {
+			return load( input, base );
+		}
+	}
+
 	public ProductCard load( InputStream input, URI source ) throws IOException {
-		updateWith( fromJson( input ), source );
+		ProductCard card = new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
+
+		this.group = card.group;
+		this.artifact = card.artifact;
+		this.version = card.version;
+		this.timestamp = card.timestamp;
+		this.release = Release.create( this.version, this.timestamp );
+
+		this.iconUri = card.iconUri;
+		this.name = card.name;
+		this.provider = card.provider;
+		this.inception = card.inception;
+
+		this.summary = card.summary;
+		this.description = card.description;
+		this.copyrightSummary = card.copyrightSummary;
+		this.licenseSummary = card.licenseSummary;
+
+		this.cardUri = card.cardUri;
+		this.packUri = card.packUri;
+		this.javaVersion = card.javaVersion;
+
+		this.maintainers = card.maintainers;
+		this.contributors = card.contributors;
+
+		this.enabled = card.enabled;
+		this.removable = card.removable;
+
+		this.resources = card.resources;
+
+		if( source != null ) this.cardUri = source.toString();
+
+		updateKey();
+
 		return this;
 	}
 
@@ -307,46 +355,6 @@ public class ProductCard {
 
 	public String[] getResourceUris( String channel ) {
 		return getPlatformResourceUris( channel );
-	}
-
-	private ProductCard fromJson( InputStream input ) throws IOException {
-		return new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
-	}
-
-	private ProductCard updateWith( ProductCard card, URI source ) {
-		this.group = card.group;
-		this.artifact = card.artifact;
-		this.version = card.version;
-		this.timestamp = card.timestamp;
-		this.release = Release.create( this.version, this.timestamp );
-
-		this.iconUri = card.iconUri;
-		this.name = card.name;
-		this.provider = card.provider;
-		this.inception = card.inception;
-
-		this.summary = card.summary;
-		this.description = card.description;
-		this.copyrightSummary = card.copyrightSummary;
-		this.licenseSummary = card.licenseSummary;
-
-		this.cardUri = card.cardUri;
-		this.packUri = card.packUri;
-		this.javaVersion = card.javaVersion;
-
-		this.maintainers = card.maintainers;
-		this.contributors = card.contributors;
-
-		this.enabled = card.enabled;
-		this.removable = card.removable;
-
-		this.resources = card.resources;
-
-		if( source != null ) this.cardUri = source.toString();
-
-		updateKey();
-
-		return this;
 	}
 
 	private void updateKey() {
