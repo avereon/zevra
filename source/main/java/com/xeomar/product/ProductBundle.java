@@ -21,8 +21,12 @@ public class ProductBundle {
 	private String prefix;
 
 	public ProductBundle( Class<? extends  Product> product ) {
+		this( product, JavaUtil.getPackagePath( product ) );
+	}
+
+	public ProductBundle( Class<? extends  Product> product, String prefix ) {
 		this.loader = product.getClassLoader();
-		this.prefix = JavaUtil.getPackagePath( product );
+		this.prefix = prefix;
 	}
 
 	public String getString( String bundleKey, String valueKey, String... values ) {
