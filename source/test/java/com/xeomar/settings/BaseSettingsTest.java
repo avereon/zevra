@@ -8,9 +8,9 @@ import java.net.URI;
 import java.util.*;
 
 import static com.xeomar.settings.SettingsMatchers.eventHas;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public abstract class BaseSettingsTest {
 
