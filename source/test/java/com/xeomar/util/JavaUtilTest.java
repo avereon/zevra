@@ -80,14 +80,14 @@ public class JavaUtilTest {
 
 	@Test
 	public void testParseClasspath() throws Exception {
-		List<URI> entries = JavaUtil.parseClasspath( null );
+		List<URI> entries = JavaUtil.parsePropertyPaths( null );
 		assertThat( entries.size(), is( 0 ) );
 
 		String separator = ";";
 		String classpath = "test1.jar";
 		classpath += separator + "test2.jar";
 		classpath += separator + URLEncoder.encode( "http://www.xeomar.com/software/test3.jar", "UTF-8" );
-		entries = JavaUtil.parseClasspath( classpath, separator );
+		entries = JavaUtil.parsePropertyPaths( classpath, separator );
 
 		assertThat( entries.get( 0 ), is( new File( "test1.jar" ).toURI() ) );
 		assertThat( entries.get( 1 ), is( new File( "test2.jar" ).toURI() ) );
@@ -97,7 +97,7 @@ public class JavaUtilTest {
 		classpath = "test1.jar";
 		classpath += separator + "test2.jar";
 		classpath += separator + URLEncoder.encode( "http://www.xeomar.com/software/test3.jar", "UTF-8" );
-		entries = JavaUtil.parseClasspath( classpath, separator );
+		entries = JavaUtil.parsePropertyPaths( classpath, separator );
 
 		assertThat( entries.get( 0 ), is( new File( "test1.jar" ).toURI() ) );
 		assertThat( entries.get( 1 ), is( new File( "test2.jar" ).toURI() ) );

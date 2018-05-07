@@ -1,7 +1,6 @@
 package com.xeomar.util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,24 +109,27 @@ public final class JavaUtil {
 	}
 
 	public static List<URI> getClasspath() {
-			return parseClasspath( System.getProperty( "class.path" ) );
+		return parsePropertyPaths( System.getProperty( "class.path" ) );
 	}
 
-	public static List<URI> parseClasspath( String classpath ) {
-		return parseClasspath( classpath, File.pathSeparator );
+	public static List<URI> getModulePath() {
+		return parsePropertyPaths( System.getProperty( "jdk.module.path" ) );
+	}
+
+	public static List<URI> parsePropertyPaths( String classpath ) {
+		return parsePropertyPaths( classpath, File.pathSeparator );
 	}
 
 	/**
-	 * Parse the relative URI strings from the specified classpath in system property format. See <a href= "http://java.sun.com/javase/6/docs/technotes/tools/windows/classpath.html" >Setting the Windows Classpath</a> or <a href=
-	 * "http://java.sun.com/javase/6/docs/technotes/tools/solaris/classpath.html" >Setting the Unix Classpath</a>
+	 * Parse relative URI strings from the specified path in system property format.
 	 */
-	public static List<URI> parseClasspath( String classpath, String separator ) {
+	public static List<URI> parsePropertyPaths( String paths, String separator ) {
 		ArrayList<URI> list = new ArrayList<>();
-		if( classpath == null ) return list;
+		if( paths == null ) return list;
 
 		URI uri = null;
 		String token;
-		StringTokenizer tokenizer = new StringTokenizer( classpath, separator );
+		StringTokenizer tokenizer = new StringTokenizer( paths, separator );
 		while( tokenizer.hasMoreTokens() ) {
 			token = tokenizer.nextToken();
 
