@@ -14,10 +14,6 @@ public class LogUtil {
 		return LoggerFactory.getLogger( clazz );
 	}
 
-	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
-		configureLogging( "java", source, parameters );
-	}
-
 	public static void configureLogging( String name, Object source, com.xeomar.util.Parameters parameters ) {
 		// Logging level conversion
 		//
@@ -30,12 +26,14 @@ public class LogUtil {
 		// TRACE -> FINEST
 
 		String level = parameters.get( LogFlag.LOG_LEVEL );
-		String file = parameters.get( LogFlag.LOG_FILE);
-		StringBuilder builder = new StringBuilder();
+		String file = parameters.get( LogFlag.LOG_FILE );
+
+		// FIXME This automatically turns on file logging
+		if( file == null ) file = name + ".log";
 
 		// Configure the simple formatter
 		// https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
-		builder.append( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
+		StringBuilder builder = new StringBuilder( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
 
 		// Add the log console handler
 		if( file == null ) {
