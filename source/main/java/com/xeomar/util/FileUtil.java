@@ -314,6 +314,8 @@ public class FileUtil {
 		try( Stream<Path> paths = Files.walk( path ) ) {
 			paths.sorted( Comparator.reverseOrder() ).forEach( file -> file.toFile().deleteOnExit() );
 		}
+		// FIXME Folders not being removed...probably because of ordering problem
+		path.toFile().deleteOnExit();
 		return path;
 	}
 

@@ -7,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
-import java.util.logging.XMLFormatter;
 
 public class LogUtil {
 
@@ -16,37 +15,51 @@ public class LogUtil {
 	}
 
 	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
+		configureLogging( "java", source, parameters );
+	}
+
+	public static void configureLogging( String name, Object source, com.xeomar.util.Parameters parameters ) {
 		// Logging level conversion
-		// SLF4J - Java
+		//
+		// SLF4J -> Java
 		// ---------------
-		// ERROR - SEVERE
-		// WARN  - WARNING
-		// INFO  - INFO
-		// DEBUG - FINE
-		// TRACE - FINEST
+		// ERROR -> SEVERE
+		// WARN  -> WARNING
+		// INFO  -> INFO
+		// DEBUG -> FINE
+		// TRACE -> FINEST
 
 		String level = parameters.get( LogFlag.LOG_LEVEL );
-
+		String file = parameters.get( LogFlag.LOG_FILE);
 		StringBuilder builder = new StringBuilder();
-		// Add the log console handler
-		builder.append( "handlers=java.util.logging.ConsoleHandler\n" );
-
-		// TODO Add the log file handler
-		//builder.append( "handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler\n" );
 
 		// Configure the simple formatter
 		// https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
 		builder.append( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
 
+		// Add the log console handler
+		if( file == null ) {
+			builder.append( "handlers=java.util.logging.ConsoleHandler\n" );
+		} else {
+			builder.append( "handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler\n" );
+		}
+
 		// Configure the console handler
 		builder.append( "java.util.logging.ConsoleHandler.level=FINEST\n" );
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
 
-		// Configure the file handler
-		builder.append( "java.util.logging.FileHandler.pattern=%h/java%u.log\n" );
-		builder.append( "java.util.logging.FileHandler.limit=50000\n" );
-		builder.append( "java.util.logging.FileHandler.count=1\n" );
-		builder.append( "java.util.logging.FileHandler.formatter=" + XMLFormatter.class.getName() + "\n" );
+		if( file != null ) {
+			// Configure the file handler
+			// %h - Home folder
+			// %u - Unique number
+			//builder.append( "java.util.logging.FileHandler.pattern=%h/" + name + "%u.log\n" );
+			builder.append( "java.util.logging.FileHandler.pattern=%h/" + file + "\n" );
+			builder.append( "java.util.logging.FileHandler.level=FINEST\n" );
+			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
+			builder.append( "java.util.logging.FileHandler.count=1\n" );
+			//builder.append( "java.util.logging.FileHandler.formatter=" + XMLFormatter.class.getName() + "\n" );
+			builder.append( "java.util.logging.FileHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
+		}
 
 		// Set the default log level
 		builder.append( ".level=" );
@@ -90,7 +103,7 @@ public class LogUtil {
 	}
 
 	private static String getProgramLogLevel( String level ) {
-		String result =  level == null ? "INFO" : level.toUpperCase();
+		String result = level == null ? "INFO" : level.toUpperCase();
 
 		switch( result ) {
 			case "NONE": {
