@@ -14,7 +14,7 @@ public class LogUtil {
 		return LoggerFactory.getLogger( clazz );
 	}
 
-	public static void configureLogging( String name, Object source, com.xeomar.util.Parameters parameters ) {
+	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
 		// Logging level conversion
 		//
 		// SLF4J -> Java
@@ -28,9 +28,6 @@ public class LogUtil {
 		String level = parameters.get( LogFlag.LOG_LEVEL );
 		String file = parameters.get( LogFlag.LOG_FILE );
 
-		// FIXME This automatically turns on file logging
-		if( file == null ) file = name + ".log";
-
 		// Configure the simple formatter
 		// https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
 		StringBuilder builder = new StringBuilder( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
@@ -43,18 +40,21 @@ public class LogUtil {
 		}
 
 		// Configure the console handler
-		builder.append( "java.util.logging.ConsoleHandler.level=FINEST\n" );
+		builder.append( "java.util.logging.ConsoleHandler.level=ALL\n" );
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
 
 		if( file != null ) {
+			System.err.println( "==Enabling log file: " + file );
 			// Configure the file handler
 			// %h - Home folder
 			// %u - Unique number
 			//builder.append( "java.util.logging.FileHandler.pattern=%h/" + name + "%u.log\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=%h/" + file + "\n" );
-			builder.append( "java.util.logging.FileHandler.level=FINEST\n" );
+			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n");
+			builder.append( "java.util.logging.FileHandler.level=ALL\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
+			builder.append( "java.util.logging.FileHandler.append=true\n");
 			//builder.append( "java.util.logging.FileHandler.formatter=" + XMLFormatter.class.getName() + "\n" );
 			builder.append( "java.util.logging.FileHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
 		}
