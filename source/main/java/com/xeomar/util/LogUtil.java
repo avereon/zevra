@@ -44,19 +44,13 @@ public class LogUtil {
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
 
 		if( file != null ) {
-			System.err.println( "==Enabling log file: " + file );
-			// Configure the file handler
-			// %h - Home folder
-			// %u - Unique number
-			//builder.append( "java.util.logging.FileHandler.pattern=%h/" + name + "%u.log\n" );
-			builder.append( "java.util.logging.FileHandler.pattern=%h/" + file + "\n" );
+			builder.append( "java.util.logging.FileHandler.pattern=" + file + "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n");
 			builder.append( "java.util.logging.FileHandler.level=ALL\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
-			builder.append( "java.util.logging.FileHandler.append=true\n");
-			//builder.append( "java.util.logging.FileHandler.formatter=" + XMLFormatter.class.getName() + "\n" );
 			builder.append( "java.util.logging.FileHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
+			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n");
 		}
 
 		// Set the default log level
@@ -126,6 +120,10 @@ public class LogUtil {
 			}
 			case "TRACE": {
 				result = "FINEST";
+				break;
+			}
+			case "ALL": {
+				result = "ALL";
 				break;
 			}
 			default: {
