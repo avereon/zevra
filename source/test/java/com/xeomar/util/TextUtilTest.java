@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -583,6 +584,36 @@ public class TextUtilTest {
 		list.add( 4 );
 
 		assertEquals( "<0> <1> <2> <3> <4>", TextUtil.toString( list, "<", ">" ) );
+	}
+
+	@Test
+	public void testSplit() {
+		String string = "string to split";
+		assertThat( TextUtil.split( string ), contains( "string", "to", "split" ) );
+	}
+
+	@Test
+	public void testSplitWithExtraWhitespace() {
+		String string = "  \tstring   to  split\n";
+		assertThat( TextUtil.split( string ), contains( "string", "to", "split" ) );
+	}
+
+	@Test
+	public void testSplitWithQuotes() {
+		String string = "string \"with quotes\" to split ";
+		assertThat( TextUtil.split( string ), contains( "string", "with quotes", "to", "split" ) );
+	}
+
+	@Test
+	public void testSplitWithEscapedQuotes() {
+		String string = "string \"with\\\" quotes\" to split ";
+		assertThat( TextUtil.split( string ), contains( "string", "with\" quotes", "to", "split" ) );
+	}
+
+	@Test
+	public void testSplitWindowsPath() {
+		String string = "copy C:\\some\\path C:\\some\\other\\path ";
+		assertThat( TextUtil.split( string ), contains( "copy", "C:\\some\\path", "C:\\some\\other\\path" ) );
 	}
 
 }

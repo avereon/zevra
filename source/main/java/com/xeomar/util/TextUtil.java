@@ -666,4 +666,8 @@ public final class TextUtil {
 		return result.toString();
 	}
 
+	public static List<String> split( String string ) {
+		return new SimpleTokenizer( string ).getTokens();
+	}
+
 }
