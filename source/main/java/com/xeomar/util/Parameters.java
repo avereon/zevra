@@ -154,7 +154,6 @@ public class Parameters {
 			if( oldValues == null ) {
 				values.put( removePrefix( flag ), newValues );
 			} else {
-				// FIXME False values should not override true value?
 				if( !isTrue( flag ) ) oldValues.addAll( newValues );
 			}
 		}
