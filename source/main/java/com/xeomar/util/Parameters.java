@@ -5,12 +5,12 @@ import java.util.*;
 
 /**
  * The Parameters class is used to convert command line parameters into an object.
- * <p>
+ *
  * <h2>Single Value Parameters</h2>Single value parameters start with &quot;-&quot; and may be followed by an optional value. If the parameter is not followed by a value but instead is followed by another parameter, the value for the
  * parameter is set to &quot;true&quot;. <blockquote> Examples: <table border="1" cellspacing="0"> <tr> <th align="left"><code>-test</code></th> <td>Sets the <code>test</code> parameter to <code>true</code>.</td> </tr> <tr> <th
  * align="left"><code>-level debug</code></th> <td>Sets the <code>level</code> parameter to <code>debug</code>.</td> </tr> <tr> <th align="left"><code>-test -level debug</code></th> <td>Sets the <code>test</code> parameter to
  * <code>true</code> and the <code>level</code> parameter to <code>debug</code>.</td> </tr> </table> </blockquote>
- * <p>
+ *
  * <h2>Multiple Value Parameters</h2>Multiple value parameters start with &quot;--&quot; and may be followed by an optional list of values. If the parameter is not followed by a value but instead is followed by another parameter, the value
  * for the parameter is set to &quot;true&quot;. <blockquote> Examples: <table border="1" cellspacing="0"> <tr> <th align="left"><code>--levels</code></th> <td>Sets the <code>levels</code> parameter to <code>true</code>.</td> </tr> <tr> <th
  * align="left"><code>--levels debug info warn</code></th> <td>Sets the <code>levels</code> parameter to the list <code>[debug, info, warn]</code>.</td> </tr> </table> </blockquote> <h2>Files</h2> File names are specified after all
@@ -19,7 +19,7 @@ import java.util.*;
  * align="left"><code>-test -- apple.txt</code></th> <td>Sets the <code>test</code> parameter to <code>true</code> and adds the file <code>apple.txt</code> to the list of files.</td> </tr> <tr> <th align="left"><code>-level debug
  * apple.txt</code></th> <td>Sets the <code>level</code> parameter to <code>debug</code> and adds the file <code>apple.txt</code> to the list of files.</td> </tr> <tr> <th align="left"><code>apple.txt -level debug</code></th> <td>Add the
  * files <code>apple.txt</code>, <code>-level</code>, and <code>debug</code> to the list of files.</td> </tr> </table> </blockquote>
- * <p>
+ *
  * <h2>Validation</h2> The Parameters class can validate command line parameters by passing a set of valid parameters to the parse() method. If a parameter is specified in the command line that does not match the valid set an
  * InvalidParameterException is thrown.
  * <p>
@@ -96,10 +96,10 @@ public class Parameters {
 				if( validCommands != null && !validCommands.contains( command ) ) throw new InvalidParameterException( "Unknown parameter: " + command );
 
 				List<String> valueList;
-				if( command.contains( EQUALS )) {
+				if( command.contains( EQUALS ) ) {
 					String[] parts = command.split( "=" );
-					command = parts[0];
-					String value = parts[1];
+					command = parts[ 0 ];
+					String value = parts[ 1 ];
 
 					valueList = values.get( removePrefix( command ) );
 					if( valueList == null ) valueList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class Parameters {
 			}
 		}
 
-		return new Parameters( commands,  resolved, flags, values, uris );
+		return new Parameters( commands, resolved, flags, values, uris );
 	}
 
 	public int size() {
@@ -147,7 +147,17 @@ public class Parameters {
 
 	public Parameters add( Parameters parameters ) {
 		flags.addAll( parameters.flags );
-		values.putAll( parameters.values );
+
+		for( String flag : parameters.getFlags() ) {
+			List<String> oldValues = getValues( flag );
+			List<String> newValues = parameters.getValues( flag );
+			if( oldValues == null ) {
+				values.put( removePrefix( flag ), newValues );
+			} else {
+				// FIXME False values should not override true value?
+				if( !isTrue( flag ) ) oldValues.addAll( newValues );
+			}
+		}
 
 		for( String uri : parameters.getUris() ) {
 			if( !uris.contains( uri ) ) uris.add( uri );

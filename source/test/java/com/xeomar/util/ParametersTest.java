@@ -4,6 +4,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -238,6 +240,25 @@ public class ParametersTest {
 		assertThat( parameters.getOriginalCommands(), contains( commands ) );
 		assertThat( parameters.getFlags(), contains( "--execmode" ) );
 		assertThat( parameters.get( "execmode" ), is( "dev" ) );
+	}
+
+	@Test
+	public void testAdd() {
+		String[] args = new String[]{ "-flag", "-key", "value1", "file1" };
+		Parameters parameters = Parameters.parse( args );
+		assertThat( parameters.get( "none" ), is( nullValue() ) );
+		assertThat( parameters.get( "flag" ), is( "true" ) );
+		assertThat( parameters.get( "key" ), is( "value1" ) );
+		assertThat( parameters.getUris(), contains( new File( "file1" ).toURI().toString() ) );
+
+		String[] addArgs = new String[]{ "-flag", "false", "-key", "value2", "file2" };
+		Parameters addParameters = Parameters.parse( addArgs );
+		parameters.add( addParameters );
+
+		assertThat( parameters.get( "none" ), is( nullValue() ) );
+		assertThat( parameters.get( "flag" ), is( "true" ) );
+		assertThat( parameters.get( "key" ), is( "value1" ) );
+		assertThat( parameters.getUris(), contains( new File( "file1" ).toURI().toString(), new File( "file2" ).toURI().toString() ) );
 	}
 
 	@Test
