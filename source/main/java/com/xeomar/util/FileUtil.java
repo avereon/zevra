@@ -292,7 +292,7 @@ public class FileUtil {
 		// Walk the folders
 		if( Files.isDirectory( path ) ) {
 			try( Stream<Path> paths = Files.list( path ) ) {
-				for( Path folder : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) deleteOnExit( folder );
+				for( Path folder : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) delete( folder );
 			}
 		}
 
@@ -306,16 +306,17 @@ public class FileUtil {
 
 	public static Path deleteOnExit( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return path;
+
 		if( Files.isDirectory( path ) ) {
 			try( Stream<Path> paths = Files.list( path ) ) {
 				for( Path folder : paths.collect( Collectors.toList() ) ) deleteOnExit( folder );
 			}
 		}
+
 		try( Stream<Path> paths = Files.walk( path ) ) {
-			paths.sorted( Comparator.reverseOrder() ).forEach( file -> file.toFile().deleteOnExit() );
+			for( Path file : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) file.toFile().deleteOnExit();
 		}
-		// FIXME Folders not being removed...probably because of ordering problem
-		path.toFile().deleteOnExit();
+
 		return path;
 	}
 

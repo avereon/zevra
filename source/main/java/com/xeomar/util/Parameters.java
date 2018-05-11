@@ -145,6 +145,17 @@ public class Parameters {
 		return values.size();
 	}
 
+	public Parameters add( Parameters parameters ) {
+		flags.addAll( parameters.flags );
+		values.putAll( parameters.values );
+
+		for( String uri : parameters.getUris() ) {
+			if( !uris.contains( uri ) ) uris.add( uri );
+		}
+
+		return this;
+	}
+
 	public String get( String flag ) {
 		List<String> values = this.values.get( removePrefix( flag ) );
 		return values == null ? null : values.get( 0 );

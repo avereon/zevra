@@ -8,6 +8,7 @@ module com.xeomar.razor {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 	requires org.slf4j;
+	requires com.fasterxml.jackson.annotation;
 
 	exports com.xeomar.util;
 	exports com.xeomar.product;
