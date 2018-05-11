@@ -53,15 +53,15 @@ public class Parameters {
 	}
 
 	public static Parameters create() {
-		return parse( new String[ 0 ] );
+		return parse();
 	}
 
-	public static Parameters parse( String[] commands ) {
+	public static Parameters parse( String... commands ) {
 		return parse( commands, (Set<String>)null );
 	}
 
 	public static Parameters parse( List<String> commands ) {
-		return parse( commands.toArray( new String[ commands.size() ] ) );
+		return parse( commands.toArray( new String[ 0 ] ) );
 	}
 
 	public static Parameters parse( String[] commands, String... validCommands ) {
@@ -69,7 +69,7 @@ public class Parameters {
 	}
 
 	public static Parameters parse( List<String> commands, String... validCommands ) {
-		return parse( commands.toArray( new String[ commands.size() ] ), validCommands );
+		return parse( commands.toArray( new String[ 0 ] ), validCommands );
 	}
 
 	public static Parameters parse( String[] commands, Set<String> validCommands ) {
@@ -146,6 +146,8 @@ public class Parameters {
 	}
 
 	public Parameters add( Parameters parameters ) {
+		if( parameters == null ) return this;
+
 		flags.addAll( parameters.flags );
 
 		for( String flag : parameters.getFlags() ) {

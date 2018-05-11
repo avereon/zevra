@@ -140,16 +140,16 @@ public class OperatingSystem {
 	/**
 	 * Test the file system for case sensitivity.
 	 */
-	public static final boolean isFileSystemCaseSensitive() {
+	public static boolean isFileSystemCaseSensitive() {
 		return fileSystemCaseSensitive;
 	}
 
-	public static final Process startProcessElevated( String title, ProcessBuilder builder ) throws IOException {
+	public static Process startProcessElevated( String title, ProcessBuilder builder ) throws IOException {
 		if( !OperatingSystem.isProcessElevated() ) elevateProcessBuilder( title, builder );
 		return builder.start();
 	}
 
-	public static final Process startProcessReduced( ProcessBuilder builder ) throws IOException {
+	public static Process startProcessReduced( ProcessBuilder builder ) throws IOException {
 		if( OperatingSystem.isProcessElevated() ) reduceProcessBuilder( builder );
 		return builder.start();
 	}
@@ -162,7 +162,7 @@ public class OperatingSystem {
 	 * @return
 	 * @throws IOException
 	 */
-	public static final ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
+	public static ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
 		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
 		builder.command( command );
