@@ -249,7 +249,9 @@ public class ParametersTest {
 		assertThat( parameters.get( "none" ), is( nullValue() ) );
 		assertThat( parameters.get( "flag" ), is( "true" ) );
 		assertThat( parameters.get( "key" ), is( "value1" ) );
-		assertThat( parameters.getUris(), contains( new File( "file1" ).toURI().toString() ) );
+		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1" ).toString() ) );
+
+
 
 		String[] addArgs = new String[]{ "-flag", "false", "-key", "value2", "file2" };
 		Parameters addParameters = Parameters.parse( addArgs );
@@ -258,7 +260,7 @@ public class ParametersTest {
 		assertThat( parameters.get( "none" ), is( nullValue() ) );
 		assertThat( parameters.get( "flag" ), is( "true" ) );
 		assertThat( parameters.get( "key" ), is( "value1" ) );
-		assertThat( parameters.getUris(), contains( new File( "file1" ).toURI().toString(), new File( "file2" ).toURI().toString() ) );
+		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1" ).toString(), UriUtil.resolve( "file2" ).toString() ) );
 	}
 
 	@Test
