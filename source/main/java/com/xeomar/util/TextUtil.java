@@ -1,7 +1,6 @@
 package com.xeomar.util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,30 +30,29 @@ public final class TextUtil {
 
 	private static final char DEFAULT_PAD_CHAR = ' ';
 
-	public static final boolean isEmpty( String string ) {
+	public static boolean isEmpty( String string ) {
 		if( string == null ) return true;
-		if( string.trim().length() == 0 ) return true;
-		return false;
+		return string.trim().length() == 0;
 	}
 
-	public static final boolean areEqual( String string1, String string2 ) {
+	public static boolean areEqual( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
+		if( string1 == null ) return false;
+		if( string2 == null ) return false;
 		return string1.equals( string2 );
 	}
 
-	public static final boolean areEqualIgnoreCase( String string1, String string2 ) {
+	public static boolean areEqualIgnoreCase( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
+		if( string1 == null ) return false;
+		if( string2 == null ) return false;
 		return string1.equalsIgnoreCase( string2 );
 	}
 
-	public static final boolean areSame( String string1, String string2 ) {
+	public static boolean areSame( String string1, String string2 ) {
 		if( isEmpty( string1 ) && isEmpty( string2 ) ) return true;
-		if( string1 == null && string2 != null ) return false;
-		if( string1 != null && string2 == null ) return false;
+		if( string1 == null ) return false;
+		if( string2 == null ) return false;
 		return string1.equals( string2 );
 	}
 
