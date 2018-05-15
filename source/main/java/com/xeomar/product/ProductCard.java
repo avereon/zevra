@@ -51,6 +51,8 @@ public class ProductCard {
 
 	private String provider;
 
+	private String providerUrl;
+
 	private int inception;
 
 	private String summary;
@@ -106,6 +108,7 @@ public class ProductCard {
 		this.iconUri = values.getProperty( "icon" );
 		this.name = values.getProperty( "name" );
 		this.provider = values.getProperty( "provider" );
+		this.providerUrl = values.getProperty( "providerUri" );
 		this.inception = Integer.parseInt( values.getProperty( "inception" ) );
 
 		this.summary = values.getProperty( "summary" );
@@ -140,6 +143,7 @@ public class ProductCard {
 		this.iconUri = card.iconUri;
 		this.name = card.name;
 		this.provider = card.provider;
+		this.providerUrl = card.providerUrl;
 		this.inception = card.inception;
 
 		this.summary = card.summary;
@@ -231,6 +235,14 @@ public class ProductCard {
 
 	public void setProvider( String provider ) {
 		this.provider = provider;
+	}
+
+	public String getProviderUrl() {
+		return providerUrl;
+	}
+
+	public void setProviderUrl( String providerUrl ) {
+		this.providerUrl = providerUrl;
 	}
 
 	public int getInception() {
