@@ -81,6 +81,7 @@ public class ProductCardTest {
 		assertThat( reader.readLine(), is( "  \"iconUri\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"name\" : \"Razor\"," ) );
 		assertThat( reader.readLine(), is( "  \"provider\" : null," ) );
+		assertThat( reader.readLine(), is( "  \"providerUrl\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"inception\" : 0," ) );
 		assertThat( reader.readLine(), is( "  \"summary\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"description\" : null," ) );
