@@ -35,7 +35,7 @@ public class OperatingSystem {
 		PPC
 	}
 
-	static final String ELEVATED_PRIVILEGE_KEY = "program.process.privilege";
+	static final String ELEVATED_PRIVILEGE_KEY = "program-process-privilege";
 
 	static final String ELEVATED_PRIVILEGE_VALUE = "elevated";
 
@@ -134,7 +134,7 @@ public class OperatingSystem {
 	}
 
 	public static final boolean isReduceProcessSupported() {
-		return OperatingSystem.isMac() || OperatingSystem.isUnix() || OperatingSystem.isWindows();
+		return OperatingSystem.isMac() || OperatingSystem.isUnix();
 	}
 
 	/**

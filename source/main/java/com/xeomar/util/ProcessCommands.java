@@ -31,7 +31,9 @@ public class ProcessCommands {
 	public static List<String> forModule( String modulePath, String moduleMain, String moduleMainClass ) {
 		List<String> commands = new ArrayList<>();
 
-		if( modulePath == null || moduleMain == null || moduleMainClass == null ) return commands;
+		if( modulePath == null ) throw new NullPointerException( "Module path cannot be null"  );
+		if( moduleMain == null ) throw new NullPointerException( "Main module cannot be null"  );
+		if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null"  );
 
 		// Add the executable path
 		commands.add( getExecutablePath() );
