@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.LogManager;
 
 public class LogUtil {
@@ -41,27 +44,28 @@ public class LogUtil {
 
 		// Configure the console handler
 		builder.append( "java.util.logging.ConsoleHandler.level=ALL\n" );
-		builder.append( "java.util.logging.ConsoleHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
+		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
 		if( file != null ) {
-			builder.append( "java.util.logging.FileHandler.pattern=" + file + "\n" );
-			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n");
+			file = getLogFilePattern( new File( file ).getAbsolutePath() );
+			builder.append( "java.util.logging.FileHandler.pattern=" ).append( file ).append( "\n" );
+			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
 			builder.append( "java.util.logging.FileHandler.level=ALL\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
-			builder.append( "java.util.logging.FileHandler.formatter=" + ProgramFormatter.class.getName() + "\n" );
-			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n");
+			builder.append( "java.util.logging.FileHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
+			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n" );
 		}
 
 		// Set the default log level
 		builder.append( ".level=" );
-		builder.append( getDefaultLogLevel( level ) );
+		builder.append( getLogLevel( level ) );
 		builder.append( "\n" );
 
 		// Set the program log level
 		builder.append( source.getClass().getPackage().getName() );
 		builder.append( ".level=" );
-		builder.append( getProgramLogLevel( level ) );
+		builder.append( getLogLevel( level ) );
 		builder.append( "\n" );
 
 		// Initialize the logging
@@ -73,28 +77,12 @@ public class LogUtil {
 		}
 	}
 
-	private static String getDefaultLogLevel( String level ) {
-		String result = level == null ? "info" : level.toUpperCase();
-
-		switch( result ) {
-			case "ERROR": {
-				result = "SEVERE";
-				break;
-			}
-			case "WARN": {
-				result = "WARNING";
-				break;
-			}
-			default: {
-				result = "INFO";
-				break;
-			}
-		}
-
-		return result;
+	private static String getLogFilePattern( String path ) {
+		Path userHome = Paths.get( System.getProperty( "user.home" ) );
+		return "%h/" + userHome.relativize( Paths.get( path ) ).toString().replace( '\\', '/' );
 	}
 
-	private static String getProgramLogLevel( String level ) {
+	private static String getLogLevel( String level ) {
 		String result = level == null ? "INFO" : level.toUpperCase();
 
 		switch( result ) {
@@ -111,7 +99,7 @@ public class LogUtil {
 				break;
 			}
 			case "INFO": {
-				result = "INFO";
+				//result = "INFO";
 				break;
 			}
 			case "DEBUG": {
@@ -123,11 +111,11 @@ public class LogUtil {
 				break;
 			}
 			case "ALL": {
-				result = "ALL";
+				//result = "ALL";
 				break;
 			}
 			default: {
-				result = "ERROR";
+				result = "INFO";
 				break;
 			}
 		}
