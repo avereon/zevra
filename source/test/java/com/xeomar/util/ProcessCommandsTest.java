@@ -9,13 +9,18 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ProcessCommandsTest {
 
 	@Test
 	public void testForModuleWithNull() {
-		List<String> commands = ProcessCommands.forModule( null, null, null );
-		assertThat( commands.size(), is( 0 ) );
+		try {
+			ProcessCommands.forModule( null, null, null );
+			fail( "Should throw NullPointerException");
+		} catch( NullPointerException exception ) {
+			// This exception should be thrown
+		}
 	}
 
 	@Test
