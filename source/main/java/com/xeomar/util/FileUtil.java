@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
 import java.util.List;
@@ -289,17 +290,23 @@ public class FileUtil {
 	public static boolean delete( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return true;
 
-		// Walk the folders
-		if( Files.isDirectory( path ) ) {
-			try( Stream<Path> paths = Files.list( path ) ) {
-				for( Path folder : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) delete( folder );
+		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) throws IOException {
+				Files.delete( file );
+				return FileVisitResult.CONTINUE;
 			}
-		}
 
-		// Delete the files
-		try( Stream<Path> paths = Files.walk( path ) ) {
-			for( Path file : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) Files.delete( file );
-		}
+			@Override
+			public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
+				if( exception == null ) {
+					Files.delete( folder );
+					return FileVisitResult.CONTINUE;
+				} else {
+					throw exception;
+				}
+			}
+		} );
 
 		return !Files.exists( path );
 	}
@@ -307,15 +314,23 @@ public class FileUtil {
 	public static Path deleteOnExit( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return path;
 
-		if( Files.isDirectory( path ) ) {
-			try( Stream<Path> paths = Files.list( path ) ) {
-				for( Path folder : paths.collect( Collectors.toList() ) ) deleteOnExit( folder );
+		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) {
+				file.toFile().deleteOnExit();
+				return FileVisitResult.CONTINUE;
 			}
-		}
 
-		try( Stream<Path> paths = Files.walk( path ) ) {
-			for( Path file : paths.sorted( Comparator.reverseOrder() ).collect( Collectors.toList() ) ) file.toFile().deleteOnExit();
-		}
+			@Override
+			public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
+				if( exception == null ) {
+					folder.toFile().deleteOnExit();
+					return FileVisitResult.CONTINUE;
+				} else {
+					throw exception;
+				}
+			}
+		} );
 
 		return path;
 	}
