@@ -18,6 +18,10 @@ public class LogUtil {
 	}
 
 	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
+		configureLogging( source, parameters, null );
+	}
+
+	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters, Path programDataFolder ) {
 		// Logging level conversion
 		//
 		// SLF4J -> Java
@@ -30,6 +34,9 @@ public class LogUtil {
 
 		String level = parameters.get( LogFlag.LOG_LEVEL );
 		String file = parameters.get( LogFlag.LOG_FILE );
+
+		boolean nameOnly = file != null && new File( file ).toString().equals( new File( file ).getName() );
+		if( nameOnly && programDataFolder != null ) file = new File( programDataFolder.toFile(), file ).toString();
 
 		// Configure the simple formatter
 		// https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
