@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractSettings implements Settings {
@@ -40,9 +37,9 @@ public abstract class AbstractSettings implements Settings {
 		outboundConverters.put( Long.class, String::valueOf );
 		outboundConverters.put( Float.class, String::valueOf );
 		outboundConverters.put( Double.class, String::valueOf );
-		outboundConverters.put( String.class, (value) -> (String)value );
+		outboundConverters.put( String.class, ( value ) -> (String)value );
 		outboundConverters.put( URI.class, Object::toString );
-		outboundConverters.put( File.class, (value) -> ((File)value).toURI().toString() );
+		outboundConverters.put( File.class, ( value ) -> ((File)value).toURI().toString() );
 
 		inboundConverters = new HashMap<>();
 		inboundConverters.put( Boolean.class, ( value ) -> value == null ? null : Boolean.parseBoolean( value ) );
@@ -96,7 +93,7 @@ public abstract class AbstractSettings implements Settings {
 		// Unmarshall the value
 		if( converter != null ) {
 			value = converter.convert( getValue( key ) );
-			if( value == null ) value = converter.convert( getDefault( key ));
+			if( value == null ) value = converter.convert( getDefault( key ) );
 		} else if( typeClass.isArray() ) {
 			value = unmarshallValue( getArray( key ), type, getDefault( key ) );
 		} else if( typeClass.isAssignableFrom( Collection.class ) || typeClass.isAssignableFrom( Map.class ) ) {
@@ -121,18 +118,23 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public void set( String key, Object value ) {
+		String oldValue = get( key );
+		String newValue = null;
+
 		if( value == null ) {
 			removeValue( key );
 		} else if( outboundConverters.keySet().contains( value.getClass() ) ) {
-			setValue( key, outboundConverters.get( value.getClass() ).convert( value ) );
+			setValue( key, newValue = outboundConverters.get( value.getClass() ).convert( value ) );
 		} else if( value instanceof Collection || value instanceof Map ) {
-			setCollection( key, marshallValue( value ) );
+			setCollection( key, newValue = marshallValue( value ) );
 		} else if( value.getClass().isArray() ) {
-			setArray( key, marshallValue( value ) );
+			setArray( key, newValue = marshallValue( value ) );
 		} else {
-			setBean( key, marshallValue( value ) );
+			setBean( key, newValue = marshallValue( value ) );
 		}
 
+		// FIXME Settings change event should only be fired if the values are different
+		boolean different = Objects.equals( oldValue, newValue );
 		new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
 	}
 
