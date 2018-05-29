@@ -70,7 +70,7 @@ public class LogUtil {
 		builder.append( "\n" );
 
 		// Set the javafx.scene log level
-		builder.append( "javafx.scene" );
+		builder.append( "javafx" );
 		builder.append( ".level=" );
 		builder.append( getLogLevel( "info" ) );
 		builder.append( "\n" );
