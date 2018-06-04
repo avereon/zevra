@@ -349,14 +349,27 @@ public abstract class BaseSettingsTest {
 	public void testUpdatedEvent() {
 		SettingsEventWatcher watcher = new SettingsEventWatcher();
 		settings.addSettingsListener( watcher );
+		assertThat( watcher.getEvents().size(), is( 0 ) );
 
+		// The value does not change so there should not be an extra eevent
+		settings.set( "a", null );
 		assertThat( watcher.getEvents().size(), is( 0 ) );
 
 		settings.set( "a", "A" );
 		assertThat( watcher.getEvents().get( 0 ), eventHas( settings, SettingsEvent.Type.CHANGED, settings.getPath(), "a", null, "A" ) );
+		assertThat( watcher.getEvents().size(), is( 1 ) );
+
+		// The value does not change so there should not be an extra event
+		settings.set( "a", "A" );
+		assertThat( watcher.getEvents().size(), is( 1 ) );
 
 		settings.set( "a", null );
 		assertThat( watcher.getEvents().get( 1 ), eventHas( settings, SettingsEvent.Type.CHANGED, settings.getPath(), "a", null, null ) );
+		assertThat( watcher.getEvents().size(), is( 2 ) );
+
+		// The value does not change so there should not be an extra event
+		settings.set( "a", null );
+		assertThat( watcher.getEvents().size(), is( 2 ) );
 	}
 
 	@Test

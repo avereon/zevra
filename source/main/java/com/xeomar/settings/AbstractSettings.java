@@ -133,9 +133,8 @@ public abstract class AbstractSettings implements Settings {
 			setBean( key, newValue = marshallValue( value ) );
 		}
 
-		// FIXME Settings change event should only be fired if the values are different
-		boolean different = Objects.equals( oldValue, newValue );
-		new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
+		// Settings change event should only be fired if the values are different
+		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
 	}
 
 	/**
