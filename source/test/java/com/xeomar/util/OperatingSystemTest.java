@@ -36,6 +36,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86_64" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.LINUX ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Community" ) );
 	}
 
 	@Test
@@ -49,6 +50,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "ppc" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Apple" ) );
 	}
 
 	@Test
@@ -62,6 +64,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 	}
 
 	@Test
@@ -75,6 +78,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 	}
 
 	@Test
@@ -88,6 +92,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 	}
 
 	@Test
@@ -101,6 +106,7 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 	}
 
 	@Test

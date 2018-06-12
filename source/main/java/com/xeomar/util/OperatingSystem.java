@@ -78,6 +78,27 @@ public class OperatingSystem {
 		return family;
 	}
 
+	public static final String getProvider() {
+		switch( family ) {
+			case WINDOWS: {
+				return "Microsoft";
+			}
+			case MAC:
+			case MACOSX: {
+				return "Apple";
+			}
+			case LINUX: {
+				return "Community";
+			}
+			case OS2: {
+				return "IBM";
+			}
+			default: {
+				return "";
+			}
+		}
+	}
+
 	public static final String getVersion() {
 		return version;
 	}
