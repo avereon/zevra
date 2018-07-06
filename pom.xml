@@ -92,32 +92,6 @@
 
 		</resources>
 
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>com.xeomar.xenon.Program</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-
-		</plugins>
-
 	</build>
 
 </project>
