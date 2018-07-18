@@ -81,6 +81,7 @@
 	</dependencies>
 
 	<build>
+
 		<sourceDirectory>source/main/java</sourceDirectory>
 		<testSourceDirectory>source/test/java</testSourceDirectory>
 
@@ -91,22 +92,6 @@
 			</resource>
 
 		</resources>
-
-		<!--<plugins>-->
-			<!--<plugin>-->
-				<!--<artifactId>maven-jmod-plugin</artifactId>-->
-				<!--<version>3.0.0-alpha-1</version>-->
-				<!--<extensions>true</extensions>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<phase>package</phase>-->
-						<!--<goals>-->
-							<!--<goal>create</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
-		<!--</plugins>-->
 
 	</build>
 
