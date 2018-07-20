@@ -40,6 +40,7 @@
 		<product-name>${project.name}</product-name>
 		<product-identifier>razor</product-identifier>
 		<project-timestamp>${maven.build.timestamp}</project-timestamp>
+
 		<commonsio-version>2.6</commonsio-version>
 		<jackson-version>2.9.6</jackson-version>
 		<slf4j-version>1.8.0-beta2</slf4j-version>
@@ -79,21 +80,6 @@
 		</dependency>
 
 	</dependencies>
-
-	<build>
-
-		<sourceDirectory>source/main/java</sourceDirectory>
-		<testSourceDirectory>source/test/java</testSourceDirectory>
-
-		<resources>
-
-			<resource>
-				<directory>source/main/resources</directory>
-			</resource>
-
-		</resources>
-
-	</build>
 
 </project>
 
