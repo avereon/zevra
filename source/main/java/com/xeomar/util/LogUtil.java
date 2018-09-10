@@ -90,6 +90,10 @@ public class LogUtil {
 		}
 	}
 
+	public static String getLogFile() {
+		return LogManager.getLogManager().getProperty( "java.util.logging.FileHandler.pattern" );
+	}
+
 	private static String getLogFilePattern( String path ) {
 		Path userHome = Paths.get( System.getProperty( "user.home" ) );
 		return "%h/" + userHome.relativize( Paths.get( path ) ).toString().replace( '\\', '/' );
