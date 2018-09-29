@@ -35,7 +35,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testGetHumanSize() throws Exception {
+	public void testGetHumanSize() {
 		assertThat( FileUtil.getHumanSize( 0 ), is( "0B" ) );
 		assertThat( FileUtil.getHumanSize( 1 ), is( "1B" ) );
 		assertThat( FileUtil.getHumanSize( 12 ), is( "12B" ) );
@@ -46,6 +46,17 @@ public class FileUtilTest {
 		assertThat( FileUtil.getHumanSize( 1234567 ), is( "1.2MB" ) );
 		assertThat( FileUtil.getHumanSize( 12345678 ), is( "12MB" ) );
 		assertThat( FileUtil.getHumanSize( 123456789 ), is( "123MB" ) );
+
+		assertThat( FileUtil.getHumanSize( -0 ), is( "0B" ) );
+		assertThat( FileUtil.getHumanSize( -1 ), is( "-1B" ) );
+		assertThat( FileUtil.getHumanSize( -12 ), is( "-12B" ) );
+		assertThat( FileUtil.getHumanSize( -123 ), is( "-123B" ) );
+		assertThat( FileUtil.getHumanSize( -1234 ), is( "-1.2KB" ) );
+		assertThat( FileUtil.getHumanSize( -12345 ), is( "-12KB" ) );
+		assertThat( FileUtil.getHumanSize( -123456 ), is( "-123KB" ) );
+		assertThat( FileUtil.getHumanSize( -1234567 ), is( "-1.2MB" ) );
+		assertThat( FileUtil.getHumanSize( -12345678 ), is( "-12MB" ) );
+		assertThat( FileUtil.getHumanSize( -123456789 ), is( "-123MB" ) );
 
 		assertThat( FileUtil.getHumanSize( SizeUnit.KB.getSize() - 1 ), is( "999B" ) );
 		assertThat( FileUtil.getHumanSize( SizeUnit.KB.getSize() ), is( "1.0KB" ) );
@@ -67,7 +78,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testGetHumanBinSize() throws Exception {
+	public void testGetHumanBinSize() {
 		assertThat( FileUtil.getHumanBinSize( 0 ), is( "0B" ) );
 		assertThat( FileUtil.getHumanBinSize( 1 ), is( "1B" ) );
 		assertThat( FileUtil.getHumanBinSize( 12 ), is( "12B" ) );
@@ -78,6 +89,17 @@ public class FileUtilTest {
 		assertThat( FileUtil.getHumanBinSize( 1234567 ), is( "1.2MiB" ) );
 		assertThat( FileUtil.getHumanBinSize( 12345678 ), is( "11MiB" ) );
 		assertThat( FileUtil.getHumanBinSize( 123456789 ), is( "117MiB" ) );
+
+		assertThat( FileUtil.getHumanBinSize( -0 ), is( "0B" ) );
+		assertThat( FileUtil.getHumanBinSize( -1 ), is( "-1B" ) );
+		assertThat( FileUtil.getHumanBinSize( -12 ), is( "-12B" ) );
+		assertThat( FileUtil.getHumanBinSize( -123 ), is( "-123B" ) );
+		assertThat( FileUtil.getHumanBinSize( -1234 ), is( "-1.2KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( -12345 ), is( "-12KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( -123456 ), is( "-120KiB" ) );
+		assertThat( FileUtil.getHumanBinSize( -1234567 ), is( "-1.2MiB" ) );
+		assertThat( FileUtil.getHumanBinSize( -12345678 ), is( "-11MiB" ) );
+		assertThat( FileUtil.getHumanBinSize( -123456789 ), is( "-117MiB" ) );
 
 		assertThat( FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() - 1 ), is( "1023B" ) );
 		assertThat( FileUtil.getHumanBinSize( SizeUnit.KiB.getSize() ), is( "1.0KiB" ) );
@@ -99,28 +121,28 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testGetExtensionWithPath() throws Exception {
+	public void testGetExtensionWithPath() {
 		assertThat( FileUtil.getExtension( (Path)null ), is( nullValue() ) );
 		assertThat( FileUtil.getExtension( Paths.get( "test" ) ), is( "" ) );
 		assertThat( FileUtil.getExtension( Paths.get( "test.txt" ) ), is( "txt" ) );
 	}
 
 	@Test
-	public void testGetExtensionWithName() throws Exception {
+	public void testGetExtensionWithName() {
 		assertThat( FileUtil.getExtension( (String)null ), is( nullValue() ) );
 		assertThat( FileUtil.getExtension( "test" ), is( "" ) );
 		assertThat( FileUtil.getExtension( "test.txt" ), is( "txt" ) );
 	}
 
 	@Test
-	public void testRemoveExtensionWithPath() throws Exception {
+	public void testRemoveExtensionWithPath() {
 		assertThat( FileUtil.removeExtension( (Path)null ), is( nullValue() ) );
 		assertThat( FileUtil.removeExtension( Paths.get( "test" ) ), is( Paths.get( "test" ) ) );
 		assertThat( FileUtil.removeExtension( Paths.get( "test.txt" ) ), is( Paths.get( "test" ) ) );
 	}
 
 	@Test
-	public void testRemoveExtensionWithName() throws Exception {
+	public void testRemoveExtensionWithName() {
 		assertThat( FileUtil.removeExtension( (String)null ), is( nullValue() ) );
 		assertThat( FileUtil.removeExtension( "test" ), is( "test" ) );
 		assertThat( FileUtil.removeExtension( "test.txt" ), is( "test" ) );
@@ -144,22 +166,7 @@ public class FileUtilTest {
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFileSource" );
 		Path target = source.getParent().resolve( "copyFileToNewFileTarget" );
 
-		try {
-			FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
-			try( DataOutputStream output = new DataOutputStream( fileOutput ) ) {
-				output.writeLong( time );
-			}
-
-			assertThat( FileUtil.copy( source, target ), is( true ) );
-
-			FileInputStream fileInput = new FileInputStream( target.toFile() );
-			try( DataInputStream input = new DataInputStream( fileInput ) ) {
-				assertThat( input.readLong(), is( time ) );
-			}
-		} finally {
-			FileUtil.deleteOnExit( source );
-			FileUtil.deleteOnExit( target );
-		}
+		assertFileCopy( time, source, target );
 	}
 
 	@Test
@@ -168,22 +175,7 @@ public class FileUtilTest {
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFileSource" );
 		Path target = FileUtil.createTempFile( PREFIX, "copyFileToFileTarget" );
 
-		try {
-			FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
-			try( DataOutputStream output = new DataOutputStream( fileOutput ) ) {
-				output.writeLong( time );
-			}
-
-			assertThat( FileUtil.copy( source, target ), is( true ) );
-
-			FileInputStream fileInput = new FileInputStream( target.toFile() );
-			try( DataInputStream input = new DataInputStream( fileInput ) ) {
-				assertThat( input.readLong(), is( time ) );
-			}
-		} finally {
-			FileUtil.deleteOnExit( source );
-			FileUtil.deleteOnExit( target );
-		}
+		assertFileCopy( time, source, target );
 	}
 
 	@Test
@@ -402,6 +394,25 @@ public class FileUtilTest {
 			assertThat( folder, is( check ) );
 		} finally {
 			FileUtil.delete( folder );
+		}
+	}
+
+	private void assertFileCopy( long time, Path source, Path target ) throws IOException {
+		try {
+			FileOutputStream fileOutput = new FileOutputStream( source.toFile() );
+			try( DataOutputStream output = new DataOutputStream( fileOutput ) ) {
+				output.writeLong( time );
+			}
+
+			assertThat( FileUtil.copy( source, target ), is( true ) );
+
+			FileInputStream fileInput = new FileInputStream( target.toFile() );
+			try( DataInputStream input = new DataInputStream( fileInput ) ) {
+				assertThat( input.readLong(), is( time ) );
+			}
+		} finally {
+			FileUtil.deleteOnExit( source );
+			FileUtil.deleteOnExit( target );
 		}
 	}
 

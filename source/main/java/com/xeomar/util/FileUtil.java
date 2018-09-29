@@ -32,6 +32,8 @@ public class FileUtil {
 	 */
 	public static String getHumanSize( long size ) {
 		int exponent = 0;
+		boolean negative = size < 0;
+		size = Math.abs( size );
 		long coefficient = size;
 		long base = SizeUnit.KB.getSize();
 		while( coefficient >= base ) {
@@ -67,16 +69,16 @@ public class FileUtil {
 			}
 		}
 
-		// Should be, at most, five characters long; three numbers, two units.
+		// Should be, at most, seven characters long: possible negative sign, four numbers, two units
 		if( exponent > 0 && coefficient < 10 ) {
 			long precise = size;
 			while( precise >= SizeUnit.MB.getSize() ) {
 				precise /= base;
 			}
-			return String.format( "%3.1f", (float)precise / base ) + unit;
+			return (negative ? "-" : "") + String.format( "%3.1f", (float)precise / base ) + unit;
 		}
 
-		return String.valueOf( coefficient ) + unit;
+		return (negative ? "-" : "") + String.valueOf( coefficient ) + unit;
 	}
 
 	/**
@@ -87,7 +89,9 @@ public class FileUtil {
 	 */
 	public static String getHumanBinSize( long size ) {
 		int exponent = 0;
-		long coefficient = size;
+		boolean negative = size < 0;
+		size = Math.abs( size );
+		long coefficient =  size ;
 		long base = SizeUnit.KiB.getSize();
 		while( coefficient >= base ) {
 			coefficient /= base;
@@ -122,16 +126,16 @@ public class FileUtil {
 			}
 		}
 
-		// Should be, at most, seven characters long; four numbers, three units.
+		// Should be, at most, eight characters long: possible negative sign, four numbers, three units
 		if( exponent > 0 && coefficient < 10 ) {
-			long precise = size;
+			long precise =  size;
 			while( precise >= SizeUnit.MiB.getSize() ) {
 				precise /= base;
 			}
-			return String.format( "%3.1f", (float)precise / base ) + unit;
+			return (negative ? "-" : "") + String.format( "%3.1f", (float)precise / base ) + unit;
 		}
 
-		return String.valueOf( coefficient ) + unit;
+		return (negative ? "-" : "") + String.valueOf( coefficient ) + unit;
 	}
 
 	public static String getExtension( Path path ) {
@@ -293,6 +297,7 @@ public class FileUtil {
 		if( !Files.exists( path ) ) return true;
 
 		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+
 			@Override
 			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) throws IOException {
 				Files.delete( file );
@@ -317,6 +322,7 @@ public class FileUtil {
 		if( !Files.exists( path ) ) return path;
 
 		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+
 			@Override
 			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) {
 				file.toFile().deleteOnExit();
