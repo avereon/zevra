@@ -184,7 +184,8 @@ public class FileUtil {
 		return copy( source, target, false );
 	}
 
-	public static boolean copy( Path source, Path target, boolean keepSourceFolder ) throws IOException {
+	// FIXME This method has a recursion bug in it
+	public static boolean copy( Path source, Path target, boolean addRootFolder ) throws IOException {
 		// Cannot copy a folder to a file
 		if( Files.isDirectory( source ) && Files.isRegularFile( target ) ) return false;
 
@@ -206,7 +207,7 @@ public class FileUtil {
 		// Copy folder sources to folder targets
 		if( Files.isDirectory( source ) && Files.isDirectory( target ) ) {
 			Path newTarget = target;
-			if( keepSourceFolder ) {
+			if( addRootFolder ) {
 				newTarget = target.resolve( source.getFileName() );
 				Files.createDirectories( newTarget );
 			}

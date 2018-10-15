@@ -9,6 +9,10 @@ import java.util.Map;
 
 public class ProcessCommands {
 
+	public static boolean isLinked() {
+		return System.getProperty( "jdk.module.path" ) == null && System.getProperty( "jdk.module.main.class" ) == null;
+	}
+
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String moduleMain = System.getProperty( "jdk.module.main" );
@@ -20,6 +24,10 @@ public class ProcessCommands {
 		List<String> commands = forModule();
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
+	}
+
+	public static List<String> forModule( String moduleMain ) {
+		return forModule( null, moduleMain, null );
 	}
 
 	public static List<String> forModule( String modulePath, String moduleMain, String moduleMainClass, Parameters parameters, String... extraCommands ) {
