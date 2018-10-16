@@ -19,10 +19,10 @@ public class LogUtil {
 	}
 
 	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters ) {
-		configureLogging( source, parameters, null );
+		configureLogging( source, parameters, null, null );
 	}
 
-	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters, Path programDataFolder ) {
+	public static void configureLogging( Object source, com.xeomar.util.Parameters parameters, Path programDataFolder, String defaultFile ) {
 		// Logging level conversion
 		//
 		// SLF4J -> Java
@@ -34,9 +34,9 @@ public class LogUtil {
 		// TRACE -> FINEST
 
 		String level = parameters.get( LogFlag.LOG_LEVEL );
-		String file = parameters.get( LogFlag.LOG_FILE );
+		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
 
-		boolean nameOnly = file != null && new File( file ).toString().equals( new File( file ).getName() );
+		boolean nameOnly = file != null && !file.contains( File.separator );
 		if( nameOnly && programDataFolder != null ) file = new File( programDataFolder.toFile(), file ).toString();
 
 		// Configure the simple formatter
