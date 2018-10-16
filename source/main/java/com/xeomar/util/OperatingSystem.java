@@ -111,6 +111,10 @@ public class OperatingSystem {
 		return arch;
 	}
 
+	public static final boolean isPosix() {
+		return family == Family.LINUX || family == Family.MACOSX || family == Family.UNIX;
+	}
+
 	public static final boolean isLinux() {
 		return family == Family.LINUX;
 	}

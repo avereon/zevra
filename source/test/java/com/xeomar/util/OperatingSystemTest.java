@@ -28,6 +28,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testLinux() throws Exception {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( true ) );
 		assertThat( OperatingSystem.isLinux(), is( true ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( true ) );
@@ -42,6 +43,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testMac() throws Exception {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( true ) );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( true ) );
 		assertThat( OperatingSystem.isUnix(), is( true ) );
@@ -56,6 +58,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testWindows7() throws Exception {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( false ) );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -70,6 +73,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testWindows8() throws Exception {
 		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( false ) );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -84,6 +88,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testWindows8_1() throws Exception {
 		OperatingSystem.init( "Windows 8.1", "x86", "6.3", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( false ) );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
@@ -98,6 +103,7 @@ public class OperatingSystemTest {
 	@Test
 	public void testWindows10() throws Exception {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix(), is( false ) );
 		assertThat( OperatingSystem.isLinux(), is( false ) );
 		assertThat( OperatingSystem.isMac(), is( false ) );
 		assertThat( OperatingSystem.isUnix(), is( false ) );
