@@ -9,21 +9,11 @@ import java.util.Map;
 
 public class ProcessCommands {
 
-	public static boolean isLinked() {
-		return System.getProperty( "jdk.module.path" ) == null && System.getProperty( "jdk.module.main.class" ) == null;
-	}
-
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String moduleMain = System.getProperty( "jdk.module.main" );
 		String moduleMainClass = System.getProperty( "jdk.module.main.class" );
 		return forModule( modulePath, moduleMain, moduleMainClass );
-	}
-
-	public static List<String> forModule( Parameters parameters, String... extraCommands ) {
-		List<String> commands = forModule();
-		commands.addAll( getParameterCommands( parameters, extraCommands ) );
-		return commands;
 	}
 
 	public static List<String> forModule( String moduleMain, String moduleMainClass ) {
@@ -40,8 +30,8 @@ public class ProcessCommands {
 		List<String> commands = new ArrayList<>();
 
 		//if( modulePath == null ) throw new NullPointerException( "Module path cannot be null"  );
-		if( moduleMain == null ) throw new NullPointerException( "Main module cannot be null"  );
-		if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null"  );
+		if( moduleMain == null ) throw new NullPointerException( "Main module cannot be null" );
+		if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null" );
 
 		// Add the executable path
 		commands.add( getExecutablePath() );
@@ -64,17 +54,14 @@ public class ProcessCommands {
 			commands.add( "-p" );
 			commands.add( modulePath );
 		}
-		if( moduleMainClass != null ) {
-			commands.add( "-m" );
-			commands.add( moduleMain + "/" + moduleMainClass );
-		} else {
-			commands.add( "-m" + moduleMain );
-		}
+
+		commands.add( "-m" );
+		commands.add( moduleMain + "/" + moduleMainClass );
 
 		return commands;
 	}
 
-	public static List<String> getParameterCommands( Parameters parameters, String... extraCommands ) {
+	private static List<String> getParameterCommands( Parameters parameters, String... extraCommands ) {
 		Parameters extraParameters = Parameters.parse( extraCommands ).add( parameters );
 
 		// Collect program flags.
