@@ -26,8 +26,8 @@ public class ProcessCommands {
 		return commands;
 	}
 
-	public static List<String> forModule( String moduleMain ) {
-		return forModule( null, moduleMain, null );
+	public static List<String> forModule( String moduleMain, String moduleMainClass ) {
+		return forModule( null, moduleMain, moduleMainClass );
 	}
 
 	public static List<String> forModule( String modulePath, String moduleMain, String moduleMainClass, Parameters parameters, String... extraCommands ) {
@@ -41,7 +41,7 @@ public class ProcessCommands {
 
 		//if( modulePath == null ) throw new NullPointerException( "Module path cannot be null"  );
 		if( moduleMain == null ) throw new NullPointerException( "Main module cannot be null"  );
-		//if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null"  );
+		if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null"  );
 
 		// Add the executable path
 		commands.add( getExecutablePath() );
