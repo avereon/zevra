@@ -1,5 +1,6 @@
 package com.xeomar.util;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -184,49 +185,33 @@ public class FileUtil {
 		return copy( source, target, false );
 	}
 
-	// FIXME This method has a recursion bug in it
 	public static boolean copy( Path source, Path target, boolean addRootFolder ) throws IOException {
-		// Cannot copy a folder to a file
-		if( Files.isDirectory( source ) && Files.isRegularFile( target ) ) return false;
-
 		// Copy file sources to file targets
 		if( Files.isRegularFile( source ) && Files.isRegularFile( target ) ) {
-			try( FileInputStream input = new FileInputStream( source.toFile() ); FileOutputStream output = new FileOutputStream( target.toFile() ) ) {
-				IOUtils.copy( input, output );
-			}
+			FileUtils.copyFile( source.toFile(), target.toFile() );
 			return true;
 		}
 
 		// Copy file sources to folder targets
 		if( Files.isRegularFile( source ) && Files.isDirectory( target ) ) {
-			Path newTarget = target.resolve( source.getFileName() );
-			Files.createFile( newTarget );
-			return copy( source, newTarget, false );
+			FileUtils.copyFileToDirectory( source.toFile(), target.toFile() );
+			return true;
 		}
 
 		// Copy folder sources to folder targets
 		if( Files.isDirectory( source ) && Files.isDirectory( target ) ) {
-			Path newTarget = target;
 			if( addRootFolder ) {
-				newTarget = target.resolve( source.getFileName() );
-				Files.createDirectories( newTarget );
+				FileUtils.copyDirectoryToDirectory( source.toFile(), target.toFile() );
+			} else {
+				FileUtils.copyDirectory( source.toFile(), target.toFile() );
 			}
-
-			boolean result = true;
-			try( Stream<Path> list = Files.list( source ) ) {
-				for( Path path : list.collect( Collectors.toList() ) ) {
-					result = result & copy( path, newTarget, true );
-				}
-			}
-			return result;
+			return true;
 		}
 
 		// Copy file source to new file target
 		if( Files.isRegularFile( source ) ) {
-			Path parent = target.getParent();
-			if( !Files.exists( parent ) ) Files.createDirectories( target.getParent() );
-			Files.createFile( target );
-			return copy( source, target, false );
+			FileUtils.copyFile( source.toFile(), target.toFile() );
+			return true;
 		}
 
 		return false;
