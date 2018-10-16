@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.LogManager;
@@ -83,7 +84,7 @@ public class LogUtil {
 
 		// Initialize the logging
 		try {
-			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( "utf-8" ) );
+			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
 		} catch( IOException exception ) {
 			exception.printStackTrace( System.err );
