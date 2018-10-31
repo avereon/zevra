@@ -32,54 +32,56 @@ public class FileUtil {
 	 * @return The human readable size string
 	 */
 	public static String getHumanSize( long size ) {
+		return getHumanSize( size, false );
+	}
+
+	/**
+	 * Get a human readable string using orders of magnitude in base-10.
+	 *
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
+	 * @return The human readable size string
+	 */
+	public static String getHumanSize( long size, boolean compact ) {
+		return getHumanSize( size, compact, true );
+	}
+
+	/**
+	 * Get a human readable string using orders of magnitude in base-10.
+	 *
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
+	 * @param showUnit If the unit should be shown
+	 * @return The human readable size string
+	 */
+	public static String getHumanSize( long size, boolean compact, boolean showUnit ) {
 		int exponent = 0;
 		boolean negative = size < 0;
 		size = Math.abs( size );
 		long coefficient = size;
-		long base = SizeUnit.KB.getSize();
+		long base = SizeUnitBase10.KB.getSize();
 		while( coefficient >= base ) {
 			coefficient /= base;
 			exponent++;
 		}
 
-		SizeUnit unit = SizeUnit.B;
-		switch( exponent ) {
-			case 1: {
-				unit = SizeUnit.KB;
-				break;
-			}
-			case 2: {
-				unit = SizeUnit.MB;
-				break;
-			}
-			case 3: {
-				unit = SizeUnit.GB;
-				break;
-			}
-			case 4: {
-				unit = SizeUnit.TB;
-				break;
-			}
-			case 5: {
-				unit = SizeUnit.PB;
-				break;
-			}
-			case 6: {
-				unit = SizeUnit.EB;
-				break;
-			}
-		}
+		SizeUnitBase10 unit = SizeUnitBase10.values()[ exponent ];
+		String unitString = compact ? unit.getCompact() : unit.name();
 
 		// Should be, at most, seven characters long: possible negative sign, four numbers, two units
+		StringBuilder text = new StringBuilder( negative ? "-" : "" );
 		if( exponent > 0 && coefficient < 10 ) {
 			long precise = size;
-			while( precise >= SizeUnit.MB.getSize() ) {
+			while( precise >= SizeUnitBase10.MB.getSize() ) {
 				precise /= base;
 			}
-			return (negative ? "-" : "") + String.format( "%3.1f", (float)precise / base ) + unit;
+			text.append( String.format( "%3.1f", (float)precise / base ) );
+		} else {
+			text.append( String.valueOf( coefficient ) );
 		}
+		if( showUnit ) text.append( unitString );
 
-		return (negative ? "-" : "") + String.valueOf( coefficient ) + unit;
+		return text.toString();
 	}
 
 	/**
@@ -88,55 +90,57 @@ public class FileUtil {
 	 * @param size The size to convert to human readable
 	 * @return The human readable size string
 	 */
-	public static String getHumanBinSize( long size ) {
+	public static String getHumanSizeBase2( long size ) {
+		return getHumanSizeBase2( size, false );
+	}
+
+	/**
+	 * Get a human readable string using orders of magnitude in base-2.
+	 *
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
+	 * @return The human readable size string
+	 */
+	public static String getHumanSizeBase2( long size, boolean compact ) {
+		return getHumanSizeBase2( size, compact, true );
+	}
+
+	/**
+	 * Get a human readable string using orders of magnitude in base-2.
+	 *
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
+	 * @param showUnit If the unit should be shown
+	 * @return The human readable size string
+	 */
+	public static String getHumanSizeBase2( long size, boolean compact, boolean showUnit ) {
 		int exponent = 0;
 		boolean negative = size < 0;
 		size = Math.abs( size );
-		long coefficient =  size ;
-		long base = SizeUnit.KiB.getSize();
+		long coefficient = size;
+		long base = SizeUnitBase2.KiB.getSize();
 		while( coefficient >= base ) {
 			coefficient /= base;
 			exponent++;
 		}
 
-		String unit = "B";
-		switch( exponent ) {
-			case 1: {
-				unit = "KiB";
-				break;
-			}
-			case 2: {
-				unit = "MiB";
-				break;
-			}
-			case 3: {
-				unit = "GiB";
-				break;
-			}
-			case 4: {
-				unit = "TiB";
-				break;
-			}
-			case 5: {
-				unit = "PiB";
-				break;
-			}
-			case 6: {
-				unit = "EiB";
-				break;
-			}
-		}
+		SizeUnitBase2 unit = SizeUnitBase2.values()[ exponent ];
+		String unitString = compact ? unit.getCompact() : unit.name();
 
 		// Should be, at most, eight characters long: possible negative sign, four numbers, three units
+		StringBuilder text = new StringBuilder( negative ? "-" : "" );
 		if( exponent > 0 && coefficient < 10 ) {
-			long precise =  size;
-			while( precise >= SizeUnit.MiB.getSize() ) {
+			long precise = size;
+			while( precise >= SizeUnitBase2.MiB.getSize() ) {
 				precise /= base;
 			}
-			return (negative ? "-" : "") + String.format( "%3.1f", (float)precise / base ) + unit;
+			text.append( String.format( "%3.1f", (float)precise / base ) );
+		} else {
+			text.append( String.valueOf( coefficient ) );
 		}
+		if( showUnit ) text.append( unitString );
 
-		return (negative ? "-" : "") + String.valueOf( coefficient ) + unit;
+		return text.toString();
 	}
 
 	public static String getExtension( Path path ) {
