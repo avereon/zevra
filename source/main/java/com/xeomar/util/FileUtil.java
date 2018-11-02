@@ -12,10 +12,13 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -237,8 +240,15 @@ public class FileUtil {
 	}
 
 	public static void zip( Path source, Path target ) throws IOException {
-		try( Stream<Path> paths = Files.walk( source ); ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
-			for( Path sourcePath : paths.collect( Collectors.toList() ) ) {
+		List<Path> paths = listPaths( source );
+
+		long total = 0;
+		for( Path path : paths ) {
+			total += Files.isDirectory( path ) ? 0 : Files.size( path );
+		}
+
+		try( ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
+			for( Path sourcePath : paths ) {
 				boolean folder = Files.isDirectory( sourcePath );
 				String zipEntryPath = source.relativize( sourcePath ).toString();
 
@@ -271,6 +281,78 @@ public class FileUtil {
 					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 						Files.createDirectories( file.getParent() );
 						IOUtils.copy( zip, output );
+					}
+				}
+			}
+		}
+	}
+
+	public static long getRecursiveSize( Path source ) throws IOException {
+		List<Path> paths = listPaths( source );
+
+		long total = 0;
+		for( Path path : paths ) {
+			total += Files.isDirectory( path ) ? 0 : Files.size( path );
+		}
+
+		return total;
+	}
+
+	public static long getUncompressedZipSize( Path source ) throws IOException {
+		ZipFile zipFile = new ZipFile( source.toFile() );
+		Iterator<? extends ZipEntry> entries = zipFile.entries().asIterator();
+
+		long total = 0;
+		while( entries.hasNext() ) {
+			ZipEntry entry = entries.next();
+			total += entry.isDirectory() ? 0 : entry.getSize();
+		}
+
+		return total;
+	}
+
+	public static void zip( Path source, Path target, LongCallback progressCallback ) throws IOException {
+		final AtomicLong total = new AtomicLong( 0 );
+		final AtomicLong last = new AtomicLong( 0 );
+
+		try( ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
+			for( Path sourcePath : listPaths( source ) ) {
+				boolean folder = Files.isDirectory( sourcePath );
+				String zipEntryPath = source.relativize( sourcePath ).toString();
+
+				if( folder ) {
+					// Folders need to have a trailing slash
+					zip.putNextEntry( new ZipEntry( zipEntryPath + "/" ) );
+				} else {
+					zip.putNextEntry( new ZipEntry( zipEntryPath ) );
+					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
+						IoUtil.copy( input, zip, ( value ) -> {
+							long diff = value - last.get();
+							if( diff > 0 ) progressCallback.call( total.addAndGet( diff ) );
+							last.set( value );
+						} );
+					}
+				}
+				zip.closeEntry();
+			}
+		}
+	}
+
+	public static void unzip( Path source, Path target, LongCallback progressCallback ) throws IOException {
+		Files.createDirectories( target );
+
+		ZipEntry entry;
+		try( ZipInputStream zip = new ZipInputStream( new FileInputStream( source.toFile() ) ) ) {
+			while( (entry = zip.getNextEntry()) != null ) {
+				String path = entry.getName();
+				Path file = target.resolve( path );
+
+				if( path.endsWith( "/" ) ) {
+					Files.createDirectories( file );
+				} else {
+					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
+						Files.createDirectories( file.getParent() );
+						IoUtil.copy( zip, output, progressCallback );
 					}
 				}
 			}
