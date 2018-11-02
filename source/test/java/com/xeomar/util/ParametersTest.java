@@ -4,8 +4,6 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,45 +25,45 @@ public class ParametersTest {
 
 	@Test
 	public void testEmpty() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{} );
+		Parameters parameters = Parameters.parse();
 		assertThat( parameters.size(), is( 0 ) );
 	}
 
 	@Test
 	public void testParse() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-help" } );
+		Parameters parameters = Parameters.parse( "-help" );
 		assertThat( parameters.get( "help" ), is( "true" ) );
 	}
 
 	@Test
 	public void testParseWithValue() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-help", "topic" } );
+		Parameters parameters = Parameters.parse( "-help", "topic" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 	}
 
 	@Test
 	public void testParseWithMultiValues() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-module", "a", "-module", "b", "--module", "c" } );
+		Parameters parameters = Parameters.parse( "-module", "a", "-module", "b", "--module", "c" );
 		assertThat( parameters.getValues( "module" ), contains( "a", "b", "c" ) );
 	}
 
 	@Test
 	public void testParseWithValueAndFile() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-help", "topic", "test.txt" } );
+		Parameters parameters = Parameters.parse( "-help", "topic", "test.txt" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test.txt" ).toString() ) );
 	}
 
 	@Test
 	public void testParseWithValueAndFiles() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-help", "topic", "test1.txt", "test2.txt" } );
+		Parameters parameters = Parameters.parse( "-help", "topic", "test1.txt", "test2.txt" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test1.txt" ).toString(), UriUtil.resolve( "test2.txt" ).toString() ) );
 	}
 
 	@Test
 	public void testParseWithFlags() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "-one", "-two", "-three" } );
+		Parameters parameters = Parameters.parse( "-one", "-two", "-three" );
 		assertThat( parameters.get( "one" ), is( "true" ) );
 		assertThat( parameters.get( "two" ), is( "true" ) );
 		assertThat( parameters.get( "three" ), is( "true" ) );
@@ -158,7 +156,7 @@ public class ParametersTest {
 
 	@Test
 	public void testParseWithEscapedValues() throws Exception {
-		Parameters parameters = Parameters.parse( new String[]{ "--test", "go", "\\-help" } );
+		Parameters parameters = Parameters.parse( "--test", "go", "\\-help" );
 		assertThat( parameters.isSet( "test" ), is( true ) );
 		assertThat( parameters.isTrue( "test" ), is( false ) );
 		assertThat( parameters.getValues( "test" ), contains( "go", "-help" ) );
@@ -344,6 +342,14 @@ public class ParametersTest {
 	}
 
 	@Test
+	public void testGetValuesWithQuotes() {
+		String[] commands = new String[]{ "-title", "The Title of the Program" };
+		Parameters parameters = Parameters.parse( commands );
+
+		assertThat( parameters.get( "title" ), is( "The Title of the Program" ) );
+	}
+
+	@Test
 	public void testIsSet() throws Exception {
 		String[] args = new String[]{ "-flag1", "false", "-flag2", "true", "-flag3" };
 		Parameters parameters = Parameters.parse( args );
@@ -412,7 +418,7 @@ public class ParametersTest {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters1 = Parameters.parse( commands );
 		Parameters parameters2 = Parameters.parse( commands );
-		Parameters parameters3 = Parameters.parse( new String[]{ "-flag", "-key", "value", "otherfile" } );
+		Parameters parameters3 = Parameters.parse( "-flag", "-key", "value", "otherfile" );
 
 		assertThat( parameters1.equals( parameters2 ), is( true ) );
 		assertThat( parameters2.equals( parameters1 ), is( true ) );
