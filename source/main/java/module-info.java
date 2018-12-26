@@ -10,8 +10,8 @@ module com.xeomar.razor {
 	requires org.slf4j;
 	requires com.fasterxml.jackson.annotation;
 
-	exports com.xeomar.util;
 	exports com.xeomar.product;
 	exports com.xeomar.settings;
-
+	exports com.xeomar.undo;
+	exports com.xeomar.util;
 }
