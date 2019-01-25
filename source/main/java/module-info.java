@@ -1,4 +1,4 @@
-module com.xeomar.razor {
+module com.xeomar.zenna {
 
 	requires java.logging;
 	requires java.management;
