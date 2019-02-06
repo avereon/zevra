@@ -87,8 +87,7 @@ public class ProductCardTest {
 		assertThat( reader.readLine(), is( "  \"description\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"copyrightSummary\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"licenseSummary\" : null," ) );
-		assertThat( reader.readLine(), is( "  \"cardUri\" : null," ) );
-		assertThat( reader.readLine(), is( "  \"packUri\" : null," ) );
+		assertThat( reader.readLine(), is( "  \"productUri\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"mainClass\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"javaVersion\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"installFolder\" : null," ) );
