@@ -94,7 +94,7 @@ public class OperatingSystem {
 				return "IBM";
 			}
 			default: {
-				return "";
+				return "Unknown";
 			}
 		}
 	}

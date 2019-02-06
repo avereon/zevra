@@ -16,7 +16,6 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -63,9 +62,11 @@ public class ProductCard {
 
 	private String licenseSummary;
 
-	private String cardUri;
+	private String productUri;
 
-	private String packUri;
+	//private String cardUri;
+
+	//private String packUri;
 
 	private String mainClass;
 
@@ -151,8 +152,7 @@ public class ProductCard {
 		this.copyrightSummary = card.copyrightSummary;
 		this.licenseSummary = card.licenseSummary;
 
-		this.cardUri = card.cardUri;
-		this.packUri = card.packUri;
+		this.productUri = card.productUri;
 		this.javaVersion = card.javaVersion;
 
 		this.maintainers = card.maintainers;
@@ -163,7 +163,7 @@ public class ProductCard {
 
 		this.resources = card.resources;
 
-		if( source != null ) this.cardUri = source.toString();
+		if( source != null ) this.productUri = source.toString();
 
 		updateKey();
 
@@ -285,29 +285,49 @@ public class ProductCard {
 		this.licenseSummary = licenseSummary;
 	}
 
-	public String getCardUri() {
-		return cardUri;
+	public URI getProductUri( Map<String, String> parameters ) throws URISyntaxException {
+		StringBuilder query = new StringBuilder();
+		for( String key : parameters.keySet() ) {
+			query.append( "&" );
+			query.append( key );
+			query.append( "=" );
+			query.append( parameters.get( key ) );
+		}
+
+		return new URI( productUri + "?" + query.substring( 1 ) );
 	}
 
-	public URI getCardUri( String channel ) throws URISyntaxException {
-		return formatUri( getCardUri(), channel );
+	public String getProductUri() {
+		return productUri;
 	}
 
-	public void setCardUri( String cardUri ) {
-		this.cardUri = cardUri;
+	public void setProductUri( String productUri ) {
+		this.productUri = productUri;
 	}
 
-	public String getPackUri() {
-		return packUri;
-	}
-
-	public URI getPackUri( String channel ) throws URISyntaxException {
-		return formatUri( getPackUri(), channel );
-	}
-
-	public void setPackUri( String packUri ) {
-		this.packUri = packUri;
-	}
+	//	public String getCardUri() {
+	//		return cardUri;
+	//	}
+	//
+	//	public URI getCardUri( String channel, String platform ) throws URISyntaxException {
+	//		return formatUri( getCardUri(), channel, platform );
+	//	}
+	//
+	//	public void setCardUri( String cardUri ) {
+	//		this.cardUri = cardUri;
+	//	}
+	//
+	//	public String getPackUri() {
+	//		return packUri;
+	//	}
+	//
+	//	public URI getPackUri( String channel, String platform ) throws URISyntaxException {
+	//		return formatUri( getPackUri(), channel, platform );
+	//	}
+	//
+	//	public void setPackUri( String packUri ) {
+	//		this.packUri = packUri;
+	//	}
 
 	public String getMainClass() {
 		return mainClass;
@@ -379,10 +399,6 @@ public class ProductCard {
 		if( group != null && artifact != null ) productKey = group + "." + artifact;
 	}
 
-	private URI formatUri( String uriString, String channel ) throws URISyntaxException {
-		return new URI( MessageFormat.format( uriString, channel ) );
-	}
-
 	private String[] getPlatformResourceUris( String channel ) {
 		String os = System.getProperty( "os.name" );
 		String arch = System.getProperty( "os.arch" );
@@ -447,7 +463,7 @@ public class ProductCard {
 		equals = equals && this.description.equals( that.description );
 		equals = equals && this.copyrightSummary.equals( that.copyrightSummary );
 		equals = equals && this.licenseSummary.equals( that.licenseSummary );
-		equals = equals && this.cardUri.equals( that.cardUri );
+		equals = equals && this.productUri.equals( that.productUri );
 
 		return equals;
 	}
