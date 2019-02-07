@@ -55,6 +55,12 @@ public class UriUtilTest {
 	}
 
 	@Test
+	public void testRemoveQueryAndFragment() {
+		String root = "https://host:74/path/to/resource";
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( root + "?parm1=a&parm2=b") ), is(URI.create(root)));
+	}
+
+	@Test
 	public void testResolveWithString() throws Exception {
 		assertThat( UriUtil.resolve( "" ), is( new File( "" ).getCanonicalFile().toURI() ) );
 		assertThat( UriUtil.resolve( "." ), is( new File( "." ).getCanonicalFile().toURI() ) );

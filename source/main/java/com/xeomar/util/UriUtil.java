@@ -14,6 +14,17 @@ public final class UriUtil {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
+	public static URI removeQueryAndFragment( URI source ) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append( source.getScheme() );
+		builder.append( "://" );
+		builder.append( source.getAuthority() );
+		builder.append( source.getPath() );
+
+		return URI.create( builder.toString() );
+	}
+
 	/**
 	 * Resolve an absolute URI from a string. The string may be in any of the following formats: <ul> <li>Absolute URI</li> <li>Relative URI</li> <li>Windows Path (Windows only)</li> <li>Windows UNC (Windows only)</li> </ul> Every reasonable
 	 * attempt is made to create a valid URI from the string. If a valid absolute URI cannot be created directly from the string then a File object is used to generate a URI based on the string under the following situations: <ul> <li>The URI

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xeomar.util.Contributor;
-import com.xeomar.util.LogUtil;
-import com.xeomar.util.Maintainer;
-import com.xeomar.util.Release;
+import com.xeomar.util.*;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -163,7 +160,7 @@ public class ProductCard {
 
 		this.resources = card.resources;
 
-		if( source != null ) this.productUri = source.toString();
+		if( source != null ) this.productUri = UriUtil.removeQueryAndFragment( source ).toString();
 
 		updateKey();
 
