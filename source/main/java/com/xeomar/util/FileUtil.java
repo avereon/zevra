@@ -273,13 +273,14 @@ public class FileUtil {
 		try( ZipInputStream zip = new ZipInputStream( new FileInputStream( source.toFile() ) ) ) {
 			while( (entry = zip.getNextEntry()) != null ) {
 				String path = entry.getName();
+				boolean folder = path.endsWith( "/" );
 				Path file = target.resolve( path );
 
-				if( path.endsWith( "/" ) ) {
+				if( folder ) {
 					Files.createDirectories( file );
 				} else {
+					Files.createDirectories( file.getParent() );
 					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
-						Files.createDirectories( file.getParent() );
 						IOUtils.copy( zip, output );
 					}
 				}
