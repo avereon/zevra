@@ -115,7 +115,9 @@ public class ProductCardTest {
 //		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Philosopher\" ]" ) );
 //		assertThat( reader.readLine(), is( "  } ]," ) );
 		assertThat( reader.readLine(), is( "  \"enabled\" : false," ) );
-		assertThat( reader.readLine(), is( "  \"removable\" : false" ) );
+		assertThat( reader.readLine(), is( "  \"removable\" : false," ) );
+		assertThat( reader.readLine(), is( "  \"cardUri\" : null," ) );
+		assertThat( reader.readLine(), is( "  \"packUri\" : null" ) );
 		assertThat( reader.readLine(), is( "}" ) );
 		assertThat( reader.readLine(), is( nullValue() ) );
 	}
