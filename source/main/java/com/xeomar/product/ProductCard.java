@@ -308,6 +308,11 @@ public class ProductCard {
 	}
 
 	@Deprecated
+	public URI getCardUri( String channel ) throws URISyntaxException {
+		return null;
+	}
+
+	@Deprecated
 	public URI getCardUri( String channel, String platform ) throws URISyntaxException {
 		return null;
 	}
@@ -319,6 +324,11 @@ public class ProductCard {
 
 	@Deprecated
 	public String getPackUri() {
+		return null;
+	}
+
+	@Deprecated
+	public URI getPackUri( String channel) throws URISyntaxException {
 		return null;
 	}
 
