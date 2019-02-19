@@ -302,29 +302,35 @@ public class ProductCard {
 		this.productUri = productUri;
 	}
 
-	//	public String getCardUri() {
-	//		return cardUri;
-	//	}
-	//
-	//	public URI getCardUri( String channel, String platform ) throws URISyntaxException {
-	//		return formatUri( getCardUri(), channel, platform );
-	//	}
-	//
-	//	public void setCardUri( String cardUri ) {
-	//		this.cardUri = cardUri;
-	//	}
-	//
-	//	public String getPackUri() {
-	//		return packUri;
-	//	}
-	//
-	//	public URI getPackUri( String channel, String platform ) throws URISyntaxException {
-	//		return formatUri( getPackUri(), channel, platform );
-	//	}
-	//
-	//	public void setPackUri( String packUri ) {
-	//		this.packUri = packUri;
-	//	}
+	@Deprecated
+	public String getCardUri() {
+		return null;
+	}
+
+	@Deprecated
+	public URI getCardUri( String channel, String platform ) throws URISyntaxException {
+		return null;
+	}
+
+	@Deprecated
+	public void setCardUri( String cardUri ) {
+		//this.cardUri = cardUri;
+	}
+
+	@Deprecated
+	public String getPackUri() {
+		return null;
+	}
+
+	@Deprecated
+	public URI getPackUri( String channel, String platform ) throws URISyntaxException {
+		return null;
+	}
+
+	@Deprecated
+	public void setPackUri( String packUri ) {
+		//this.packUri = packUri;
+	}
 
 	public String getMainClass() {
 		return mainClass;
