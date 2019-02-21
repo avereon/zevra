@@ -16,7 +16,7 @@ public class ProcessCommandsTest {
 	@Test
 	public void testForModuleWithNull() {
 		try {
-			ProcessCommands.forModule( null, null, null );
+			ProcessCommands.forModule( null, null, null, null );
 			fail( "Should throw NullPointerException");
 		} catch( NullPointerException exception ) {
 			// This exception should be thrown
@@ -25,10 +25,11 @@ public class ProcessCommandsTest {
 
 	@Test
 	public void testForModule() {
+		String javaPath = OperatingSystem.getJavaExecutablePath();
 		String modulePath = "/var/tmp/util/modules";
 		String moduleMain = "com.xeomar.util";
 		String moduleMainClass = "com.xeomar.util.Module";
-		List<String> commands = ProcessCommands.forModule( modulePath, moduleMain, moduleMainClass );
+		List<String> commands = ProcessCommands.forModule( javaPath, modulePath, moduleMain, moduleMainClass );
 
 		// Determine the runtime parameters
 		List<String> runtimeCommands = new ArrayList<>();
@@ -45,7 +46,7 @@ public class ProcessCommandsTest {
 
 		// Assert all the commands
 		int index = 0;
-		assertThat( commands.get(index++), is( OperatingSystem.getJavaExecutablePath() ) );
+		assertThat( commands.get(index++), is( javaPath ) );
 		for( String command : runtimeCommands ) {
 			assertThat( commands.get(index++), is( command ) );
 		}

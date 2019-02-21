@@ -13,28 +13,32 @@ public class ProcessCommands {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String moduleMain = System.getProperty( "jdk.module.main" );
 		String moduleMainClass = System.getProperty( "jdk.module.main.class" );
-		return forModule( modulePath, moduleMain, moduleMainClass );
+		return forModule( null, modulePath, moduleMain, moduleMainClass );
 	}
 
-	public static List<String> forModule( String moduleMain, String moduleMainClass ) {
-		return forModule( null, moduleMain, moduleMainClass );
-	}
+//	public static List<String> forModule( String mainModule, String mainClass ) {
+//		return forModule( null, mainModule, mainClass );
+//	}
+//
+//	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
+//		return forModule( OperatingSystem.getJavaExecutablePath(), modulePath, mainModule, mainClass );
+//	}
 
-	public static List<String> forModule( String modulePath, String moduleMain, String moduleMainClass, Parameters parameters, String... extraCommands ) {
-		List<String> commands = forModule( modulePath, moduleMain, moduleMainClass );
+	public static List<String> forModule( String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
+		List<String> commands = forModule( null, modulePath, mainModule, mainClass );
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
 	}
 
-	public static List<String> forModule( String modulePath, String moduleMain, String moduleMainClass ) {
+	public static List<String> forModule( String javaExecutablePath, String modulePath, String mainModule, String mainClass ) {
 		List<String> commands = new ArrayList<>();
 
 		//if( modulePath == null ) throw new NullPointerException( "Module path cannot be null"  );
-		if( moduleMain == null ) throw new NullPointerException( "Main module cannot be null" );
-		if( moduleMainClass == null ) throw new NullPointerException( "Module main class cannot be null" );
+		if( mainModule == null ) throw new NullPointerException( "Main module cannot be null" );
+		if( mainClass == null ) throw new NullPointerException( "Module main class cannot be null" );
 
-		// Add the executable path
-		commands.add( getExecutablePath() );
+		// Add the java executable path
+		commands.add( javaExecutablePath == null ? OperatingSystem.getJavaExecutablePath() : javaExecutablePath );
 
 		// Add the VM parameters to the commands
 		RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
@@ -56,7 +60,7 @@ public class ProcessCommands {
 		}
 
 		commands.add( "-m" );
-		commands.add( moduleMain + "/" + moduleMainClass );
+		commands.add( mainModule + "/" + mainClass );
 
 		return commands;
 	}
@@ -84,10 +88,6 @@ public class ProcessCommands {
 		if( uris.size() > 0 ) commands.addAll( uris );
 
 		return commands;
-	}
-
-	private static String getExecutablePath() {
-		return OperatingSystem.getJavaExecutablePath();
 	}
 
 }
