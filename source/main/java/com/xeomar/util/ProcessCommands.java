@@ -9,6 +9,17 @@ import java.util.Map;
 
 public class ProcessCommands {
 
+	public static String getCommandLineAsString() {
+		return TextUtil.toString( getCommandLine(), " " );
+	}
+
+	public static List<String> getCommandLine() {
+		List<String> commands = new ArrayList<>();
+		commands.add( OperatingSystem.getJavaExecutablePath() );
+		commands.addAll( ManagementFactory.getRuntimeMXBean().getInputArguments() );
+		return commands;
+	}
+
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String moduleMain = System.getProperty( "jdk.module.main" );
