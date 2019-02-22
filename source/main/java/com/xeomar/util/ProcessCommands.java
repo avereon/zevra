@@ -16,16 +16,24 @@ public class ProcessCommands {
 		return forModule( null, modulePath, moduleMain, moduleMainClass );
 	}
 
-//	public static List<String> forModule( String mainModule, String mainClass ) {
-//		return forModule( null, mainModule, mainClass );
-//	}
-//
-//	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
-//		return forModule( OperatingSystem.getJavaExecutablePath(), modulePath, mainModule, mainClass );
-//	}
+	@Deprecated
+	public static List<String> forModule( String mainModule, String mainClass ) {
+		return forModule( null, mainModule, mainClass );
+	}
 
+	@Deprecated
+	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
+		return forModule( null, modulePath, mainModule, mainClass );
+	}
+
+	@Deprecated
 	public static List<String> forModule( String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
-		List<String> commands = forModule( null, modulePath, mainModule, mainClass );
+		return forModule( null, modulePath, mainModule, mainClass, parameters, extraCommands );
+	}
+
+	public static List<String> forModule( String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
+
+		List<String> commands = forModule( javaExecutablePath, modulePath, mainModule, mainClass );
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
 	}
