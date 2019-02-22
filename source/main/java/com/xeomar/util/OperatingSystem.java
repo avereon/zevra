@@ -463,18 +463,11 @@ public class OperatingSystem {
 		}
 	}
 
-	private static final String getPlatformFolder() {
-		switch( family ) {
-			case WINDOWS: {
-				return "win";
-			}
-			default: {
-				return family.name().toLowerCase();
-			}
-		}
+	private static String getPlatformFolder() {
+		return family == Family.WINDOWS ? "win" : family.name().toLowerCase();
 	}
 
-	private static final boolean canWriteToProgramFiles() {
+	private static boolean canWriteToProgramFiles() {
 		if( !OperatingSystem.isWindows() ) return false;
 		try {
 			String programFilesFolder = System.getenv( "ProgramFiles" );
@@ -486,15 +479,20 @@ public class OperatingSystem {
 		}
 	}
 
-	private static final List<String> getElevateCommands( String title ) throws IOException {
-		List<String> commands = new ArrayList<String>();
+	private static List<String> getElevateCommands( String title ) throws IOException {
+		// FIXME This method is not properly testable due to the unix file checks
+
+		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {
 			commands.add( extractMacElevate().getPath() );
 		} else if( isUnix() ) {
+			File pkexec = new File( "/usr/bin/pkexec");
 			File gksudo = new File( "/usr/bin/gksudo" );
 			File kdesudo = new File( "/usr/bin/kdesudo" );
-			if( gksudo.exists() ) {
+			if( pkexec.exists() ) {
+				commands.add( "/usr/bin/pkexec" );
+			} else if( gksudo.exists() ) {
 				commands.add( "/usr/bin/gksudo" );
 				commands.add( "-D" );
 				commands.add( title );

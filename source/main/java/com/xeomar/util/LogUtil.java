@@ -84,6 +84,7 @@ public class LogUtil {
 
 		// Initialize the logging
 		try {
+			// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
 		} catch( IOException exception ) {

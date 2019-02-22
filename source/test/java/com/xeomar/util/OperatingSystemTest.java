@@ -169,9 +169,14 @@ public class OperatingSystemTest {
 		ProcessBuilder builder = new ProcessBuilder( program );
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
+		File pkexec = new File( "/usr/bin/pkexec" );
 		File gksudo = new File( "/usr/bin/gksudo" );
 		File kdesudo = new File( "/usr/bin/kdesudo" );
-		if( gksudo.exists() ) {
+		if( pkexec.exists() ) {
+			assertThat( builder.command().get( 0 ), is( pkexec.toString() ) );
+			assertThat( builder.command().get( 1 ), is( program ) );
+			assertThat( builder.command().size(), is( 2 ) );
+		} else if( gksudo.exists() ) {
 			assertThat( builder.command().get( 0 ), is( gksudo.toString() ) );
 			assertThat( builder.command().get( 1 ), is( "-D" ) );
 			assertThat( builder.command().get( 2 ), is( program ) );
