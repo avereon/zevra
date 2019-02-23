@@ -70,15 +70,15 @@ public class OperatingSystem {
 		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), System.getProperty( "os.version" ), null, null );
 	}
 
-	public static final String getName() {
+	public static String getName() {
 		return name;
 	}
 
-	public static final Family getFamily() {
+	public static Family getFamily() {
 		return family;
 	}
 
-	public static final String getProvider() {
+	public static String getProvider() {
 		switch( family ) {
 			case WINDOWS: {
 				return "Microsoft";
@@ -99,35 +99,35 @@ public class OperatingSystem {
 		}
 	}
 
-	public static final String getVersion() {
+	public static String getVersion() {
 		return version;
 	}
 
-	public static final Architecture getArchitecture() {
+	public static Architecture getArchitecture() {
 		return architecture;
 	}
 
-	public static final String getSystemArchitecture() {
+	public static String getSystemArchitecture() {
 		return arch;
 	}
 
-	public static final boolean isPosix() {
+	public static boolean isPosix() {
 		return family == Family.LINUX || family == Family.MACOSX || family == Family.UNIX;
 	}
 
-	public static final boolean isLinux() {
+	public static boolean isLinux() {
 		return family == Family.LINUX;
 	}
 
-	public static final boolean isMac() {
+	public static boolean isMac() {
 		return family == Family.MACOSX;
 	}
 
-	public static final boolean isUnix() {
+	public static boolean isUnix() {
 		return family == Family.LINUX || family == Family.MACOSX || family == Family.UNIX;
 	}
 
-	public static final boolean isWindows() {
+	public static boolean isWindows() {
 		return family == Family.WINDOWS;
 	}
 
@@ -136,7 +136,7 @@ public class OperatingSystem {
 	 *
 	 * @return true if the process has elevated privileges.
 	 */
-	public static final boolean isProcessElevated() {
+	public static boolean isProcessElevated() {
 		if( elevated == null ) {
 			String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
 			if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
@@ -154,11 +154,11 @@ public class OperatingSystem {
 		return elevated;
 	}
 
-	public static final boolean isElevateProcessSupported() {
+	public static boolean isElevateProcessSupported() {
 		return OperatingSystem.isMac() || OperatingSystem.isUnix() || OperatingSystem.isWindows();
 	}
 
-	public static final boolean isReduceProcessSupported() {
+	public static boolean isReduceProcessSupported() {
 		return OperatingSystem.isMac() || OperatingSystem.isUnix();
 	}
 
@@ -180,12 +180,15 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to attempt to elevate the process privileges
+	 * when the process is started. The returned ProcessBuilder should not be
+	 * modified after this call to avoid problems even though this cannot be
+	 * enforced.
 	 *
 	 * @param title The name of the program requesting elevated privileges
-	 * @param builder
-	 * @return
-	 * @throws IOException
+	 * @param builder The process builder to modify
+	 * @return The process build modified to run with elevated privileges
+	 * @throws IOException If the resources needed to elevate the process are not available
 	 */
 	public static ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
 		List<String> command = getElevateCommands( title );
@@ -195,20 +198,22 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to reduce the process privileges when the
+	 * process is started. The returned ProcessBuilder should not be modified
+	 * after this call to avoid problems even though this cannot be enforced.
 	 *
-	 * @param builder
+	 * @param builder The process builder to modify
 	 * @return
 	 * @throws IOException
 	 */
-	public static final ProcessBuilder reduceProcessBuilder( ProcessBuilder builder ) throws IOException {
+	public static ProcessBuilder reduceProcessBuilder( ProcessBuilder builder ) throws IOException {
 		List<String> command = getReduceCommands();
 
 		if( isWindows() ) {
 			// See the following links for further information:
 			// http://stackoverflow.com/questions/2414991/how-to-launch-a-program-as-as-a-normal-user-from-a-uac-elevated-installer (comment 2 in answer)
 			// http://mdb-blog.blogspot.com/2013/01/nsis-lunch-program-as-user-from-uac.html
-			throw new IOException( "Launching a normal processes from an elevated processes is impossible in Windows." );
+			throw new IOException( "Launching a normal processes from an elevated processes is not possible in Windows." );
 		} else {
 			command.addAll( builder.command() );
 			builder.command( command );
@@ -219,11 +224,11 @@ public class OperatingSystem {
 		return builder;
 	}
 
-	public static final String getJavaExecutableName() {
+	public static String getJavaExecutableName() {
 		return isWindows() ? "javaw" : "java";
 	}
 
-	public static final String getJavaExecutablePath() {
+	public static String getJavaExecutablePath() {
 		StringBuilder builder = new StringBuilder( System.getProperty( "java.home" ) );
 		builder.append( File.separator );
 		builder.append( "bin" );
@@ -238,7 +243,7 @@ public class OperatingSystem {
 	 * @return The total system memory in bytes or -1 if it cannot be determined.
 	 */
 	@SuppressWarnings( "restriction" )
-	public static final long getTotalSystemMemory() {
+	public static long getTotalSystemMemory() {
 		long memory = -1;
 		try {
 			memory = ((com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
@@ -249,13 +254,16 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Get the program data folder for the operating system. On Windows systems this is the %APPDATA% location. On other systems this is $HOME.
+	 * Get the user program data folder for the operating system. On Windows
+	 * systems this is the %APPDATA% location. On unix systems this is
+	 * $HOME/.config.
 	 * <p>
 	 * Exapmles:
 	 * <p>
-	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming<br/> Linux: /home/&lt;username&gt;
+	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming<br/>
+	 * Linux: /home/&lt;username&gt;/.config
 	 *
-	 * @return
+	 * @return The user program data folder
 	 */
 	public static Path getUserProgramDataFolder() {
 		return userProgramDataFolder;
@@ -273,14 +281,8 @@ public class OperatingSystem {
 	 * @return The user program data folder
 	 */
 	public static Path getUserProgramDataFolder( String identifier, String name ) {
-		switch( family ) {
-			case WINDOWS: {
-				return getUserProgramDataFolder().resolve( name );
-			}
-			default: {
-				return getUserProgramDataFolder().resolve( identifier );
-			}
-		}
+		if( isWindows() ) return getUserProgramDataFolder().resolve( name );
+		return getUserProgramDataFolder().resolve( identifier );
 	}
 
 	/**
@@ -330,18 +332,6 @@ public class OperatingSystem {
 	static void clearProcessElevatedFlag() {
 		elevated = null;
 	}
-
-//	/**
-//	 * The init() method is intentionally package private, and separate from the
-//	 * static initializer, so the initialization logic can be tested.
-//	 *
-//	 * @param name The os name from System.getProperty( "os.name" ).
-//	 * @param arch The os arch from System.getProperty( "os.arch" ).
-//	 * @param version The os version from System.getProperty( "os.version" ).
-//	 */
-//	static void init( String name, String arch, String version ) {
-//		init( name, arch, version, null, null );
-//	}
 
 	/**
 	 * The init() method is intentionally package private, and separate from the
@@ -397,15 +387,12 @@ public class OperatingSystem {
 
 		// User program data folder
 		if( userData == null ) {
-			switch( family ) {
-				case WINDOWS: {
-					userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
-					break;
-				}
-				default: {
-					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
-					break;
-				}
+			if( isWindows() ) {
+				userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
+			} else if( isUnix() ) {
+				userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
+			} else {
+				userProgramDataFolder = Paths.get( System.getProperty( "user.home" ) );
 			}
 		} else {
 			userProgramDataFolder = Paths.get( userData );
@@ -423,7 +410,7 @@ public class OperatingSystem {
 					break;
 				}
 				default: {
-					sharedProgramDataFolder =  Paths.get( System.getProperty( "user.home" ) );
+					sharedProgramDataFolder = Paths.get( System.getProperty( "user.home" ) );
 					break;
 				}
 			}
@@ -432,7 +419,7 @@ public class OperatingSystem {
 		}
 	}
 
-	private static final String mapLibraryName( String libname ) {
+	private static String mapLibraryName( String libname ) {
 		switch( family ) {
 			case LINUX: {
 				return "lib" + libname + ".so";
@@ -449,7 +436,7 @@ public class OperatingSystem {
 		}
 	}
 
-	private static final String getArchitectureFolder() {
+	private static String getArchitectureFolder() {
 		switch( architecture ) {
 			case X86: {
 				return "x86";
@@ -480,14 +467,12 @@ public class OperatingSystem {
 	}
 
 	private static List<String> getElevateCommands( String title ) throws IOException {
-		// FIXME This method is not properly testable due to the unix file checks
-
 		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {
 			commands.add( extractMacElevate().getPath() );
 		} else if( isUnix() ) {
-			File pkexec = new File( "/usr/bin/pkexec");
+			File pkexec = new File( "/usr/bin/pkexec" );
 			File gksudo = new File( "/usr/bin/gksudo" );
 			File kdesudo = new File( "/usr/bin/kdesudo" );
 			if( pkexec.exists() ) {
@@ -515,13 +500,11 @@ public class OperatingSystem {
 		return commands;
 	}
 
-	private static final List<String> getReduceCommands() throws IOException {
-		List<String> commands = new ArrayList<String>();
+	private static List<String> getReduceCommands() {
+		List<String> commands = new ArrayList<>();
 
-		if( isWindows() ) {
-			//commands.add( "runas" );
-			//commands.add( "/trustlevel:0x20000" );
-		} else {
+		// It is not possible to reduce the access from an elevated process on Windows
+		if( isUnix() ) {
 			commands.add( "su" );
 			commands.add( "-" );
 			commands.add( System.getenv( "SUDO_USER" ) );
@@ -531,34 +514,24 @@ public class OperatingSystem {
 		return commands;
 	}
 
-	private static final File extractWinElevate() throws IOException {
+	private static File extractWinElevate() throws IOException {
 		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" ).getCanonicalFile();
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/win/elevate.js" );
-		FileOutputStream target = new FileOutputStream( elevator );
-		try {
-			IOUtils.copy( source, target );
-		} finally {
-			source.close();
-			target.close();
-		}
-
-		elevator.setExecutable( true );
-
-		return elevator;
+		return getElevator( elevator, source );
 	}
 
-	private static final File extractMacElevate() throws IOException {
+	private static File extractMacElevate() throws IOException {
 		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate" ).getCanonicalFile();
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/mac/elevate" );
-		FileOutputStream target = new FileOutputStream( elevator );
-		try {
+		return getElevator( elevator, source );
+	}
+
+	private static File getElevator( File elevator, InputStream source ) throws IOException {
+		try( source; FileOutputStream target = new FileOutputStream( elevator ) ) {
 			IOUtils.copy( source, target );
-		} finally {
-			source.close();
-			target.close();
 		}
 
-		elevator.setExecutable( true );
+		if( !elevator.setExecutable( true ) ) throw new IOException( "Unable to make executable: " + elevator );
 
 		return elevator;
 	}
