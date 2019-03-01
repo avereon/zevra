@@ -102,35 +102,35 @@ public class LogUtil {
 	}
 
 	private static String getLogLevel( String level ) {
-		String result = level == null ? "INFO" : level.toUpperCase();
+		String result = level == null ? LogFlag.INFO : level.toLowerCase();
 
 		switch( result ) {
-			case "NONE": {
+			case LogFlag.NONE: {
 				result = "OFF";
 				break;
 			}
-			case "ERROR": {
+			case LogFlag.ERROR: {
 				result = "SEVERE";
 				break;
 			}
-			case "WARN": {
+			case LogFlag.WARN: {
 				result = "WARNING";
 				break;
 			}
-			case "INFO": {
-				//result = "INFO";
+			case LogFlag.INFO: {
+				result = "INFO";
 				break;
 			}
-			case "DEBUG": {
+			case LogFlag.DEBUG: {
 				result = "FINE";
 				break;
 			}
-			case "TRACE": {
+			case LogFlag.TRACE: {
 				result = "FINEST";
 				break;
 			}
-			case "ALL": {
-				//result = "ALL";
+			case LogFlag.ALL: {
+				result = "ALL";
 				break;
 			}
 			default: {
