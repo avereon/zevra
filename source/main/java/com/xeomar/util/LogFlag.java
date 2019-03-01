@@ -24,4 +24,17 @@ public interface LogFlag {
 	 */
 	String LOG_FILE = "--log-file";
 
+	String NONE = "none";
+
+	String ERROR = "error";
+
+	String WARN = "warn";
+
+	String INFO = "info";
+
+	String DEBUG = "debug";
+
+	String TRACE = "trace";
+
+	String ALL = "all";
 }

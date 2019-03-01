@@ -35,11 +35,11 @@ public class OperatingSystem {
 		PPC
 	}
 
-	static final String ELEVATED_PRIVILEGE_KEY = "program-process-privilege";
+	public static String ELEVATED_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
 
-	static final String ELEVATED_PRIVILEGE_VALUE = "elevated";
+	public static String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
 
-	static final String NORMAL_PRIVILEGE_VALUE = "normal";
+	public static String NORMAL_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-normal";
 
 	private static Architecture architecture;
 
@@ -59,7 +59,7 @@ public class OperatingSystem {
 
 	private static Path sharedProgramDataFolder;
 
-	/**
+	/*
 	 * Initialize the class.
 	 */
 	static {
@@ -137,11 +137,9 @@ public class OperatingSystem {
 	 * @return true if the process has elevated privileges.
 	 */
 	public static boolean isProcessElevated() {
-		if( elevated == null ) {
-			String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
-			if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
-			if( NORMAL_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.FALSE;
-		}
+		String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
+		if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
+		if( NORMAL_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.FALSE;
 
 		if( elevated == null ) {
 			if( isWindows() ) {
@@ -180,15 +178,12 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to attempt to elevate the process privileges
-	 * when the process is started. The returned ProcessBuilder should not be
-	 * modified after this call to avoid problems even though this cannot be
-	 * enforced.
+	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
 	 *
 	 * @param title The name of the program requesting elevated privileges
-	 * @param builder The process builder to modify
-	 * @return The process build modified to run with elevated privileges
-	 * @throws IOException If the resources needed to elevate the process are not available
+	 * @param builder
+	 * @return
+	 * @throws IOException
 	 */
 	public static ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
 		List<String> command = getElevateCommands( title );
@@ -198,11 +193,9 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to reduce the process privileges when the
-	 * process is started. The returned ProcessBuilder should not be modified
-	 * after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
 	 *
-	 * @param builder The process builder to modify
+	 * @param builder
 	 * @return
 	 * @throws IOException
 	 */
@@ -213,7 +206,7 @@ public class OperatingSystem {
 			// See the following links for further information:
 			// http://stackoverflow.com/questions/2414991/how-to-launch-a-program-as-as-a-normal-user-from-a-uac-elevated-installer (comment 2 in answer)
 			// http://mdb-blog.blogspot.com/2013/01/nsis-lunch-program-as-user-from-uac.html
-			throw new IOException( "Launching a normal processes from an elevated processes is not possible in Windows." );
+			throw new IOException( "Launching a normal processes from an elevated processes is impossible in Windows." );
 		} else {
 			command.addAll( builder.command() );
 			builder.command( command );
@@ -254,16 +247,15 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Get the user program data folder for the operating system. On Windows
-	 * systems this is the %APPDATA% location. On unix systems this is
-	 * $HOME/.config.
+	 * Get the program data folder for the operating system. On Windows systems
+	 * this is the %APPDATA% location. On other systems this is $HOME.
 	 * <p>
 	 * Exapmles:
 	 * <p>
-	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming<br/>
-	 * Linux: /home/&lt;username&gt;/.config
+	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming
+	 * <br/> Linux: /home/&lt;username&gt;
 	 *
-	 * @return The user program data folder
+	 * @return
 	 */
 	public static Path getUserProgramDataFolder() {
 		return userProgramDataFolder;
@@ -281,8 +273,14 @@ public class OperatingSystem {
 	 * @return The user program data folder
 	 */
 	public static Path getUserProgramDataFolder( String identifier, String name ) {
-		if( isWindows() ) return getUserProgramDataFolder().resolve( name );
-		return getUserProgramDataFolder().resolve( identifier );
+		switch( family ) {
+			case WINDOWS: {
+				return getUserProgramDataFolder().resolve( name );
+			}
+			default: {
+				return getUserProgramDataFolder().resolve( identifier );
+			}
+		}
 	}
 
 	/**
@@ -332,6 +330,18 @@ public class OperatingSystem {
 	static void clearProcessElevatedFlag() {
 		elevated = null;
 	}
+
+	//	/**
+	//	 * The init() method is intentionally package private, and separate from the
+	//	 * static initializer, so the initialization logic can be tested.
+	//	 *
+	//	 * @param name The os name from System.getProperty( "os.name" ).
+	//	 * @param arch The os arch from System.getProperty( "os.arch" ).
+	//	 * @param version The os version from System.getProperty( "os.version" ).
+	//	 */
+	//	static void init( String name, String arch, String version ) {
+	//		init( name, arch, version, null, null );
+	//	}
 
 	/**
 	 * The init() method is intentionally package private, and separate from the
@@ -387,12 +397,15 @@ public class OperatingSystem {
 
 		// User program data folder
 		if( userData == null ) {
-			if( isWindows() ) {
-				userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
-			} else if( isUnix() ) {
-				userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
-			} else {
-				userProgramDataFolder = Paths.get( System.getProperty( "user.home" ) );
+			switch( family ) {
+				case WINDOWS: {
+					userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
+					break;
+				}
+				default: {
+					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
+					break;
+				}
 			}
 		} else {
 			userProgramDataFolder = Paths.get( userData );
@@ -467,6 +480,8 @@ public class OperatingSystem {
 	}
 
 	private static List<String> getElevateCommands( String title ) throws IOException {
+		// FIXME This method is not properly testable due to the unix file checks
+
 		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {
@@ -503,8 +518,11 @@ public class OperatingSystem {
 	private static List<String> getReduceCommands() {
 		List<String> commands = new ArrayList<>();
 
-		// It is not possible to reduce the access from an elevated process on Windows
-		if( isUnix() ) {
+		if( isWindows() ) {
+			// NOTE It is not possible to reduce the process privilege on Windows
+			//commands.add( "runas" );
+			//commands.add( "/trustlevel:0x20000" );
+		} else {
 			commands.add( "su" );
 			commands.add( "-" );
 			commands.add( System.getenv( "SUDO_USER" ) );
@@ -515,24 +533,22 @@ public class OperatingSystem {
 	}
 
 	private static File extractWinElevate() throws IOException {
-		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" ).getCanonicalFile();
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/win/elevate.js" );
-		return getElevator( elevator, source );
+		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" ).getCanonicalFile();
+		return extractElevator( source, elevator );
 	}
 
 	private static File extractMacElevate() throws IOException {
-		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate" ).getCanonicalFile();
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/mac/elevate" );
-		return getElevator( elevator, source );
+		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate" ).getCanonicalFile();
+		return extractElevator( source, elevator );
 	}
 
-	private static File getElevator( File elevator, InputStream source ) throws IOException {
+	private static File extractElevator( InputStream source, File elevator ) throws IOException {
 		try( source; FileOutputStream target = new FileOutputStream( elevator ) ) {
 			IOUtils.copy( source, target );
+			elevator.setExecutable( true );
 		}
-
-		if( !elevator.setExecutable( true ) ) throw new IOException( "Unable to make executable: " + elevator );
-
 		return elevator;
 	}
 
