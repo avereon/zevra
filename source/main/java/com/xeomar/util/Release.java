@@ -52,13 +52,7 @@ public class Release implements Comparable<Release> {
 
 	public String getTimestampString( TimeZone zone ) {
 		if( timestamp == null ) return "";
-
-		StringBuilder builder = new StringBuilder( DateUtil.format( timestamp, DateUtil.DEFAULT_DATE_FORMAT, zone ) );
-		if( !zone.equals( DateUtil.DEFAULT_TIME_ZONE ) ) {
-			builder.append( " " );
-			builder.append( zone.getDisplayName( zone.inDaylightTime( timestamp ), TimeZone.SHORT ) );
-		}
-		return builder.toString();
+		return DateUtil.format( timestamp, DateUtil.DEFAULT_DATE_FORMAT, zone );
 	}
 
 	@Override

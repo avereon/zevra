@@ -135,13 +135,21 @@ public class DateUtil {
 	 *
 	 * @param date
 	 * @param format
-	 * @param timeZone
+	 * @param zone
 	 * @return
 	 */
-	public static final String format( Date date, String format, TimeZone timeZone ) {
+	public static final String format( Date date, String format, TimeZone zone ) {
 		SimpleDateFormat formatter = new SimpleDateFormat( format );
-		formatter.setTimeZone( timeZone );
-		return formatter.format( date );
+		formatter.setTimeZone( zone );
+
+		StringBuilder builder = new StringBuilder( formatter.format( date ) );
+		if( !zone.equals( DateUtil.DEFAULT_TIME_ZONE ) ) {
+			builder.append( " " );
+			builder.append( zone.getDisplayName( zone.inDaylightTime( date ), TimeZone.SHORT ) );
+		}
+
+		return builder.toString();
+
 	}
 
 	public static final String formatDuration( long time ) {
