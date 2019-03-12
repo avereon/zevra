@@ -47,12 +47,20 @@ public class ProductBundle {
 	public String getString( String bundleKey, String valueKey, String... values ) {
 		String string = null;
 
-		ResourceBundle bundle = getBundle( "bundles/" + bundleKey, Locale.getDefault(), module );
-		if( bundle.containsKey( valueKey ) ) string = format( bundle.getString( valueKey ), (Object[])values );
+		string = getStringOrNull( bundleKey, valueKey, values  );
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
 			log.warn( "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
 		}
+
+		return string;
+	}
+
+	public String getStringOrNull( String bundleKey, String valueKey, String... values ) {
+		String string = null;
+
+		ResourceBundle bundle = getBundle( "bundles/" + bundleKey, Locale.getDefault(), module );
+		if( bundle.containsKey( valueKey ) ) string = format( bundle.getString( valueKey ), (Object[])values );
 
 		return string;
 	}
