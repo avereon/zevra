@@ -1,7 +1,6 @@
 package com.xeomar.util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.invoke.MethodHandles;
@@ -13,7 +12,7 @@ public class HashUtil {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
-	//public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
+	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 
 	public static final HashStrategy SHA2 = new DigestStrategy( new MessageDigestWrapper( "SHA-256" ) );
 

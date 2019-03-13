@@ -492,8 +492,6 @@ public class OperatingSystem {
 	}
 
 	private static List<String> getElevateCommands( String title ) throws IOException {
-		// FIXME This method is not properly testable due to the unix file checks
-
 		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {

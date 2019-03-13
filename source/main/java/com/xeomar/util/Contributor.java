@@ -3,7 +3,6 @@ package com.xeomar.util;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Use Lombok when it is supported in Java 9
 public class Contributor extends Person {
 
 	private String organization;
@@ -34,6 +33,11 @@ public class Contributor extends Person {
 
 	public void setRoles( List<String> roles ) {
 		this.roles = roles;
+	}
+
+	@Override
+	public String toString() {
+		return "Contributor{" + "name='" + getName() + '}';
 	}
 
 }

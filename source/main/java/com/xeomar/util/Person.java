@@ -1,6 +1,5 @@
 package com.xeomar.util;
 
-// TODO Use Lombok when it is supported in Java 9
 public class Person {
 
 	private String name;
@@ -17,11 +16,6 @@ public class Person {
 		this.name = name;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -36,5 +30,10 @@ public class Person {
 
 	public void setTimezone( String timezone ) {
 		this.timezone = timezone;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

@@ -32,11 +32,10 @@ public class HashUtilTest extends TestCase {
 		}
 	}
 
-	// FIXME SHA3 test disabled for Java 8
-	//	public void testHashUsingSha3() {
-	//		assertNull( HashUtil.hash( (String)null ) );
-	//		assertEquals( "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a", HashUtil.hash( "", HashUtil.SHA3 ) );
-	//		assertEquals( "36f028580bb02cc8272a9a020f4200e346e276ae664e45ee80745574e2f5ab80", HashUtil.hash( "test", HashUtil.SHA3 ) );
-	//	}
+	public void testHashUsingSha3() {
+		assertNull( HashUtil.hash( (String)null ) );
+		assertEquals( "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a", HashUtil.hash( "", HashUtil.SHA3 ) );
+		assertEquals( "36f028580bb02cc8272a9a020f4200e346e276ae664e45ee80745574e2f5ab80", HashUtil.hash( "test", HashUtil.SHA3 ) );
+	}
 
 }
