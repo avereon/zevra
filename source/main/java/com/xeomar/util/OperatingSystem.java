@@ -435,6 +435,7 @@ public class OperatingSystem {
 			Process process = new ProcessBuilder( "ver" ).start();
 			return new BufferedReader( new InputStreamReader( process.getInputStream() ) ).readLine();
 		} catch( Exception exception ) {
+			log.debug( "Error getting Windows version", exception );
 			// Intentionally ignore exception
 		}
 		return defaultVersion;
