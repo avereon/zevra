@@ -3,10 +3,7 @@ package com.xeomar.util;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
@@ -389,6 +386,7 @@ public class OperatingSystem {
 
 		// Store the version.
 		OperatingSystem.version = version;
+		if( family == Family.WINDOWS ) version = getExtendedWindowsVersion( version );
 
 		// Case sensitive file system.
 		File fileOne = new File( "TeStFiLe" );
@@ -430,6 +428,16 @@ public class OperatingSystem {
 		} else {
 			sharedProgramDataFolder = Paths.get( sharedData );
 		}
+	}
+
+	private static String getExtendedWindowsVersion( String defaultVersion ) {
+		try {
+			Process process = new ProcessBuilder( "ver" ).start();
+			return new BufferedReader( new InputStreamReader( process.getInputStream() ) ).readLine();
+		} catch( Exception exception ) {
+			// Intentionally ignore exception
+		}
+		return defaultVersion;
 	}
 
 	private static String mapLibraryName( String libname ) {
