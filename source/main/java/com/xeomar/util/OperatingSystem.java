@@ -376,7 +376,7 @@ public class OperatingSystem {
 		if( version == null ) {
 			switch( family ) {
 				case WINDOWS: {
-					OperatingSystem.version = getExtendedWindowsVersion( version );
+					OperatingSystem.version = getExtendedWindowsVersion();
 					break;
 				}
 				default: {
@@ -429,14 +429,19 @@ public class OperatingSystem {
 		}
 	}
 
-	private static String getExtendedWindowsVersion( String defaultVersion ) {
+	private static String getExtendedWindowsVersion() {
 		try {
-			Process process = new ProcessBuilder( "ver" ).start();
-			return new BufferedReader( new InputStreamReader( process.getInputStream() ) ).readLine();
-		} catch( Exception exception ) {
+			Process process = new ProcessBuilder("cmd", "/Q", "/C", "ver").start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if ("".equals(line.trim())) continue;
+				return line.substring("Microsoft Windows [Version ".length(), line.length() - 1);
+			}
+		} catch (Exception exception) {
 			// Intentionally ignore exception
 		}
-		return defaultVersion;
+		return System.getProperty("os.version");
 	}
 
 	private static String mapLibraryName( String libname ) {
