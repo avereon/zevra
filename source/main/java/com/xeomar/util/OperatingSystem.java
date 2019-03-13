@@ -64,7 +64,7 @@ public class OperatingSystem {
 	}
 
 	public static void reset() {
-		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), System.getProperty( "os.version" ), null, null );
+		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null );
 	}
 
 	public static String getName() {
@@ -328,18 +328,6 @@ public class OperatingSystem {
 		elevated = null;
 	}
 
-	//	/**
-	//	 * The init() method is intentionally package private, and separate from the
-	//	 * static initializer, so the initialization logic can be tested.
-	//	 *
-	//	 * @param name The os name from System.getProperty( "os.name" ).
-	//	 * @param arch The os arch from System.getProperty( "os.arch" ).
-	//	 * @param version The os version from System.getProperty( "os.version" ).
-	//	 */
-	//	static void init( String name, String arch, String version ) {
-	//		init( name, arch, version, null, null );
-	//	}
-
 	/**
 	 * The init() method is intentionally package private, and separate from the
 	 * static initializer, so the initialization logic can be tested.
@@ -354,7 +342,7 @@ public class OperatingSystem {
 		OperatingSystem.name = name;
 		OperatingSystem.arch = arch;
 
-		// Determine the OS family.
+		// Determine the OS family
 		if( name.contains( "Linux" ) ) {
 			family = Family.LINUX;
 		} else if( name.contains( "Windows" ) ) {
@@ -373,7 +361,7 @@ public class OperatingSystem {
 			family = Family.UNKNOWN;
 		}
 
-		// Determine the OS architecture.
+		// Determine the OS architecture
 		if( arch.matches( "x86" ) || arch.matches( "i.86" ) ) {
 			OperatingSystem.architecture = Architecture.X86;
 		} else if( "x86_64".equals( arch ) || "amd64".equals( arch ) ) {
@@ -384,11 +372,22 @@ public class OperatingSystem {
 			OperatingSystem.architecture = Architecture.UNKNOWN;
 		}
 
-		// Store the version.
-		OperatingSystem.version = version;
-		if( family == Family.WINDOWS ) version = getExtendedWindowsVersion( version );
+		// Store the version
+		if( version == null ) {
+			switch( family ) {
+				case WINDOWS: {
+					OperatingSystem.version = getExtendedWindowsVersion( version );
+					break;
+				}
+				default: {
+					OperatingSystem.version = System.getProperty( "os.version" );
+				}
+			}
+		} else {
+			OperatingSystem.version = version;
+		}
 
-		// Case sensitive file system.
+		// Case sensitive file system
 		File fileOne = new File( "TeStFiLe" );
 		File fileTwo = new File( "tEsTfIlE" );
 		fileSystemCaseSensitive = !fileOne.equals( fileTwo );
