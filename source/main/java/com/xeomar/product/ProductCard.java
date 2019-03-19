@@ -129,6 +129,10 @@ public class ProductCard {
 		}
 	}
 
+	public ProductCard load( InputStream input ) throws IOException {
+		return load( input, null );
+	}
+
 	public ProductCard load( InputStream input, URI source ) throws IOException {
 		ProductCard card = new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
 
@@ -328,7 +332,7 @@ public class ProductCard {
 	}
 
 	@Deprecated
-	public URI getPackUri( String channel) throws URISyntaxException {
+	public URI getPackUri( String channel ) throws URISyntaxException {
 		return null;
 	}
 
