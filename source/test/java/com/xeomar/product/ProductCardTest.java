@@ -16,9 +16,25 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class ProductCardTest {
+
+	@Test
+	public void testHashCode() {
+		ProductCard a = new ProductCard();
+		ProductCard b = new ProductCard();
+
+		a.setGroup( "com.example" );
+		a.setArtifact( "artifact" );
+
+		b.setGroup( "com.example" );
+		b.setArtifact( "artifact" );
+
+		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
+		assertThat( a.hashCode(), is( b.hashCode() ));
+	}
 
 	@Test
 	public void testEquals() {
@@ -31,6 +47,7 @@ public class ProductCardTest {
 		b.setGroup( "com.example" );
 		b.setArtifact( "artifact" );
 
+		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
 		assertThat( a, is( b ) );
 	}
 
@@ -91,29 +108,29 @@ public class ProductCardTest {
 		assertThat( reader.readLine(), is( "  \"mainClass\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"javaVersion\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"installFolder\" : null," ) );
-//		assertThat( reader.readLine(), is( "  \"maintainers\" : [ {" ) );
-//		assertThat( reader.readLine(), is( "    \"name\" : \"Sole Maintainer\"," ) );
-//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Architect\", \"Developer\", \"Tester\" ]" ) );
-//		assertThat( reader.readLine(), is( "  } ]," ) );
-//		assertThat( reader.readLine(), is( "  \"contributors\" : [ {" ) );
-//		assertThat( reader.readLine(), is( "    \"name\" : \"Contributor One\"," ) );
-//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Consultant\", \"Beta User\" ]" ) );
-//		assertThat( reader.readLine(), is( "  }, {" ) );
-//		assertThat( reader.readLine(), is( "    \"name\" : \"Contributor Two\"," ) );
-//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
-//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Philosopher\" ]" ) );
-//		assertThat( reader.readLine(), is( "  } ]," ) );
+		//		assertThat( reader.readLine(), is( "  \"maintainers\" : [ {" ) );
+		//		assertThat( reader.readLine(), is( "    \"name\" : \"Sole Maintainer\"," ) );
+		//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Architect\", \"Developer\", \"Tester\" ]" ) );
+		//		assertThat( reader.readLine(), is( "  } ]," ) );
+		//		assertThat( reader.readLine(), is( "  \"contributors\" : [ {" ) );
+		//		assertThat( reader.readLine(), is( "    \"name\" : \"Contributor One\"," ) );
+		//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Consultant\", \"Beta User\" ]" ) );
+		//		assertThat( reader.readLine(), is( "  }, {" ) );
+		//		assertThat( reader.readLine(), is( "    \"name\" : \"Contributor Two\"," ) );
+		//		assertThat( reader.readLine(), is( "    \"email\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"timezone\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organization\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"organizationUrl\" : null," ) );
+		//		assertThat( reader.readLine(), is( "    \"roles\" : [ \"Philosopher\" ]" ) );
+		//		assertThat( reader.readLine(), is( "  } ]," ) );
 		assertThat( reader.readLine(), is( "  \"enabled\" : false," ) );
 		assertThat( reader.readLine(), is( "  \"removable\" : false," ) );
 		assertThat( reader.readLine(), is( "  \"cardUri\" : null," ) );

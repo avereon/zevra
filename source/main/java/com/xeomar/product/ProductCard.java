@@ -458,6 +458,11 @@ public class ProductCard {
 	}
 
 	@Override
+	public int hashCode() {
+		return getProductKey().hashCode();
+	}
+
+	@Override
 	public boolean equals( Object object ) {
 		if( !(object instanceof ProductCard) ) return false;
 		ProductCard that = (ProductCard)object;
