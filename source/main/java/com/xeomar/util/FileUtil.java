@@ -191,35 +191,7 @@ public class FileUtil {
 	}
 
 	public static boolean copy( Path source, Path target, boolean includeRootFolder ) throws IOException {
-		// Copy file sources to file targets
-		if( Files.isRegularFile( source ) && Files.isRegularFile( target ) ) {
-			copyFileToFile( source.toFile(), target.toFile() );
-			return true;
-		}
-
-		// Copy file sources to folder targets
-		if( Files.isRegularFile( source ) && Files.isDirectory( target ) ) {
-			copyFileToDirectory( source.toFile(), target.toFile() );
-			return true;
-		}
-
-		// Copy folder sources to folder targets
-		if( Files.isDirectory( source ) && Files.isDirectory( target ) ) {
-			if( includeRootFolder ) {
-				copyDirectoryToDirectory( source.toFile(), target.toFile() );
-			} else {
-				copyDirectory( source.toFile(), target.toFile() );
-			}
-			return true;
-		}
-
-		// Copy file source to new file target
-		if( Files.isRegularFile( source ) ) {
-			copyFileToFile( source.toFile(), target.toFile() );
-			return true;
-		}
-
-		return false;
+		return copy( source.toFile(), target.toFile(), includeRootFolder );
 	}
 
 	public static long copy( Path file, OutputStream target ) throws IOException {
