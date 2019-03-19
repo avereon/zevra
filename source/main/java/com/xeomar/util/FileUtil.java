@@ -416,6 +416,10 @@ public class FileUtil {
 		return path;
 	}
 
+	public static Path getTempFolder() {
+		return Paths.get( System.getProperty( "java.io.tmpdir" ) );
+	}
+
 	public static Path createTempFile( String prefix, String suffix, FileAttribute... attributes ) throws IOException {
 		return Files.createTempFile( prefix, suffix, attributes );
 	}
