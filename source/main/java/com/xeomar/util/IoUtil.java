@@ -1,12 +1,12 @@
 package com.xeomar.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class IoUtil {
+
+	private static final int DEFUALT_BUFFER_SIZE = 8192;
 
 	public static String toString( InputStream input ) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -15,7 +15,7 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, OutputStream output ) throws IOException {
-		return copy( input, output, 4096 );
+		return copy( input, output, DEFUALT_BUFFER_SIZE );
 	}
 
 	public static long copy( InputStream input, OutputStream output, int bufferSize ) throws IOException {
@@ -23,17 +23,11 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, OutputStream output, byte[] buffer ) throws IOException {
-		long total;
-		int count;
-		for( total = 0L; -1 != (count = input.read( buffer )); total += count ) {
-			output.write( buffer, 0, count );
-		}
-
-		return total;
+		return copy( input, output, buffer, null );
 	}
 
 	public static long copy( InputStream input, OutputStream output, LongCallback progressCallback ) throws IOException {
-		return copy( input, output, 4096, progressCallback );
+		return copy( input, output, DEFUALT_BUFFER_SIZE, progressCallback );
 	}
 
 	public static long copy( InputStream input, OutputStream output, int bufferSize, LongCallback progressCallback ) throws IOException {
@@ -46,10 +40,49 @@ public class IoUtil {
 
 		for( total = 0L; -1 != (count = input.read( buffer )); total += count ) {
 			output.write( buffer, 0, count );
-			progressCallback.call( total );
+			if( progressCallback != null ) progressCallback.call( total );
 		}
 
 		return total;
+	}
+
+	public static long copy( InputStream input, Writer writer, String encoding ) throws IOException {
+		return copy( new InputStreamReader( input, Charset.forName( encoding )), writer, DEFUALT_BUFFER_SIZE );
+	}
+
+	public static long copy( Reader reader, Writer writer, int bufferSize ) throws IOException {
+		return copy( reader, writer, new char[bufferSize]);
+	}
+
+	public static long copy( Reader reader, Writer writer, char[] buffer ) throws IOException {
+		return copy( reader, writer, buffer, null );
+	}
+
+	public static long copy( Reader reader, Writer writer, char[] buffer, LongCallback progressCallback ) throws IOException {
+		int count;
+		long total;
+
+		for( total = 0L; -1 != (count = reader.read( buffer )); total += count ) {
+			writer.write( buffer, 0, count );
+			if( progressCallback != null ) progressCallback.call( total );
+		}
+
+		return total;
+	}
+
+	public static void write( char[] data, OutputStream output, Charset encoding ) throws IOException {
+		if( data != null ) output.write( new String( data ).getBytes( encoding ) );
+	}
+
+	public static void write( String data, OutputStream output, String encoding ) throws IOException {
+		write( data.toCharArray(), output, Charset.forName( encoding ) );
+	}
+
+	public static String toString( InputStream input, String encoding ) throws IOException {
+		try( final StringWriter sw = new StringWriter() ) {
+			copy( input, sw, encoding );
+			return sw.toString();
+		}
 	}
 
 }

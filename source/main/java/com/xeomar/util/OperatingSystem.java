@@ -1,6 +1,5 @@
 package com.xeomar.util;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.*;
@@ -556,7 +555,7 @@ public class OperatingSystem {
 
 	private static File extractElevator( InputStream source, File elevator ) throws IOException {
 		try( source; FileOutputStream target = new FileOutputStream( elevator ) ) {
-			IOUtils.copy( source, target );
+			IoUtil.copy( source, target );
 			elevator.setExecutable( true );
 		}
 		return elevator;

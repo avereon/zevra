@@ -1,14 +1,10 @@
 package com.xeomar.util;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.invoke.MethodHandles;
+import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
@@ -27,6 +23,8 @@ public class FileUtil {
 	public static final Path TEMP_FOLDER = Paths.get( System.getProperty( "java.io.tmpdir" ) );
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+
+	private static final long FILE_COPY_BUFFER_SIZE = SizeUnitBase2.MiB.getSize() * 25;
 
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
@@ -174,7 +172,7 @@ public class FileUtil {
 
 	public static void save( String data, Path target, String encoding ) throws IOException {
 		try( OutputStream output = new FileOutputStream( target.toFile() ) ) {
-			IOUtils.write( data, output, encoding );
+			IoUtil.write( data, output, encoding );
 		}
 	}
 
@@ -184,7 +182,7 @@ public class FileUtil {
 
 	public static String load( Path source, String encoding ) throws IOException {
 		try( FileInputStream input = new FileInputStream( source.toString() ) ) {
-			return IOUtils.toString( input, encoding );
+			return IoUtil.toString( input, encoding );
 		}
 	}
 
@@ -192,32 +190,32 @@ public class FileUtil {
 		return copy( source, target, false );
 	}
 
-	public static boolean copy( Path source, Path target, boolean addRootFolder ) throws IOException {
+	public static boolean copy( Path source, Path target, boolean includeRootFolder ) throws IOException {
 		// Copy file sources to file targets
 		if( Files.isRegularFile( source ) && Files.isRegularFile( target ) ) {
-			FileUtils.copyFile( source.toFile(), target.toFile() );
+			copyFileToFile( source.toFile(), target.toFile() );
 			return true;
 		}
 
 		// Copy file sources to folder targets
 		if( Files.isRegularFile( source ) && Files.isDirectory( target ) ) {
-			FileUtils.copyFileToDirectory( source.toFile(), target.toFile() );
+			copyFileToDirectory( source.toFile(), target.toFile() );
 			return true;
 		}
 
 		// Copy folder sources to folder targets
 		if( Files.isDirectory( source ) && Files.isDirectory( target ) ) {
-			if( addRootFolder ) {
-				FileUtils.copyDirectoryToDirectory( source.toFile(), target.toFile() );
+			if( includeRootFolder ) {
+				copyDirectoryToDirectory( source.toFile(), target.toFile() );
 			} else {
-				FileUtils.copyDirectory( source.toFile(), target.toFile() );
+				copyDirectory( source.toFile(), target.toFile() );
 			}
 			return true;
 		}
 
 		// Copy file source to new file target
 		if( Files.isRegularFile( source ) ) {
-			FileUtils.copyFile( source.toFile(), target.toFile() );
+			copyFileToFile( source.toFile(), target.toFile() );
 			return true;
 		}
 
@@ -226,7 +224,91 @@ public class FileUtil {
 
 	public static long copy( Path file, OutputStream target ) throws IOException {
 		try( FileInputStream source = new FileInputStream( file.toFile() ) ) {
-			return IOUtils.copy( source, target );
+			return IoUtil.copy( source, target );
+		}
+	}
+
+	public static boolean copy( File source, File target, boolean includeRootFolder ) throws IOException {
+		// Copy file sources to file targets
+		if( source.isFile() && target.isFile() ) {
+			copyFileToFile( source, target );
+			return true;
+		}
+
+		// Copy file sources to folder targets
+		if( source.isFile() && target.isDirectory() ) {
+			copyFileToDirectory( source, target );
+			return true;
+		}
+
+		// Copy folder sources to folder targets
+		if( source.isDirectory() && target.isDirectory() ) {
+			if( includeRootFolder ) {
+				copyDirectoryToDirectory( source, target );
+			} else {
+				copyDirectory( source, target );
+			}
+			return true;
+		}
+
+		// Copy file source to new file target
+		if( source.isFile() ) {
+			copyFileToFile( source, target );
+			return true;
+		}
+
+		return false;
+	}
+
+	private static void copyFileToFile( File source, File target ) throws IOException {
+		if( target.exists() && target.isDirectory() ) throw new IOException( "Destination is a directory: " + target );
+
+		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos.getChannel() ) {
+			final long size = input.size();
+			long count;
+			long position = 0;
+			while( position < size ) {
+				final long remain = size - position;
+				count = remain > FILE_COPY_BUFFER_SIZE ? FILE_COPY_BUFFER_SIZE : remain;
+				final long bytesCopied = output.transferFrom( input, position, count );
+				if( bytesCopied == 0 ) break;
+				position += bytesCopied;
+			}
+		}
+	}
+
+	private static void copyFileToDirectory( File source, File target ) throws IOException {
+		copyFileToFile( source, new File( target, source.getName() ) );
+	}
+
+	private static void copyDirectoryToDirectory( File source, File target ) throws IOException {
+		copyDirectory( source, new File( target, source.getName() ) );
+	}
+
+	private static void copyDirectory( File source, File target ) throws IOException {
+		doCopyDirectory( source, target, null );
+	}
+
+	private static void doCopyDirectory( File source, File target, FileFilter filter ) throws IOException {
+		File[] sourceFiles = filter == null ? source.listFiles() : source.listFiles( filter );
+		if( sourceFiles == null ) throw new IOException( "Failed to list source: " + source );
+
+		// Make sure there is a valid target
+		if( target.exists() ) {
+			if( !target.isDirectory() ) throw new IOException( "Target not a folder: " + target );
+		} else {
+			if( !target.mkdirs() && !target.isDirectory() ) throw new IOException( "Cannot create target: " + target );
+		}
+		if( !target.canWrite() ) throw new IOException( "Cannot write to target: " + target );
+
+		// Copy files
+		for( File sourceFile : sourceFiles ) {
+			File targetFile = new File( target, sourceFile.getName() );
+			if( sourceFile.isDirectory() ) {
+				doCopyDirectory( sourceFile, targetFile, filter );
+			} else {
+				copyFileToFile( sourceFile, targetFile );
+			}
 		}
 	}
 
@@ -258,7 +340,7 @@ public class FileUtil {
 				} else {
 					zip.putNextEntry( new ZipEntry( zipEntryPath ) );
 					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
-						IOUtils.copy( input, zip );
+						IoUtil.copy( input, zip );
 					}
 				}
 				zip.closeEntry();
@@ -281,7 +363,7 @@ public class FileUtil {
 				} else {
 					Files.createDirectories( file.getParent() );
 					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
-						IOUtils.copy( zip, output );
+						IoUtil.copy( zip, output );
 					}
 				}
 			}

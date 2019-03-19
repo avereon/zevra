@@ -1,6 +1,5 @@
 package com.xeomar.util;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -357,7 +356,7 @@ public class FileUtilTest {
 			// Check that the target files match the source files
 			Files.walk( sourceData ).forEach( path -> assertThat( Files.exists( targetData.resolve( sourceData.relativize( path ) ) ), is( true ) ) );
 		} finally {
-			if( Files.exists( targetData ) ) FileUtils.forceDelete( targetData.toFile() );
+			if( Files.exists( targetData ) ) FileUtil.delete( targetData );
 			assertThat( Files.exists( targetData ), is( false ) );
 		}
 	}
@@ -379,7 +378,7 @@ public class FileUtilTest {
 			}
 			assertThat( paths.size(), is( 6 ) );
 		} finally {
-			FileUtils.forceDelete( sourceRoot.toFile() );
+			FileUtil.delete( sourceRoot );
 		}
 	}
 
