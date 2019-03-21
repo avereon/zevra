@@ -190,8 +190,16 @@ public class FileUtil {
 		return copy( source, target, false );
 	}
 
+	public static boolean copy( Path source, Path target, LongCallback progressCallback ) throws IOException {
+		return copy( source, target, false, progressCallback );
+	}
+
 	public static boolean copy( Path source, Path target, boolean includeRootFolder ) throws IOException {
-		return copy( source.toFile(), target.toFile(), includeRootFolder );
+		return copy( source, target, includeRootFolder, null );
+	}
+
+	public static boolean copy( Path source, Path target, boolean includeRootFolder, LongCallback progressCallback ) throws IOException {
+		return copy( source.toFile(), target.toFile(), includeRootFolder, progressCallback );
 	}
 
 	public static long copy( Path file, OutputStream target ) throws IOException {
@@ -201,38 +209,42 @@ public class FileUtil {
 	}
 
 	public static boolean copy( File source, File target, boolean includeRootFolder ) throws IOException {
+		return copy( source, target, includeRootFolder, null );
+	}
+
+	public static boolean copy( File source, File target, boolean includeRootFolder, LongCallback progressCallback ) throws IOException {
 		// Copy file sources to file targets
 		if( source.isFile() && target.isFile() ) {
-			copyFileToFile( source, target );
+			copyFileToFile( source, target, progressCallback );
 			return true;
 		}
 
 		// Copy file sources to folder targets
 		if( source.isFile() && target.isDirectory() ) {
-			copyFileToDirectory( source, target );
+			copyFileToDirectory( source, target, progressCallback );
 			return true;
 		}
 
 		// Copy folder sources to folder targets
 		if( source.isDirectory() && target.isDirectory() ) {
 			if( includeRootFolder ) {
-				copyDirectoryToDirectory( source, target );
+				copyDirectoryToDirectory( source, target, progressCallback );
 			} else {
-				copyDirectory( source, target );
+				copyDirectory( source, target, progressCallback );
 			}
 			return true;
 		}
 
 		// Copy file source to new file target
 		if( source.isFile() ) {
-			copyFileToFile( source, target );
+			copyFileToFile( source, target, progressCallback );
 			return true;
 		}
 
 		return false;
 	}
 
-	private static void copyFileToFile( File source, File target ) throws IOException {
+	private static void copyFileToFile( File source, File target, LongCallback progressCallback ) throws IOException {
 		if( target.exists() && target.isDirectory() ) throw new IOException( "Destination is a directory: " + target );
 
 		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos.getChannel() ) {
@@ -241,27 +253,28 @@ public class FileUtil {
 			long position = 0;
 			while( position < size ) {
 				final long remain = size - position;
-				count = remain > FILE_COPY_BUFFER_SIZE ? FILE_COPY_BUFFER_SIZE : remain;
+				count = Math.min( remain, FILE_COPY_BUFFER_SIZE );
 				final long bytesCopied = output.transferFrom( input, position, count );
 				if( bytesCopied == 0 ) break;
 				position += bytesCopied;
+				if( progressCallback != null ) progressCallback.call( position );
 			}
 		}
 	}
 
-	private static void copyFileToDirectory( File source, File target ) throws IOException {
-		copyFileToFile( source, new File( target, source.getName() ) );
+	private static void copyFileToDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+		copyFileToFile( source, new File( target, source.getName() ), progressCallback );
 	}
 
-	private static void copyDirectoryToDirectory( File source, File target ) throws IOException {
-		copyDirectory( source, new File( target, source.getName() ) );
+	private static void copyDirectoryToDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+		copyDirectory( source, new File( target, source.getName() ), progressCallback );
 	}
 
-	private static void copyDirectory( File source, File target ) throws IOException {
-		doCopyDirectory( source, target, null );
+	private static void copyDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+		doCopyDirectory( source, target, null, progressCallback );
 	}
 
-	private static void doCopyDirectory( File source, File target, FileFilter filter ) throws IOException {
+	private static void doCopyDirectory( File source, File target, FileFilter filter, LongCallback progressCallback ) throws IOException {
 		File[] sourceFiles = filter == null ? source.listFiles() : source.listFiles( filter );
 		if( sourceFiles == null ) throw new IOException( "Failed to list source: " + source );
 
@@ -277,9 +290,9 @@ public class FileUtil {
 		for( File sourceFile : sourceFiles ) {
 			File targetFile = new File( target, sourceFile.getName() );
 			if( sourceFile.isDirectory() ) {
-				doCopyDirectory( sourceFile, targetFile, filter );
+				doCopyDirectory( sourceFile, targetFile, filter, progressCallback );
 			} else {
-				copyFileToFile( sourceFile, targetFile );
+				copyFileToFile( sourceFile, targetFile, progressCallback );
 			}
 		}
 	}
@@ -294,76 +307,11 @@ public class FileUtil {
 	}
 
 	public static void zip( Path source, Path target ) throws IOException {
-		List<Path> paths = listPaths( source );
-
-		long total = 0;
-		for( Path path : paths ) {
-			total += Files.isDirectory( path ) ? 0 : Files.size( path );
-		}
-
-		try( ZipOutputStream zip = new ZipOutputStream( new FileOutputStream( target.toFile() ) ) ) {
-			for( Path sourcePath : paths ) {
-				boolean folder = Files.isDirectory( sourcePath );
-				String zipEntryPath = source.relativize( sourcePath ).toString();
-
-				if( folder ) {
-					// Folders need to have a trailing slash
-					zip.putNextEntry( new ZipEntry( zipEntryPath + "/" ) );
-				} else {
-					zip.putNextEntry( new ZipEntry( zipEntryPath ) );
-					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
-						IoUtil.copy( input, zip );
-					}
-				}
-				zip.closeEntry();
-			}
-		}
+		zip( source, target, null );
 	}
 
 	public static void unzip( Path source, Path target ) throws IOException {
-		Files.createDirectories( target );
-
-		ZipEntry entry;
-		try( ZipInputStream zip = new ZipInputStream( new FileInputStream( source.toFile() ) ) ) {
-			while( (entry = zip.getNextEntry()) != null ) {
-				String path = entry.getName();
-				boolean folder = path.endsWith( "/" );
-				Path file = target.resolve( path );
-
-				if( folder ) {
-					Files.createDirectories( file );
-				} else {
-					Files.createDirectories( file.getParent() );
-					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
-						IoUtil.copy( zip, output );
-					}
-				}
-			}
-		}
-	}
-
-	public static long getRecursiveSize( Path source ) throws IOException {
-		List<Path> paths = listPaths( source );
-
-		long total = 0;
-		for( Path path : paths ) {
-			total += Files.isDirectory( path ) ? 0 : Files.size( path );
-		}
-
-		return total;
-	}
-
-	public static long getUncompressedZipSize( Path source ) throws IOException {
-		ZipFile zipFile = new ZipFile( source.toFile() );
-		Iterator<? extends ZipEntry> entries = zipFile.entries().asIterator();
-
-		long total = 0;
-		while( entries.hasNext() ) {
-			ZipEntry entry = entries.next();
-			total += entry.isDirectory() ? 0 : entry.getSize();
-		}
-
-		return total;
+		unzip( source, target, null );
 	}
 
 	public static void zip( Path source, Path target, LongCallback progressCallback ) throws IOException {
@@ -383,7 +331,7 @@ public class FileUtil {
 					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
 						IoUtil.copy( input, zip, ( value ) -> {
 							long diff = value - last.get();
-							if( diff > 0 ) progressCallback.call( total.addAndGet( diff ) );
+							if( progressCallback != null && diff > 0 ) progressCallback.call( total.addAndGet( diff ) );
 							last.set( value );
 						} );
 					}
@@ -412,6 +360,35 @@ public class FileUtil {
 				}
 			}
 		}
+	}
+
+	public static long getDeepSize( Path source ) throws IOException {
+		List<Path> paths = listPaths( source );
+
+		long total = 0;
+		for( Path path : paths ) {
+			total += Files.isDirectory( path ) ? 0 : Files.size( path );
+		}
+
+		return total;
+	}
+
+	public static long getUncompressedSize( Path source ) throws IOException {
+		ZipFile zipFile = new ZipFile( source.toFile() );
+		Iterator<? extends ZipEntry> entries = zipFile.entries().asIterator();
+
+		long total = 0;
+		while( entries.hasNext() ) {
+			ZipEntry entry = entries.next();
+			total += entry.isDirectory() ? 0 : entry.getSize();
+		}
+
+		return total;
+	}
+
+	public static long getDeepUncompressedSize( Path source ) throws IOException {
+		// TODO Accumulates all files sizes and uncompressed zip file sizes
+		return 0;
 	}
 
 	public static List<Path> listPaths( Path file ) throws IOException {
