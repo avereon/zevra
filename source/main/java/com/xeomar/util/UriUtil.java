@@ -14,6 +14,10 @@ public final class UriUtil {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
+	public static String parseName( URI uri  ) {
+		return uri.getPath().substring( uri.getPath().lastIndexOf( "/" ) + 1 );
+	}
+
 	public static URI removeQueryAndFragment( URI source ) {
 		StringBuilder builder = new StringBuilder();
 
