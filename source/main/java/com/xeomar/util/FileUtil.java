@@ -353,8 +353,8 @@ public class FileUtil {
 				if( path.endsWith( "/" ) ) {
 					Files.createDirectories( file );
 				} else {
+					Files.createDirectories( file.getParent() );
 					try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
-						Files.createDirectories( file.getParent() );
 						IoUtil.copy( zip, output, progressCallback );
 					}
 				}
