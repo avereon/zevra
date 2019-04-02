@@ -119,13 +119,13 @@ public class ProductCard {
 		return this;
 	}
 
-	public ProductCard load( Class<? extends Product> product ) throws IOException {
-		return load( product, null );
+	public ProductCard load( Product product ) throws IOException {
+		return load( product.getClass() );
 	}
 
-	public ProductCard load( Class<? extends Product> product, URI base ) throws IOException {
-		try( InputStream input = product.getResourceAsStream( CARD ) ) {
-			return load( input, base );
+	public ProductCard load( Class<?> loader ) throws IOException {
+		try( InputStream input = loader.getResourceAsStream( CARD ) ) {
+			return load( input, null );
 		}
 	}
 
