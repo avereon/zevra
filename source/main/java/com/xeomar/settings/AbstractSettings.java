@@ -6,7 +6,6 @@ import com.xeomar.util.LogUtil;
 import com.xeomar.util.PathUtil;
 import com.xeomar.util.TypeReference;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -135,6 +134,11 @@ public abstract class AbstractSettings implements Settings {
 
 		// Settings change event should only be fired if the values are different
 		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
+	}
+
+	@Override
+	public void remove( String key ) {
+		set( key, null );
 	}
 
 	/**

@@ -204,6 +204,14 @@ public interface Settings {
 	void set( String key, Object value );
 
 	/**
+	 * Remove a value from the settings node. This is the same as setting the
+	 * value to null.
+	 *
+	 * @param key The value key
+	 */
+	void remove( String key );
+
+	/**
 	 * Get the default values for this settings node.
 	 *
 	 * @return The default values map
