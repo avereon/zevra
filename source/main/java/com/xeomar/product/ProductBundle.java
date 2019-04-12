@@ -48,7 +48,7 @@ public class ProductBundle {
 	public String getStringOrNull( String bundleKey, String valueKey, String... values ) {
 		String string = null;
 
-		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + "/" + bundleKey, Locale.getDefault(), module );
+		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + "/bundles/" + bundleKey, Locale.getDefault(), module );
 		if( bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), (Object[])values );
 
 		return string;
