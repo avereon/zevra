@@ -5,12 +5,10 @@ import com.xeomar.util.LogUtil;
 import org.slf4j.Logger;
 
 import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import static java.text.MessageFormat.format;
-import static java.util.ResourceBundle.getBundle;
 
 public class ProductBundle {
 
@@ -22,6 +20,8 @@ public class ProductBundle {
 
 	private String prefix;
 
+	private String rbPackage;
+
 	public ProductBundle( Class<? extends Product> product ) {
 		this( product, JavaUtil.getPackagePath( product ) );
 	}
@@ -31,23 +31,12 @@ public class ProductBundle {
 		this.loader = product.getClassLoader();
 		this.prefix = prefix;
 
-//		if( product.getName().contains( "xenon" ) ) {
-//			try {
-//				System.out.println( product.getName() );
-//				InputStream moduleInput = product.getModule().getResourceAsStream( "/META-INF/bundles/action.properties" );
-//				System.out.println( moduleInput != null ? "FOUND MODULE RESOURCE" : "COULD NOT FIND MODULE RESOURCE" );
-//				InputStream classInput = product.getResourceAsStream( "/bundles/action.properties" );
-//				System.out.println( classInput != null ? "FOUND CLASS RESOURCE" : "COULD NOT FIND CLASS RESOURCE" );
-//			} catch( IOException e ) {
-//				e.printStackTrace();
-//			}
-//		}
+		this.rbPackage = product.getPackageName().replace( ".", "/" );
 	}
 
 	public String getString( String bundleKey, String valueKey, String... values ) {
-		String string = null;
+		String string = getStringOrNull( bundleKey, valueKey, values );
 
-		string = getStringOrNull( bundleKey, valueKey, values  );
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
 			log.warn( "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
@@ -59,8 +48,8 @@ public class ProductBundle {
 	public String getStringOrNull( String bundleKey, String valueKey, String... values ) {
 		String string = null;
 
-		ResourceBundle bundle = getBundle( "bundles/" + bundleKey, Locale.getDefault(), module );
-		if( bundle.containsKey( valueKey ) ) string = format( bundle.getString( valueKey ), (Object[])values );
+		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + "/" + bundleKey, Locale.getDefault(), module );
+		if( bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), (Object[])values );
 
 		return string;
 	}
