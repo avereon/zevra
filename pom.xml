@@ -12,11 +12,11 @@
 	</parent>
 
 	<groupId>com.xeomar</groupId>
-	<artifactId>zenna</artifactId>
+	<artifactId>zevra</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Zenna</name>
+	<name>Zevra</name>
 	<description>Utility library</description>
 	<inceptionYear>2018</inceptionYear>
 
