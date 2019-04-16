@@ -1,4 +1,4 @@
-module com.xeomar.zenna {
+module com.xeomar.zevra {
 
 	requires java.logging;
 	requires java.management;
