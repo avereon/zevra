@@ -153,7 +153,7 @@ public class ProductCard {
 		this.copyrightSummary = card.copyrightSummary;
 		this.licenseSummary = card.licenseSummary;
 
-		this.productUri = card.productUri;
+		//this.productUri = card.productUri;
 		this.javaVersion = card.javaVersion;
 
 		this.maintainers = card.maintainers;
@@ -286,6 +286,7 @@ public class ProductCard {
 		this.licenseSummary = licenseSummary;
 	}
 
+	@Deprecated
 	public URI getProductUri( Map<String, String> parameters ) throws URISyntaxException {
 		StringBuilder query = new StringBuilder();
 		for( String key : parameters.keySet() ) {
