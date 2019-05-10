@@ -1,21 +1,33 @@
 package com.xeomar.util;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public final class UriUtil {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
-	public static String parseName( URI uri  ) {
-		return uri.getPath().substring( uri.getPath().lastIndexOf( "/" ) + 1 );
+	public static URI addToPath( URI uri, String path ) {
+		String newPath = Paths.get( uri.getPath() ).resolve( path ).toString();
+		try {
+			return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), newPath, uri.getQuery(), uri.getFragment() );
+		} catch( URISyntaxException exception ) {
+			return uri;
+		}
+	}
+
+	public static String parseName( URI uri ) {
+		Path path = Paths.get( uri.getPath() );
+		Path name = path.getFileName();
+		return name == null ? "" : name.toString();
 	}
 
 	public static URI removeQueryAndFragment( URI source ) {
@@ -172,7 +184,7 @@ public final class UriUtil {
 		} else {
 			if( uri.getUserInfo() != null ) parts.add( uri.getUserInfo() );
 			if( uri.getHost() != null ) parts.add( uri.getHost() );
-			if( uri.getPath() != null ) parts.addAll( Arrays.asList( uri.getPath().split( "/",-1 ) ) );
+			if( uri.getPath() != null ) parts.addAll( Arrays.asList( uri.getPath().split( "/", -1 ) ) );
 		}
 		if( uri.getFragment() != null ) parts.add( uri.getFragment() );
 
