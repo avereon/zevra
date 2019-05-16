@@ -3,6 +3,7 @@ package com.xeomar.util;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.function.LongConsumer;
 
 public class IoUtil {
 
@@ -26,21 +27,22 @@ public class IoUtil {
 		return copy( input, output, buffer, null );
 	}
 
-	public static long copy( InputStream input, OutputStream output, LongCallback progressCallback ) throws IOException {
+	public static long copy( InputStream input, OutputStream output, LongConsumer progressCallback ) throws IOException {
 		return copy( input, output, DEFUALT_BUFFER_SIZE, progressCallback );
 	}
 
-	public static long copy( InputStream input, OutputStream output, int bufferSize, LongCallback progressCallback ) throws IOException {
+	public static long copy( InputStream input, OutputStream output, int bufferSize, LongConsumer progressCallback ) throws IOException {
 		return copy( input, output, new byte[ bufferSize ], progressCallback );
 	}
 
-	public static long copy( InputStream input, OutputStream output, byte[] buffer, LongCallback progressCallback ) throws IOException {
+	@SuppressWarnings( "Duplicates" )
+	public static long copy( InputStream input, OutputStream output, byte[] buffer, LongConsumer progressCallback ) throws IOException {
 		int count;
 		long total;
 
 		for( total = 0L; -1 != (count = input.read( buffer )); total += count ) {
 			output.write( buffer, 0, count );
-			if( progressCallback != null ) progressCallback.call( total );
+			if( progressCallback != null ) progressCallback.accept( total );
 		}
 
 		return total;
@@ -58,13 +60,14 @@ public class IoUtil {
 		return copy( reader, writer, buffer, null );
 	}
 
-	public static long copy( Reader reader, Writer writer, char[] buffer, LongCallback progressCallback ) throws IOException {
+	@SuppressWarnings( "Duplicates" )
+	public static long copy( Reader reader, Writer writer, char[] buffer, LongConsumer progressCallback ) throws IOException {
 		int count;
 		long total;
 
 		for( total = 0L; -1 != (count = reader.read( buffer )); total += count ) {
 			writer.write( buffer, 0, count );
-			if( progressCallback != null ) progressCallback.call( total );
+			if( progressCallback != null ) progressCallback.accept( total );
 		}
 
 		return total;

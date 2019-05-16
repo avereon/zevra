@@ -11,6 +11,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -190,7 +191,7 @@ public class FileUtil {
 		return copy( source, target, false );
 	}
 
-	public static boolean copy( Path source, Path target, LongCallback progressCallback ) throws IOException {
+	public static boolean copy( Path source, Path target, LongConsumer progressCallback ) throws IOException {
 		return copy( source, target, false, progressCallback );
 	}
 
@@ -198,7 +199,7 @@ public class FileUtil {
 		return copy( source, target, includeRootFolder, null );
 	}
 
-	public static boolean copy( Path source, Path target, boolean includeRootFolder, LongCallback progressCallback ) throws IOException {
+	public static boolean copy( Path source, Path target, boolean includeRootFolder, LongConsumer progressCallback ) throws IOException {
 		return copy( source.toFile(), target.toFile(), includeRootFolder, progressCallback );
 	}
 
@@ -212,7 +213,7 @@ public class FileUtil {
 		return copy( source, target, includeRootFolder, null );
 	}
 
-	public static boolean copy( File source, File target, boolean includeRootFolder, LongCallback progressCallback ) throws IOException {
+	public static boolean copy( File source, File target, boolean includeRootFolder, LongConsumer progressCallback ) throws IOException {
 		// Copy file sources to file targets
 		if( source.isFile() && target.isFile() ) {
 			copyFileToFile( source, target, progressCallback );
@@ -244,7 +245,7 @@ public class FileUtil {
 		return false;
 	}
 
-	private static void copyFileToFile( File source, File target, LongCallback progressCallback ) throws IOException {
+	private static void copyFileToFile( File source, File target, LongConsumer progressCallback ) throws IOException {
 		if( target.exists() && target.isDirectory() ) throw new IOException( "Destination is a directory: " + target );
 
 		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos.getChannel() ) {
@@ -257,24 +258,24 @@ public class FileUtil {
 				final long bytesCopied = output.transferFrom( input, position, count );
 				if( bytesCopied == 0 ) break;
 				position += bytesCopied;
-				if( progressCallback != null ) progressCallback.call( position );
+				if( progressCallback != null ) progressCallback.accept( position );
 			}
 		}
 	}
 
-	private static void copyFileToDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+	private static void copyFileToDirectory( File source, File target, LongConsumer progressCallback ) throws IOException {
 		copyFileToFile( source, new File( target, source.getName() ), progressCallback );
 	}
 
-	private static void copyDirectoryToDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+	private static void copyDirectoryToDirectory( File source, File target, LongConsumer progressCallback ) throws IOException {
 		copyDirectory( source, new File( target, source.getName() ), progressCallback );
 	}
 
-	private static void copyDirectory( File source, File target, LongCallback progressCallback ) throws IOException {
+	private static void copyDirectory( File source, File target, LongConsumer progressCallback ) throws IOException {
 		doCopyDirectory( source, target, null, progressCallback );
 	}
 
-	private static void doCopyDirectory( File source, File target, FileFilter filter, LongCallback progressCallback ) throws IOException {
+	private static void doCopyDirectory( File source, File target, FileFilter filter, LongConsumer progressCallback ) throws IOException {
 		File[] sourceFiles = filter == null ? source.listFiles() : source.listFiles( filter );
 		if( sourceFiles == null ) throw new IOException( "Failed to list source: " + source );
 
@@ -314,7 +315,7 @@ public class FileUtil {
 		unzip( source, target, null );
 	}
 
-	public static void zip( Path source, Path target, LongCallback progressCallback ) throws IOException {
+	public static void zip( Path source, Path target, LongConsumer progressCallback ) throws IOException {
 		final AtomicLong total = new AtomicLong( 0 );
 		final AtomicLong last = new AtomicLong( 0 );
 
@@ -331,7 +332,7 @@ public class FileUtil {
 					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
 						IoUtil.copy( input, zip, ( value ) -> {
 							long diff = value - last.get();
-							if( progressCallback != null && diff > 0 ) progressCallback.call( total.addAndGet( diff ) );
+							if( progressCallback != null && diff > 0 ) progressCallback.accept( total.addAndGet( diff ) );
 							last.set( value );
 						} );
 					}
@@ -341,7 +342,7 @@ public class FileUtil {
 		}
 	}
 
-	public static void unzip( Path source, Path target, LongCallback progressCallback ) throws IOException {
+	public static void unzip( Path source, Path target, LongConsumer progressCallback ) throws IOException {
 		Files.createDirectories( target );
 
 		ZipEntry entry;
