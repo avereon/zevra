@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -61,10 +60,6 @@ public class ProductCard {
 
 	private String productUri;
 
-	//private String cardUri;
-
-	//private String packUri;
-
 	private String mainClass;
 
 	private String javaVersion;
@@ -80,6 +75,9 @@ public class ProductCard {
 	private boolean enabled;
 
 	private boolean removable;
+
+	@JsonIgnore
+	private RepoCard repo;
 
 	private Map<String, String> resources;
 
@@ -135,7 +133,11 @@ public class ProductCard {
 
 	public ProductCard load( InputStream input, URI source ) throws IOException {
 		ProductCard card = new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
+		if( source != null ) this.productUri = UriUtil.removeQueryAndFragment( source ).toString();
+		return copyFrom( card );
+	}
 
+	public ProductCard copyFrom( ProductCard card ) {
 		this.group = card.group;
 		this.artifact = card.artifact;
 		this.version = card.version;
@@ -153,7 +155,6 @@ public class ProductCard {
 		this.copyrightSummary = card.copyrightSummary;
 		this.licenseSummary = card.licenseSummary;
 
-		//this.productUri = card.productUri;
 		this.javaVersion = card.javaVersion;
 
 		this.maintainers = card.maintainers;
@@ -163,8 +164,6 @@ public class ProductCard {
 		this.removable = card.removable;
 
 		this.resources = card.resources;
-
-		if( source != null ) this.productUri = UriUtil.removeQueryAndFragment( source ).toString();
 
 		updateKey();
 
@@ -198,16 +197,18 @@ public class ProductCard {
 		return version;
 	}
 
-	public void setVersion( String version ) {
+	public ProductCard setVersion( String version ) {
 		this.version = version;
+		return this;
 	}
 
 	public String getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp( String timestamp ) {
+	public ProductCard setTimestamp( String timestamp ) {
 		this.timestamp = timestamp;
+		return this;
 	}
 
 	public Release getRelease() {
@@ -218,189 +219,162 @@ public class ProductCard {
 		return iconUri;
 	}
 
-	public void setIconUri( String iconUri ) {
+	public ProductCard setIconUri( String iconUri ) {
 		this.iconUri = iconUri;
+		return this;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName( String name ) {
+	public ProductCard setName( String name ) {
 		this.name = name;
+		return this;
 	}
 
 	public String getProvider() {
 		return provider;
 	}
 
-	public void setProvider( String provider ) {
+	public ProductCard setProvider( String provider ) {
 		this.provider = provider;
+		return this;
 	}
 
 	public String getProviderUrl() {
 		return providerUrl;
 	}
 
-	public void setProviderUrl( String providerUrl ) {
+	public ProductCard setProviderUrl( String providerUrl ) {
 		this.providerUrl = providerUrl;
+		return this;
 	}
 
 	public int getInception() {
 		return inception;
 	}
 
-	public void setInception( int inception ) {
+	public ProductCard setInception( int inception ) {
 		this.inception = inception;
+		return this;
 	}
 
 	public String getSummary() {
 		return summary;
 	}
 
-	public void setSummary( String summary ) {
+	public ProductCard setSummary( String summary ) {
 		this.summary = summary;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription( String description ) {
+	public ProductCard setDescription( String description ) {
 		this.description = description;
+		return this;
 	}
 
 	public String getCopyrightSummary() {
 		return copyrightSummary;
 	}
 
-	public void setCopyrightSummary( String copyrightSummary ) {
+	public ProductCard setCopyrightSummary( String copyrightSummary ) {
 		this.copyrightSummary = copyrightSummary;
+		return this;
 	}
 
 	public String getLicenseSummary() {
 		return licenseSummary;
 	}
 
-	public void setLicenseSummary( String licenseSummary ) {
+	public ProductCard setLicenseSummary( String licenseSummary ) {
 		this.licenseSummary = licenseSummary;
-	}
-
-	@Deprecated
-	public URI getProductUri( Map<String, String> parameters ) throws URISyntaxException {
-		StringBuilder query = new StringBuilder();
-		for( String key : parameters.keySet() ) {
-			query.append( "&" );
-			query.append( key );
-			query.append( "=" );
-			query.append( parameters.get( key ) );
-		}
-
-		return new URI( productUri + "?" + query.substring( 1 ) );
+		return this;
 	}
 
 	public String getProductUri() {
 		return productUri;
 	}
 
-	public void setProductUri( String productUri ) {
+	public ProductCard setProductUri( String productUri ) {
 		this.productUri = productUri;
-	}
-
-	@Deprecated
-	public String getCardUri() {
-		return null;
-	}
-
-	@Deprecated
-	public URI getCardUri( String channel ) throws URISyntaxException {
-		return null;
-	}
-
-	@Deprecated
-	public URI getCardUri( String channel, String platform ) throws URISyntaxException {
-		return null;
-	}
-
-	@Deprecated
-	public void setCardUri( String cardUri ) {
-		//this.cardUri = cardUri;
-	}
-
-	@Deprecated
-	public String getPackUri() {
-		return null;
-	}
-
-	@Deprecated
-	public URI getPackUri( String channel ) throws URISyntaxException {
-		return null;
-	}
-
-	@Deprecated
-	public URI getPackUri( String channel, String platform ) throws URISyntaxException {
-		return null;
-	}
-
-	@Deprecated
-	public void setPackUri( String packUri ) {
-		//this.packUri = packUri;
+		return this;
 	}
 
 	public String getMainClass() {
 		return mainClass;
 	}
 
-	public void setMainClass( String mainClass ) {
+	public ProductCard setMainClass( String mainClass ) {
 		this.mainClass = mainClass;
+		return this;
 	}
 
 	public String getJavaVersion() {
 		return javaVersion;
 	}
 
-	public void setJavaVersion( String javaVersion ) {
+	public ProductCard setJavaVersion( String javaVersion ) {
 		this.javaVersion = javaVersion;
+		return this;
 	}
 
 	public Path getInstallFolder() {
 		return installFolder;
 	}
 
-	public void setInstallFolder( Path installFolder ) {
+	public ProductCard setInstallFolder( Path installFolder ) {
 		this.installFolder = installFolder;
+		return this;
 	}
 
 	public List<Maintainer> getMaintainers() {
 		return maintainers;
 	}
 
-	public void setMaintainers( List<Maintainer> maintainers ) {
+	public ProductCard setMaintainers( List<Maintainer> maintainers ) {
 		this.maintainers = maintainers;
+		return this;
 	}
 
 	public List<Contributor> getContributors() {
 		return contributors;
 	}
 
-	public void setContributors( List<Contributor> contributors ) {
+	public ProductCard setContributors( List<Contributor> contributors ) {
 		this.contributors = contributors;
+		return this;
 	}
 
 	public boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled( boolean enabled ) {
+	public ProductCard setEnabled( boolean enabled ) {
 		this.enabled = enabled;
+		return this;
 	}
 
 	public boolean isRemovable() {
 		return removable;
 	}
 
-	public void setRemovable( boolean removable ) {
+	public ProductCard setRemovable( boolean removable ) {
 		this.removable = removable;
+		return this;
+	}
+
+	public RepoCard getRepo() {
+		return repo;
+	}
+
+	public ProductCard setRepo( RepoCard repo ) {
+		this.repo = repo;
+		return this;
 	}
 
 	public String[] getResourceUris( String channel ) {
