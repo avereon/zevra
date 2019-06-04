@@ -179,18 +179,20 @@ public class ProductCard {
 		return group;
 	}
 
-	public void setGroup( String group ) {
+	public ProductCard setGroup( String group ) {
 		this.group = group;
 		updateKey();
+		return this;
 	}
 
 	public String getArtifact() {
 		return artifact;
 	}
 
-	public void setArtifact( String artifact ) {
+	public ProductCard setArtifact( String artifact ) {
 		this.artifact = artifact;
 		updateKey();
+		return this;
 	}
 
 	public String getVersion() {
