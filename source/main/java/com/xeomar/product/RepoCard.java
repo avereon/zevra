@@ -100,6 +100,16 @@ public class RepoCard {
 		this.rank = rank;
 	}
 
+	public RepoCard copyFrom( RepoCard card ) {
+		this.name = card.name;
+		this.icon = card.icon;
+		this.repo = card.repo;
+		this.enabled = card.enabled;
+		this.removable = card.removable;
+		this.rank = card.rank;
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return repo;
