@@ -99,7 +99,6 @@ public class ProductCard {
 		this.artifact = values.getProperty( "artifact" );
 		this.version = values.getProperty( "version" );
 		this.timestamp = values.getProperty( "timestamp" );
-		this.release = Release.create( this.version, this.timestamp );
 
 		this.iconUri = values.getProperty( "icon" );
 		this.name = values.getProperty( "name" );
@@ -113,6 +112,7 @@ public class ProductCard {
 		this.licenseSummary = values.getProperty( "license" );
 
 		this.updateKey();
+		this.updateRelease();
 
 		return this;
 	}
@@ -142,7 +142,6 @@ public class ProductCard {
 		this.artifact = card.artifact;
 		this.version = card.version;
 		this.timestamp = card.timestamp;
-		this.release = Release.create( this.version, this.timestamp );
 
 		this.iconUri = card.iconUri;
 		this.name = card.name;
@@ -165,7 +164,8 @@ public class ProductCard {
 
 		this.resources = card.resources;
 
-		updateKey();
+		this.updateKey();
+		this.updateRelease();
 
 		return this;
 	}
@@ -201,6 +201,7 @@ public class ProductCard {
 
 	public ProductCard setVersion( String version ) {
 		this.version = version;
+		updateRelease();
 		return this;
 	}
 
@@ -210,6 +211,7 @@ public class ProductCard {
 
 	public ProductCard setTimestamp( String timestamp ) {
 		this.timestamp = timestamp;
+		updateRelease();
 		return this;
 	}
 
@@ -391,6 +393,10 @@ public class ProductCard {
 		 * effects.
 		 */
 		if( group != null && artifact != null ) productKey = group + "." + artifact;
+	}
+
+	private void updateRelease() {
+		release = Release.create( this.version, this.timestamp );
 	}
 
 	private String[] getPlatformResourceUris( String channel ) {

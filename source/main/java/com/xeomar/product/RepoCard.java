@@ -56,48 +56,54 @@ public class RepoCard {
 		return name;
 	}
 
-	public void setName( String name ) {
+	public RepoCard setName( String name ) {
 		this.name = name;
+		return this;
 	}
 
 	public String getIcon() {
 		return icon;
 	}
 
-	public void setIcon( String icon ) {
+	public RepoCard setIcon( String icon ) {
 		this.icon = icon;
+		return this;
 	}
 
 	public String getRepo() {
 		return repo;
 	}
 
-	public void setRepo( String repo ) {
+	public RepoCard setRepo( String repo ) {
 		this.repo = repo;
+		return this;
 	}
 
 	public boolean isEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled( boolean enabled ) {
+	public RepoCard setEnabled( boolean enabled ) {
 		this.enabled = enabled;
+		return this;
 	}
 
 	public boolean isRemovable() {
 		return removable;
 	}
 
-	public void setRemovable( boolean removable ) {
+	public RepoCard setRemovable( boolean removable ) {
 		this.removable = removable;
+		return this;
 	}
 
 	public int getRank() {
 		return rank;
 	}
 
-	public void setRank( int rank ) {
+	public RepoCard setRank( int rank ) {
 		this.rank = rank;
+		return this;
 	}
 
 	public RepoCard copyFrom( RepoCard card ) {
