@@ -381,8 +381,8 @@ public class ProductCard {
 		return this;
 	}
 
-	public String[] getResourceUris( String channel ) {
-		return getPlatformResourceUris( channel );
+	public String[] getResourceUris() {
+		return getPlatformResourceUris();
 	}
 
 	private void updateKey() {
@@ -399,14 +399,14 @@ public class ProductCard {
 		release = Release.create( this.version, this.timestamp );
 	}
 
-	private String[] getPlatformResourceUris( String channel ) {
+	private String[] getPlatformResourceUris() {
 		String os = System.getProperty( "os.name" );
 		String arch = System.getProperty( "os.arch" );
 
 		Set<String> resources = new HashSet<>();
 
 		// Add the product pack URI
-		//resources.add( getPackUri( channel ) );
+		//resources.add( getPackUri() );
 
 		// This code was originally intended to resolve os/architecture specific
 		// resources needed for a product. For the moment, this feature is not
