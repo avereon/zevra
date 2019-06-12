@@ -381,6 +381,7 @@ public class ProductCard {
 		return this;
 	}
 
+	@JsonIgnore
 	public String[] getResourceUris() {
 		return getPlatformResourceUris();
 	}

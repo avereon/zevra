@@ -33,7 +33,7 @@ public class ProductCardTest {
 		b.setArtifact( "artifact" );
 
 		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
-		assertThat( a.hashCode(), is( b.hashCode() ));
+		assertThat( a.hashCode(), is( b.hashCode() ) );
 	}
 
 	@Test
