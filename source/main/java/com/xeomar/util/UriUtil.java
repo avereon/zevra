@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public final class UriUtil {
@@ -16,18 +14,17 @@ public final class UriUtil {
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
 	public static URI addToPath( URI uri, String path ) {
-		String newPath = Paths.get( uri.getPath() ).resolve( path ).toString();
+		String newPath = uri.getPath() + "/" + path;
 		try {
-			return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), newPath, uri.getQuery(), uri.getFragment() );
+			return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), newPath, uri.getQuery(), uri.getFragment() ).normalize();
 		} catch( URISyntaxException exception ) {
 			return uri;
 		}
 	}
 
 	public static String parseName( URI uri ) {
-		Path path = Paths.get( uri.getPath() );
-		Path name = path.getFileName();
-		return name == null ? "" : name.toString();
+		String path = uri.getPath();
+		return path.substring( path.lastIndexOf( "/" ) + 1 );
 	}
 
 	public static URI removeQueryAndFragment( URI source ) {
@@ -42,9 +39,12 @@ public final class UriUtil {
 	}
 
 	/**
-	 * Resolve an absolute URI from a string. The string may be in any of the following formats: <ul> <li>Absolute URI</li> <li>Relative URI</li> <li>Windows Path (Windows only)</li> <li>Windows UNC (Windows only)</li> </ul> Every reasonable
-	 * attempt is made to create a valid URI from the string. If a valid absolute URI cannot be created directly from the string then a File object is used to generate a URI based on the string under the following situations: <ul> <li>The URI
-	 * is malformed</li> <li>The URI is relative because scheme is missing</li> <li>The URI is a drive letter because the scheme is only one character long </li> </ul>
+	 * Resolve an absolute URI from a string. The string may be in any of the following formats: <ul> <li>Absolute URI</li> <li>Relative URI</li> <li>Windows Path
+	 * (Windows only)</li> <li>Windows UNC (Windows only)</li> </ul> Every reasonable
+	 * attempt is made to create a valid URI from the string. If a valid absolute URI cannot be created directly from the string then a File object is used to
+	 * generate a URI based on the string under the following situations: <ul> <li>The URI
+	 * is malformed</li> <li>The URI is relative because scheme is missing</li> <li>The URI is a drive letter because the scheme is only one character long </li>
+	 * </ul>
 	 *
 	 * @param string A string to resolve into a URI
 	 * @return A new URI based on the specified string.

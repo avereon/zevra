@@ -56,7 +56,9 @@ public class UriUtilTest {
 
 	@Test
 	public void testAddToPath() {
-		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ), is( URI.create("https://host:74/path/to/resource?parm1=a&parm2=b")));
+		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ), is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) );
+		assertThat( UriUtil.addToPath( URI.create( "/path/to" ), "resource" ), is( URI.create( "/path/to/resource" ) ) );
+		assertThat( UriUtil.addToPath( URI.create( "/path/of" ), "../to/resource" ), is( URI.create( "/path/to/resource" ) ) );
 	}
 
 	@Test
@@ -69,7 +71,7 @@ public class UriUtilTest {
 	@Test
 	public void testRemoveQueryAndFragment() {
 		String root = "https://host:74/path/to/resource";
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( root + "?parm1=a&parm2=b") ), is(URI.create(root)));
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( root + "?parm1=a&parm2=b" ) ), is( URI.create( root ) ) );
 	}
 
 	@Test
