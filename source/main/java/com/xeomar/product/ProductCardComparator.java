@@ -34,6 +34,9 @@ public class ProductCardComparator implements Comparator<ProductCard> {
 			case GROUP: {
 				return card1.getGroup().compareTo( card2.getGroup() );
 			}
+			case VERSION: {
+				return card1.getVersion().compareTo( card2.getVersion() );
+			}
 			default: {
 				return card1.getName().compareTo( card2.getName() );
 			}
