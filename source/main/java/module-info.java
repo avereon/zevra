@@ -1,4 +1,4 @@
-module com.xeomar.zevra {
+module com.avereon.zevra {
 
 	requires java.logging;
 	requires java.management;
@@ -9,8 +9,8 @@ module com.xeomar.zevra {
 	requires org.slf4j;
 	requires com.fasterxml.jackson.annotation;
 
-	exports com.xeomar.product;
-	exports com.xeomar.settings;
-	exports com.xeomar.undo;
-	exports com.xeomar.util;
+	exports com.avereon.product;
+	exports com.avereon.settings;
+	exports com.avereon.undo;
+	exports com.avereon.util;
 }

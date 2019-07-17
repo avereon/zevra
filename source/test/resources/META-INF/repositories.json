@@ -1,15 +1,15 @@
 [
 	{
-		"name" : "Xeomar Official",
-		"repo" : "https://xeomar.com/download/stable",
+		"name" : "Avereon Official",
+		"repo" : "https://avereon.com/download/stable",
 		"icon" : "provider",
 		"enabled" : "true",
 		"removable" : "false",
 		"rank": -2
 	},
 	{
-		"name" : "Xeomar Nightly",
-		"repo" : "https://xeomar.com/download/latest",
+		"name" : "Avereon Nightly",
+		"repo" : "https://avereon.com/download/latest",
 		"icon" : "provider",
 		"enabled" : "false",
 		"removable" : "true",
