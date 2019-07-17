@@ -39,13 +39,13 @@ public class JavaUtilTest {
 	@Test
 	public void testGetShortClassNameWithString() {
 		assertThat( JavaUtil.getShortClassName( "java.lang.Object" ), is( "j.l.Object" ) );
-		assertThat( JavaUtil.getShortClassName( "com.avereon.xenon.Program" ), is( "c.x.x.Program" ) );
+		assertThat( JavaUtil.getShortClassName( "com.avereon.xenon.Program" ), is( "c.a.x.Program" ) );
 	}
 
 	@Test
 	public void testGetShortClassNameWithClass() {
 		assertThat( JavaUtil.getShortClassName( Object.class ), is( "j.l.Object" ) );
-		assertThat( JavaUtil.getShortClassName( JavaUtil.class ), is( "c.x.u.JavaUtil" ) );
+		assertThat( JavaUtil.getShortClassName( JavaUtil.class ), is( "c.a.u.JavaUtil" ) );
 	}
 
 	@Test
