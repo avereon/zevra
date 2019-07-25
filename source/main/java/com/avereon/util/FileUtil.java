@@ -248,7 +248,8 @@ public class FileUtil {
 	private static void copyFileToFile( File source, File target, LongConsumer progressCallback ) throws IOException {
 		if( target.exists() && target.isDirectory() ) throw new IOException( "Destination is a directory: " + target );
 
-		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos.getChannel() ) {
+		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos
+			.getChannel() ) {
 			final long size = input.size();
 			long count;
 			long position = 0;
@@ -516,6 +517,28 @@ public class FileUtil {
 		Files.createDirectories( path );
 		if( !Files.exists( path ) ) throw new IOException( "Unable to create temp folder" );
 		return path;
+	}
+
+	/**
+	 * Find the closest valid (existing folder) parent for the given file.
+	 *
+	 * @param file The file for which to find a valid parent folder
+	 */
+	public static File findValidParent( File file ) {
+		return findValidParent( file.toPath() ).toFile();
+	}
+
+	/**
+	 * Find the closest valid (existing folder) parent for the given path.
+	 *
+	 * @param path The path for which to find a valid parent
+	 */
+	public static Path findValidParent( Path path ) {
+		Path parent = path.getParent();
+		while( Files.notExists( parent ) || !Files.isDirectory( parent ) ) {
+			parent = parent.getParent();
+		}
+		return parent;
 	}
 
 }

@@ -17,7 +17,7 @@ import java.util.zip.ZipFile;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class FileUtilTest {
 
@@ -394,6 +394,16 @@ public class FileUtilTest {
 		} finally {
 			FileUtil.delete( folder );
 		}
+	}
+
+	@Test
+	public void testFindValidParent() throws Exception {
+		Path path = FileUtil.getTempFolder().resolve( "non/existant/path" );
+		assertFalse( Files.exists( path ) );
+
+		Path valid = FileUtil.findValidParent( path );
+		assertTrue( Files.exists( valid ) );
+		assertTrue( Files.isDirectory( valid ) );
 	}
 
 	private void assertFileCopy( long time, Path source, Path target ) throws IOException {
