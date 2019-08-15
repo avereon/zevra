@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 /*
-The catalog.card file, and therefore this class, server two purposes but
+FIXME The catalog.card file, and therefore this class, serve two purposes but
 probably should not. One purpose is to specify the repository location of the
 market/store/repo. The other purpose is to specify the products available at
 the market/store/repo.
