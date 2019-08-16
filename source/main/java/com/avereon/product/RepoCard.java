@@ -1,24 +1,15 @@
 package com.avereon.product;
 
+import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.net.URI;
 import java.util.Objects;
 
-/*
-FIXME The catalog.card file, and therefore this class, serve two purposes but
-probably should not. One purpose is to specify the repository location of the
-market/store/repo. The other purpose is to specify the products available at
-the market/store/repo.
-
-This dual purpose may simply be a historical artifact of how the original repo
-was set up and operated. It provided the initial repo configuration for the
-program and was a reasonable repo index at the same time.
- */
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class RepoCard {
 
@@ -28,28 +19,22 @@ public class RepoCard {
 
 	private String icon;
 
-	private String repo;
-
-	private boolean enabled;
-
-	private boolean removable;
-
-	private int rank;
+	private String url;
 
 	public RepoCard() {}
 
-	public RepoCard( String repo ) {
-		this.repo = repo;
+	public RepoCard( String url ) {
+		this.url = url;
 	}
 
-	public static List<RepoCard> forProduct( Class<?> loader ) throws IOException {
-		try( InputStream input = loader.getResourceAsStream( CONFIG ) ) {
-			return loadCards( input );
-		}
+	public RepoCard load( InputStream input ) throws IOException {
+		return load( input, null );
 	}
 
-	public static List<RepoCard> loadCards( InputStream input ) throws IOException {
-		return new ObjectMapper().readerFor( new TypeReference<List<RepoCard>>() {} ).readValue( input );
+	public RepoCard load( InputStream input, URI source ) throws IOException {
+		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
+		if( source != null ) this.url = UriUtil.removeQueryAndFragment( source ).toString();
+		return copyFrom( card );
 	}
 
 	public String getName() {
@@ -70,55 +55,25 @@ public class RepoCard {
 		return this;
 	}
 
-	public String getRepo() {
-		return repo;
+	public String getUrl() {
+		return url;
 	}
 
-	public RepoCard setRepo( String repo ) {
-		this.repo = repo;
-		return this;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public RepoCard setEnabled( boolean enabled ) {
-		this.enabled = enabled;
-		return this;
-	}
-
-	public boolean isRemovable() {
-		return removable;
-	}
-
-	public RepoCard setRemovable( boolean removable ) {
-		this.removable = removable;
-		return this;
-	}
-
-	public int getRank() {
-		return rank;
-	}
-
-	public RepoCard setRank( int rank ) {
-		this.rank = rank;
+	public RepoCard setUrl( String url ) {
+		this.url = url;
 		return this;
 	}
 
 	public RepoCard copyFrom( RepoCard card ) {
 		this.name = card.name;
 		this.icon = card.icon;
-		this.repo = card.repo;
-		this.enabled = card.enabled;
-		this.removable = card.removable;
-		this.rank = card.rank;
+		this.url = card.url;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return repo;
+		return url;
 	}
 
 	@Override
@@ -126,12 +81,12 @@ public class RepoCard {
 		if( this == object ) return true;
 		if( !(object instanceof RepoCard) ) return false;
 		RepoCard that = (RepoCard)object;
-		return Objects.equals( this.repo, that.repo );
+		return Objects.equals( this.url, that.url );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( repo );
+		return Objects.hash( url );
 	}
 
 }

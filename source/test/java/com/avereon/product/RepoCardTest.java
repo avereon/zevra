@@ -1,43 +1,78 @@
 package com.avereon.product;
 
-import com.avereon.util.TextUtil;
-import org.hamcrest.CoreMatchers;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.util.List;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class RepoCardTest {
 
-	// Test that the catalog card can be unmarshalled
 	@Test
-	public void testLoadCard() throws Exception {
-		List<RepoCard> cards = RepoCard.forProduct( getClass() );
-		assertThat( cards.size(), is( 2 ) );
+	public void testHashCode() {
+		RepoCard a = new RepoCard();
+		RepoCard b = new RepoCard();
 
-		assertThat( cards.get( 0 ).getName(), is( "Avereon Official" ) );
-		assertThat( cards.get( 0 ).getRepo(), is( "https://avereon.com/download/stable" ) );
-		assertThat( cards.get( 0 ).getIcon(), is( "provider" ) );
-		assertThat( cards.get( 0 ).isEnabled(), is( true ) );
-		assertThat( cards.get( 0 ).isRemovable(), is( false ) );
-		assertThat( cards.get( 0 ).getRank(), is( -2 ) );
+		a.setName( "Example Repo" );
+		a.setUrl( "http://example.com/repo" );
 
-		assertThat( cards.get( 1 ).getName(), is( "Avereon Nightly" ) );
-		assertThat( cards.get( 1 ).getRepo(), is( "https://avereon.com/download/latest" ) );
-		assertThat( cards.get( 1 ).getIcon(), is( "provider" ) );
-		assertThat( cards.get( 1 ).isEnabled(), is( false ) );
-		assertThat( cards.get( 1 ).isRemovable(), is( true ) );
-		assertThat( cards.get( 1 ).getRank(), is( -1 ) );
+		b.setName( "Example Repo" );
+		b.setUrl( "http://example.com/repo" );
+
+		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
+		assertThat( a.hashCode(), is( b.hashCode() ) );
 	}
 
 	@Test
+	public void testEquals() {
+		RepoCard a = new RepoCard();
+		RepoCard b = new RepoCard();
+
+		a.setName( "Example Repo" );
+		a.setUrl( "http://example.com/repo" );
+
+		b.setName( "Example Repo" );
+		b.setUrl( "http://example.com/repo" );
+
+		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
+		assertThat( a, is( b ) );
+	}
+
+	@Test
+	public void testJsonMarshalling() throws Exception {
+		RepoCard card = new RepoCard(  );
+		card.setName( "Example Repo" );
+		card.setUrl( "http://example.com/repo" );
+		card.setIcon( "http://example.com/repo/icon.png" );
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure( SerializationFeature.INDENT_OUTPUT, true );
+		String store = mapper.writeValueAsString( card );
+
+		//System.out.println( store );
+
+		BufferedReader reader = new BufferedReader( new StringReader( store ) );
+		assertThat( reader.readLine(), is( "{" ) );
+		assertThat( reader.readLine(), is( "  \"name\" : \"Example Repo\"," ) );
+		assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
+		assertThat( reader.readLine(), is( "  \"url\" : \"http://example.com/repo\"" ) );
+		assertThat( reader.readLine(), is( "}" ) );
+		assertThat( reader.readLine(), is( nullValue() ) );
+	}
+
+		@Test
 	public void testIgnoreMissingAndUnknownProperties() throws Exception {
-		String state = "[{\"name\" : \"Avereon\", \"extra\" : \"unknown\"}]";
-		List<RepoCard> card = RepoCard.loadCards( new ByteArrayInputStream( state.getBytes( TextUtil.CHARSET) ) );
-		assertThat( card.get(0).getName(), CoreMatchers.is( "Avereon" ) );
+		String state = "{\"name\" : \"Example Repo\", \"url\" : \"http://example.com/repo\"}";
+		RepoCard card = new RepoCard().load( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
+		assertThat( card.getName(), is( "Example Repo" ) );
 	}
 
 }
