@@ -65,6 +65,7 @@ public class RepoCard {
 	}
 
 	public RepoCard copyFrom( RepoCard card ) {
+		if( card == null ) return null;
 		this.name = card.name;
 		this.icon = card.icon;
 		this.url = card.url;
