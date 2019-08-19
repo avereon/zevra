@@ -48,7 +48,7 @@ public class RepoCardTest {
 
 	@Test
 	public void testJsonMarshalling() throws Exception {
-		RepoCard card = new RepoCard(  );
+		RepoCard card = new RepoCard();
 		card.setName( "Example Repo" );
 		card.setUrl( "http://example.com/repo" );
 		card.setIcon( "http://example.com/repo/icon.png" );
@@ -61,6 +61,7 @@ public class RepoCardTest {
 
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
 		assertThat( reader.readLine(), is( "{" ) );
+		assertThat( reader.readLine(), is( "  \"internalId\" : " + card.getInternalId() + "," ) );
 		assertThat( reader.readLine(), is( "  \"name\" : \"Example Repo\"," ) );
 		assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
 		assertThat( reader.readLine(), is( "  \"url\" : \"http://example.com/repo\"" ) );
@@ -68,7 +69,7 @@ public class RepoCardTest {
 		assertThat( reader.readLine(), is( nullValue() ) );
 	}
 
-		@Test
+	@Test
 	public void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Example Repo\", \"url\" : \"http://example.com/repo\"}";
 		RepoCard card = new RepoCard().load( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
