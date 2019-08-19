@@ -1,5 +1,6 @@
 package com.avereon.product;
 
+import com.avereon.util.IdGenerator;
 import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,15 +16,20 @@ public class RepoCard {
 
 	public static final String CONFIG = "/META-INF/repositories.json";
 
+	private String internalId;
+
 	private String name;
 
 	private String icon;
 
 	private String url;
 
-	public RepoCard() {}
+	public RepoCard() {
+		this( null );
+	}
 
 	public RepoCard( String url ) {
+		this.internalId = IdGenerator.getId();
 		this.url = url;
 	}
 
@@ -35,6 +41,15 @@ public class RepoCard {
 		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
 		if( source != null ) this.url = UriUtil.removeQueryAndFragment( source ).toString();
 		return copyFrom( card );
+	}
+
+	public String getInternalId() {
+		return internalId;
+	}
+
+	public RepoCard setInternalId( String internalId ) {
+		this.internalId = internalId;
+		return this;
 	}
 
 	public String getName() {
@@ -74,7 +89,7 @@ public class RepoCard {
 
 	@Override
 	public String toString() {
-		return url;
+		return "[" + name + "] " + url;
 	}
 
 	@Override

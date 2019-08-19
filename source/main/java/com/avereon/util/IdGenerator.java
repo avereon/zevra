@@ -21,7 +21,18 @@ public class IdGenerator {
 	}
 
 	public static String getId() {
-		return getId( RANDOM.nextLong() ^ System.currentTimeMillis() );
+		return getId( System.currentTimeMillis() ^ RANDOM.nextLong() );
+	}
+
+	public static String getId( long value ) {
+		StringBuilder builder = new StringBuilder();
+
+		for( int count = 0; count < 16; count++ ) {
+			builder.append( map[ (int)(value & 0xF) ] );
+			value >>= 4;
+		}
+
+		return builder.toString();
 	}
 
 	public static String getId( String string ) {
@@ -55,17 +66,6 @@ public class IdGenerator {
 
 	public static String slug( long value ) {
 		return slug( (int)(value ^ (value >>> 32)) );
-	}
-
-	public static String getId( long value ) {
-		StringBuilder builder = new StringBuilder();
-
-		for( int count = 0; count < 16; count++ ) {
-			builder.append( map[ (int)(value & 0xF) ] );
-			value >>= 4;
-		}
-
-		return builder.toString();
 	}
 
 }
