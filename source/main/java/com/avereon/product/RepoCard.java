@@ -1,6 +1,5 @@
 package com.avereon.product;
 
-import com.avereon.util.IdGenerator;
 import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -12,11 +11,9 @@ import java.net.URI;
 import java.util.Objects;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
-public class RepoCard {
+public class RepoCard extends BaseCard {
 
 	public static final String CONFIG = "/META-INF/repositories.json";
-
-	private String internalId;
 
 	private String name;
 
@@ -29,7 +26,6 @@ public class RepoCard {
 	}
 
 	public RepoCard( String url ) {
-		this.internalId = IdGenerator.getId();
 		this.url = url;
 	}
 
@@ -43,12 +39,8 @@ public class RepoCard {
 		return copyFrom( card );
 	}
 
-	public String getInternalId() {
-		return internalId;
-	}
-
 	public RepoCard setInternalId( String internalId ) {
-		this.internalId = internalId;
+		super.setInternalId( internalId );
 		return this;
 	}
 

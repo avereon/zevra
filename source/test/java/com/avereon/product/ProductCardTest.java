@@ -1,9 +1,9 @@
 package com.avereon.product;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.avereon.util.Contributor;
 import com.avereon.util.Maintainer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -90,6 +90,7 @@ public class ProductCardTest {
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
 		assertThat( reader.readLine(), is( "{" ) );
 		//assertThat( reader.readLine(), is( "  \"productKey\" : com.avereon.razor," ) );
+		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "  \"group\" : \"com.avereon\"," ) );
 		assertThat( reader.readLine(), is( "  \"artifact\" : \"razor\"," ) );
 		assertThat( reader.readLine(), is( "  \"version\" : \"1.0.0\"," ) );

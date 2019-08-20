@@ -18,7 +18,7 @@ import java.util.*;
  * This class must load the product "info" very quickly. The full product "card" can load more slowly.
  */
 @JsonIgnoreProperties( ignoreUnknown = true )
-public class ProductCard {
+public class ProductCard extends BaseCard {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 

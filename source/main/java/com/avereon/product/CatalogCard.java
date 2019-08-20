@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CatalogCard {
+public class CatalogCard extends BaseCard {
 
 	public static final String FILE = "catalog.card";
 
