@@ -201,7 +201,7 @@ public interface Settings {
 	 * @param key The value key
 	 * @param value The value
 	 */
-	void set( String key, Object value );
+	Settings set( String key, Object value );
 
 	/**
 	 * Remove a value from the settings node. This is the same as setting the
@@ -209,7 +209,7 @@ public interface Settings {
 	 *
 	 * @param key The value key
 	 */
-	void remove( String key );
+	Settings remove( String key );
 
 	/**
 	 * Get the default values for this settings node.
@@ -242,12 +242,12 @@ public interface Settings {
 	/**
 	 * Flush the settings values. For settings implementations that store values this method should be used to store the values promptly.
 	 */
-	void flush();
+	Settings flush();
 
 	/**
 	 * Delete this settings node.
 	 */
-	void delete();
+	Settings delete();
 
 	@SuppressWarnings( "unused" )
 	static void print( Settings settings ) {

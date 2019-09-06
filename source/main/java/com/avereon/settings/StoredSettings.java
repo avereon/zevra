@@ -166,12 +166,13 @@ public class StoredSettings extends AbstractSettings {
 	// NEXT Override getArray and/or getCollection to retrieve state from individual files
 
 	@Override
-	public void flush() {
+	public Settings flush() {
 		scheduleSave( true );
+		return this;
 	}
 
 	@Override
-	public synchronized void delete() {
+	public synchronized Settings delete() {
 		synchronized( scheduleLock ) {
 			if( task != null ) task.cancel();
 		}
@@ -186,6 +187,8 @@ public class StoredSettings extends AbstractSettings {
 		} catch( IOException exception ) {
 			log.error( "Unable to delete settings folder: " + folder, exception );
 		}
+
+		return this;
 	}
 
 	@Override
@@ -220,13 +223,13 @@ public class StoredSettings extends AbstractSettings {
 		}
 	}
 
-	private void scheduleSave( boolean force ) {
+	private void scheduleSave( boolean immediate ) {
 		synchronized( scheduleLock ) {
 			long storeTime = lastStoreTime.get();
 			long dirtyTime = lastDirtyTime.get();
 
 			// If there are no changes since the last store time just return
-			if( !force && (dirtyTime < storeTime) ) return;
+			if( !immediate && (dirtyTime < storeTime) ) return;
 
 			long valueTime = lastValueTime.get();
 			long softNext = valueTime + MIN_PERSIST_LIMIT;
@@ -235,12 +238,12 @@ public class StoredSettings extends AbstractSettings {
 			long taskTime = task == null ? 0 : task.scheduledExecutionTime();
 
 			// If the existing task time is already set to the next time just return
-			if( !force && (taskTime == nextTime) ) return;
+			if( !immediate && (taskTime == nextTime) ) return;
 
 			// Cancel the existing task and schedule a new one
 			if( task != null ) task.cancel();
 			task = new SaveTask();
-			if( force ) {
+			if( immediate ) {
 				task.run();
 			} else {
 				timer.schedule( task, new Date( nextTime ) );
