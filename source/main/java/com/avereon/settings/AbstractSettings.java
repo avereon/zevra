@@ -116,7 +116,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public void set( String key, Object value ) {
+	public Settings set( String key, Object value ) {
 		String oldValue = get( key );
 		String newValue = null;
 
@@ -134,11 +134,14 @@ public abstract class AbstractSettings implements Settings {
 
 		// Settings change event should only be fired if the values are different
 		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.Type.CHANGED, getPath(), key, value ).fire( getListeners() );
+
+		return this;
 	}
 
 	@Override
-	public void remove( String key ) {
+	public Settings remove( String key ) {
 		set( key, null );
+		return this;
 	}
 
 	/**

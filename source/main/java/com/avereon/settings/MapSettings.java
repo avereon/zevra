@@ -103,11 +103,14 @@ public class MapSettings extends AbstractSettings {
 	}
 
 	@Override
-	public void flush() {}
+	public Settings flush() {
+		return this;
+	}
 
 	@Override
-	public void delete() {
+	public Settings delete() {
 		root.settings.remove( getPath() );
+		return this;
 	}
 
 }
