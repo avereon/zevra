@@ -450,7 +450,7 @@ public class ProductCard extends BaseCard {
 	public boolean equals( Object object ) {
 		if( !(object instanceof ProductCard) ) return false;
 		ProductCard that = (ProductCard)object;
-		return this.group.equals( that.group ) && this.artifact.equals( that.artifact );
+		return this.getProductKey().equals( that.getProductKey() );
 	}
 
 	public boolean deepEquals( Object object ) {
