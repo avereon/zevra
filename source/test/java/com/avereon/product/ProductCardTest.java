@@ -74,10 +74,11 @@ public class ProductCardTest {
 
 		ProductCard card = new ProductCard();
 		card.setGroup( "com.avereon" );
-		card.setArtifact( "razor" );
+		card.setArtifact( "zevra" );
+		card.setPackaging( "lib" );
 		card.setVersion( "1.0.0" );
 		card.setTimestamp( "2018-01-01 00:00:00" );
-		card.setName( "Razor" );
+		card.setName( "Zevra" );
 		card.setMaintainers( maintainers );
 		card.setContributors( contributors );
 
@@ -89,15 +90,16 @@ public class ProductCardTest {
 
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
 		assertThat( reader.readLine(), is( "{" ) );
-		//assertThat( reader.readLine(), is( "  \"productKey\" : com.avereon.razor," ) );
+		//assertThat( reader.readLine(), is( "  \"productKey\" : com.avereon.zevra," ) );
 		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "  \"group\" : \"com.avereon\"," ) );
-		assertThat( reader.readLine(), is( "  \"artifact\" : \"razor\"," ) );
+		assertThat( reader.readLine(), is( "  \"artifact\" : \"zevra\"," ) );
+		assertThat( reader.readLine(), is( "  \"packaging\" : \"lib\"," ) );
 		assertThat( reader.readLine(), is( "  \"version\" : \"1.0.0\"," ) );
 		assertThat( reader.readLine(), is( "  \"timestamp\" : \"2018-01-01 00:00:00\"," ) );
 		//assertThat( reader.readLine(), is( "  \"release\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"iconUri\" : null," ) );
-		assertThat( reader.readLine(), is( "  \"name\" : \"Razor\"," ) );
+		assertThat( reader.readLine(), is( "  \"name\" : \"Zevra\"," ) );
 		assertThat( reader.readLine(), is( "  \"provider\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"providerUrl\" : null," ) );
 		assertThat( reader.readLine(), is( "  \"inception\" : 0," ) );
@@ -140,9 +142,9 @@ public class ProductCardTest {
 
 	@Test
 	public void testIgnoreMissingAndUnknownProperties() throws Exception {
-		String state = "{\"name\" : \"Razor\", \"extra\" : \"unknown\"}";
+		String state = "{\"name\" : \"Zevra\", \"extra\" : \"unknown\"}";
 		ProductCard card = new ProductCard().load( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ), null );
-		assertThat( card.getName(), is( "Razor" ) );
+		assertThat( card.getName(), is( "Zevra" ) );
 	}
 
 }

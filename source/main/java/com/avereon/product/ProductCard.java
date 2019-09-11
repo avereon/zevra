@@ -33,6 +33,8 @@ public class ProductCard extends BaseCard {
 
 	private String artifact;
 
+	private String packaging;
+
 	private String version;
 
 	private String timestamp;
@@ -97,6 +99,7 @@ public class ProductCard extends BaseCard {
 
 		this.group = values.getProperty( "group" );
 		this.artifact = values.getProperty( "artifact" );
+		this.packaging = values.getProperty( "packaging" );
 		this.version = values.getProperty( "version" );
 		this.timestamp = values.getProperty( "timestamp" );
 
@@ -140,6 +143,7 @@ public class ProductCard extends BaseCard {
 	public ProductCard copyFrom( ProductCard card ) {
 		this.group = card.group;
 		this.artifact = card.artifact;
+		this.packaging = card.packaging;
 		this.version = card.version;
 		this.timestamp = card.timestamp;
 
@@ -193,6 +197,14 @@ public class ProductCard extends BaseCard {
 		this.artifact = artifact;
 		updateKey();
 		return this;
+	}
+
+	public String getPackaging() {
+		return packaging;
+	}
+
+	public void setPackaging( String packaging ) {
+		this.packaging = packaging;
 	}
 
 	public String getVersion() {
@@ -457,9 +469,9 @@ public class ProductCard extends BaseCard {
 		if( !(object instanceof ProductCard) ) return false;
 		ProductCard that = (ProductCard)object;
 
-		boolean equals = true;
-		equals = equals && this.group.equals( that.group );
+		boolean equals = this.group.equals( that.group );
 		equals = equals && this.artifact.equals( that.artifact );
+		equals = equals && this.packaging.equals( that.packaging );
 		equals = equals && this.release.equals( that.release );
 		equals = equals && this.iconUri.equals( that.iconUri );
 		equals = equals && this.name.equals( that.name );
