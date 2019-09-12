@@ -16,6 +16,4 @@ jobs:
         with:
           java-version: 11
       - name: Build
-        run:
-          - env
-          - mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
+        run: env && mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
