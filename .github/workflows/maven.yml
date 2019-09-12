@@ -1,9 +1,9 @@
 name: Avereon Zevra Library
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
+#  push:
+#    branches:
+#      - master
 
 jobs:
   build:
@@ -16,4 +16,6 @@ jobs:
         with:
           java-version: 11
       - name: Build
-        run: mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
+        run:
+          - env
+          - mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
