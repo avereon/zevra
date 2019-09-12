@@ -1,6 +1,9 @@
 name: Avereon Zevra Library
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -13,9 +16,4 @@ jobs:
         with:
           java-version: 11
       - name: Build
-        run: mvn package -B -U -V --settings .github/settings.xml --file pom.xml
-#      - name: Deploy
-#        env:
-#          TRAVIS_SSH_KEY: ${{ secrets.TRAVIS_SSH_KEY }}
-#          TRAVIS_SSH_PUB: ${{ secrets.TRAVIS_SSH_PUB }}
-#        run: .github/deploy.sh
+        run: mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
