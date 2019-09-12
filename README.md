@@ -15,6 +15,7 @@ A utility library commonly used in Avereon projects.
   * Hashes
   * ID Generation
   * General IO
+  * Product Metadata
   * Classes, Packages and Stack traces
   * Operating System
   * Command-line parameters
