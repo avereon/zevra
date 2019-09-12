@@ -1,4 +1,4 @@
-name: Avereon Zevra Library
+name: Avereon Zevra Build
 
 on: [push]
 #  push:
