@@ -16,4 +16,5 @@ jobs:
         with:
           java-version: 11
       - name: Build
-        run: echo "Hello ${AVN_REPO_USERNAME}" && mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
+        run: echo "HELLO" && echo ${AVN_REPO_USERNAME} && echo HELLO
+#        run: mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
