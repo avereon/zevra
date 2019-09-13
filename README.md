@@ -1,4 +1,4 @@
-[build-status]: https://travis-ci.org/avereon/zevra.svg?branch=master "Build status"
+[build-status]: https://github.com/avereon/zevra/workflows/Avereon%20Zevra%20CI/badge.svg "Build status"
 
 # Zevra ![alt text][build-status]
 

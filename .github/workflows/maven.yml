@@ -1,4 +1,4 @@
-name: Avereon Zevra Build
+name: Avereon Zevra CI
 
 on: [push]
 
