@@ -1,9 +1,6 @@
 name: Avereon Zevra Library
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
   build:
