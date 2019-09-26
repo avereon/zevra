@@ -53,6 +53,9 @@ public class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Apple" ) );
+
+		// Test the process launch workaround
+		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ), is( "FORK" ) );
 	}
 
 	@Test
