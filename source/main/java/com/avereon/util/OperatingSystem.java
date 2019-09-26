@@ -136,16 +136,36 @@ public class OperatingSystem {
 		String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
 		if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
 		if( NORMAL_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.FALSE;
+		return elevated == null ? isAdminUser() : elevated;
+	}
 
-		if( elevated == null ) {
-			if( isWindows() ) {
-				elevated = canWriteToProgramFiles();
-			} else {
-				elevated = System.getProperty( "user.name" ).equals( "root" );
+	/**
+	 * Determine if user has elevated privileges.
+	 *
+	 * @return true if user has elevated privileges.
+	 */
+	public static boolean isAdminUser() {
+		if( isWindows() ) {
+			try {
+				String authority = "HKU\\S-1-5-19";
+				String command = "reg query \"" + authority + "\"";
+				Process process = Runtime.getRuntime().exec( command );
+				process.waitFor();
+				return (process.exitValue() == 0);
+			} catch( Exception exception ) {
+				return canWriteToProgramFiles();
 			}
 		}
+		try {
+			String command = "id -u";
+			Process process = Runtime.getRuntime().exec( command );
+			process.waitFor();
 
-		return elevated;
+			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
+			return bufferedReader.readLine().equals( "0" );
+		} catch( Exception exception ) {
+			return System.getProperty( "user.name" ).equals( "root" );
+		}
 	}
 
 	public static boolean isElevateProcessSupported() {
