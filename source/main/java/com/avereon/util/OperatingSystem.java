@@ -581,8 +581,8 @@ public class OperatingSystem {
 	private static File extractElevator( InputStream source, File elevator ) throws IOException {
 		try( source; FileOutputStream target = new FileOutputStream( elevator ) ) {
 			IoUtil.copy( source, target );
-			elevator.setExecutable( true );
 		}
+		if( !elevator.setExecutable( true ) ) throw new IOException( "Failed to set execute permission on " + elevator );
 		return elevator;
 	}
 
