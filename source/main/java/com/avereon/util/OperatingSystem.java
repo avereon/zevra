@@ -134,18 +134,39 @@ public class OperatingSystem {
 	 */
 	public static boolean isProcessElevated() {
 		String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
+		if( override == null ) override = System.getenv( ELEVATED_PRIVILEGE_KEY );
 		if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
 		if( NORMAL_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.FALSE;
+		return elevated == null ? isAdminUser() : elevated;
+	}
 
-		if( elevated == null ) {
-			if( isWindows() ) {
-				elevated = canWriteToProgramFiles();
-			} else {
-				elevated = System.getProperty( "user.name" ).equals( "root" );
+	/**
+	 * Determine if user has elevated privileges.
+	 *
+	 * @return true if user has elevated privileges.
+	 */
+	public static boolean isAdminUser() {
+		if( isWindows() ) {
+			try {
+				String authority = "HKU\\S-1-5-19";
+				String command = "reg query \"" + authority + "\"";
+				Process process = Runtime.getRuntime().exec( command );
+				process.waitFor();
+				return (process.exitValue() == 0);
+			} catch( Exception exception ) {
+				return canWriteToProgramFiles();
 			}
 		}
+		try {
+			String command = "id -u";
+			Process process = Runtime.getRuntime().exec( command );
+			process.waitFor();
 
-		return elevated;
+			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
+			return bufferedReader.readLine().equals( "0" );
+		} catch( Exception exception ) {
+			return System.getProperty( "user.name" ).equals( "root" );
+		}
 	}
 
 	public static boolean isElevateProcessSupported() {
@@ -174,7 +195,8 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified
+	 * after this call to avoid problems even though this cannot be enforced.
 	 *
 	 * @param title The name of the program requesting elevated privileges
 	 * @param builder
@@ -185,11 +207,13 @@ public class OperatingSystem {
 		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
 		builder.command( command );
+		builder.environment().put( ELEVATED_PRIVILEGE_KEY, ELEVATED_PRIVILEGE_VALUE);
 		return builder;
 	}
 
 	/**
-	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call
+	 * to avoid problems even though this cannot be enforced.
 	 *
 	 * @param builder
 	 * @return
@@ -426,21 +450,24 @@ public class OperatingSystem {
 		} else {
 			sharedProgramDataFolder = Paths.get( sharedData );
 		}
+
+		// Execution workaround
+		if( isMac() ) System.setProperty( "jdk.lang.Process.launchMechanism", "FORK" );
 	}
 
 	private static String getExtendedWindowsVersion() {
 		try {
-			Process process = new ProcessBuilder("cmd", "/Q", "/C", "ver").start();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			Process process = new ProcessBuilder( "cmd", "/Q", "/C", "ver" ).start();
+			BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
 			String line;
-			while ((line = reader.readLine()) != null) {
-				if ("".equals(line.trim())) continue;
-				return line.substring("Microsoft Windows [Version ".length(), line.length() - 1);
+			while( (line = reader.readLine()) != null ) {
+				if( "".equals( line.trim() ) ) continue;
+				return line.substring( "Microsoft Windows [Version ".length(), line.length() - 1 );
 			}
-		} catch (Exception exception) {
+		} catch( Exception exception ) {
 			// Intentionally ignore exception
 		}
-		return System.getProperty("os.version");
+		return System.getProperty( "os.version" );
 	}
 
 	private static String mapLibraryName( String libname ) {
@@ -556,8 +583,8 @@ public class OperatingSystem {
 	private static File extractElevator( InputStream source, File elevator ) throws IOException {
 		try( source; FileOutputStream target = new FileOutputStream( elevator ) ) {
 			IoUtil.copy( source, target );
-			elevator.setExecutable( true );
 		}
+		if( !elevator.setExecutable( true ) ) throw new IOException( "Failed to set execute permission on " + elevator );
 		return elevator;
 	}
 
