@@ -174,7 +174,8 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to attempt to elevate the process privileges when the process is started. The returned ProcessBuilder should not be modified
+	 * after this call to avoid problems even though this cannot be enforced.
 	 *
 	 * @param title The name of the program requesting elevated privileges
 	 * @param builder
@@ -189,7 +190,8 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call to avoid problems even though this cannot be enforced.
+	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call
+	 * to avoid problems even though this cannot be enforced.
 	 *
 	 * @param builder
 	 * @return
@@ -426,21 +428,24 @@ public class OperatingSystem {
 		} else {
 			sharedProgramDataFolder = Paths.get( sharedData );
 		}
+
+		// Execution workaround
+		if( isMac() ) System.setProperty( "jdk.lang.Process.launchMechanism", "FORK" );
 	}
 
 	private static String getExtendedWindowsVersion() {
 		try {
-			Process process = new ProcessBuilder("cmd", "/Q", "/C", "ver").start();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			Process process = new ProcessBuilder( "cmd", "/Q", "/C", "ver" ).start();
+			BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
 			String line;
-			while ((line = reader.readLine()) != null) {
-				if ("".equals(line.trim())) continue;
-				return line.substring("Microsoft Windows [Version ".length(), line.length() - 1);
+			while( (line = reader.readLine()) != null ) {
+				if( "".equals( line.trim() ) ) continue;
+				return line.substring( "Microsoft Windows [Version ".length(), line.length() - 1 );
 			}
-		} catch (Exception exception) {
+		} catch( Exception exception ) {
 			// Intentionally ignore exception
 		}
-		return System.getProperty("os.version");
+		return System.getProperty( "os.version" );
 	}
 
 	private static String mapLibraryName( String libname ) {
