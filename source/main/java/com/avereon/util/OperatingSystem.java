@@ -452,7 +452,7 @@ public class OperatingSystem {
 		}
 
 		// Execution workaround
-		if( isMac() ) System.setProperty( "jdk.lang.Process.launchMechanism", "FORK" );
+		if( isUnix() ) System.setProperty( "jdk.lang.Process.launchMechanism", "FORK" );
 	}
 
 	private static String getExtendedWindowsVersion() {
