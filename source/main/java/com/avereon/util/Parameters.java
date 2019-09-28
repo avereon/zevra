@@ -207,7 +207,18 @@ public class Parameters {
 	 * @return
 	 */
 	public boolean isSet( String flag ) {
-		return !(get( flag ) == null);
+		return get( flag ) != null;
+	}
+
+	public boolean anySet( String... flags ) {
+		return anySet( Set.of( flags ) );
+	}
+
+	public boolean anySet( Collection<String> flags ) {
+		for( String flag : flags ) {
+			if( isSet( flag ) ) return true;
+		}
+		return false;
 	}
 
 	public Set<String> getFlags() {
