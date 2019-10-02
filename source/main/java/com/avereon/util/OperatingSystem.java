@@ -207,7 +207,7 @@ public class OperatingSystem {
 		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
 		builder.command( command );
-		builder.environment().put( ELEVATED_PRIVILEGE_KEY, ELEVATED_PRIVILEGE_VALUE);
+		builder.environment().put( ELEVATED_PRIVILEGE_KEY, ELEVATED_PRIVILEGE_VALUE );
 		return builder;
 	}
 
@@ -521,7 +521,7 @@ public class OperatingSystem {
 		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {
-			commands.add( extractMacElevate().getPath() );
+			commands.add( extractMacElevate( title ).getPath() );
 		} else if( isUnix() ) {
 			File pkexec = new File( "/usr/bin/pkexec" );
 			File gksudo = new File( "/usr/bin/gksudo" );
@@ -569,14 +569,22 @@ public class OperatingSystem {
 	}
 
 	private static File extractWinElevate() throws IOException {
+		return extractWinElevate( "elevate.js" );
+	}
+
+	private static File extractWinElevate( String name ) throws IOException {
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/win/elevate.js" );
-		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" ).getCanonicalFile();
+		File elevator = new File( System.getProperty( "java.io.tmpdir" ), name ).getCanonicalFile();
 		return extractElevator( source, elevator );
 	}
 
 	private static File extractMacElevate() throws IOException {
+		return extractMacElevate( "elevate" );
+	}
+
+	private static File extractMacElevate( String name ) throws IOException {
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/mac/elevate" );
-		File elevator = new File( System.getProperty( "java.io.tmpdir" ), "elevate" ).getCanonicalFile();
+		File elevator = new File( System.getProperty( "java.io.tmpdir" ), name ).getCanonicalFile();
 		return extractElevator( source, elevator );
 	}
 
