@@ -42,8 +42,8 @@
 		<product-identifier>${project.artifactId}</product-identifier>
 		<project-timestamp>${maven.build.timestamp}</project-timestamp>
 
-		<jackson-version>2.10.0</jackson-version>
-		<slf4j-version>1.8.0-beta4</slf4j-version>
+		<jackson.version>2.10.0</jackson.version>
+		<slf4j.version>1.8.0-beta4</slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -51,26 +51,26 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson-version}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson-version}</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j-version}</version>
+			<version>${slf4j.version}</version>
 			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-nop</artifactId>
-			<version>${slf4j-version}</version>
+			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 
