@@ -156,12 +156,14 @@ public class OperatingSystemTest {
 	@Test
 	public void testElevateProcessMac() throws Exception {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		ProcessBuilder builder = new ProcessBuilder( "textmate" );
-		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate" );
 
-		OperatingSystem.elevateProcessBuilder( "textmate", builder );
+		String programName = "Zevra";
+		ProcessBuilder builder = new ProcessBuilder( programName );
+		File elevate = new File( System.getProperty( "java.io.tmpdir" ), programName );
+
+		OperatingSystem.elevateProcessBuilder( programName, builder );
 		assertThat( builder.command().get( 0 ), is( elevate.getCanonicalPath() ) );
-		assertThat( builder.command().get( 1 ), is( "textmate" ) );
+		assertThat( builder.command().get( 1 ), is( programName ) );
 		assertThat( builder.command().size(), is( 2 ) );
 	}
 
