@@ -16,6 +16,7 @@ jobs:
         env:
           AVN_REPO_USERNAME: ${{ secrets.AVN_REPO_USERNAME }}
           AVN_REPO_PASSWORD: ${{ secrets.AVN_REPO_PASSWORD }}
+          AVN_KEYSTORE_PASSWORD: ${{ secrets.AVN_KEYSTORE_PASSWORD }}
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$AVN_KEYSTORE_PASSWORD" --output avereon.keystore .github/avereon.keystore.gpg
           mvn deploy -B -U -V --settings .github/settings.xml --file pom.xml
