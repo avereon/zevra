@@ -1,68 +1,81 @@
 package com.avereon.util;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class ParametersTest {
+class ParametersTest {
 
 	@Test
-	public void testNull() throws Exception {
+	@SuppressWarnings( "ConstantConditions" )
+	void testNull() {
 		try {
 			Parameters.parse( (List<String>)null );
-			Assert.fail( "Parameters.parse(null) should throw a NullPointerException." );
+			fail( "Parameters.parse(null) should throw a NullPointerException." );
 		} catch( NullPointerException exception ) {
 			// 
 		}
 	}
 
 	@Test
-	public void testEmpty() throws Exception {
+	void testEmpty() {
 		Parameters parameters = Parameters.parse();
 		assertThat( parameters.size(), is( 0 ) );
 	}
 
 	@Test
-	public void testParse() throws Exception {
+	void testParse() {
 		Parameters parameters = Parameters.parse( "-help" );
 		assertThat( parameters.get( "help" ), is( "true" ) );
 	}
 
 	@Test
-	public void testParseWithValue() throws Exception {
+	void testParseWithValue() {
 		Parameters parameters = Parameters.parse( "-help", "topic" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 	}
 
 	@Test
-	public void testParseWithMultiValues() throws Exception {
+	void testParseWithValue2() {
+		String key = "key";
+		String value = "value";
+		String notakey = "notakey";
+		String[] args = new String[]{ "-" + key, value };
+		Parameters parameters = Parameters.parse( args );
+		assertThat( parameters.isTrue( notakey ), is( false ) );
+		assertThat( parameters.get( key ), is( value ) );
+	}
+
+	@Test
+	void testParseWithMultiValues() {
 		Parameters parameters = Parameters.parse( "-module", "a", "-module", "b", "--module", "c" );
 		assertThat( parameters.getValues( "module" ), contains( "a", "b", "c" ) );
 	}
 
 	@Test
-	public void testParseWithValueAndFile() throws Exception {
+	void testParseWithValueAndFile() {
 		Parameters parameters = Parameters.parse( "-help", "topic", "test.txt" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test.txt" ).toString() ) );
 	}
 
 	@Test
-	public void testParseWithValueAndFiles() throws Exception {
+	void testParseWithValueAndFiles() {
 		Parameters parameters = Parameters.parse( "-help", "topic", "test1.txt", "test2.txt" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test1.txt" ).toString(), UriUtil.resolve( "test2.txt" ).toString() ) );
 	}
 
 	@Test
-	public void testParseWithFlags() throws Exception {
+	void testParseWithFlags() {
 		Parameters parameters = Parameters.parse( "-one", "-two", "-three" );
 		assertThat( parameters.get( "one" ), is( "true" ) );
 		assertThat( parameters.get( "two" ), is( "true" ) );
@@ -70,14 +83,14 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithFlagAndFile() throws Exception {
+	void testParseWithFlagAndFile() {
 		Parameters parameters = Parameters.parse( new String[]{ "-help", "topic", "test.txt" }, "-help" );
 		assertThat( parameters.get( "help" ), is( "topic" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test.txt" ).toString() ) );
 	}
 
 	@Test
-	public void testParseWithUnknownFlagAndFile() throws Exception {
+	void testParseWithUnknownFlagAndFile() {
 		try {
 			Parameters.parse( new String[]{ "-help", "topic", "-test", "test", "test.txt" }, "-help" );
 			fail( "Unknown flags should cause an exception" );
@@ -87,7 +100,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithFlag() throws Exception {
+	void testParseWithFlag() {
 		String flag = "flag";
 		String notaflag = "notaflag";
 		String[] args = new String[]{ "-" + flag };
@@ -97,7 +110,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithFlags2() throws Exception {
+	void testParseWithFlags2() {
 		String notaflag = "notaflag";
 		List<String> flags = new ArrayList<>();
 		flags.add( "flag1" );
@@ -119,18 +132,8 @@ public class ParametersTest {
 		}
 	}
 
-	public void testParseWithValue2() throws Exception {
-		String key = "key";
-		String value = "value";
-		String notakey = "notakey";
-		String[] args = new String[]{ "-" + key, value };
-		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isTrue( notakey ), is( false ) );
-		assertThat( parameters.get( key ), is( value ) );
-	}
-
 	@Test
-	public void testParseWithValues() throws Exception {
+	void testParseWithValues() {
 		int count = 5;
 		String notakey = "notakey";
 		List<String> keys = new ArrayList<>();
@@ -155,7 +158,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithEscapedValues() throws Exception {
+	void testParseWithEscapedValues() {
 		Parameters parameters = Parameters.parse( "--test", "go", "\\-help" );
 		assertThat( parameters.isSet( "test" ), is( true ) );
 		assertThat( parameters.isTrue( "test" ), is( false ) );
@@ -163,7 +166,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseFlagsWithValue() throws Exception {
+	void testParseFlagsWithValue() {
 		String[] args = new String[]{ "-flag1", "-key", "value", "-flag2" };
 		Parameters parameters = Parameters.parse( args );
 		assertThat( parameters.isTrue( "flag1" ), is( true ) );
@@ -172,7 +175,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseValuesWithFlag() throws Exception {
+	void testParseValuesWithFlag() {
 		String[] args = new String[]{ "-key1", "value1", "-flag", "-key2", "value2" };
 		Parameters parameters = Parameters.parse( args );
 		assertThat( parameters.get( "key1" ), is( "value1" ) );
@@ -181,7 +184,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithFile() throws Exception {
+	void testParseWithFile() {
 		String filename = "test.file";
 		String[] args = new String[]{ filename };
 		Parameters parameters = Parameters.parse( args );
@@ -189,14 +192,14 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithFiles() throws Exception {
+	void testParseWithFiles() {
 		int count = 5;
 		List<String> list = new ArrayList<>();
 		for( int index = 0; index < count; index++ ) {
 			list.add( "test" + index + ".file" );
 		}
 
-		String[] args = list.toArray( new String[ list.size() ] );
+		String[] args = list.toArray( new String[ 0 ] );
 		Parameters parameters = Parameters.parse( args );
 
 		List<String> uris = parameters.getUris();
@@ -207,7 +210,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseFlagWithFile() throws Exception {
+	void testParseFlagWithFile() {
 		String filename = "file";
 		String[] args = new String[]{ "-flag", "--", filename };
 		Parameters parameters = Parameters.parse( args );
@@ -217,21 +220,21 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParseWithNullEntry() throws Exception {
+	void testParseWithNullEntry() {
 		String[] args = new String[ 1 ];
 		try {
 			Parameters.parse( args );
-			Assert.fail( "Null values should cause an exception" );
+			fail( "Null values should cause an exception" );
 		} catch( IllegalArgumentException exception ) {
 			assertThat( exception.getMessage(), is( "Null command at index: 0" ) );
 		} catch( Exception exception ) {
 			exception.printStackTrace( System.out );
-			Assert.fail( "Unexpected exception " + exception );
+			fail( "Unexpected exception " + exception );
 		}
 	}
 
 	@Test
-	public void testParseWithJavaFxFlag() throws Exception {
+	void testParseWithJavaFxFlag() {
 		String[] commands = new String[]{ "--execmode=dev" };
 		Parameters parameters = Parameters.parse( commands );
 
@@ -241,15 +244,13 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testAdd() {
+	void testAdd() {
 		String[] args = new String[]{ "-flag", "-key", "value1", "file1" };
 		Parameters parameters = Parameters.parse( args );
 		assertThat( parameters.get( "none" ), is( nullValue() ) );
 		assertThat( parameters.get( "flag" ), is( "true" ) );
 		assertThat( parameters.get( "key" ), is( "value1" ) );
 		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1" ).toString() ) );
-
-
 
 		String[] addArgs = new String[]{ "-flag", "false", "-key", "value2", "file2" };
 		Parameters addParameters = Parameters.parse( addArgs );
@@ -262,7 +263,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGet() throws Exception {
+	void testGet() {
 		String[] args = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( args );
 		assertThat( parameters.get( "none" ), is( nullValue() ) );
@@ -279,7 +280,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetWithDefault() throws Exception {
+	void testGetWithDefault() {
 		String[] args = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -289,7 +290,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetFlags() throws Exception {
+	void testGetFlags() {
 		String[] args = new String[]{ "-flag", "-key", "value", "--flag", "value1", "value2", "value3", "--", "file0", "file1" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -298,7 +299,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetValues() throws Exception {
+	void testGetValues() {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -308,7 +309,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetValuesWithFlags() throws Exception {
+	void testGetValuesWithFlags() {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "-other" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -319,7 +320,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetValuesWithFiles() throws Exception {
+	void testGetValuesWithFiles() {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "--", "file1.txt" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -329,7 +330,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetValuesWithFlagsAndFiles() throws Exception {
+	void testGetValuesWithFlagsAndFiles() {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "-other", "test", "file1.txt" };
 		Parameters parameters = Parameters.parse( args );
 
@@ -342,7 +343,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetValuesWithQuotes() {
+	void testGetValuesWithQuotes() {
 		String[] commands = new String[]{ "-title", "The Title of the Program" };
 		Parameters parameters = Parameters.parse( commands );
 
@@ -350,7 +351,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testIsSet() throws Exception {
+	void testIsSet() {
 		String[] args = new String[]{ "-flag1", "false", "-flag2", "true", "-flag3" };
 		Parameters parameters = Parameters.parse( args );
 		assertThat( parameters.isSet( "flag0" ), is( false ) );
@@ -391,7 +392,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testGetOriginalCommands() throws Exception {
+	void testGetOriginalCommands() {
 		List<String> args = Arrays.asList( "-flag", "-key", "value", "file" );
 		Parameters parameters = Parameters.parse( args );
 		List<String> commands = parameters.getOriginalCommands();
@@ -401,20 +402,20 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testIdempotentParse() throws Exception {
+	void testIdempotentParse() {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( commands );
 		assertThat( Parameters.parse( parameters.getOriginalCommands() ), is( parameters ) );
 	}
 
 	@Test
-	public void testHashCode() {
+	void testHashCode() {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
 		assertEquals( Parameters.parse( commands ).hashCode(), Parameters.parse( commands ).hashCode() );
 	}
 
 	@Test
-	public void testEquals() {
+	void testEquals() {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters1 = Parameters.parse( commands );
 		Parameters parameters2 = Parameters.parse( commands );

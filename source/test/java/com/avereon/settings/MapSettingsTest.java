@@ -1,11 +1,11 @@
 package com.avereon.settings;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
-public class MapSettingsTest extends BaseSettingsTest {
+class MapSettingsTest extends BaseSettingsTest {
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		settings = new MapSettings();
 	}
 

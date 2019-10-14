@@ -1,4 +1,4 @@
-module com.avereon.zevra {
+open module com.avereon.zevra {
 
 	requires java.logging;
 	requires java.management;

@@ -1,34 +1,34 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class LineParserTest {
+class LineParserTest {
 
 	@Test
-	public void testParserWithNull() {
+	void testParserWithNull() {
 		LineParser parser = new LineParser( null );
 		assertNull( parser.next() );
 	}
 
 	@Test
-	public void testParserWithEmpty() {
+	void testParserWithEmpty() {
 		LineParser parser = new LineParser( "" );
 		assertEquals( "", parser.next() );
 		assertNull( parser.next() );
 	}
 
 	@Test
-	public void testParserWithSingleLine() {
+	void testParserWithSingleLine() {
 		LineParser parser = new LineParser( "a" );
 		assertEquals( "a", parser.next() );
 		assertNull( parser.next() );
 	}
 
 	@Test
-	public void testParserWithTwoEmptyLines() {
+	void testParserWithTwoEmptyLines() {
 		LineParser parser = new LineParser( "\n" );
 		assertEquals( "", parser.next() );
 		assertEquals( "\n", parser.getTerminator() );
@@ -37,26 +37,26 @@ public class LineParserTest {
 		assertNull( parser.next() );
 	}
 
-	//	@Test
-	//	public void testParserWithTwoEmptyLinesWithTerminators() {
-	//		LineParser parser = new LineParser( "\n", true );
-	//		assertEquals( "\n", parser.next() );
-	//		assertEquals( "", parser.next() );
-	//		assertNull( parser.next() );
-	//
-	//		parser = new LineParser( "\r", true );
-	//		assertEquals( "\r", parser.next() );
-	//		assertEquals( "", parser.next() );
-	//		assertNull( parser.next() );
-	//
-	//		parser = new LineParser( "\r\n", true );
-	//		assertEquals( "\r\n", parser.next() );
-	//		assertEquals( "", parser.next() );
-	//		assertNull( parser.next() );
-	//	}
+	@Test
+	void testParserWithTwoEmptyLinesWithTerminators() {
+		LineParser parser = new LineParser( "\n" );
+		assertEquals( "", parser.next() );
+		assertEquals( "", parser.next() );
+		assertNull( parser.next() );
+
+		parser = new LineParser( "\r" );
+		assertEquals( "", parser.next() );
+		assertEquals( "", parser.next() );
+		assertNull( parser.next() );
+
+		parser = new LineParser( "\r\n" );
+		assertEquals( "", parser.next() );
+		assertEquals( "", parser.next() );
+		assertNull( parser.next() );
+	}
 
 	@Test
-	public void testParserWithFirstLineEmpty() {
+	void testParserWithFirstLineEmpty() {
 		LineParser parser = new LineParser( "\na" );
 		assertEquals( "", parser.next() );
 		assertEquals( "a", parser.next() );
@@ -64,7 +64,7 @@ public class LineParserTest {
 	}
 
 	@Test
-	public void testParserWithTwoLines() {
+	void testParserWithTwoLines() {
 		LineParser parser = new LineParser( "a\nb" );
 		assertEquals( "a", parser.next() );
 		assertEquals( "b", parser.next() );
@@ -72,7 +72,7 @@ public class LineParserTest {
 	}
 
 	@Test
-	public void testParserWithThreeLinesLastLineEmpty() {
+	void testParserWithThreeLinesLastLineEmpty() {
 		LineParser parser = new LineParser( "a\nb\n" );
 		assertEquals( "a", parser.next() );
 		assertEquals( "b", parser.next() );
@@ -81,7 +81,7 @@ public class LineParserTest {
 	}
 
 	@Test
-	public void testParserWithFirstLineAndLastLineEmpty() {
+	void testParserWithFirstLineAndLastLineEmpty() {
 		LineParser parser = new LineParser( "\na\nb\n" );
 		assertEquals( "", parser.next() );
 		assertEquals( "a", parser.next() );
@@ -91,7 +91,7 @@ public class LineParserTest {
 	}
 
 	@Test
-	public void testGetRemaining() {
+	void testGetRemaining() {
 		LineParser parser = new LineParser( "a\nb\nc" );
 		assertEquals( "a", parser.next() );
 		assertEquals( "b\nc", parser.getRemaining() );

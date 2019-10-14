@@ -1,14 +1,14 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-public class SizeUnitBase10Test {
+class SizeUnitBase10Test {
 
 	@Test
-	public void testConstants() {
+	void testConstants() {
 		assertThat( SizeUnitBase10.KB.getSize(), is( 1000L ) );
 		assertThat( SizeUnitBase10.MB.getSize(), is( 1000000L ) );
 		assertThat( SizeUnitBase10.GB.getSize(), is( 1000000000L ) );

@@ -2,7 +2,7 @@ package com.avereon.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -12,12 +12,12 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CatalogCardTest {
+class CatalogCardTest {
 
 	@Test
-	public void testLoad() throws Exception {
+	void testLoad() throws Exception {
 		String data = "{\"timestamp\":\"1557457963562\",\"products\":[\"product1\",\"product2\"]}";
 		RepoCard repo = new RepoCard();
 		CatalogCard card = CatalogCard.load( repo, new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
@@ -27,7 +27,7 @@ public class CatalogCardTest {
 	}
 
 	@Test
-	public void testJsonMarshalling() throws Exception {
+	void testJsonMarshalling() throws Exception {
 		RepoCard repo = new RepoCard();
 		repo.setName( "Example Product Market" );
 		repo.setUrl( "https://www.example.com/market" );

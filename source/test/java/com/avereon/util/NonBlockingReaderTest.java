@@ -1,21 +1,21 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
-public class NonBlockingReaderTest {
+class NonBlockingReaderTest {
 
 	private static long delay = 50;
 
 	@Test
-	public void testReadLine() throws Exception {
+	void testReadLine() throws Exception {
 		String line1 = "I am first with five";
 		String line2 = "Then seven in the middle";
 		String line3 = "Five again to end";
@@ -31,7 +31,7 @@ public class NonBlockingReaderTest {
 	}
 
 	@Test
-	public void testReadLineWithTimeout() {
+	void testReadLineWithTimeout() {
 		try {
 			NonBlockingReader reader = null;
 			try {
@@ -46,7 +46,7 @@ public class NonBlockingReaderTest {
 	}
 
 	@Test
-	public void testClose() throws Exception {
+	void testClose() throws Exception {
 		long time = delay;
 
 		NonBlockingReader reader = new NonBlockingReader( System.in );

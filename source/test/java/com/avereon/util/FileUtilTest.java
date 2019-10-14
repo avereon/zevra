@@ -1,8 +1,8 @@
 package com.avereon.util;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.file.DirectoryStream;
@@ -15,26 +15,28 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FileUtilTest {
+class FileUtilTest {
 
 	private static final String PREFIX = "com-avereon-unit-test-";
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeEach
+	void setup() throws Exception {
 		removeTempFiles();
 	}
 
-	@After
-	public void cleanup() throws Exception {
+	@AfterEach
+	void cleanup() throws Exception {
 		removeTempFiles();
 	}
 
 	@Test
-	public void testGetHumanSize() {
+	void testGetHumanSize() {
 		assertThat( FileUtil.getHumanSize( 0 ), is( "0B" ) );
 		assertThat( FileUtil.getHumanSize( 1 ), is( "1B" ) );
 		assertThat( FileUtil.getHumanSize( 12 ), is( "12B" ) );
@@ -77,7 +79,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testGetHumanBinSize() {
+	void testGetHumanBinSize() {
 		assertThat( FileUtil.getHumanSizeBase2( 0 ), is( "0B" ) );
 		assertThat( FileUtil.getHumanSizeBase2( 1 ), is( "1B" ) );
 		assertThat( FileUtil.getHumanSizeBase2( 12 ), is( "12B" ) );
@@ -120,47 +122,47 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testGetExtensionWithPath() {
+	void testGetExtensionWithPath() {
 		assertThat( FileUtil.getExtension( (Path)null ), is( nullValue() ) );
 		assertThat( FileUtil.getExtension( Paths.get( "test" ) ), is( "" ) );
 		assertThat( FileUtil.getExtension( Paths.get( "test.txt" ) ), is( "txt" ) );
 	}
 
 	@Test
-	public void testGetExtensionWithName() {
+	void testGetExtensionWithName() {
 		assertThat( FileUtil.getExtension( (String)null ), is( nullValue() ) );
 		assertThat( FileUtil.getExtension( "test" ), is( "" ) );
 		assertThat( FileUtil.getExtension( "test.txt" ), is( "txt" ) );
 	}
 
 	@Test
-	public void testRemoveExtensionWithPath() {
+	void testRemoveExtensionWithPath() {
 		assertThat( FileUtil.removeExtension( (Path)null ), is( nullValue() ) );
 		assertThat( FileUtil.removeExtension( Paths.get( "test" ) ), is( Paths.get( "test" ) ) );
 		assertThat( FileUtil.removeExtension( Paths.get( "test.txt" ) ), is( Paths.get( "test" ) ) );
 	}
 
 	@Test
-	public void testRemoveExtensionWithName() {
+	void testRemoveExtensionWithName() {
 		assertThat( FileUtil.removeExtension( (String)null ), is( nullValue() ) );
 		assertThat( FileUtil.removeExtension( "test" ), is( "test" ) );
 		assertThat( FileUtil.removeExtension( "test.txt" ), is( "test" ) );
 	}
 
 	@Test
-	public void testSaveAndLoad() throws Exception {
+	void testSaveAndLoad() throws Exception {
 		Path path = FileUtil.createTempFile( PREFIX, "Test" );
 		FileUtil.save( path.toString(), path );
 		assertThat( FileUtil.load( path ), is( path.toString() ) );
 	}
 
 	@Test
-	public void testCopyWithNonExistantFiles() throws Exception {
+	void testCopyWithNonExistantFiles() throws Exception {
 		assertThat( FileUtil.copy( Paths.get( "/nonexistant" ), Paths.get( "/nonexistant" ) ), is( false ) );
 	}
 
 	@Test
-	public void testCopyFileToNewFile() throws Exception {
+	void testCopyFileToNewFile() throws Exception {
 		long time = System.currentTimeMillis();
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFileSource" );
 		Path target = source.getParent().resolve( "copyFileToNewFileTarget" );
@@ -169,7 +171,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFileToExistingFile() throws Exception {
+	void testCopyFileToExistingFile() throws Exception {
 		long time = System.currentTimeMillis();
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFileSource" );
 		Path target = FileUtil.createTempFile( PREFIX, "copyFileToFileTarget" );
@@ -178,7 +180,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFileToFolder() throws Exception {
+	void testCopyFileToFolder() throws Exception {
 		long time = System.currentTimeMillis();
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFolderSource" );
 		Path target = FileUtil.createTempFolder( PREFIX, "copyFileToFolderTarget" );
@@ -202,7 +204,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFolderToFile() throws Exception {
+	void testCopyFolderToFile() throws Exception {
 		Path source = FileUtil.createTempFolder( PREFIX, "copyFolderToFileSource" );
 		Path target = FileUtil.createTempFile( PREFIX, "copyFolderToFileTarget" );
 		try {
@@ -216,7 +218,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFolderToFolder() throws Exception {
+	void testCopyFolderToFolder() throws Exception {
 		Path source0 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderSource0" );
 		Path source1 = FileUtil.createTempFolder( source0, PREFIX, "copyFolderToFolderSource1" );
 		Path target0 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderTarget0" );
@@ -256,7 +258,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFolderToFolderWithSourceFolder() throws Exception {
+	void testCopyFolderToFolderWithSourceFolder() throws Exception {
 		Path source0 = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderParent0" );
 		Path source1 = FileUtil.createTempFolder( source0, PREFIX, "copyFolderToFolderParent1" );
 		Path target = FileUtil.createTempFolder( PREFIX, "copyFolderToFolderTarget" );
@@ -296,7 +298,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCopyFileToOutputStream() throws Exception {
+	void testCopyFileToOutputStream() throws Exception {
 		long time = System.currentTimeMillis();
 		Path source = FileUtil.createTempFile( PREFIX, "copyFileToFileSource" );
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
@@ -317,7 +319,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testZipAndUnzip() throws Exception {
+	void testZipAndUnzip() throws Exception {
 		Path sourceData = Paths.get( "source/test/java" );
 		Path zip = Paths.get( "target/test.source.zip" );
 		Path targetData = Paths.get( "target/test/data" );
@@ -362,7 +364,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testListPaths() throws Exception {
+	void testListPaths() throws Exception {
 		Path sourceRoot = FileUtil.createTempFolder( getClass().getSimpleName() );
 		try {
 			Path sourceFile1 = FileUtil.createTempFile( sourceRoot, getClass().getSimpleName(), "" );
@@ -383,7 +385,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testCreateTempFolder() throws Exception {
+	void testCreateTempFolder() throws Exception {
 		Path folder = FileUtil.createTempFolder( PREFIX );
 		try {
 			assertThat( Files.exists( folder ), is( true ) );
@@ -397,7 +399,7 @@ public class FileUtilTest {
 	}
 
 	@Test
-	public void testFindValidParent() throws Exception {
+	void testFindValidParent() {
 		Path path = FileUtil.getTempFolder().resolve( "non/existant/path" );
 		assertFalse( Files.exists( path ) );
 

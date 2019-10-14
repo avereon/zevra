@@ -6,10 +6,10 @@ import org.hamcrest.TypeSafeMatcher;
 
 import java.util.Objects;
 
-public class SettingsMatchers {
+class SettingsMatchers {
 
-	public static Matcher<SettingsEvent> eventHas( Object source, SettingsEvent.Type type, String path, String key, String oldValue, String newValue ) {
-		return new TypeSafeMatcher<SettingsEvent>() {
+	static Matcher<SettingsEvent> eventHas( Object source, SettingsEvent.Type type, String path, String key, String oldValue, String newValue ) {
+		return new TypeSafeMatcher<>() {
 
 			@Override
 			public void describeTo( final Description description ) {
@@ -23,13 +23,23 @@ public class SettingsMatchers {
 
 			@Override
 			protected boolean matchesSafely( final SettingsEvent item ) {
-				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getType(), type ) && Objects.equals( item.getPath(), path ) && Objects.equals( item.getNewValue(), newValue );
+				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getType(), type ) && Objects.equals( item.getPath(),
+					path
+				) && Objects.equals( item.getNewValue(), newValue );
 			}
 		};
 	}
 
-	private static String format( Class<? extends SettingsEvent> clazz, Object source, SettingsEvent.Type type, String path, String key, String oldValue, String newValue ) {
-		StringBuilder builder = new StringBuilder( );
+	private static String format(
+		Class<? extends SettingsEvent> clazz,
+		Object source,
+		SettingsEvent.Type type,
+		String path,
+		String key,
+		String oldValue,
+		String newValue
+	) {
+		StringBuilder builder = new StringBuilder();
 		builder.append( clazz.getSimpleName() );
 		builder.append( ":" );
 		builder.append( source.getClass().getSimpleName() );

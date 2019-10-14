@@ -3,21 +3,21 @@ package com.avereon.settings;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test the storage and retrieval of Java beans using JSON
  */
-public class JsonSettingsTest {
+class JsonSettingsTest {
 
 	@Test
 	@SuppressWarnings( "unchecked" )
-	public void testStoreBeanMap() throws Exception {
+	void testStoreBeanMap() throws Exception {
 		// Create the beans
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -37,14 +37,12 @@ public class JsonSettingsTest {
 		String store = mapper.writeValueAsString( expectedBeanMap );
 
 		// Load the beans
-		TypeReference<Map<String, MockBean>> typeRef = new TypeReference<Map<String, MockBean>>() {};
+		TypeReference<Map<String, MockBean>> typeRef = new TypeReference<>() {};
 		assertThat( ((Map<String, MockBean>)mapper.readerFor( typeRef ).readValue( store )).values(), containsInAnyOrder( bean1, bean2, bean3 ) );
-
-		//System.out.println( store );
 	}
 
 	@Test
-	public void testStoreBeanList() throws Exception {
+	void testStoreBeanList() throws Exception {
 		// Create the beans
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -65,14 +63,14 @@ public class JsonSettingsTest {
 		String store = mapper.writeValueAsString( expectedBeanList );
 
 		// Load the beans
-		TypeReference<List<MockBean>> typeRef = new TypeReference<List<MockBean>>() {};
+		TypeReference<List<MockBean>> typeRef = new TypeReference<>() {};
 		assertThat( mapper.readerFor( typeRef ).readValue( store ), containsInAnyOrder( bean1, bean2, bean3 ) );
 
 		//System.out.println( store );
 	}
 
 	@Test
-	public void testStoreBeanSet() throws Exception {
+	void testStoreBeanSet() throws Exception {
 		// Create the beans
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -93,9 +91,8 @@ public class JsonSettingsTest {
 		String store = mapper.writeValueAsString( expectedBeanSet );
 
 		// Load the beans
-		TypeReference<Set<MockBean>> typeRef = new TypeReference<Set<MockBean>>() {};
+		TypeReference<Set<MockBean>> typeRef = new TypeReference<>() {};
 		assertThat( mapper.readerFor( typeRef ).readValue( store ), containsInAnyOrder( bean1, bean2, bean3 ) );
-
-		//System.out.println( store );
 	}
+
 }

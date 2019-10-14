@@ -1,20 +1,20 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class ProcessCommandsTest {
+class ProcessCommandsTest {
 
 	@Test
-	public void testForModuleWithNull() {
+	void testForModuleWithNull() {
 		try {
 			ProcessCommands.forModule( null, null, null, null );
 			fail( "Should throw NullPointerException" );
@@ -24,7 +24,7 @@ public class ProcessCommandsTest {
 	}
 
 	@Test
-	public void testForModule() {
+	void testForModule() {
 		String javaPath = OperatingSystem.getJavaExecutablePath();
 		String modulePath = "/var/tmp/util/modules";
 		String moduleMain = "com.avereon.util";
@@ -48,7 +48,7 @@ public class ProcessCommandsTest {
 	}
 
 	@Test
-	public void testForModuleWithParameters() {
+	void testForModuleWithParameters() {
 		String javaPath = OperatingSystem.getJavaExecutablePath();
 		String modulePath = "/var/tmp/util/modules";
 		String moduleMain = "com.avereon.util";
@@ -75,7 +75,7 @@ public class ProcessCommandsTest {
 	}
 
 	@Test
-	public void testForModuleWithParametersAndExtraCommands() {
+	void testForModuleWithParametersAndExtraCommands() {
 		String javaPath = OperatingSystem.getJavaExecutablePath();
 		String modulePath = "/var/tmp/util/modules";
 		String moduleMain = "com.avereon.util";

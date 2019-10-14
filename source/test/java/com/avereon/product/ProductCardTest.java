@@ -4,7 +4,7 @@ import com.avereon.util.Contributor;
 import com.avereon.util.Maintainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -16,13 +16,13 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
-public class ProductCardTest {
+class ProductCardTest {
 
 	@Test
-	public void testHashCode() {
+	void testHashCode() {
 		ProductCard a = new ProductCard();
 		ProductCard b = new ProductCard();
 
@@ -37,7 +37,7 @@ public class ProductCardTest {
 	}
 
 	@Test
-	public void testEquals() {
+	void testEquals() {
 		ProductCard a = new ProductCard();
 		ProductCard b = new ProductCard();
 
@@ -52,7 +52,7 @@ public class ProductCardTest {
 	}
 
 	@Test
-	public void testJsonMarshalling() throws Exception {
+	void testJsonMarshalling() throws Exception {
 		Maintainer maintainer = new Maintainer();
 		maintainer.setName( "Sole Maintainer" );
 		maintainer.setRoles( Arrays.asList( "Architect", "Developer", "Tester" ) );
@@ -141,7 +141,7 @@ public class ProductCardTest {
 	}
 
 	@Test
-	public void testIgnoreMissingAndUnknownProperties() throws Exception {
+	void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Zevra\", \"extra\" : \"unknown\"}";
 		ProductCard card = new ProductCard().load( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ), null );
 		assertThat( card.getName(), is( "Zevra" ) );

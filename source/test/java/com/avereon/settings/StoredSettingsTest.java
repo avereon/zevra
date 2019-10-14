@@ -1,23 +1,23 @@
 package com.avereon.settings;
 
 import com.avereon.util.FileUtil;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.nio.file.Path;
 
-public class StoredSettingsTest extends BaseSettingsTest {
+class StoredSettingsTest extends BaseSettingsTest {
 
 	private Path path;
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeEach
+	void setup() throws Exception {
 		path = FileUtil.createTempFolder( SETTINGS_NAME );
 		settings = new StoredSettings( path );
 	}
 
-	@After
-	public void cleanup() throws Exception {
+	@AfterEach
+	void cleanup() throws Exception {
 		FileUtil.delete( path );
 	}
 

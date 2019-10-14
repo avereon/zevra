@@ -1,20 +1,24 @@
 package com.avereon.util;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 
-public class IndenterTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.*;
+
+class IndenterTest {
 
 	// For convenience.
 	private static final String IND = Indenter.DEFAULT_INDENT_STRING;
 
-	public void testCreateIndent() {
+	@Test
+	void testCreateIndent() {
 		assertEquals( IND, Indenter.createIndent() );
 	}
 
-	public void testCreateIndentWithSize() {
+	@Test
+	void testCreateIndentWithSize() {
 		assertEquals( "", Indenter.createIndent( -1 ) );
 		assertEquals( "", Indenter.createIndent( 0 ) );
 		assertEquals( IND + "", Indenter.createIndent( 1 ) );
@@ -22,7 +26,8 @@ public class IndenterTest extends TestCase {
 		assertEquals( IND + "" + IND + "" + IND + "", Indenter.createIndent( 3 ) );
 	}
 
-	public void testCreateIndentWithString() {
+	@Test
+	void testCreateIndentWithString() {
 		assertEquals( "", Indenter.createIndent( -1, "<>" ) );
 		assertEquals( "", Indenter.createIndent( 0, "<>" ) );
 		assertEquals( "<>", Indenter.createIndent( 1, "<>" ) );
@@ -30,13 +35,15 @@ public class IndenterTest extends TestCase {
 		assertEquals( "<><><>", Indenter.createIndent( 3, "<>" ) );
 	}
 
-	public void testWriteIndent() throws Exception {
+	@Test
+	void testWriteIndent() throws Exception {
 		StringWriter writer = new StringWriter();
 		Indenter.writeIndent( writer );
 		assertEquals( IND, writer.toString() );
 	}
 
-	public void testWriteIndentWithSize() throws Exception {
+	@Test
+	void testWriteIndentWithSize() throws Exception {
 		assertWriteIndent( "", -1 );
 		assertWriteIndent( "", 0 );
 		assertWriteIndent( IND + "", 1 );
@@ -44,22 +51,25 @@ public class IndenterTest extends TestCase {
 		assertWriteIndent( IND + "" + IND + "" + IND + "", 3 );
 	}
 
-	public void testWriteIndentWithString() throws Exception {
+	@Test
+	void testWriteIndentWithString() throws Exception {
 		assertWriteIndentWithString( "<>", "<>" );
 		assertWriteIndentWithString( "<><>", "<><>" );
 		assertWriteIndentWithString( "<><><>", "<><><>" );
 	}
 
-	public void testWriteIndentWithSizeAndString() throws Exception {
+	@Test
+	void testWriteIndentWithSizeAndString() throws Exception {
 		assertWriteIndentWithSizeAndString( "", -1, "<>" );
 		assertWriteIndentWithSizeAndString( "", 0, "<>" );
 		assertWriteIndentWithSizeAndString( "<>", 1, "<>" );
-		assertWriteIndentWithSizeAndString( "<><>", 2, "<>" );
-		assertWriteIndentWithSizeAndString( "<><><>", 3, "<>" );
+		assertWriteIndentWithSizeAndString( "[][]", 2, "[]" );
+		assertWriteIndentWithSizeAndString( "<*><*><*>", 3, "<*>" );
 	}
 
-	public void testIndent() {
-		assertEquals( null, Indenter.indent( null ) );
+	@Test
+	void testIndent() {
+		assertNull( Indenter.indent( null ) );
 
 		assertEquals( IND, Indenter.indent( "" ) );
 		assertEquals( IND + "a", Indenter.indent( "a" ) );
@@ -71,8 +81,9 @@ public class IndenterTest extends TestCase {
 		assertEquals( IND + "a\n" + IND + "a\n" + IND + "a", Indenter.indent( "a\na\na" ) );
 	}
 
-	public void testIndentWithSize() {
-		assertEquals( null, Indenter.indent( null, 2 ) );
+	@Test
+	void testIndentWithSize() {
+		assertNull( Indenter.indent( null, 2 ) );
 
 		assertEquals( IND + IND, Indenter.indent( "", 2 ) );
 		assertEquals( IND + IND + "a", Indenter.indent( "a", 2 ) );
@@ -84,8 +95,9 @@ public class IndenterTest extends TestCase {
 		assertEquals( IND + IND + "a\n" + IND + IND + "a\n" + IND + IND + "a", Indenter.indent( "a\na\na", 2 ) );
 	}
 
-	public void testIndentWithString() {
-		assertEquals( null, Indenter.indent( null, "<>" ) );
+	@Test
+	void testIndentWithString() {
+		assertNull( Indenter.indent( null, "<>" ) );
 
 		assertEquals( "<>", Indenter.indent( "", "<>" ) );
 		assertEquals( "<>a", Indenter.indent( "a", "<>" ) );
@@ -97,8 +109,9 @@ public class IndenterTest extends TestCase {
 		assertEquals( "<>a\n<>a\n<>a", Indenter.indent( "a\na\na", "<>" ) );
 	}
 
-	public void testIndentWithSizeAndString() {
-		assertEquals( null, Indenter.indent( null, 1, "<>" ) );
+	@Test
+	void testIndentWithSizeAndString() {
+		assertNull( Indenter.indent( null, 1, "<>" ) );
 
 		assertEquals( "<><><>", Indenter.indent( "", 3, "<>" ) );
 		assertEquals( "<><><>a", Indenter.indent( "a", 3, "<>" ) );
@@ -110,7 +123,8 @@ public class IndenterTest extends TestCase {
 		assertEquals( "<><><>a\n<><><>a\n<><><>a", Indenter.indent( "a\na\na", 3, "<>" ) );
 	}
 
-	public void testCanUnindent() {
+	@Test
+	void testCanUnindent() {
 		assertFalse( Indenter.canUnindent( null ) );
 
 		assertFalse( Indenter.canUnindent( "a" + IND ) );
@@ -132,7 +146,8 @@ public class IndenterTest extends TestCase {
 		assertTrue( Indenter.canUnindent( IND + "a\n" + IND + "b\n" + IND + "c" ) );
 	}
 
-	public void testCanUnindentWithSize() {
+	@Test
+	void testCanUnindentWithSize() {
 		assertFalse( Indenter.canUnindent( null ) );
 
 		assertFalse( Indenter.canUnindent( "a" + IND + IND + "", 2 ) );
@@ -154,7 +169,8 @@ public class IndenterTest extends TestCase {
 		assertTrue( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) );
 	}
 
-	public void testCanUnindentWithString() {
+	@Test
+	void testCanUnindentWithString() {
 		assertFalse( Indenter.canUnindent( null ) );
 
 		assertFalse( Indenter.canUnindent( "a<><><>", 3, "<>" ) );
@@ -176,7 +192,8 @@ public class IndenterTest extends TestCase {
 		assertTrue( Indenter.canUnindent( "<><><>a\n" + "<><><>b\n" + "<><><>c", 3, "<>" ) );
 	}
 
-	public void testUnindent() {
+	@Test
+	void testUnindent() {
 		assertNull( Indenter.unindent( null ) );
 
 		assertEquals( "", Indenter.unindent( "" ) );
@@ -192,7 +209,8 @@ public class IndenterTest extends TestCase {
 		assertEquals( "a\nb\nc", Indenter.unindent( IND + "a\n" + IND + "b\n" + IND + "c" ) );
 	}
 
-	public void testUnindentWithSize() {
+	@Test
+	void testUnindentWithSize() {
 		assertNull( Indenter.unindent( null, 2 ) );
 
 		assertEquals( "", Indenter.unindent( "", 2 ) );
@@ -208,7 +226,8 @@ public class IndenterTest extends TestCase {
 		assertEquals( "a\nb\nc", Indenter.unindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) );
 	}
 
-	public void testUnindentWithString() {
+	@Test
+	void testUnindentWithString() {
 		assertNull( Indenter.unindent( null, 3, "<>" ) );
 
 		assertEquals( "", Indenter.unindent( "", 3, "<>" ) );
@@ -224,17 +243,17 @@ public class IndenterTest extends TestCase {
 		assertEquals( "a\nb\nc", Indenter.unindent( "<><><>a\n<><><>b\n<><><>c", 3, "<>" ) );
 	}
 
-	public void testTrim() {
+	@Test
+	void testTrim() {
 		assertNull( Indenter.trim( null, null ) );
 		assertEquals( "", Indenter.trim( "", "" ) );
 		assertEquals( "b", Indenter.trim( "abc", "ac" ) );
 	}
 
-	public void testTrimLines() {
+	@Test
+	void testTrimLines() {
 		assertNull( Indenter.trimLines( null, null ) );
 		assertEquals( "", Indenter.trimLines( "", "" ) );
-
-		//assertEquals( "bc", Indenter.trimLines( "abc", "ac" ) );
 	}
 
 	private void assertWriteIndent( String result, int size ) throws IOException {

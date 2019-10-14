@@ -39,7 +39,10 @@ public class MockBean {
 		if( this == that ) return true;
 		if( !(that instanceof MockBean) ) return false;
 		MockBean mockBean = (MockBean)that;
-		return integerPrimitiveProperty == mockBean.integerPrimitiveProperty && Objects.equals( stringProperty, mockBean.stringProperty ) && Objects.equals( integerProperty, mockBean.integerProperty );
+		return integerPrimitiveProperty == mockBean.integerPrimitiveProperty && Objects.equals( stringProperty, mockBean.stringProperty ) && Objects.equals(
+			integerProperty,
+			mockBean.integerProperty
+		);
 	}
 
 	@Override

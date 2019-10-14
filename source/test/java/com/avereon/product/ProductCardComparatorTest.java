@@ -1,17 +1,17 @@
 package com.avereon.product;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
-public class ProductCardComparatorTest {
+class ProductCardComparatorTest {
 
 	@Test
-	public void testCompareName() {
+	void testCompareName() {
 		ProductCard card1 = new ProductCard();
 		card1.setName( "B" );
 
@@ -27,7 +27,7 @@ public class ProductCardComparatorTest {
 	}
 
 	@Test
-	public void testCompareArtifact() {
+	void testCompareArtifact() {
 		ProductCard card1 = new ProductCard();
 		card1.setArtifact( "b" );
 
@@ -43,7 +43,7 @@ public class ProductCardComparatorTest {
 	}
 
 	@Test
-	public void testCompareVersion() {
+	void testCompareVersion() {
 		ProductCard card1 = new ProductCard();
 		card1.setVersion( "2" );
 
@@ -70,7 +70,7 @@ public class ProductCardComparatorTest {
 	}
 
 	@Test
-	public void testCompareRelease() {
+	void testCompareRelease() {
 		ProductCard card1 = new ProductCard();
 		card1.setVersion( "1" ).setTimestamp( "2018-02-14 00:00:00" );
 

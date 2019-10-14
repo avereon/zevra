@@ -1,20 +1,20 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class IdGeneratorTest {
+class IdGeneratorTest {
 
 	@Test
-	public void testGetId() {
+	void testGetId() {
 		String id = IdGenerator.getId();
 		assertThat( id.length(), is( 16 ) );
 	}
 
 	@Test
-	public void testGetIdWithInt() {
+	void testGetIdWithInt() {
 		assertThat( IdGenerator.slug( 0x00000000 ), is( "mmmmmmmm" ) );
 		assertThat( IdGenerator.slug( 0x55555555 ), is( "cccccccc" ) );
 		assertThat( IdGenerator.slug( 0xaaaaaaaa ), is( "xxxxxxxx" ) );
@@ -22,7 +22,7 @@ public class IdGeneratorTest {
 	}
 
 	@Test
-	public void testGetIdWithLong() {
+	void testGetIdWithLong() {
 		assertThat( IdGenerator.getId( 0x0000000000000000L ), is( "mmmmmmmmmmmmmmmm" ) );
 		assertThat( IdGenerator.getId( 0x5555555555555555L ), is( "cccccccccccccccc" ) );
 		assertThat( IdGenerator.getId( 0xaaaaaaaaaaaaaaaaL ), is( "xxxxxxxxxxxxxxxx" ) );
@@ -30,11 +30,11 @@ public class IdGeneratorTest {
 	}
 
 	@Test
-	public void testGetIdWithString() {
-		assertThat( IdGenerator.getId( "test"), is( "ttzlkhsndwnhcnlc" ) );
-		assertThat( IdGenerator.getId( "tent"), is( "zzwvwkwxwwkkzrrl" ) );
-		assertThat( IdGenerator.getId( "bent"), is( "btkclsbfbtnhnsvx" ) );
-		assertThat( IdGenerator.getId( "bunt"), is( "lrzcnrdcbkbzxkfc" ) );
+	void testGetIdWithString() {
+		assertThat( IdGenerator.getId( "test" ), is( "ttzlkhsndwnhcnlc" ) );
+		assertThat( IdGenerator.getId( "tent" ), is( "zzwvwkwxwwkkzrrl" ) );
+		assertThat( IdGenerator.getId( "bent" ), is( "btkclsbfbtnhnsvx" ) );
+		assertThat( IdGenerator.getId( "bunt" ), is( "lrzcnrdcbkbzxkfc" ) );
 	}
 
 }

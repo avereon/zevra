@@ -1,16 +1,17 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class PathUtilTest {
+class PathUtilTest {
 
 	@Test
-	public void testIsAbsolute() {
+	@SuppressWarnings( "ConstantConditions" )
+	void testIsAbsolute() {
 		assertThat( PathUtil.isAbsolute( "/" ), is( true ) );
 		assertThat( PathUtil.isAbsolute( "/test" ), is( true ) );
 		assertThat( PathUtil.isAbsolute( "/test/path" ), is( true ) );
@@ -23,7 +24,8 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testIsRelative() {
+	@SuppressWarnings( "ConstantConditions" )
+	void testIsRelative() {
 		assertThat( PathUtil.isRelative( null ), is( false ) );
 		assertThat( PathUtil.isRelative( "" ), is( true ) );
 		assertThat( PathUtil.isRelative( "test" ), is( true ) );
@@ -37,7 +39,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testGetParent() {
+	void testGetParent() {
 		assertThat( PathUtil.getParent( null ), is( nullValue() ) );
 		assertThat( PathUtil.getParent( "" ), is( nullValue() ) );
 		assertThat( PathUtil.getParent( "/" ), is( nullValue() ) );
@@ -55,7 +57,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testGetName() {
+	void testGetName() {
 		assertThat( PathUtil.getName( null ), is( nullValue() ) );
 		assertThat( PathUtil.getName( "" ), is( "" ) );
 		assertThat( PathUtil.getName( "/" ), is( "/" ) );
@@ -64,7 +66,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testNormalize() {
+	void testNormalize() {
 		// Normal paths
 		assertThat( PathUtil.normalize( null ), is( nullValue() ) );
 		assertThat( PathUtil.normalize( "" ), is( "" ) );
@@ -87,7 +89,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testResolve() {
+	void testResolve() {
 		// Null paths
 		assertThat( PathUtil.resolve( null, "" ), is( nullValue() ) );
 		assertThat( PathUtil.resolve( "", null ), is( nullValue() ) );
@@ -112,7 +114,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testRelativize() {
+	void testRelativize() {
 		// Null paths
 		assertThat( PathUtil.relativize( null, "" ), is( nullValue() ) );
 		assertThat( PathUtil.relativize( null, "/" ), is( nullValue() ) );
@@ -158,7 +160,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testRelativizeWithMixedAbsoluteAndRelativePaths() {
+	void testRelativizeWithMixedAbsoluteAndRelativePaths() {
 		// Absolute and relative
 		try {
 			PathUtil.relativize( "/foo", "bar" );
@@ -177,7 +179,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testParseNames() {
+	void testParseNames() {
 		assertThat( PathUtil.parseNames( "/foo/bar" ), is( new String[]{ "/", "foo", "bar" } ) );
 		assertThat( PathUtil.parseNames( "/foo/bar/" ), is( new String[]{ "/", "foo", "bar" } ) );
 		assertThat( PathUtil.parseNames( "foo/bar" ), is( new String[]{ "foo", "bar" } ) );
@@ -188,7 +190,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void testGetChild() {
+	void testGetChild() {
 		assertThat( PathUtil.getChild( null, "" ), is( nullValue() ) );
 		assertThat( PathUtil.getChild( "", null ), is( nullValue() ) );
 

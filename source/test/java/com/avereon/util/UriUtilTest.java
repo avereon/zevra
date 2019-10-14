@@ -1,18 +1,18 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URI;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
-public class UriUtilTest {
+class UriUtilTest {
 
 	@Test
-	public void understandUriParts() {
+	void understandUriParts() {
 		URI uri = URI.create( "program:product#updates" );
 		assertThat( uri.isOpaque(), is( true ) );
 		assertThat( uri.isAbsolute(), is( true ) );
@@ -55,27 +55,30 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testAddToPath() {
-		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ), is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) );
+	void testAddToPath() {
+		assertThat(
+			UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ),
+			is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) )
+		);
 		assertThat( UriUtil.addToPath( URI.create( "/path/to" ), "resource" ), is( URI.create( "/path/to/resource" ) ) );
 		assertThat( UriUtil.addToPath( URI.create( "/path/of" ), "../to/resource" ), is( URI.create( "/path/to/resource" ) ) );
 	}
 
 	@Test
-	public void testParseName() {
+	void testParseName() {
 		assertThat( UriUtil.parseName( URI.create( "https://host:74" ) ), is( "" ) );
 		assertThat( UriUtil.parseName( URI.create( "https://host:74/" ) ), is( "" ) );
 		assertThat( UriUtil.parseName( URI.create( "https://host:74/path/to/resource" ) ), is( "resource" ) );
 	}
 
 	@Test
-	public void testRemoveQueryAndFragment() {
+	void testRemoveQueryAndFragment() {
 		String root = "https://host:74/path/to/resource";
 		assertThat( UriUtil.removeQueryAndFragment( URI.create( root + "?parm1=a&parm2=b" ) ), is( URI.create( root ) ) );
 	}
 
 	@Test
-	public void testResolveWithString() throws Exception {
+	void testResolveWithString() throws Exception {
 		assertThat( UriUtil.resolve( "" ), is( new File( "" ).getCanonicalFile().toURI() ) );
 		assertThat( UriUtil.resolve( "." ), is( new File( "." ).getCanonicalFile().toURI() ) );
 		assertThat( UriUtil.resolve( "test" ), is( new File( "test" ).getCanonicalFile().toURI() ) );
@@ -85,7 +88,7 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testResolveWithRelativeUri() {
+	void testResolveWithRelativeUri() {
 		URI base = URI.create( "file:/test/folder/" );
 		URI absolute = URI.create( "file:/test/folder/absolute" );
 		URI relative = URI.create( "relative" );
@@ -104,14 +107,14 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testResolveWithAbsoluteUri() {
+	void testResolveWithAbsoluteUri() {
 		URI jar = URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/resource" );
 		URI icon = URI.create( "http://www.parallelsymmetry.com/images/icons/escape.png" );
 		assertThat( UriUtil.resolve( jar, icon ), is( URI.create( "http://www.parallelsymmetry.com/images/icons/escape.png" ) ) );
 	}
 
 	@Test
-	public void testGetParent() {
+	void testGetParent() {
 		URI absolute = URI.create( "file:/test/folder/absolute" );
 		URI opaque = URI.create( "jar:" + absolute.toString() );
 		URI doubleOpaque = URI.create( "double:jar:" + absolute.toString() );
@@ -122,7 +125,7 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testParseQueryWithUri() {
+	void testParseQueryWithUri() {
 		assertThat( UriUtil.parseQuery( (URI)null ), is( nullValue() ) );
 
 		URI uri = URI.create( "test:///path?attr1&attr2" );
@@ -137,7 +140,7 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testParseQueryWithString() {
+	void testParseQueryWithString() {
 		assertThat( UriUtil.parseQuery( (String)null ), is( nullValue() ) );
 
 		Map<String, String> parameters = UriUtil.parseQuery( "attr1&attr2" );
@@ -150,24 +153,27 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testGetUriPartsWithOpaqueUri() {
+	void testGetUriPartsWithOpaqueUri() {
 		assertThat( UriUtil.getParts( URI.create( "program:about#details" ) ), contains( "program", "about", "details" ) );
 	}
 
 	@Test
-	public void testGetUriPartsWithHierarchicalUri() {
-		assertThat( UriUtil.getParts( URI.create( "http://avereon.com/download/razor/product/card#latest" ) ), contains( "http", "avereon.com", "", "download", "razor", "product", "card", "latest" ) );
+	void testGetUriPartsWithHierarchicalUri() {
+		assertThat(
+			UriUtil.getParts( URI.create( "http://avereon.com/download/razor/product/card#latest" ) ),
+			contains( "http", "avereon.com", "", "download", "razor", "product", "card", "latest" )
+		);
 		assertThat( UriUtil.getParts( URI.create( "/" ) ).size(), is( 2 ) );
 		assertThat( UriUtil.getParts( URI.create( "" ) ), contains( "" ) );
 	}
 
 	@Test
-	public void testGetUriPartsWithRelativeUri() {
+	void testGetUriPartsWithRelativeUri() {
 		assertThat( UriUtil.getParts( URI.create( "/download/razor/product" ) ), contains( "", "download", "razor", "product" ) );
 	}
 
 	@Test
-	public void testGetUriMatchScoreWithOpaqueUri() {
+	void testGetUriMatchScoreWithOpaqueUri() {
 		URI a = URI.create( "program:about" );
 		URI b = URI.create( "program:about#details" );
 		URI c = URI.create( "program:settings" );
@@ -190,7 +196,7 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testGetUriMatchScoreWithHierarchicalUri() {
+	void testGetUriMatchScoreWithHierarchicalUri() {
 		URI a = URI.create( "" );
 		URI b = URI.create( "/" );
 		URI c = URI.create( "ssh://user@sshhost.com" );
@@ -228,7 +234,7 @@ public class UriUtilTest {
 	}
 
 	@Test
-	public void testGetUriMatchScoreWithPathUri() {
+	void testGetUriMatchScoreWithPathUri() {
 		URI a = URI.create( "" );
 		URI b = URI.create( "/" );
 		URI c = URI.create( "/root" );

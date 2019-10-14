@@ -1,10 +1,12 @@
 package com.avereon.util;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
-public class VersionTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.*;
+
+class VersionTest {
 
 	private static final String[] VERSIONS_QUALIFIER = { "1-alpha2snapshot", "1-alpha2", "1-alpha-123", "1-beta-2", "1-beta123", "1-m2", "1-m11", "1-rc", "1-cr2", "1-rc123", "1-SNAPSHOT", "1", "1-sp", "1-sp2", "1-sp123", "1-abc", "1-def", "1-pom-1", "1-1-snapshot", "1-1", "1-2", "1-123" };
 
@@ -42,184 +44,190 @@ public class VersionTest extends TestCase {
 
 	private Version snapshot = new Version( "3.4.5-SNAPSHOT" );
 
-	public void testIsSnapshot() {
-		assertEquals( true, new Version( "1-alpha2snapshot" ).isSnapshot() );
-		assertEquals( false, new Version( "1-alpha2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-alpha-123" ).isSnapshot() );
-		assertEquals( false, new Version( "1-beta-2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-beta123" ).isSnapshot() );
-		assertEquals( false, new Version( "1-m2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-m11" ).isSnapshot() );
-		assertEquals( false, new Version( "1-rc" ).isSnapshot() );
-		assertEquals( false, new Version( "1-cr2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-rc123" ).isSnapshot() );
-		assertEquals( true, new Version( "1-SNAPSHOT" ).isSnapshot() );
-		assertEquals( false, new Version( "1" ).isSnapshot() );
-		assertEquals( false, new Version( "1-sp" ).isSnapshot() );
-		assertEquals( false, new Version( "1-sp2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-sp123" ).isSnapshot() );
-		assertEquals( false, new Version( "1-abc" ).isSnapshot() );
-		assertEquals( false, new Version( "1-def" ).isSnapshot() );
-		assertEquals( false, new Version( "1-pom-1" ).isSnapshot() );
-		assertEquals( true, new Version( "1-1-snapshot" ).isSnapshot() );
-		assertEquals( false, new Version( "1-1" ).isSnapshot() );
-		assertEquals( false, new Version( "1-2" ).isSnapshot() );
-		assertEquals( false, new Version( "1-123" ).isSnapshot() );
+	@Test
+	void testIsSnapshot() {
+		assertTrue( new Version( "1-alpha2snapshot" ).isSnapshot() );
+		assertFalse( new Version( "1-alpha2" ).isSnapshot() );
+		assertFalse( new Version( "1-alpha-123" ).isSnapshot() );
+		assertFalse( new Version( "1-beta-2" ).isSnapshot() );
+		assertFalse( new Version( "1-beta123" ).isSnapshot() );
+		assertFalse( new Version( "1-m2" ).isSnapshot() );
+		assertFalse( new Version( "1-m11" ).isSnapshot() );
+		assertFalse( new Version( "1-rc" ).isSnapshot() );
+		assertFalse( new Version( "1-cr2" ).isSnapshot() );
+		assertFalse( new Version( "1-rc123" ).isSnapshot() );
+		assertTrue( new Version( "1-SNAPSHOT" ).isSnapshot() );
+		assertFalse( new Version( "1" ).isSnapshot() );
+		assertFalse( new Version( "1-sp" ).isSnapshot() );
+		assertFalse( new Version( "1-sp2" ).isSnapshot() );
+		assertFalse( new Version( "1-sp123" ).isSnapshot() );
+		assertFalse( new Version( "1-abc" ).isSnapshot() );
+		assertFalse( new Version( "1-def" ).isSnapshot() );
+		assertFalse( new Version( "1-pom-1" ).isSnapshot() );
+		assertTrue( new Version( "1-1-snapshot" ).isSnapshot() );
+		assertFalse( new Version( "1-1" ).isSnapshot() );
+		assertFalse( new Version( "1-2" ).isSnapshot() );
+		assertFalse( new Version( "1-123" ).isSnapshot() );
 
-		assertEquals( false, new Version( "2.0" ).isSnapshot() );
-		assertEquals( false, new Version( "2-1" ).isSnapshot() );
-		assertEquals( false, new Version( "2.0.a" ).isSnapshot() );
-		assertEquals( false, new Version( "2.0.0.a" ).isSnapshot() );
-		assertEquals( false, new Version( "2.0.2" ).isSnapshot() );
-		assertEquals( false, new Version( "2.0.123" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1.0" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1-a" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1b" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1-c" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1-1" ).isSnapshot() );
-		assertEquals( false, new Version( "2.1.0.1" ).isSnapshot() );
-		assertEquals( false, new Version( "2.2" ).isSnapshot() );
-		assertEquals( false, new Version( "2.123" ).isSnapshot() );
-		assertEquals( false, new Version( "11.a2" ).isSnapshot() );
-		assertEquals( false, new Version( "11.a11" ).isSnapshot() );
-		assertEquals( false, new Version( "11.b2" ).isSnapshot() );
-		assertEquals( false, new Version( "11.b11" ).isSnapshot() );
-		assertEquals( false, new Version( "11.m2" ).isSnapshot() );
-		assertEquals( false, new Version( "11.m11" ).isSnapshot() );
-		assertEquals( false, new Version( "11" ).isSnapshot() );
-		assertEquals( false, new Version( "11.a" ).isSnapshot() );
-		assertEquals( false, new Version( "11b" ).isSnapshot() );
-		assertEquals( false, new Version( "11c" ).isSnapshot() );
-		assertEquals( false, new Version( "11m" ).isSnapshot() );
+		assertFalse( new Version( "2.0" ).isSnapshot() );
+		assertFalse( new Version( "2-1" ).isSnapshot() );
+		assertFalse( new Version( "2.0.a" ).isSnapshot() );
+		assertFalse( new Version( "2.0.0.a" ).isSnapshot() );
+		assertFalse( new Version( "2.0.2" ).isSnapshot() );
+		assertFalse( new Version( "2.0.123" ).isSnapshot() );
+		assertFalse( new Version( "2.1.0" ).isSnapshot() );
+		assertFalse( new Version( "2.1-a" ).isSnapshot() );
+		assertFalse( new Version( "2.1b" ).isSnapshot() );
+		assertFalse( new Version( "2.1-c" ).isSnapshot() );
+		assertFalse( new Version( "2.1-1" ).isSnapshot() );
+		assertFalse( new Version( "2.1.0.1" ).isSnapshot() );
+		assertFalse( new Version( "2.2" ).isSnapshot() );
+		assertFalse( new Version( "2.123" ).isSnapshot() );
+		assertFalse( new Version( "11.a2" ).isSnapshot() );
+		assertFalse( new Version( "11.a11" ).isSnapshot() );
+		assertFalse( new Version( "11.b2" ).isSnapshot() );
+		assertFalse( new Version( "11.b11" ).isSnapshot() );
+		assertFalse( new Version( "11.m2" ).isSnapshot() );
+		assertFalse( new Version( "11.m11" ).isSnapshot() );
+		assertFalse( new Version( "11" ).isSnapshot() );
+		assertFalse( new Version( "11.a" ).isSnapshot() );
+		assertFalse( new Version( "11b" ).isSnapshot() );
+		assertFalse( new Version( "11c" ).isSnapshot() );
+		assertFalse( new Version( "11m" ).isSnapshot() );
 	}
 
-	public void testHasQulifierAlpha() {
-		assertEquals( true, new Version( "1-alpha2snapshot" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "1-alpha2" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "1-alpha-123" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-beta-2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-beta123" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-m2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-m11" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-rc" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-cr2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-rc123" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-SNAPSHOT" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-sp" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-sp2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-sp123" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-abc" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-def" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-pom-1" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-1-snapshot" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-1" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "1-123" ).hasQualifier( "alpha" ) );
+	@Test
+	void testHasQulifierAlpha() {
+		assertTrue( new Version( "1-alpha2snapshot" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "1-alpha2" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "1-alpha-123" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-beta-2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-beta123" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-m2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-m11" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-rc" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-cr2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-rc123" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-SNAPSHOT" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-sp" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-sp2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-sp123" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-abc" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-def" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-pom-1" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-1-snapshot" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-1" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "1-123" ).hasQualifier( "alpha" ) );
 
-		assertEquals( false, new Version( "2.0" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2-1" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "2.0.a" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "2.0.0.a" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.0.2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.0.123" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.1.0" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "2.1-a" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.1b" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.1-c" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.1-1" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.1.0.1" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "2.123" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "11.a2" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "11.a11" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11.b2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11.b11" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11.m2" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11.m11" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11" ).hasQualifier( "alpha" ) );
-		assertEquals( true, new Version( "11.a" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11b" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11c" ).hasQualifier( "alpha" ) );
-		assertEquals( false, new Version( "11m" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.0" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2-1" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "2.0.a" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "2.0.0.a" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.0.2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.0.123" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.1.0" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "2.1-a" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.1b" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.1-c" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.1-1" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.1.0.1" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "2.123" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "11.a2" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "11.a11" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11.b2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11.b11" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11.m2" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11.m11" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11" ).hasQualifier( "alpha" ) );
+		assertTrue( new Version( "11.a" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11b" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11c" ).hasQualifier( "alpha" ) );
+		assertFalse( new Version( "11m" ).hasQualifier( "alpha" ) );
 	}
 
-	public void testHasQualifierBeta() {
-		assertEquals( false, new Version( "1-alpha2snapshot" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-alpha2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-alpha-123" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "1-beta-2" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "1-beta123" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-m2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-m11" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-rc" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-cr2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-rc123" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-SNAPSHOT" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-sp" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-sp2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-sp123" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-abc" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-def" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-pom-1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-1-snapshot" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "1-123" ).hasQualifier( "beta" ) );
+	@Test
+	void testHasQualifierBeta() {
+		assertFalse( new Version( "1-alpha2snapshot" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-alpha2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-alpha-123" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "1-beta-2" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "1-beta123" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-m2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-m11" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-rc" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-cr2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-rc123" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-SNAPSHOT" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-sp" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-sp2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-sp123" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-abc" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-def" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-pom-1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-1-snapshot" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "1-123" ).hasQualifier( "beta" ) );
 
-		assertEquals( false, new Version( "2.0" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2-1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.0.a" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.0.0.a" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.0.2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.0.123" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.1.0" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.1-a" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "2.1b" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.1-c" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.1-1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.1.0.1" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "2.123" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11.a2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11.a11" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "11.b2" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "11.b11" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11.m2" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11.m11" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11.a" ).hasQualifier( "beta" ) );
-		assertEquals( true, new Version( "11b" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11c" ).hasQualifier( "beta" ) );
-		assertEquals( false, new Version( "11m" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.0" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2-1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.0.a" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.0.0.a" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.0.2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.0.123" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.1.0" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.1-a" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "2.1b" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.1-c" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.1-1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.1.0.1" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "2.123" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11.a2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11.a11" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "11.b2" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "11.b11" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11.m2" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11.m11" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11.a" ).hasQualifier( "beta" ) );
+		assertTrue( new Version( "11b" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11c" ).hasQualifier( "beta" ) );
+		assertFalse( new Version( "11m" ).hasQualifier( "beta" ) );
 	}
 
-	public void testCompareVersions() {
-		assertEquals( "Compare equal versions", 0, Version.compareVersions( version, version ) );
+	@Test
+	void testCompareVersions() {
+		assertEquals( 0, Version.compareVersions( version, version ), "Compare equal versions" );
 
-		assertEquals( "Compare greater major", -1, Version.compareVersions( version, majorGreater ) );
-		assertEquals( "Compare lesser major", 1, Version.compareVersions( version, majorLesser ) );
+		assertEquals( -1, Version.compareVersions( version, majorGreater ), "Compare greater major" );
+		assertEquals( 1, Version.compareVersions( version, majorLesser ), "Compare lesser major" );
 
-		assertEquals( "Compare greater minor", -1, Version.compareVersions( version, minorGreater ) );
-		assertEquals( "Compare lesser minor", 1, Version.compareVersions( version, minorLesser ) );
+		assertEquals( -1, Version.compareVersions( version, minorGreater ), "Compare greater minor" );
+		assertEquals( 1, Version.compareVersions( version, minorLesser ), "Compare lesser minor" );
 
-		assertEquals( "Compare greater micro", -1, Version.compareVersions( version, microGreater ) );
-		assertEquals( "Compare lesser micro", 1, Version.compareVersions( version, microLesser ) );
+		assertEquals( -1, Version.compareVersions( version, microGreater ), "Compare greater micro" );
+		assertEquals( 1, Version.compareVersions( version, microLesser ), "Compare lesser micro" );
 
-		assertEquals( "Compare greater revision", -1, Version.compareVersions( version, revisionGreater ) );
-		assertEquals( "Compare lesser revision", 1, Version.compareVersions( version, revisionLesser ) );
+		assertEquals( -1, Version.compareVersions( version, revisionGreater ), "Compare greater revision" );
+		assertEquals( 1, Version.compareVersions( version, revisionLesser ), "Compare lesser revision" );
 
-		assertEquals( "Compare greater build", -1, Version.compareVersions( version, buildGreater ) );
-		assertEquals( "Compare lesser build", 1, Version.compareVersions( version, buildLesser ) );
+		assertEquals( -1, Version.compareVersions( version, buildGreater ), "Compare greater build" );
+		assertEquals( 1, Version.compareVersions( version, buildLesser ), "Compare lesser build" );
 	}
 
-	public void testCompareVersionWithSnapshot() {
-		assertEquals( "Compare snapshot versions", 1, Version.compareVersions( version, snapshot ) );
-		assertEquals( "Compare snapshot versions", -1, Version.compareVersions( snapshot, version ) );
+	@Test
+	void testCompareVersionWithSnapshot() {
+		assertEquals( 1, Version.compareVersions( version, snapshot ), "Compare snapshot versions" );
+		assertEquals( -1, Version.compareVersions( snapshot, version ), "Compare snapshot versions" );
 	}
 
-	public void testToString() {
+	@Test
+	void testToString() {
 		assertEquals( "unknown", new Version( null ).toString() );
 
 		assertEquals( "3.4.5-a-06", alpha.toString() );
@@ -236,7 +244,8 @@ public class VersionTest extends TestCase {
 		}
 	}
 
-	public void testToHumanString() {
+	@Test
+	void testToHumanString() {
 		assertEquals( "2.0", new Version( "2.0" ).toHumanString() );
 		assertEquals( "2-1", new Version( "2-1" ).toHumanString() );
 		assertEquals( "2.0 Alpha", new Version( "2.0.a" ).toHumanString() );
@@ -293,15 +302,18 @@ public class VersionTest extends TestCase {
 		assertEquals( "3.4.5 SNAPSHOT", snapshot.toHumanString() );
 	}
 
-	public void testVersionsQualifier() {
+	@Test
+	void testVersionsQualifier() {
 		checkVersionsOrder( VERSIONS_QUALIFIER );
 	}
 
-	public void testVersionsNumber() {
+	@Test
+	void testVersionsNumber() {
 		checkVersionsOrder( VERSIONS_NUMBER );
 	}
 
-	public void testVersionsEqual() {
+	@Test
+	void testVersionsEqual() {
 		checkVersionsEqual( "1", "1" );
 		checkVersionsEqual( "1", "1.0" );
 		checkVersionsEqual( "1", "1.0.0" );
@@ -356,7 +368,8 @@ public class VersionTest extends TestCase {
 		checkVersionsEqual( "1m3", "1MILESTONE3" );
 	}
 
-	public void testVersionComparing() {
+	@Test
+	void testVersionComparing() {
 		checkVersionsOrder( "1", "2" );
 		checkVersionsOrder( "1.5", "2" );
 		checkVersionsOrder( "1", "2.5" );
@@ -402,7 +415,8 @@ public class VersionTest extends TestCase {
 		checkVersionsOrder( "1.6.0_22", "1.7" );
 	}
 
-	public void testLocaleIndependent() {
+	@Test
+	void testLocaleIndependent() {
 		Locale original = Locale.getDefault();
 		Locale[] locales = { Locale.ENGLISH, new Locale( "tr" ), Locale.getDefault() };
 		try {
@@ -415,13 +429,14 @@ public class VersionTest extends TestCase {
 		}
 	}
 
-	public void testHashCode() {
+	@Test
+	void testHashCode() {
 		Version a = new Version( "1" );
 		Version b = new Version( "1" );
 		Version c = new Version( "2" );
-		assertTrue( a.hashCode() == b.hashCode() );
-		assertFalse( a.hashCode() == c.hashCode() );
-		assertFalse( b.hashCode() == c.hashCode() );
+		assertEquals( a.hashCode(), b.hashCode() );
+		assertNotEquals( a.hashCode(), c.hashCode() );
+		assertNotEquals( b.hashCode(), c.hashCode() );
 	}
 
 	private Version newComparable( String version ) {
@@ -429,17 +444,17 @@ public class VersionTest extends TestCase {
 	}
 
 	private void checkVersionsOrder( String[] strings ) {
-		Version[] versions = new Version[strings.length];
+		Version[] versions = new Version[ strings.length ];
 		for( int index = 0; index < strings.length; index++ ) {
-			versions[index] = newComparable( strings[index] );
+			versions[ index ] = newComparable( strings[ index ] );
 		}
 
 		for( int lowIndex = 1; lowIndex < strings.length; lowIndex++ ) {
-			Version low = versions[lowIndex - 1];
+			Version low = versions[ lowIndex - 1 ];
 			for( int highIndex = lowIndex; highIndex < strings.length; highIndex++ ) {
-				Version high = versions[highIndex];
-				assertTrue( "expected " + low + " < " + high, low.compareTo( high ) < 0 );
-				assertTrue( "expected " + high + " > " + low, high.compareTo( low ) > 0 );
+				Version high = versions[ highIndex ];
+				assertTrue( low.compareTo( high ) < 0, "expected " + low + " < " + high );
+				assertTrue( high.compareTo( low ) > 0, "expected " + high + " > " + low );
 			}
 		}
 	}
@@ -447,18 +462,18 @@ public class VersionTest extends TestCase {
 	private void checkVersionsEqual( String string1, String string2 ) {
 		Version version1 = newComparable( string1 );
 		Version version2 = newComparable( string2 );
-		assertTrue( "expected " + string1 + " == " + string2, version1.compareTo( version2 ) == 0 );
-		assertTrue( "expected " + string2 + " == " + string1, version2.compareTo( version1 ) == 0 );
-		assertTrue( "expected same hashcode for " + string1 + " and " + string2, version1.hashCode() == version2.hashCode() );
-		assertTrue( "expected " + string1 + ".equals( " + string2 + " )", version1.equals( version2 ) );
-		assertTrue( "expected " + string2 + ".equals( " + string1 + " )", version2.equals( version1 ) );
+		assertEquals( 0, version1.compareTo( version2 ), "expected " + string1 + " == " + string2 );
+		assertEquals( 0, version2.compareTo( version1 ), "expected " + string2 + " == " + string1 );
+		assertEquals( version1.hashCode(), version2.hashCode(), "expected same hashcode for " + string1 + " and " + string2 );
+		assertEquals( version1, version2, "expected " + string1 + ".equals( " + string2 + " )" );
+		assertEquals( version2, version1, "expected " + string2 + ".equals( " + string1 + " )" );
 	}
 
 	private void checkVersionsOrder( String string1, String string2 ) {
 		Version version1 = newComparable( string1 );
 		Version version2 = newComparable( string2 );
-		assertTrue( "expected " + string1 + " < " + string2, version1.compareTo( version2 ) < 0 );
-		assertTrue( "expected " + string2 + " > " + string1, version2.compareTo( version1 ) > 0 );
+		assertTrue( version1.compareTo( version2 ) < 0, "expected " + string1 + " < " + string2 );
+		assertTrue( version2.compareTo( version1 ) > 0, "expected " + string2 + " > " + string1 );
 	}
 
 }

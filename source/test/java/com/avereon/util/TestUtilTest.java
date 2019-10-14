@@ -1,16 +1,16 @@
 package com.avereon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestUtilTest {
+class TestUtilTest {
 
 	@Test
-	public void testIsTest() {
+	void testIsTest() {
 		boolean isTest = TestUtil.isTest();
 		if( !isTest ) new Throwable( "Unable to determine test runner from thread stack:" ).printStackTrace();
-		assertTrue( "Unable to determine test runner from thread stack", TestUtil.isTest() );
+		assertTrue( TestUtil.isTest(), "Unable to determine test runner from thread stack" );
 	}
 
 }

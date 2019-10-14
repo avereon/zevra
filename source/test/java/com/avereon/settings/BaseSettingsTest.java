@@ -2,34 +2,34 @@ package com.avereon.settings;
 
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.*;
 
 import static com.avereon.settings.SettingsMatchers.eventHas;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class BaseSettingsTest {
 
-	protected static final String SETTINGS_NAME = "AvereonSettingsTest";
+	static final String SETTINGS_NAME = "AvereonSettingsTest";
 
 	protected Settings settings;
 
 	@Test
-	public void testExists() {
+	void testExists() {
 		assertThat( settings.exists( "/" ), is( true ) );
 	}
 
 	@Test
-	public void testGetPath() {
+	void testGetPath() {
 		assertThat( settings.getPath(), startsWith( "/" ) );
 	}
 
 	@Test
-	public void testRootNode() {
+	void testRootNode() {
 		Settings rootByEmpty = settings.getNode( PathUtil.EMPTY );
 		Settings rootByRoot = settings.getNode( PathUtil.ROOT );
 		assertEquals( rootByEmpty, rootByRoot );

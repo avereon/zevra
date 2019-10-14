@@ -12,10 +12,11 @@ public class TestUtil {
 
 	static {
 		runners = new HashSet<>();
-		runners.add( "org.junit.runners.ParentRunner");
+		runners.add( "org.junit.platform.launcher.core.DefaultLauncher" );
+		runners.add( "org.junit.runners.ParentRunner" );
 		runners.add( "org.junit.runner.JUnitCore" );
 		runners.add( "junit.framework.TestSuite" );
-		runners.add( "org.apache.maven.surefire.junit4.JUnit4Provider");
+		runners.add( "org.apache.maven.surefire.junit4.JUnit4Provider" );
 	}
 
 	/**
@@ -43,7 +44,21 @@ public class TestUtil {
 			}
 		}
 
+		if( !result ) printClasses();
+
 		return test = result;
+	}
+
+	private static void printClasses() {
+		Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+		for( Thread thread : stacks.keySet() ) {
+			if( thread.getId() == 1 ) {
+				StackTraceElement[] elements = stacks.get( thread );
+				for( StackTraceElement element : elements ) {
+					System.out.println( element.getClassName() );
+				}
+			}
+		}
 	}
 
 }

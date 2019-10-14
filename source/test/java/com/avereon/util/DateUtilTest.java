@@ -1,13 +1,16 @@
 package com.avereon.util;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.TimeZone;
 
-public class DateUtilTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.*;
 
-	public void testParse() {
+class DateUtilTest {
+
+	@Test
+	void testParse() {
 		try {
 			DateUtil.parse( "", null );
 			fail( "Null format should cause a NullPointerException." );
@@ -22,7 +25,8 @@ public class DateUtilTest extends TestCase {
 		assertEquals( new Date( 0 ), DateUtil.parse( "1970-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss" ) );
 	}
 
-	public void testParseWithTimeZone() {
+	@Test
+	void testParseWithTimeZone() {
 		try {
 			DateUtil.parse( "", null, (TimeZone)null );
 			fail( "Null format should cause a NullPointerException." );
@@ -59,7 +63,8 @@ public class DateUtilTest extends TestCase {
 		assertEquals( new Date( 0 ), DateUtil.parse( "1970-01-01 05:00:00", "yyyy-MM-dd HH:mm:ss", "GMT+05" ) );
 	}
 
-	public void testFormatDuration() {
+	@Test
+	void testFormatDuration() {
 		assertEquals( "", DateUtil.formatDuration( 0L ) );
 		assertEquals( "345ms", DateUtil.formatDuration( 345L ) );
 		assertEquals( "1s", DateUtil.formatDuration( 1000L ) );
