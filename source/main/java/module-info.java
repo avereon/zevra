@@ -1,13 +1,13 @@
 module com.avereon.zevra {
 
-	requires java.logging;
-	requires java.management;
-	requires java.xml;
-	requires jdk.management;
+	requires static java.logging;
+	requires static java.management;
+	requires static java.xml;
+	requires static jdk.management;
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
-	requires org.slf4j;
+	requires transitive org.slf4j;
 
 	exports com.avereon.product;
 	exports com.avereon.settings;
