@@ -1,6 +1,6 @@
 [build-status]: https://github.com/avereon/zevra/workflows/Avereon%20Zevra%20CI/badge.svg "Build status"
 
-# Zevra ![alt text][build-status]
+# Zevra [![][build-status]](https://github.com/avereon/zevra/actions)
 
 A utility library commonly used in Avereon projects.
 
