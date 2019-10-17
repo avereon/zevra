@@ -44,11 +44,12 @@ public class TestUtil {
 			}
 		}
 
-		if( !result ) printClasses();
+		//if( !result ) printClasses();
 
 		return test = result;
 	}
 
+	@SuppressWarnings( "unused" )
 	private static void printClasses() {
 		Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
 		for( Thread thread : stacks.keySet() ) {
