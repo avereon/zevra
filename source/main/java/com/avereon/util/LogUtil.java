@@ -55,6 +55,7 @@ public class LogUtil {
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
 		if( file != null ) {
+			new File( file ).getParentFile().mkdirs();
 			file = getLogFilePattern( new File( file ).getAbsolutePath() );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( file ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
