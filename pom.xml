@@ -78,6 +78,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- This configuration allows the JUnit test runner to find the unit tests -->
@@ -90,6 +91,12 @@
 					</argLine>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+
 		</plugins>
 	</build>
 
