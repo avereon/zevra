@@ -1,7 +1,5 @@
 package com.avereon.util;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * The Controllable interface represents classes that can be "controlled" by
  * starting and stopping.
@@ -15,14 +13,14 @@ public interface Controllable<T> {
 
 	T start();
 
-	T awaitStart( long timeout, TimeUnit unit ) throws InterruptedException;
-
-	T restart();
-
-	T awaitRestart( long timeout, TimeUnit unit ) throws InterruptedException;
+//	T awaitStart( long timeout, TimeUnit unit ) throws InterruptedException;
+//
+//	T restart();
+//
+//	T awaitRestart( long timeout, TimeUnit unit ) throws InterruptedException;
 
 	T stop();
 
-	T awaitStop( long timeout, TimeUnit unit ) throws InterruptedException;
+//	T awaitStop( long timeout, TimeUnit unit ) throws InterruptedException;
 
 }
