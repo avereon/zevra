@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+@SuppressWarnings( "WeakerAccess" )
 public class DateUtil {
 
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -17,29 +18,29 @@ public class DateUtil {
 	/**
 	 * Convenience method to get the current year for the UTC time zone.
 	 *
-	 * @return
+	 * @return The current year for the UTC time zone
 	 */
-	public static final int getCurrentYear() {
+	public static int getCurrentYear() {
 		return getCurrentYear( DEFAULT_TIME_ZONE );
 	}
 
 	/**
 	 * Convenience method to get the current year based on time zone.
 	 *
-	 * @param timeZone
-	 * @return
+	 * @param timeZone The time zone for which to get the current year
+	 * @return The current year for the specified time zone
 	 */
-	public static final int getCurrentYear( String timeZone ) {
+	public static int getCurrentYear( String timeZone ) {
 		return getCurrentYear( TimeZone.getTimeZone( timeZone ) );
 	}
 
 	/**
 	 * Convenience method to get the current year based on time zone.
 	 *
-	 * @param timeZone
-	 * @return
+	 * @param timeZone The time zone for which to get the current year
+	 * @return The current year for the specified time zone
 	 */
-	public static final int getCurrentYear( TimeZone timeZone ) {
+	public static int getCurrentYear( TimeZone timeZone ) {
 		return Calendar.getInstance( timeZone ).get( Calendar.YEAR );
 	}
 
@@ -49,7 +50,7 @@ public class DateUtil {
 	 * @param data
 	 * @return
 	 */
-	public static final Date parse( String data ) {
+	public static Date parse( String data ) {
 		return parse( data, DEFAULT_DATE_FORMAT, DEFAULT_TIME_ZONE );
 	}
 
@@ -60,7 +61,7 @@ public class DateUtil {
 	 * @param format
 	 * @return
 	 */
-	public static final Date parse( String data, String format ) {
+	public static Date parse( String data, String format ) {
 		return parse( data, format, DEFAULT_TIME_ZONE );
 	}
 
@@ -72,7 +73,7 @@ public class DateUtil {
 	 * @param timeZone
 	 * @return
 	 */
-	public static final Date parse( String data, String format, String timeZone ) {
+	public static Date parse( String data, String format, String timeZone ) {
 		return parse( data, format, timeZone == null ? null : TimeZone.getTimeZone( timeZone ) );
 	}
 
@@ -84,7 +85,7 @@ public class DateUtil {
 	 * @param timeZone The timezone of the data
 	 * @return The parsed date or null if there is a parsing error
 	 */
-	public static final Date parse( String data, String format, TimeZone timeZone ) {
+	public static Date parse( String data, String format, TimeZone timeZone ) {
 		if( data == null ) return null;
 
 		SimpleDateFormat formatter = new SimpleDateFormat( format );
@@ -103,7 +104,7 @@ public class DateUtil {
 	 * @param date
 	 * @return
 	 */
-	public static final String format( Date date ) {
+	public static String format( Date date ) {
 		return format( date, DEFAULT_DATE_FORMAT, DEFAULT_TIME_ZONE );
 	}
 
@@ -114,7 +115,7 @@ public class DateUtil {
 	 * @param format
 	 * @return
 	 */
-	public static final String format( Date date, String format ) {
+	public static String format( Date date, String format ) {
 		return format( date, format, DEFAULT_TIME_ZONE );
 	}
 
@@ -126,8 +127,8 @@ public class DateUtil {
 	 * @param timeZone
 	 * @return
 	 */
-	public static final String format( Date date, String format, String timeZone ) {
-		return format( date, format, timeZone );
+	public static String format( Date date, String format, String timeZone ) {
+		return format( date, format, TimeZone.getTimeZone( timeZone ) );
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class DateUtil {
 	 * @param zone
 	 * @return
 	 */
-	public static final String format( Date date, String format, TimeZone zone ) {
+	public static String format( Date date, String format, TimeZone zone ) {
 		SimpleDateFormat formatter = new SimpleDateFormat( format );
 		formatter.setTimeZone( zone );
 
@@ -152,7 +153,14 @@ public class DateUtil {
 
 	}
 
-	public static final String formatDuration( long time ) {
+	/**
+	 * Format a duration in milliseconds to day/hour/minute/second/millisecond
+	 * format. For example: 6443673321L formats to "74d 13h 54m 33s 321ms".
+	 *
+	 * @param time The duration in milliseconds
+	 * @return A string in day/hour/minute/second/millisecond format
+	 */
+	public static String formatDuration( long time ) {
 		long millis = time % 1000;
 		time /= 1000;
 		long seconds = time % 60;
