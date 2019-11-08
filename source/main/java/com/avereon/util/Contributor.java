@@ -3,6 +3,9 @@ package com.avereon.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A POJO class representing a person that contributes to a cause.
+ */
 public class Contributor extends Person {
 
 	private String organization;
@@ -37,7 +40,7 @@ public class Contributor extends Person {
 
 	@Override
 	public String toString() {
-		return "Contributor{" + "name='" + getName() + '}';
+		return "Contributor{" + "name='" + getName() + " roles=" + roles + '}';
 	}
 
 }

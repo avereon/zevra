@@ -2,6 +2,12 @@ package com.avereon.util;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The Controllable interface represents classes that can be "controlled" by
+ * starting and stopping.
+ *
+ * @param <T>
+ */
 @SuppressWarnings( { "unused", "UnusedReturnValue" } )
 public interface Controllable<T> {
 
