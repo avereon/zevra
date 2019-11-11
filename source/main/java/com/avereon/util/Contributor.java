@@ -1,12 +1,13 @@
 package com.avereon.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A POJO class representing a person that contributes to a cause.
+ * A POJO that represents a person that contributes to a cause.
  */
-public class Contributor extends Person {
+public class Contributor extends Person implements Serializable {
 
 	private String organization;
 

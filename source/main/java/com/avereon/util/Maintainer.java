@@ -1,3 +1,8 @@
 package com.avereon.util;
 
-public class Maintainer extends Contributor {}
+import java.io.Serializable;
+
+/**
+ * A POJO that represents a contributor that is maintaining a cause.
+ */
+public class Maintainer extends Contributor implements Serializable {}
