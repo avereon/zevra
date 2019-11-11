@@ -19,6 +19,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A convenience class to simplify the use of XML documents as descriptors. This
+ * class makes accessing simpler by treating all values as paths in the XML
+ * document where the path elements are nodes in the XML DOM tree. For example,
+ * given the XML document
+ * <pre>
+ * &lt;config&gt;
+ *   &lt;threads&gt;
+ *     &lt;min&gt;2&lt;/min&gt;
+ *     &lt;max&gt;8&lt;/max&gt;
+ *   &lt;/threads&gt;
+ * &lt;/config&gt;</pre>
+ * calling getValue("/config/threads/max") would return "8".
+ * <p/>
+ * Other methods are provided for creating descriptors, getting attribute
+ * values and getting other information from the descriptor.
+ */
 public class XmlDescriptor {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
@@ -31,8 +48,17 @@ public class XmlDescriptor {
 
 	private List<String> paths;
 
+	/**
+	 * Create an empty descriptor.
+	 */
 	public XmlDescriptor() {}
 
+	/**
+	 * Load an XML descriptor from a URI.
+	 *
+	 * @param uri The URI of the XML content
+	 * @throws IOException If an I/O error occurs
+	 */
 	public XmlDescriptor( URI uri ) throws IOException {
 		if( uri == null ) return;
 		try {
@@ -42,6 +68,12 @@ public class XmlDescriptor {
 		}
 	}
 
+	/**
+	 * Load an XML descriptor from a URL.
+	 *
+	 * @param url The URL of the XML content
+	 * @throws IOException If an I/O error occurs
+	 */
 	public XmlDescriptor( URL url ) throws IOException {
 		if( url == null ) return;
 		try {
@@ -51,6 +83,12 @@ public class XmlDescriptor {
 		}
 	}
 
+	/**
+	 * Load an XML descriptor from a Reader.
+	 *
+	 * @param reader The Reader from which to load the XML content
+	 * @throws IOException If an I/O error occurs
+	 */
 	public XmlDescriptor( Reader reader ) throws IOException {
 		if( reader == null ) return;
 		try {
@@ -60,6 +98,12 @@ public class XmlDescriptor {
 		}
 	}
 
+	/**
+	 * Load an XML descriptor from an InputStream.
+	 *
+	 * @param input The InputStream from which to load the XML content
+	 * @throws IOException If an I/O error occurs
+	 */
 	public XmlDescriptor( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "Input stream cannot be null." );
 		try {
@@ -69,19 +113,47 @@ public class XmlDescriptor {
 		}
 	}
 
+	/**
+	 * Create a descriptor from an existing XML node, which includes XML documents.
+	 *
+	 * @param node The XML node to use as the root of the descriptor
+	 */
 	public XmlDescriptor( Node node ) {
 		if( node == null ) return;
 		this.node = node;
 	}
 
+	/**
+	 * Get the parent XML document of this descriptor if this descriptor was
+	 * created from a node. If the descriptor node is the parent document then it
+	 * is returned.
+	 */
 	public Document getDocument() {
 		return (node instanceof Document) ? (Document)node : node.getOwnerDocument();
 	}
 
+	/**
+	 * Get the XML node that is the root of this descriptor.
+	 *
+	 * @return The root XML node of the descriptor
+	 */
 	public Node getNode() {
 		return node;
 	}
 
+	/**
+	 * Get the attribute names for the node at the specified path. For example,
+	 * give the following XML document:
+	 * <pre>
+	 * &lt;config&gt;
+	 *   &lt;threads min=&quot;2&quot; max=&quot;8&quot;/&gt;
+	 * &lt;/config&gt;</pre>
+	 * calling <code>getAttributeNames("/config/threads")</code> returns a
+	 * List&lt;String&gt; with "min" and "max".
+	 *
+	 * @param path The path of the node for which to retrieve attribute names
+	 * @return The list of attribute names for the node
+	 */
 	public List<String> getAttributeNames( String path ) {
 		List<String> names = this.attrNames.get( path );
 		if( names == null ) {
@@ -91,6 +163,22 @@ public class XmlDescriptor {
 		return names;
 	}
 
+	/**
+	 * Get the unique names of child nodes of the node at the specified path. For
+	 * example, give the XML document:
+	 * <pre>
+	 * &lt;config&gt;
+	 *   &lt;threads&gt;
+	 *     &lt;min&gt;2&lt;/min&gt;
+	 *     &lt;max&gt;8&lt;/max&gt;
+	 *   &lt;/threads&gt;
+	 * &lt;/config&gt;</pre>
+	 * calling <code>getAttributeNames("/config/threads")</code> returns a
+	 * List&lt;String&gt; with "min" and "max".
+	 *
+	 * @param path The path of the node for which to retrieve child node names
+	 * @return The list of child node names for the node
+	 */
 	public List<String> getNames( String path ) {
 		List<String> names = this.names.get( path );
 		if( names == null ) {
@@ -100,6 +188,22 @@ public class XmlDescriptor {
 		return names;
 	}
 
+	/**
+	 * Get the paths of non-empty values for the entire descriptor. For example,
+	 * give the XML document
+	 * <pre>
+	 * &lt;config&gt;
+	 *   &lt;threads&gt;
+	 *     &lt;min/min&gt;
+	 *     &lt;max&gt;8&lt;/max&gt;
+	 *   &lt;/threads&gt;
+	 * &lt;/config&gt;</pre>
+	 * calling <code>getPaths()</code> returns a List&lt;String&gt; with only
+	 * "/config/thread/max". Because the path "/config/thread/min" does not have
+	 * a non-empty value it is not returned in the list.
+	 *
+	 * @return The list of paths with non-empty values
+	 */
 	public List<String> getPaths() {
 		if( paths == null ) paths = listPaths( node );
 		return paths;

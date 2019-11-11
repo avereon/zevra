@@ -124,13 +124,20 @@ class XmlDescriptorTest {
 		XmlDescriptor descriptor = loadTestDescriptor();
 
 		List<String> paths = descriptor.getPaths();
+
+		int count = 0;
 		assertNotNull( paths );
-		assertEquals( 10, paths.size() );
-		assertEquals( "/test/name", paths.get( 0 ) );
-		assertEquals( "/test/alias", paths.get( 1 ) );
-		assertEquals( "/test/path/value", paths.get( 2 ) );
-		assertEquals( "/test/integer", paths.get( 3 ) );
-		assertEquals( "/test/summary", paths.get( 9 ) );
+		assertEquals( "/test/name", paths.get( count++ ) );
+		assertEquals( "/test/alias", paths.get( count++ ) );
+		assertEquals( "/test/path/value", paths.get( count++ ) );
+		assertEquals( "/test/integer", paths.get( count++) );
+		assertEquals( "/test/nodes/node", paths.get( count++) );
+		assertEquals( "/test/nodes/notthisone", paths.get( count++) );
+		assertEquals( "/test/nodes/node", paths.get( count++) );
+		assertEquals( "/test/nodes/notthisone", paths.get( count++) );
+		assertEquals( "/test/nodes/node", paths.get( count++) );
+		assertEquals( "/test/summary", paths.get( count++ ) );
+		assertEquals( count, paths.size() );
 	}
 
 	@Test

@@ -24,7 +24,7 @@ public class PathUtil {
 	}
 
 	public static boolean isRoot( String path ) {
-		return path != null && SEPARATOR.equals( path );
+		return path != null && path.equals( SEPARATOR );
 	}
 
 	public static String getName( String path ) {
@@ -182,7 +182,7 @@ public class PathUtil {
 
 	private static String normalizeSeparators( String path ) {
 		if( path == null ) return null;
-		while( (path.indexOf( DOUBLE_SEPARATOR )) > -1 ) {
+		while( path.contains( DOUBLE_SEPARATOR ) ) {
 			path = path.replace( DOUBLE_SEPARATOR, SEPARATOR );
 		}
 		return path;
