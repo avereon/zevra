@@ -209,18 +209,61 @@ public class XmlDescriptor {
 		return paths;
 	}
 
+	/**
+	 * Get the first XML child node with the specified path in this descriptor.
+	 *
+	 * @param path The path of the child node
+	 * @return The XML child node
+	 */
 	public Node getNode( String path ) {
 		return getNode( this.node, path );
 	}
 
+	/**
+	 * Get all the XML child nodes with the specified path in this descriptor.
+	 *
+	 * @param path The path of the XML child nodes
+	 * @return An array of the XML child nodes
+	 */
 	public Node[] getNodes( String path ) {
 		return getNodes( this.node, path );
 	}
 
+	/**
+	 * Get the text value of the XML node at the specified path. For example,
+	 * given the XML document
+	 * <pre>
+	 * &lt;config&gt;
+	 *   &lt;threads&gt;
+	 *     &lt;min&gt;2&lt;/min&gt;
+	 *     &lt;max&gt;8&lt;/max&gt;
+	 *   &lt;/threads&gt;
+	 * &lt;/config&gt;</pre>
+	 * calling &lt;getValue("/config/threads/max")&gt; would return "8".
+	 *
+	 * @param path The path of the value
+	 * @return The string value
+	 */
 	public String getValue( String path ) {
 		return getValue( this.node, path );
 	}
 
+	/**
+	 * Get the text value of the XML node at the specified path. If the value is
+	 * empty then return the default value. For example, given the XML document
+	 * <pre>
+	 * &lt;config&gt;
+	 *   &lt;threads&gt;
+	 *     &lt;min&gt;&lt;/min&gt;
+	 *     &lt;max&gt;8&lt;/max&gt;
+	 *   &lt;/threads&gt;
+	 * &lt;/config&gt;</pre>
+	 * calling &lt;getValue("/config/threads/min", "3" )&gt; would return "3" but
+	 * calling &lt;getValue("/config/threads/max", "5" )&gt; would return "8".
+	 *
+	 * @param path The path of the value
+	 * @return The string value
+	 */
 	public String getValue( String path, String defaultValue ) {
 		return getValue( this.node, path, defaultValue );
 	}
@@ -228,18 +271,31 @@ public class XmlDescriptor {
 	/**
 	 * Get an array of all the values that have the same path.
 	 *
-	 * @param path
+	 * @param path The path of the values
 	 * @return An array of values with the same path.
 	 */
 	public String[] getValues( String path ) {
 		return getValues( this.node, path );
 	}
 
+	/**
+	 * Return formatted XML, using the descriptor node as the root, as returned
+	 * by {@link com.avereon.util.XmlUtil#toString(Node)}
+	 *
+	 * @return The formatted XML string
+	 */
 	@Override
 	public String toString() {
 		return XmlUtil.toString( node );
 	}
 
+	/**
+	 * Using the specified node as the root, return the node at the give path.
+	 *
+	 * @param node The node to use as the root node
+	 * @param path The node path
+	 * @return The node at the specified path
+	 */
 	public static Node getNode( Node node, String path ) {
 		if( node == null || TextUtil.isEmpty( path ) ) return null;
 
@@ -254,6 +310,13 @@ public class XmlDescriptor {
 		return value;
 	}
 
+	/**
+	 * Using the specified node as the root, return the nodes at the give path.
+	 *
+	 * @param node The node to use as the root node
+	 * @param path The node path
+	 * @return The nodes at the specified path
+	 */
 	public static Node[] getNodes( Node node, String path ) {
 		if( node == null || TextUtil.isEmpty( path ) ) return null;
 
@@ -276,6 +339,14 @@ public class XmlDescriptor {
 		return values.toArray( new Node[ values.size() ] );
 	}
 
+	/**
+	 * Using the specified node as the root, get the text value of the XML node at
+	 * the specified path.
+	 *
+	 * @param node The node to use as the root node
+	 * @param path The value path
+	 * @return The value at the specified path
+	 */
 	public static String getValue( Node node, String path ) {
 		if( node == null || TextUtil.isEmpty( path ) ) return null;
 
@@ -293,6 +364,14 @@ public class XmlDescriptor {
 		return value;
 	}
 
+	/**
+	 * Using the specified node as the root, get the text value of the XML node at
+	 * the specified path. If the value is empty then use the default value.
+	 *
+	 * @param node The node to use as the root node
+	 * @param path The value path
+	 * @return The value at the specified path
+	 */
 	public static String getValue( Node node, String path, String defaultValue ) {
 		String value = getValue( node, path );
 		if( value == null ) return defaultValue;
@@ -332,6 +411,14 @@ public class XmlDescriptor {
 		return values.toArray( new String[ values.size() ] );
 	}
 
+	/**
+	 * Using the specified XML node, get the text value of the attribute with the
+	 * specified name.
+	 *
+	 * @param node The node
+	 * @param name The attribute name
+	 * @return The attribute value
+	 */
 	public static String getAttribute( Node node, String name ) {
 		Node attribute = node.getAttributes().getNamedItem( name );
 		return attribute == null ? null : attribute.getNodeValue();
