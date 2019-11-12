@@ -8,9 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * The Version class represents a version of an item using a delimited set of
  * numbers and letters. The version class can represent version patterns such as
  * <a href="https://semver.org/">Semver</a> but is not restricted to those
- * patterns.
+ * patterns. Practically any string can be a version.
  * <p/>
  * The most important functionality of a version is the ability to compare two
+ * versions. This class provides methods for creating, parsing and comparing
  * versions.
  */
 public class Version implements Comparable<Version> {
@@ -60,26 +61,63 @@ public class Version implements Comparable<Version> {
 		expansions.put( UNKNOWN, "UNKNOWN" );
 	}
 
+	/**
+	 * Create an empty version.
+	 */
 	public Version() {
 		this( null );
 	}
 
+	/**
+	 * Create a version from a String.
+	 *
+	 * @param version The version string
+	 */
 	public Version( String version ) {
 		parse( version == null ? UNKNOWN : version );
 	}
 
+	/**
+	 * Is this version a SNAPSHOT version. The version is a SNAPSHOT version if
+	 * it has the SNAPSHOT qualifier.
+	 *
+	 * @return True if this version is a SNAPSHOT, false otherwise
+	 */
 	public boolean isSnapshot() {
 		return hasQualifier( SNAPSHOT );
 	}
 
+	/**
+	 * Does this version have a specific qualifier.
+	 *
+	 * @param qualifier The qualifier in question
+	 * @return True if this version has the qualifier, false otherwise
+	 */
 	public boolean hasQualifier( String qualifier ) {
 		return checkForString( items, qualifier.toLowerCase() );
 	}
 
+	/**
+	 * Format the version as a human friendly string.
+	 *
+	 * @return The version in human friendly format
+	 */
 	public String toHumanString() {
 		return this.human;
 	}
 
+	/**
+	 * Compare this version to the specified version. The versions are compared
+	 * one level at a time until the two parts at a level mismatch or the versions
+	 * are found to be equal.
+	 * <p/>
+	 * This method returns -1 if the specified version is less than this version,
+	 * 1 if the specified version is greater than this version or 0 if the
+	 * versions are equal.
+	 *
+	 * @param version The version to compare with
+	 * @return -1, 0 or 1
+	 */
 	@Override
 	public int compareTo( Version version ) {
 		int result = items.compareTo( version.items );
@@ -87,25 +125,52 @@ public class Version implements Comparable<Version> {
 		return result < 0 ? -1 : 1;
 	}
 
+	/**
+	 * Return the string representation of this version.
+	 *
+	 * @return The string of this version
+	 */
 	@Override
 	public String toString() {
 		return version;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals( Object object ) {
 		return (object instanceof Version) && canonical.equals( ((Version)object).canonical );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		return canonical.hashCode();
 	}
 
+	/**
+	 * Compare two versions.
+	 *
+	 * @see #compareTo(Version)
+	 * @param version1 The first version
+	 * @param version2 The second version
+	 * @return -1, 0 or 1
+	 */
 	public static int compareVersions( String version1, String version2 ) {
 		return new Version( version1 ).compareTo( new Version( version2 ) );
 	}
 
+	/**
+	 * Compare two versions.
+	 *
+	 * @see #compareTo(Version)
+	 * @param version1 The first version
+	 * @param version2 The second version
+	 * @return -1, 0 or 1
+	 */
 	public static int compareVersions( Version version1, Version version2 ) {
 		return version1.compareTo( version2 );
 	}
