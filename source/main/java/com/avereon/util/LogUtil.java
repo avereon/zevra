@@ -67,21 +67,14 @@ public class LogUtil {
 		}
 
 		// Set the default log level
-		builder.append( ".level=" );
-		builder.append( getLogLevel( level ) );
-		builder.append( "\n" );
+		builder.append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
 
-		// Set the javafx.scene log level
-		builder.append( "javafx" );
-		builder.append( ".level=" );
-		builder.append( getLogLevel( "info" ) );
-		builder.append( "\n" );
+		// Set the javafx log level
+		builder.append( "javafx" ).append( ".level=" ).append( getLogLevel( "info" ) ).append( "\n" );
 
 		// Set the program log level
-		builder.append( source.getClass().getPackage().getName() );
-		builder.append( ".level=" );
-		builder.append( getLogLevel( level ) );
-		builder.append( "\n" );
+		String sourcePackage = source.getClass().getPackage().getName();
+		builder.append( sourcePackage ).append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
 
 		// Initialize the logging
 		try {
