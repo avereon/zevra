@@ -8,7 +8,7 @@ public interface Product {
 
 	ClassLoader getClassLoader();
 
-	ProductBundle getResourceBundle();
+	ProductBundle rb();
 
 	/**
 	 * Get the shared product data folder. This is the location where the product

@@ -1,6 +1,5 @@
 package com.avereon.product;
 
-import com.avereon.util.JavaUtil;
 import com.avereon.util.LogUtil;
 import org.slf4j.Logger;
 
@@ -16,26 +15,28 @@ public class ProductBundle {
 
 	private Module module;
 
-	private ClassLoader loader;
-
-	private String prefix;
-
 	private String rbPackage;
 
 	public ProductBundle( Class<? extends Product> product ) {
-		this( product, JavaUtil.getPackagePath( product ) );
+		this( product, "/bundles" );
 	}
 
-	public ProductBundle( Class<? extends Product> product, String prefix ) {
+	/**
+	 * This constructor will determine the ProductBundle path by using the product
+	 * package as the first part of the path and add the path argument. For
+	 * example, if the product is com.example.Product and the path is
+	 * &quot;/bundles&quot; the full lookup path is com/example/bundles.
+	 *
+	 * @param product The product for this bundle
+	 * @param path Extra path information to append to package path
+	 */
+	public ProductBundle( Class<? extends Product> product, String path ) {
 		this.module = product.getModule();
-		this.loader = product.getClassLoader();
-		this.prefix = prefix;
-
-		this.rbPackage = product.getPackageName().replace( ".", "/" );
+		this.rbPackage = product.getPackageName().replace( ".", "/" ) + path + "/";
 	}
 
-	public String getString( String bundleKey, String valueKey, String... values ) {
-		String string = getStringOrNull( bundleKey, valueKey, values );
+	public String text( String bundleKey, String valueKey, Object... values ) {
+		String string = textOr( bundleKey, valueKey, null, values );
 
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
@@ -45,13 +46,13 @@ public class ProductBundle {
 		return string;
 	}
 
-	public String getStringOrNull( String bundleKey, String valueKey, String... values ) {
-		String string = null;
+	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
+		String string = other;
 
-		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + "/bundles/" + bundleKey, Locale.getDefault(), module );
-		if( bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), (Object[])values );
+		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + bundleKey, Locale.getDefault(), module );
+		if( bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
 
 		return string;
 	}
 
-}
+	}
