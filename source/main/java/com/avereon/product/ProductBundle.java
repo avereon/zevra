@@ -9,6 +9,9 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+/**
+ * This class is to simplify the interface and use of resource bundles.
+ */
 public class ProductBundle {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
@@ -17,6 +20,11 @@ public class ProductBundle {
 
 	private String rbPackage;
 
+	/**
+	 * Calls the main constructor with the path &quot;/bundles&quot;.
+	 *
+	 * @param product The product for this bundle
+	 */
 	public ProductBundle( Class<? extends Product> product ) {
 		this( product, "/bundles" );
 	}
