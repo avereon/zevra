@@ -1,6 +1,7 @@
 package com.avereon.product;
 
 import com.avereon.util.LogUtil;
+import com.avereon.util.TextUtil;
 import org.slf4j.Logger;
 
 import java.lang.invoke.MethodHandles;
@@ -55,12 +56,12 @@ public class ProductBundle {
 	}
 
 	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
-		String string = other;
+		String string = null;
 
 		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + bundleKey, Locale.getDefault(), module );
 		if( bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
 
-		return string;
+		return TextUtil.isEmpty( string ) ? other : string;
 	}
 
-	}
+}
