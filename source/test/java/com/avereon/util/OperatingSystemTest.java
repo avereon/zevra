@@ -16,9 +16,13 @@ class OperatingSystemTest {
 
 	private static final String WINDOWS_USER_DATA = "C:\\Users\\user\\AppData\\Roaming";
 
+	private static final String MACOSX_USER_DATA = "/home/user/Library/Application Support";
+
 	private static final String UNIX_USER_DATA = "/home/user/.config";
 
 	private static final String WINDOWS_SHARED_DATA = "C:\\ProgramData";
+
+	private static final String MACOSX_SHARED_DATA = "/Library/Application Support";
 
 	private static final String UNIX_SHARED_DATA = "/usr/local/share/data";
 
@@ -295,7 +299,22 @@ class OperatingSystemTest {
 	@Test
 	void testGetUserProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( WINDOWS_USER_DATA ).resolve( "Program" ) ) );
+
+		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( MACOSX_USER_DATA ).resolve( "Program" ) ) );
+
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( UNIX_USER_DATA ).resolve( "program" ) ) );
+	}
+
+	@Test
+	void testBaseGetUserProgramDataFolder() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( WINDOWS_USER_DATA ) ) );
+
+		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
+		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( MACOSX_USER_DATA ) ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( UNIX_USER_DATA ) ) );
@@ -304,7 +323,22 @@ class OperatingSystemTest {
 	@Test
 	void testGetSharedProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( WINDOWS_SHARED_DATA ).resolve( "Program" ) ) );
+
+		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( MACOSX_SHARED_DATA ).resolve( "Program" ) ) );
+
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( UNIX_SHARED_DATA ).resolve( "program" ) ) );
+	}
+
+	@Test
+	void testGetBaseSharedProgramDataFolder() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( WINDOWS_SHARED_DATA ) ) );
+
+		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
+		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( MACOSX_SHARED_DATA ) ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( UNIX_SHARED_DATA ) ) );

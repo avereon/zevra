@@ -294,11 +294,15 @@ public class OperatingSystem {
 	 */
 	public static Path getUserProgramDataFolder( String identifier, String name ) {
 		switch( family ) {
+			case MACOSX:
 			case WINDOWS: {
 				return getUserProgramDataFolder().resolve( name );
 			}
-			default: {
+			case LINUX: {
 				return getUserProgramDataFolder().resolve( identifier );
+			}
+			default: {
+				return getUserProgramDataFolder().resolve( "." + identifier );
 			}
 		}
 	}
@@ -331,6 +335,7 @@ public class OperatingSystem {
 	 */
 	public static Path getSharedProgramDataFolder( String identifier, String name ) {
 		switch( family ) {
+			case MACOSX:
 			case WINDOWS: {
 				return getSharedProgramDataFolder().resolve( name );
 			}
@@ -422,8 +427,16 @@ public class OperatingSystem {
 					userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
 					break;
 				}
-				default: {
+				case MACOSX: {
+					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), "/Library/Application Support" );
+					break;
+				}
+				case LINUX: {
 					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), ".config" );
+					break;
+				}
+				default: {
+					sharedProgramDataFolder = Paths.get( System.getProperty( "user.home" ) );
 					break;
 				}
 			}
@@ -436,6 +449,10 @@ public class OperatingSystem {
 			switch( family ) {
 				case WINDOWS: {
 					sharedProgramDataFolder = Paths.get( System.getenv( "allusersprofile" ) );
+					break;
+				}
+				case MACOSX: {
+					sharedProgramDataFolder = Paths.get( "/Library/Application Support" );
 					break;
 				}
 				case LINUX: {
