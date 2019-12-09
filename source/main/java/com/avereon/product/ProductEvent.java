@@ -12,14 +12,12 @@ public class ProductEvent extends EventObject {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
-	private Object source;
-
 	public ProductEvent( Object source ) {
 		super( source );
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public void fire( Set<? extends ProductEventListener> listeners ) {
+	public ProductEvent fire( Set<? extends ProductEventListener> listeners ) {
 		for( ProductEventListener listener : new HashSet<>( listeners ) ) {
 			try {
 				listener.handleEvent( this );
@@ -27,6 +25,7 @@ public class ProductEvent extends EventObject {
 				log.error( "Error dispatching event: " + toString(), throwable );
 			}
 		}
+		return this;
 	}
 
 	public String toString() {
