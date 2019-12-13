@@ -22,9 +22,9 @@ public class ProductCard extends BaseCard {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
 
-	public static final String CARD = "/META-INF/product.card";
+	private static final String CARD = "META-INF/product.card";
 
-	public static final String INFO = "/META-INF/product.info";
+	private static final String INFO = "META-INF/product.info";
 
 	@JsonIgnore
 	private String productKey;
@@ -60,18 +60,15 @@ public class ProductCard extends BaseCard {
 
 	private String licenseSummary;
 
+	@JsonIgnore
 	private String productUri;
-
-	private String mainClass;
 
 	private String javaVersion;
 
 	private Path installFolder;
 
-	@JsonIgnore
 	private List<Maintainer> maintainers;
 
-	@JsonIgnore
 	private List<Contributor> contributors;
 
 	private boolean enabled;
@@ -85,8 +82,16 @@ public class ProductCard extends BaseCard {
 
 	public ProductCard() {}
 
+	public ProductCard init( Product product ) throws IOException {
+		return init( product.getClassLoader() );
+	}
+
 	public ProductCard init( Class<?> source ) throws IOException {
-		try( InputStream input = source.getResourceAsStream( INFO ) ) {
+		return init( source.getClassLoader() );
+	}
+
+	public ProductCard init( ClassLoader loader ) throws IOException {
+		try( InputStream input = loader.getResourceAsStream( INFO ) ) {
 			return init( input );
 		}
 	}
@@ -121,10 +126,14 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard load( Product product ) throws IOException {
-		return load( product.getClass() );
+		return load( product.getClassLoader() );
 	}
 
-	public ProductCard load( Class<?> loader ) throws IOException {
+	public ProductCard load( Class<?> clazz ) throws IOException {
+		return load( clazz.getClassLoader() );
+	}
+
+	public ProductCard load( ClassLoader loader ) throws IOException {
 		try( InputStream input = loader.getResourceAsStream( CARD ) ) {
 			return load( input, null );
 		}
@@ -135,6 +144,7 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard load( InputStream input, URI source ) throws IOException {
+		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
 		ProductCard card = new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
 		if( source != null ) this.productUri = UriUtil.removeQueryAndFragment( source ).toString();
 		return copyFrom( card );
@@ -203,8 +213,9 @@ public class ProductCard extends BaseCard {
 		return packaging;
 	}
 
-	public void setPackaging( String packaging ) {
+	public ProductCard setPackaging( String packaging ) {
 		this.packaging = packaging;
+		return this;
 	}
 
 	public String getVersion() {
@@ -321,15 +332,6 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	public String getMainClass() {
-		return mainClass;
-	}
-
-	public ProductCard setMainClass( String mainClass ) {
-		this.mainClass = mainClass;
-		return this;
-	}
-
 	public String getJavaVersion() {
 		return javaVersion;
 	}
@@ -419,7 +421,7 @@ public class ProductCard extends BaseCard {
 		Set<String> resources = new HashSet<>();
 
 		// Add the product pack URI
-		//resources.add( getPackUri() );
+		resources.add( getProductUri() );
 
 		// This code was originally intended to resolve os/architecture specific
 		// resources needed for a product. For the moment, this feature is not
@@ -445,7 +447,7 @@ public class ProductCard extends BaseCard {
 		//			if( uris != null ) resources.addAll( Arrays.asList( uris ) );
 		//		}
 
-		return resources.toArray( new String[ resources.size() ] );
+		return resources.toArray( new String[ 0 ] );
 	}
 
 	@Override

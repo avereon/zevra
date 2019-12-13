@@ -1,11 +1,14 @@
 package com.avereon.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
  * A POJO that is a simple representation of a person that is intended to
  * be marshalled and unmarshalled.
  */
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class Person implements Serializable {
 
 	private String name;

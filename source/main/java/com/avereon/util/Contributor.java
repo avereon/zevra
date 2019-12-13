@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 /**
  * A POJO that represents a person that contributes to a cause.
  */
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class Contributor extends Person implements Serializable {
 
 	private String organization;

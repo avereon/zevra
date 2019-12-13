@@ -1,0 +1,14 @@
+group: com.avereon
+artifact: zevra
+version: 0.0-SNAPSHOT
+timestamp: 2018-01-01 00:00:00
+
+name: Zevra
+icon: library
+provider: Avereon
+inception: 2018
+
+summary: Utility library
+description: A utility library for Avereon applications.
+copyright: All rights reserved.
+license: Zevra comes with ABSOLUTELY NO WARRANTY. This is open software, and you are welcome to redistribute it under certain conditions.

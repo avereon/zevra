@@ -1,0 +1,36 @@
+{
+  "group": "com.avereon",
+  "artifact": "zevra",
+  "version": "0.0-SNAPSHOT",
+  "timestamp": "2018-01-01 00:00:00",
+	"icons": [ "library", "https://avereon.com/download/latest/zevra/product/icon" ],
+  "name": "Zevra",
+  "provider": "Avereon",
+  "providerUrl": "https://www.avereon.com",
+  "inception": "2018",
+  "summary": "Utility library",
+  "description": "A utility library for Avereon applications.",
+  "copyrightSummary": "All rights reserved.",
+  "licenseSummary": "Zevra comes with ABSOLUTELY NO WARRANTY. This is open software, and you are welcome to redistribute it under certain conditions.",
+  "javaVersion": "11",
+  "maintainers": [
+  {
+    "name": "Sole Maintainer",
+    "email": "sole.maintainer@example.com",
+    "timezone": null,
+    "organization": "Example",
+    "organizationUrl": "https://www.example.com",
+    "roles": [ "Maintainer", "Developer" ]
+  }
+  ],
+  "contributors": [
+  {
+    "name": "John Doe",
+    "roles": [ "Just John" ]
+  },
+  {
+    "name": "Jane Doe",
+    "roles": [ "Just Jane" ]
+  }
+  ]
+}
