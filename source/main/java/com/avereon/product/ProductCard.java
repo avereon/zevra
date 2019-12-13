@@ -83,18 +83,22 @@ public class ProductCard extends BaseCard {
 	public ProductCard() {}
 
 	public ProductCard init( Product product ) throws IOException {
-		return init( product.getClassLoader() );
+		return init( product.getClass() );
 	}
 
 	public ProductCard init( Class<?> source ) throws IOException {
-		return init( source.getClassLoader() );
+		/*
+		 * NOTE Using the class loader instead of the class to find the resource
+		 * does not work as expected when loading products from the classpath.
+		 */
+		return init( source.getResourceAsStream( "/" + INFO ) );
 	}
 
-	public ProductCard init( ClassLoader loader ) throws IOException {
-		try( InputStream input = loader.getResourceAsStream( INFO ) ) {
-			return init( input );
-		}
-	}
+	//	public ProductCard init( ClassLoader loader ) throws IOException {
+	//		try( InputStream input = loader.getResourceAsStream( INFO ) ) {
+	//			return init( input );
+	//		}
+	//	}
 
 	public ProductCard init( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
@@ -126,18 +130,22 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard load( Product product ) throws IOException {
-		return load( product.getClassLoader() );
+		return load( product.getClass() );
 	}
 
 	public ProductCard load( Class<?> clazz ) throws IOException {
-		return load( clazz.getClassLoader() );
+		/*
+		 * NOTE Using the class loader instead of the class to find the resource
+		 * does not work as expected when loading products from the classpath.
+		 */
+		return load( clazz.getResourceAsStream( "/" + CARD ) );
 	}
 
-	public ProductCard load( ClassLoader loader ) throws IOException {
-		try( InputStream input = loader.getResourceAsStream( CARD ) ) {
-			return load( input, null );
-		}
-	}
+	//	public ProductCard load( ClassLoader loader ) throws IOException {
+	//		try( InputStream input = loader.getResourceAsStream( CARD ) ) {
+	//			return load( input, null );
+	//		}
+	//	}
 
 	public ProductCard load( InputStream input ) throws IOException {
 		return load( input, null );

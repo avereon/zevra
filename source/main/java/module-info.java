@@ -8,7 +8,7 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 	// This transitive dependency causes a compiler warning because slf4j is still
-	// and automatic module. The curex maven plugin solves this at assembly time
+	// an automatic module. The curex maven plugin solves this at assembly time
 	// but the warning will persist at compile time.
 	requires transitive org.slf4j;
 
