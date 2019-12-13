@@ -42,7 +42,7 @@ public class ProductCard extends BaseCard {
 	@JsonIgnore
 	private Release release;
 
-	private String iconUri;
+	private List<String> icons;
 
 	private String name;
 
@@ -103,7 +103,7 @@ public class ProductCard extends BaseCard {
 		this.version = values.getProperty( "version" );
 		this.timestamp = values.getProperty( "timestamp" );
 
-		this.iconUri = values.getProperty( "icon" );
+		this.icons = List.of( values.getProperty( "icon" ) );
 		this.name = values.getProperty( "name" );
 		this.provider = values.getProperty( "provider" );
 		this.providerUrl = values.getProperty( "providerUri" );
@@ -147,7 +147,7 @@ public class ProductCard extends BaseCard {
 		this.version = card.version;
 		this.timestamp = card.timestamp;
 
-		this.iconUri = card.iconUri;
+		this.icons = card.icons;
 		this.name = card.name;
 		this.provider = card.provider;
 		this.providerUrl = card.providerUrl;
@@ -231,12 +231,12 @@ public class ProductCard extends BaseCard {
 		return release;
 	}
 
-	public String getIconUri() {
-		return iconUri;
+	public List<String> getIcons() {
+		return icons;
 	}
 
-	public ProductCard setIconUri( String iconUri ) {
-		this.iconUri = iconUri;
+	public ProductCard setIcons( List<String> icons ) {
+		this.icons = Collections.unmodifiableList( icons );
 		return this;
 	}
 
@@ -353,7 +353,7 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard setMaintainers( List<Maintainer> maintainers ) {
-		this.maintainers = maintainers;
+		this.maintainers = Collections.unmodifiableList( maintainers );
 		return this;
 	}
 
@@ -362,7 +362,7 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard setContributors( List<Contributor> contributors ) {
-		this.contributors = contributors;
+		this.contributors = Collections.unmodifiableList( contributors );
 		return this;
 	}
 
@@ -473,7 +473,7 @@ public class ProductCard extends BaseCard {
 		equals = equals && this.artifact.equals( that.artifact );
 		equals = equals && this.packaging.equals( that.packaging );
 		equals = equals && this.release.equals( that.release );
-		equals = equals && this.iconUri.equals( that.iconUri );
+		equals = equals && this.icons.equals( that.icons );
 		equals = equals && this.name.equals( that.name );
 		equals = equals && this.provider.equals( that.provider );
 		equals = equals && this.inception == that.inception;
