@@ -21,6 +21,14 @@ public class ProductBundle {
 
 	private String rbPackage;
 
+	public ProductBundle( Product product ) {
+		this( product.getClass() );
+	}
+
+	public ProductBundle( Product product, String path ) {
+		this( product.getClass(), path );
+	}
+
 	/**
 	 * Calls the main constructor with the path &quot;/bundles&quot;.
 	 *
