@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +32,7 @@ class CatalogCardTest {
 		RepoCard repo = new RepoCard();
 		repo.setName( "Example Product Market" );
 		repo.setUrl( "https://www.example.com/market" );
-		repo.setIcon( "https://www.example.com/market/icon" );
+		repo.setIcons( List.of( "https://www.example.com/market/icon" ) );
 
 		CatalogCard card = new CatalogCard();
 		card.setTimestamp( System.currentTimeMillis() );
@@ -48,8 +49,8 @@ class CatalogCardTest {
 		assertThat( reader.readLine(), is( "  \"repo\" : {" ) );
 		assertThat( reader.readLine(), is( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "    \"name\" : \"Example Product Market\"," ) );
-		assertThat( reader.readLine(), is( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
-		assertThat( reader.readLine(), is( "    \"icons\" : [ ]," ) );
+		//assertThat( reader.readLine(), is( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
+		assertThat( reader.readLine(), is( "    \"icons\" : [ \"https://www.example.com/market/icon\" ]," ) );
 		assertThat( reader.readLine(), is( "    \"url\" : \"https://www.example.com/market\"" ) );
 		assertThat( reader.readLine(), is( "  }," ) );
 		assertThat( reader.readLine(), is( "  \"timestamp\" : " + card.getTimestamp() + "," ) );

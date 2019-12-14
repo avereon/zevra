@@ -19,7 +19,7 @@ public class RepoCard extends BaseCard {
 
 	private String name;
 
-	private String icon;
+	//private String icon;
 
 	private List<String> icons;
 
@@ -58,14 +58,14 @@ public class RepoCard extends BaseCard {
 		return this;
 	}
 
-	public String getIcon() {
-		return icon;
-	}
-
-	public RepoCard setIcon( String icon ) {
-		this.icon = icon;
-		return this;
-	}
+//	public String getIcon() {
+//		return icon;
+//	}
+//
+//	public RepoCard setIcon( String icon ) {
+//		this.icon = icon;
+//		return this;
+//	}
 
 	public List<String> getIcons() {
 		return icons;
@@ -88,7 +88,8 @@ public class RepoCard extends BaseCard {
 	public RepoCard copyFrom( RepoCard card ) {
 		if( card == null ) return null;
 		this.name = card.name;
-		this.icon = card.icon;
+		//this.icon = card.icon;
+		this.setIcons( card.getIcons() );
 		this.url = card.url;
 		return this;
 	}

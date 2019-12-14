@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -51,7 +52,7 @@ class RepoCardTest {
 		RepoCard card = new RepoCard();
 		card.setName( "Example Repo" );
 		card.setUrl( "http://example.com/repo" );
-		card.setIcon( "http://example.com/repo/icon.png" );
+		card.setIcons( List.of( "http://example.com/repo/icon.png" ) );
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure( SerializationFeature.INDENT_OUTPUT, true );
@@ -63,8 +64,8 @@ class RepoCardTest {
 		assertThat( reader.readLine(), is( "{" ) );
 		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "  \"name\" : \"Example Repo\"," ) );
-		assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
-		assertThat( reader.readLine(), is( "  \"icons\" : [ ]," ) );
+		//assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
+		assertThat( reader.readLine(), is( "  \"icons\" : [ \"http://example.com/repo/icon.png\" ]," ) );
 		assertThat( reader.readLine(), is( "  \"url\" : \"http://example.com/repo\"" ) );
 		assertThat( reader.readLine(), is( "}" ) );
 		assertThat( reader.readLine(), is( nullValue() ) );
