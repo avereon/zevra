@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @JsonIgnoreProperties( ignoreUnknown = true )
@@ -19,6 +21,8 @@ public class RepoCard extends BaseCard {
 
 	private String icon;
 
+	private List<String> icons;
+
 	private String url;
 
 	public RepoCard() {
@@ -27,6 +31,7 @@ public class RepoCard extends BaseCard {
 
 	public RepoCard( String url ) {
 		this.url = url;
+		this.icons = Collections.unmodifiableList( List.of() );
 	}
 
 	public RepoCard load( InputStream input ) throws IOException {
@@ -59,6 +64,15 @@ public class RepoCard extends BaseCard {
 
 	public RepoCard setIcon( String icon ) {
 		this.icon = icon;
+		return this;
+	}
+
+	public List<String> getIcons() {
+		return icons;
+	}
+
+	public RepoCard setIcons( List<String> icons ) {
+		this.icons = Collections.unmodifiableList( icons == null ? List.of() : icons );
 		return this;
 	}
 

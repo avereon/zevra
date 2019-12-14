@@ -64,6 +64,7 @@ class RepoCardTest {
 		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "  \"name\" : \"Example Repo\"," ) );
 		assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
+		assertThat( reader.readLine(), is( "  \"icons\" : [ ]," ) );
 		assertThat( reader.readLine(), is( "  \"url\" : \"http://example.com/repo\"" ) );
 		assertThat( reader.readLine(), is( "}" ) );
 		assertThat( reader.readLine(), is( nullValue() ) );

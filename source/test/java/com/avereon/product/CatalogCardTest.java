@@ -49,6 +49,7 @@ class CatalogCardTest {
 		assertThat( reader.readLine(), is( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "    \"name\" : \"Example Product Market\"," ) );
 		assertThat( reader.readLine(), is( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
+		assertThat( reader.readLine(), is( "    \"icons\" : [ ]," ) );
 		assertThat( reader.readLine(), is( "    \"url\" : \"https://www.example.com/market\"" ) );
 		assertThat( reader.readLine(), is( "  }," ) );
 		assertThat( reader.readLine(), is( "  \"timestamp\" : " + card.getTimestamp() + "," ) );

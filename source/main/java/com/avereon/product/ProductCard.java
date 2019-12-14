@@ -255,7 +255,7 @@ public class ProductCard extends BaseCard {
 	}
 
 	public ProductCard setIcons( List<String> icons ) {
-		this.icons = Collections.unmodifiableList( icons );
+		this.icons = Collections.unmodifiableList( icons == null ? List.of() : icons );
 		return this;
 	}
 
