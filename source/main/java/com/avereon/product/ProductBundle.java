@@ -4,12 +4,12 @@ import com.avereon.util.LogUtil;
 import com.avereon.util.TextUtil;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class is to simplify the interface and use of resource bundles.
@@ -87,4 +87,39 @@ public class ProductBundle {
 		return TextUtil.isEmpty( string ) ? other : string;
 	}
 
+	private static class InternalRB extends ResourceBundle {
+
+		private Product product;
+
+		private String path;
+
+		private Locale locale;
+
+		private Properties properties;
+
+		private InternalRB( Product product, String path, Locale locale ) {
+			this.product = product;
+			this.path = path;
+			this.locale = locale;
+			this.properties = new Properties();
+
+			InputStream input = product.getClass().getResourceAsStream( path );
+			try {
+				properties.load( input );
+			} catch( IOException exception ) {
+				exception.printStackTrace();
+			}
+		}
+
+		@Override
+		protected Object handleGetObject( String key ) {
+			return properties.get(key);
+		}
+
+		@Override
+		public Enumeration<String> getKeys() {
+			// TODO new IteratorEnumeration( Set.of() );
+			return new Vector<>( properties.keySet().stream().map( String::valueOf ).collect( Collectors.toSet() ) ).elements();
+		}
+	}
 }
