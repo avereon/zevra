@@ -1,16 +1,9 @@
 package com.avereon.settings;
 
-import com.avereon.product.ProductEvent;
+import com.avereon.event.Event;
+import com.avereon.event.EventType;
 
-public class SettingsEvent extends ProductEvent {
-
-	public enum Type {
-		CHANGED,
-		LOADED,
-		SAVED
-	}
-
-	private Type type;
+public class SettingsEvent extends Event {
 
 	private String path;
 
@@ -18,20 +11,15 @@ public class SettingsEvent extends ProductEvent {
 
 	private Object newValue;
 
-	public SettingsEvent( Object source, Type type, String path ) {
+	public SettingsEvent( Object source, EventType type, String path ) {
 		this( source, type, path, null, null );
 	}
 
-	public SettingsEvent( Object source, Type type, String path, String key, Object newValue ) {
-		super( source );
-		this.type = type;
+	public SettingsEvent( Object source, EventType type, String path, String key, Object newValue ) {
+		super( source, type );
 		this.path = path;
 		this.key = key;
 		this.newValue = newValue;
-	}
-
-	public Type getType() {
-		return type;
 	}
 
 	public String getPath() {
@@ -50,7 +38,7 @@ public class SettingsEvent extends ProductEvent {
 	public String toString() {
 		StringBuilder builder = new StringBuilder( super.toString() );
 		builder.append( ":" );
-		builder.append( type );
+		builder.append( getEventType() );
 		if( path != null ) {
 			builder.append( ":" );
 			builder.append( path );
@@ -59,7 +47,7 @@ public class SettingsEvent extends ProductEvent {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( type == Type.CHANGED ){
+		if( getEventType() == SettingsEventType.CHANGED ){
 			builder.append( ":" );
 			builder.append( newValue );
 		}

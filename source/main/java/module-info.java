@@ -12,6 +12,7 @@ module com.avereon.zevra {
 	// but the warning will persist at compile time.
 	requires transitive org.slf4j;
 
+	exports com.avereon.event;
 	exports com.avereon.product;
 	exports com.avereon.settings;
 	exports com.avereon.undo;

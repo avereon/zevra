@@ -1,9 +1,9 @@
 package com.avereon.settings;
 
-import com.avereon.product.ProductEventListener;
+import com.avereon.event.EventHandler;
 
-public interface SettingsListener extends ProductEventListener<SettingsEvent> {
+public interface SettingsListener extends EventHandler<SettingsEvent> {
 
-	void handleEvent( SettingsEvent event );
+	//void handleEvent( SettingsEvent event );
 
 }

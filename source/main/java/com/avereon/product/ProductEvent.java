@@ -8,6 +8,10 @@ import java.util.EventObject;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @deprecated In favor of {@link com.avereon.event.Event}
+ */
+@Deprecated
 public class ProductEvent extends EventObject {
 
 	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
@@ -31,7 +35,7 @@ public class ProductEvent extends EventObject {
 	public String toString() {
 		String sourceClass = getSource().getClass().getSimpleName();
 		String eventClass = getClass().getSimpleName();
-		return sourceClass + ":" + eventClass;
+		return sourceClass + ": " + eventClass;
 	}
 
 }

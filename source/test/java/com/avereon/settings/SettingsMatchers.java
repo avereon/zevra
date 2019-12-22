@@ -1,5 +1,6 @@
 package com.avereon.settings;
 
+import com.avereon.event.EventType;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -8,7 +9,7 @@ import java.util.Objects;
 
 class SettingsMatchers {
 
-	static Matcher<SettingsEvent> eventHas( Object source, SettingsEvent.Type type, String path, String key, String oldValue, String newValue ) {
+	static Matcher<SettingsEvent> eventHas( Object source, EventType type, String path, String key, String oldValue, String newValue ) {
 		return new TypeSafeMatcher<>() {
 
 			@Override
@@ -23,7 +24,7 @@ class SettingsMatchers {
 
 			@Override
 			protected boolean matchesSafely( final SettingsEvent item ) {
-				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getType(), type ) && Objects.equals( item.getPath(),
+				return Objects.equals( item.getSource(), source ) && Objects.equals( item.getKey(), key ) && Objects.equals( item.getEventType(), type ) && Objects.equals( item.getPath(),
 					path
 				) && Objects.equals( item.getNewValue(), newValue );
 			}
@@ -33,7 +34,7 @@ class SettingsMatchers {
 	private static String format(
 		Class<? extends SettingsEvent> clazz,
 		Object source,
-		SettingsEvent.Type type,
+		EventType type,
 		String path,
 		String key,
 		String oldValue,
@@ -53,7 +54,7 @@ class SettingsMatchers {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( type == SettingsEvent.Type.CHANGED ) {
+		if( type == SettingsEventType.CHANGED ) {
 			builder.append( ":" );
 			builder.append( oldValue );
 			builder.append( ":" );
