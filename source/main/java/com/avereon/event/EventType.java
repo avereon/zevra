@@ -27,7 +27,7 @@ public final class EventType<T extends Event> {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "-" + name;
+		return name;
 	}
 
 }

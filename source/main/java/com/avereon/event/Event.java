@@ -17,7 +17,7 @@ public class Event extends EventObject {
 	public String toString() {
 		String sourceClass = getSource().getClass().getSimpleName();
 		String eventClass = getClass().getSimpleName();
-		return sourceClass + "> " + eventClass;
+		return sourceClass + " > " + eventClass + " : " + getEventType();
 	}
 
 	public EventType<? extends Event> getEventType() {
