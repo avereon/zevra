@@ -1,10 +1,11 @@
 package com.avereon.settings;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.avereon.event.EventHandler;
 import com.avereon.util.LogUtil;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private Map<String, Object> defaultValues;
 
-	private Set<SettingsListener> listeners;
+	private Set<EventHandler<SettingsEvent>> listeners;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -271,16 +272,16 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public void addSettingsListener( SettingsListener listener ) {
+	public void addSettingsListener( EventHandler<SettingsEvent> listener ) {
 		listeners.add( listener );
 	}
 
 	@Override
-	public void removeSettingsListener( SettingsListener listener ) {
+	public void removeSettingsListener( EventHandler<SettingsEvent> listener ) {
 		listeners.remove( listener );
 	}
 
-	Set<SettingsListener> getListeners() {
+	Set<EventHandler<SettingsEvent>> getListeners() {
 		return listeners;
 	}
 

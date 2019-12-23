@@ -1,5 +1,6 @@
 package com.avereon.settings;
 
+import com.avereon.event.EventHandler;
 import com.avereon.util.TypeReference;
 
 import java.util.List;
@@ -230,14 +231,14 @@ public interface Settings {
 	 *
 	 * @param listener The settings listener
 	 */
-	void addSettingsListener( SettingsListener listener );
+	void addSettingsListener( EventHandler<SettingsEvent> listener );
 
 	/**
 	 * Remove a settings listener from this node.
 	 *
 	 * @param listener The settings listener
 	 */
-	void removeSettingsListener( SettingsListener listener );
+	void removeSettingsListener( EventHandler<SettingsEvent> listener );
 
 	/**
 	 * Flush the settings values. For settings implementations that store values this method should be used to store the values promptly.
