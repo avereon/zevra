@@ -9,6 +9,12 @@ public class SettingsEvent extends Event {
 
 	public static final EventType<SettingsEvent> ANY = SETTINGS;
 
+	public static final EventType<SettingsEvent> SAVED = new EventType<>( ANY, "SAVED" );
+
+	public static final EventType<SettingsEvent> CHANGED = new EventType<>( ANY, "CHANGED" );
+
+	public static final EventType<SettingsEvent> LOADED = new EventType<>( ANY, "LOADED" );
+
 	private String path;
 
 	private String key;
@@ -51,7 +57,7 @@ public class SettingsEvent extends Event {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( getEventType() == SettingsEventType.CHANGED ){
+		if( getEventType() == CHANGED ){
 			builder.append( ":" );
 			builder.append( newValue );
 		}

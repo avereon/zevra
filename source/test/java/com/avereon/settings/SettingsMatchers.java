@@ -54,7 +54,7 @@ class SettingsMatchers {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( type == SettingsEventType.CHANGED ) {
+		if( type == SettingsEvent.CHANGED ) {
 			builder.append( ":" );
 			builder.append( oldValue );
 			builder.append( ":" );

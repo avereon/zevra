@@ -20,12 +20,12 @@ class TestEventHub {
 		EventHub<Event> hub = new EventHub<>();
 		hub.register( Event.ANY, rootEvents::add );
 		hub.register( TestEvent.ANY, testEvents::add );
-		hub.register( TestEventType.A, aEvents::add );
-		hub.register( TestEventType.B, bEvents::add );
+		hub.register( TestEvent.A, aEvents::add );
+		hub.register( TestEvent.B, bEvents::add );
 
 		hub.handle( new TestEvent( this, TestEvent.ANY ) );
-		hub.handle( new TestEvent( this, TestEventType.A ) );
-		hub.handle( new TestEvent( this, TestEventType.B ) );
+		hub.handle( new TestEvent( this, TestEvent.A ) );
+		hub.handle( new TestEvent( this, TestEvent.B ) );
 
 		assertThat( rootEvents.size(), is( 3 ) );
 		assertThat( testEvents.size(), is( 3 ) );
@@ -39,21 +39,14 @@ class TestEventHub {
 
 		public static final EventType<TestEvent> ANY = TEST;
 
+		public static final EventType<TestEvent> A = new EventType<>( TestEvent.ANY, "A" );
+
+		public static final EventType<TestEvent> B = new EventType<>( TestEvent.ANY, "B" );
+
 		public TestEvent( Object source, EventType<? extends TestEvent> type ) {
 			super( source, type );
 		}
 
 	}
 
-	private static class TestEventType extends EventType<TestEvent> {
-
-		public static final EventType<TestEvent> A = new EventType<>( TestEvent.ANY, "A" );
-
-		public static final EventType<TestEvent> B = new EventType<>( TestEvent.ANY, "B" );
-
-		private TestEventType( EventType<Event> parent, String name ) {
-			super( parent, name );
-		}
-
-	}
 }

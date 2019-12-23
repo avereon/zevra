@@ -356,7 +356,7 @@ public abstract class BaseSettingsTest {
 		assertThat( watcher.getEvents().size(), is( 0 ) );
 
 		settings.set( "a", "A" );
-		assertThat( watcher.getEvents().get( 0 ), eventHas( settings, SettingsEventType.CHANGED, settings.getPath(), "a", null, "A" ) );
+		assertThat( watcher.getEvents().get( 0 ), eventHas( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, "A" ) );
 		assertThat( watcher.getEvents().size(), is( 1 ) );
 
 		// The value does not change so there should not be an extra event
@@ -364,7 +364,7 @@ public abstract class BaseSettingsTest {
 		assertThat( watcher.getEvents().size(), is( 1 ) );
 
 		settings.set( "a", null );
-		assertThat( watcher.getEvents().get( 1 ), eventHas( settings, SettingsEventType.CHANGED, settings.getPath(), "a", null, null ) );
+		assertThat( watcher.getEvents().get( 1 ), eventHas( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, null ) );
 		assertThat( watcher.getEvents().size(), is( 2 ) );
 
 		// The value does not change so there should not be an extra event

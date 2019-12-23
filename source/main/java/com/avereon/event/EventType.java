@@ -1,6 +1,6 @@
 package com.avereon.event;
 
-public class EventType<T extends Event> {
+public final class EventType<T extends Event> {
 
 	public static final EventType<Event> ROOT = new EventType<>( null, "EVENT" );
 

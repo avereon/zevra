@@ -133,7 +133,7 @@ public abstract class AbstractSettings implements Settings {
 		}
 
 		// Settings change event should only be fired if the values are different
-		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEventType.CHANGED, getPath(), key, value ).fire( getListeners() );
+		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
 
 		return this;
 	}
