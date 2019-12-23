@@ -20,12 +20,12 @@ public class EventHub<T extends Event> implements EventHandler<T> {
 		}
 	}
 
-	public EventHub<T> register( EventType<? extends Event> type, EventHandler<T> handler ) {
+	public EventHub<T> register( final EventType<? extends Event> type, final EventHandler<T> handler ) {
 		handlers.put( type, handler );
 		return this;
 	}
 
-	public EventHub<T> unregister( EventType<? extends Event> type ) {
+	public EventHub<T> unregister( final EventType<? extends Event> type ) {
 		handlers.remove( type );
 		return this;
 	}

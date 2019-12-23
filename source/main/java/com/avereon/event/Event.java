@@ -9,7 +9,7 @@ public class Event extends EventObject {
 
 	private EventType<? extends Event> type;
 
-	public Event( Object source, EventType<? extends Event> type ) {
+	public Event( final Object source, final EventType<? extends Event> type ) {
 		super( source );
 		this.type = type;
 	}
@@ -25,7 +25,7 @@ public class Event extends EventObject {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public <E extends Event> E fire( Collection<? extends EventHandler<E>> handlers ) {
+	public <E extends Event> E fire( final Collection<? extends EventHandler<E>> handlers ) {
 		handlers.forEach( (h) -> h.handle( (E)this ) );
 		return (E)this;
 	}
