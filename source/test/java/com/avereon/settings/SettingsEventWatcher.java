@@ -11,7 +11,7 @@ class SettingsEventWatcher extends EventHub<SettingsEvent> implements SettingsLi
 	private List<SettingsEvent> events = new CopyOnWriteArrayList<>();
 
 	public SettingsEventWatcher() {
-		register( SettingsEventType.ANY, ( e) -> events.add( e ) );
+		register( SettingsEvent.ANY, ( e) -> events.add( e ) );
 	}
 
 	public List<SettingsEvent> getEvents() {

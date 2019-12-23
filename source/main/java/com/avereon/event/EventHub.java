@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventHub<T extends Event> implements EventHandler<T> {
 
-	private Map<EventType<T>, EventHandler<T>> handlers;
+	private Map<EventType<? extends Event>, EventHandler<T>> handlers;
 
 	public EventHub() {
 		handlers = new ConcurrentHashMap<>();
@@ -20,12 +20,12 @@ public class EventHub<T extends Event> implements EventHandler<T> {
 		}
 	}
 
-	public EventHub<T> register( EventType<T> type, EventHandler<T> handler ) {
+	public EventHub<T> register( EventType<? extends Event> type, EventHandler<T> handler ) {
 		handlers.put( type, handler );
 		return this;
 	}
 
-	public EventHub<T> unregister( EventType<T> type ) {
+	public EventHub<T> unregister( EventType<? extends Event> type ) {
 		handlers.remove( type );
 		return this;
 	}

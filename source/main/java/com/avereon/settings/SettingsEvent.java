@@ -5,6 +5,10 @@ import com.avereon.event.EventType;
 
 public class SettingsEvent extends Event {
 
+	public static final EventType<SettingsEvent> SETTINGS = new EventType<>( EventType.ROOT, "SETTINGS" );
+
+	public static final EventType<SettingsEvent> ANY = SETTINGS;
+
 	private String path;
 
 	private String key;
