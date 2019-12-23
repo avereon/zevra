@@ -11,11 +11,11 @@ public class SettingsEvent extends Event {
 
 	private Object newValue;
 
-	public SettingsEvent( Object source, EventType type, String path ) {
+	public SettingsEvent( Object source, EventType<SettingsEvent> type, String path ) {
 		this( source, type, path, null, null );
 	}
 
-	public SettingsEvent( Object source, EventType type, String path, String key, Object newValue ) {
+	public SettingsEvent( Object source, EventType<SettingsEvent> type, String path, String key, Object newValue ) {
 		super( source, type );
 		this.path = path;
 		this.key = key;

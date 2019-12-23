@@ -70,12 +70,12 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public <T> T get( String key, Class<T> type ) {
-		return get( key, new TypeReference<T>( type ) {} );
+		return get( key, new TypeReference<>( type ) {} );
 	}
 
 	@Override
 	public <T> T get( String key, Class<T> type, T defaultValue ) {
-		return get( key, new TypeReference<T>( type ) {}, defaultValue );
+		return get( key, new TypeReference<>( type ) {}, defaultValue );
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public abstract class AbstractSettings implements Settings {
 
 		if( value == null ) {
 			removeValue( key );
-		} else if( outboundConverters.keySet().contains( value.getClass() ) ) {
+		} else if( outboundConverters.containsKey( value.getClass() ) ) {
 			setValue( key, newValue = outboundConverters.get( value.getClass() ).convert( value ) );
 		} else if( value instanceof Collection || value instanceof Map ) {
 			setCollection( key, newValue = marshallValue( value ) );

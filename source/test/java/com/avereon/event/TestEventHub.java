@@ -30,15 +30,15 @@ class TestEventHub {
 		assertThat( bEvents.size(), is( 1 ) );
 	}
 
-	private static class TestEventType extends EventType {
+	private static class TestEventType extends EventType<Event> {
 
-		public static final EventType ANY = new EventType( EventType.ROOT, "TEST" );
+		public static final EventType<Event> ANY = new EventType<>( Event.ANY, "TEST" );
 
-		public static final EventType A = new EventType( ANY, "A" );
+		public static final EventType<Event> A = new EventType<>( ANY, "A" );
 
-		public static final EventType B = new EventType( ANY, "B" );
+		public static final EventType<Event> B = new EventType<>( ANY, "B" );
 
-		private TestEventType( EventType parent, String name ) {
+		private TestEventType( EventType<Event> parent, String name ) {
 			super( parent, name );
 		}
 

@@ -1,10 +1,10 @@
 package com.avereon.event;
 
-public class EventType {
+public class EventType<T extends Event> {
 
-	public static final EventType ROOT = new EventType( null, "EVENT" );
+	public static final EventType<Event> ROOT = new EventType<>( null, "EVENT" );
 
-	private EventType parent;
+	private EventType<? super T> parent;
 
 	private String name;
 
@@ -12,16 +12,16 @@ public class EventType {
 		this( ROOT, name );
 	}
 
-	public EventType( final EventType parent ) {
+	public EventType( final EventType<? super T> parent ) {
 		this( parent, null );
 	}
 
-	public EventType( final EventType parent, final String name ) {
+	public EventType( final EventType<? super T> parent, final String name ) {
 		this.parent = parent;
 		this.name = name;
 	}
 
-	public EventType getParentEventType() {
+	public EventType<? super T> getParentEventType() {
 		return parent;
 	}
 

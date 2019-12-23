@@ -5,9 +5,11 @@ import java.util.EventObject;
 
 public class Event extends EventObject {
 
-	private EventType type;
+	public static final EventType<Event> ANY = EventType.ROOT;
 
-	public Event( Object source, EventType type ) {
+	private EventType<? extends Event> type;
+
+	public Event( Object source, EventType<? extends Event> type ) {
 		super( source );
 		this.type = type;
 	}
@@ -18,7 +20,7 @@ public class Event extends EventObject {
 		return sourceClass + "> " + eventClass;
 	}
 
-	public EventType getEventType() {
+	public EventType<? extends Event> getEventType() {
 		return type;
 	}
 
