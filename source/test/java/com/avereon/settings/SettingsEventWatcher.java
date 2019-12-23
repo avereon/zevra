@@ -1,16 +1,17 @@
 package com.avereon.settings;
 
+import com.avereon.event.EventHub;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class SettingsEventWatcher implements SettingsListener {
+class SettingsEventWatcher extends EventHub<SettingsEvent> implements SettingsListener {
 
 	private List<SettingsEvent> events = new CopyOnWriteArrayList<>();
 
-	@Override
-	public void handle( SettingsEvent event ) {
-		events.add( event );
+	public SettingsEventWatcher() {
+		register( SettingsEventType.ANY, ( e) -> events.add( e ) );
 	}
 
 	public List<SettingsEvent> getEvents() {

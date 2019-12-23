@@ -21,6 +21,10 @@ public class EventType {
 		this.name = name;
 	}
 
+	public EventType getParentEventType() {
+		return parent;
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "-" + name;
