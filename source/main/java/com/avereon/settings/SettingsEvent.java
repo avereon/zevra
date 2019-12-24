@@ -44,11 +44,15 @@ public class SettingsEvent extends Event {
 		return newValue;
 	}
 
+	@SuppressWarnings( "unchecked" )
+	@Override
+	public EventType<SettingsEvent> getEventType() {
+		return (EventType<SettingsEvent>)super.getEventType();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder( super.toString() );
-		builder.append( ":" );
-		builder.append( getEventType() );
 		if( path != null ) {
 			builder.append( ":" );
 			builder.append( path );

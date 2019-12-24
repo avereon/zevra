@@ -1,6 +1,7 @@
 package com.avereon.settings;
 
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventHub;
 import com.avereon.util.LogUtil;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
@@ -12,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractSettings implements Settings {
 
@@ -25,7 +28,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private Map<String, Object> defaultValues;
 
-	private Set<EventHandler<SettingsEvent>> listeners;
+	private EventHub eventHub;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -56,7 +59,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	protected AbstractSettings() {
-		this.listeners = new CopyOnWriteArraySet<>();
+		this.eventHub = new EventHub();
 	}
 
 	@Override
@@ -134,7 +137,8 @@ public abstract class AbstractSettings implements Settings {
 		}
 
 		// Settings change event should only be fired if the values are different
-		if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
+		//if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
+		if( !Objects.equals( oldValue, newValue ) ) getEventHub().handle( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
 
 		return this;
 	}
@@ -273,16 +277,16 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public void addSettingsListener( EventHandler<SettingsEvent> listener ) {
-		listeners.add( listener );
+		getEventHub().register( SettingsEvent.ANY, listener );
 	}
 
 	@Override
 	public void removeSettingsListener( EventHandler<SettingsEvent> listener ) {
-		listeners.remove( listener );
+		getEventHub().unregister( SettingsEvent.ANY, listener );
 	}
 
-	Set<EventHandler<SettingsEvent>> getListeners() {
-		return listeners;
+	public EventHub getEventHub() {
+		return eventHub;
 	}
 
 	String getNodePath( String root, String path ) {

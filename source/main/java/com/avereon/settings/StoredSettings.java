@@ -70,7 +70,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private StoredSettings( StoredSettings root, String path, Path folder, Map<String, String> values, ExecutorService executor ) {
-		if( folder.getFileName().equals( SETTINGS_FILE_NAME )) throw new RuntimeException( "Folder ends with " + SETTINGS_FILE_NAME );
+		if( folder.getFileName().equals( SETTINGS_FILE_NAME ) ) throw new RuntimeException( "Folder ends with " + SETTINGS_FILE_NAME );
 		if( root == null ) {
 			this.settings = new ConcurrentHashMap<>();
 			this.root = this;
@@ -201,7 +201,7 @@ public class StoredSettings extends AbstractSettings {
 		if( !Files.exists( file ) || Files.isDirectory( file ) ) return;
 		try( FileInputStream input = new FileInputStream( file.toFile() ) ) {
 			values.load( input );
-			new SettingsEvent( this, SettingsEvent.LOADED, getPath() ).fire( getListeners() );
+			getEventHub().handle( new SettingsEvent( this, SettingsEvent.LOADED, getPath() ) );
 		} catch( IOException exception ) {
 			log.error( "Error loading settings file: " + file, exception );
 		}
@@ -217,7 +217,7 @@ public class StoredSettings extends AbstractSettings {
 		try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 			values.store( output, null );
 			lastStoreTime.set( System.currentTimeMillis() );
-			new SettingsEvent( this, SettingsEvent.SAVED, getPath() ).fire( getListeners() );
+			getEventHub().handle( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
 		} catch( IOException exception ) {
 			log.error( "Error saving settings file: " + file, exception );
 		}
