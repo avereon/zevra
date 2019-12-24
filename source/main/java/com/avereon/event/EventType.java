@@ -25,6 +25,10 @@ public final class EventType<T extends Event> {
 		return parent;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public String toString() {
 		return name;
