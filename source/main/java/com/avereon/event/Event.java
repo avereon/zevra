@@ -1,5 +1,7 @@
 package com.avereon.event;
 
+import com.avereon.util.JavaUtil;
+
 import java.util.EventObject;
 
 public class Event extends EventObject {
@@ -8,19 +10,23 @@ public class Event extends EventObject {
 
 	private EventType<? extends Event> type;
 
+	private final String toString;
+
 	public Event( final Object source, final EventType<? extends Event> type ) {
 		super( source );
 		this.type = type;
-	}
 
-	public String toString() {
-		String sourceClass = getSource().getClass().getSimpleName();
-		String eventClass = getClass().getSimpleName();
-		return sourceClass + " > " + eventClass + " : " + getEventType();
+		String sourceClass = JavaUtil.getClassName( source.getClass() );
+		String eventClass = JavaUtil.getClassName( this.getClass() );
+		toString =  sourceClass + " > " + eventClass + " : " + getEventType().getName();
 	}
 
 	public EventType<? extends Event> getEventType() {
 		return type;
+	}
+
+	public String toString() {
+		return toString;
 	}
 
 }
