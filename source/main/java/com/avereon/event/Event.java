@@ -18,7 +18,7 @@ public class Event extends EventObject {
 
 		String sourceClass = JavaUtil.getClassName( source.getClass() );
 		String eventClass = JavaUtil.getClassName( this.getClass() );
-		toString =  sourceClass + " > " + eventClass + " : " + getEventType().getName();
+		toString = sourceClass + " > " + eventClass + " : " + getEventType().getName();
 	}
 
 	public EventType<? extends Event> getEventType() {
