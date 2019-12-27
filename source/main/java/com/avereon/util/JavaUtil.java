@@ -43,21 +43,31 @@ public final class JavaUtil {
 	/**
 	 * Get the simple class name from a full class name.
 	 *
-	 * @param name
-	 * @return
+	 * @param name The fully qualified class name
+	 * @return The class name without the package
 	 */
 	public static String getClassName( String name ) {
-		return name.substring( name.lastIndexOf( '.' ) + 1 );
+		return name == null ? null : name.substring( name.lastIndexOf( '.' ) + 1 );
 	}
 
 	/**
 	 * Get the simple class name from a full class name.
 	 *
-	 * @param type
-	 * @return
+	 * @param type The class from which to derive the name
+	 * @return The class name without the package
 	 */
 	public static String getClassName( Class<?> type ) {
-		return (getClassName( type.getName() ));
+		return type == null ? null : getClassName( type.getName() );
+	}
+
+	/**
+	 * Get only the class name from an object.
+	 *
+	 * @param object The object from which to derive the class name
+	 * @return The class name without the package
+	 */
+	public static String getClassName( Object object ) {
+		return object == null ? null : getClassName( object.getClass().getName() );
 	}
 
 	public static String getShortClassName( String name ) {
@@ -149,7 +159,8 @@ public final class JavaUtil {
 	}
 
 	/**
-	 * Parse the relative URLs from the specified classpath in JAR file manifest format. See <a href= "http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes" >Setting the JAR Manifest Class-Path Attribute</a>
+	 * Parse the relative URLs from the specified classpath in JAR file manifest format. See <a href= "http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes"
+	 * >Setting the JAR Manifest Class-Path Attribute</a>
 	 */
 	public static List<URL> parseManifestClasspath( URI base, String classpath ) throws IOException, URISyntaxException {
 		List<URL> urls = new ArrayList<>();
@@ -166,10 +177,11 @@ public final class JavaUtil {
 	}
 
 	/**
-	 * Get the root cause of a throwable.
+	 * Get the root cause of a throwable. This method calls getCause() until the
+	 * cause without a cause (the root cause) is found.
 	 *
-	 * @param throwable
-	 * @return
+	 * @param throwable The throwable from which to retrieve the root cause
+	 * @return The root cause of a throwable
 	 */
 	public static Throwable getRootCause( Throwable throwable ) {
 		Throwable cause = throwable;
