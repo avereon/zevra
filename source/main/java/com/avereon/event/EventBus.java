@@ -48,12 +48,12 @@ public class EventBus implements EventDispatcher {
 		return this;
 	}
 
-	public <T extends Event> EventBus register( EventType<T> type, EventHandler<T> handler ) {
+	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfAbsent( type, k -> new HashSet<>() ).add( new EventHandlerWrapper<>( handler ) );
 		return this;
 	}
 
-	public <T extends Event> EventBus unregister( EventType<T> type, EventHandler<T> handler ) {
+	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfPresent( type, ( t, c ) -> {
 			c.removeIf( w -> w.getHandler() == handler );
 			return c.isEmpty() ? null : c;
