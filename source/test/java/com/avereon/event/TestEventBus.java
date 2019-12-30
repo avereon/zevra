@@ -8,7 +8,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class TestEventHub {
+class TestEventBus {
 
 	@Test
 	void testHandle() {
@@ -18,16 +18,16 @@ class TestEventHub {
 		List<Event> aEvents = new ArrayList<>();
 		List<Event> bEvents = new ArrayList<>();
 
-		EventHub<Event> hub = new EventHub<>();
-		hub.register( Event.ANY, rootEvents::add );
-		hub.register( TestEvent.ANY, testEvents1::add );
-		hub.register( TestEvent.ANY, testEvents2::add );
-		hub.register( TestEvent.A, aEvents::add );
-		hub.register( TestEvent.B, bEvents::add );
+		EventBus bus = new EventBus();
+		bus.register( Event.ANY, rootEvents::add );
+		bus.register( TestEvent.ANY, testEvents1::add );
+		bus.register( TestEvent.ANY, testEvents2::add );
+		bus.register( TestEvent.A, aEvents::add );
+		bus.register( TestEvent.B, bEvents::add );
 
-		hub.handle( new TestEvent( this, TestEvent.ANY ) );
-		hub.handle( new TestEvent( this, TestEvent.A ) );
-		hub.handle( new TestEvent( this, TestEvent.B ) );
+		bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
+		bus.dispatch( new TestEvent( this, TestEvent.A ) );
+		bus.dispatch( new TestEvent( this, TestEvent.B ) );
 
 		assertThat( rootEvents.size(), is( 3 ) );
 		assertThat( testEvents1.size(), is( 3 ) );

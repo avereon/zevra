@@ -1,7 +1,7 @@
 package com.avereon.settings;
 
 import com.avereon.event.EventHandler;
-import com.avereon.event.EventHub;
+import com.avereon.event.EventBus;
 import com.avereon.util.LogUtil;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
@@ -28,7 +28,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private Map<String, Object> defaultValues;
 
-	private EventHub eventHub;
+	private EventBus eventBus;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -59,7 +59,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	protected AbstractSettings() {
-		this.eventHub = new EventHub();
+		this.eventBus = new EventBus();
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public abstract class AbstractSettings implements Settings {
 
 		// Settings change event should only be fired if the values are different
 		//if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
-		if( !Objects.equals( oldValue, newValue ) ) getEventHub().handle( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
+		if( !Objects.equals( oldValue, newValue ) ) getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
 
 		return this;
 	}
@@ -277,16 +277,16 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public void addSettingsListener( EventHandler<SettingsEvent> listener ) {
-		getEventHub().register( SettingsEvent.ANY, listener );
+		getEventBus().register( SettingsEvent.ANY, listener );
 	}
 
 	@Override
 	public void removeSettingsListener( EventHandler<SettingsEvent> listener ) {
-		getEventHub().unregister( SettingsEvent.ANY, listener );
+		getEventBus().unregister( SettingsEvent.ANY, listener );
 	}
 
-	public EventHub getEventHub() {
-		return eventHub;
+	public EventBus getEventBus() {
+		return eventBus;
 	}
 
 	String getNodePath( String root, String path ) {

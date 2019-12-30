@@ -219,7 +219,7 @@ public abstract class BaseSettingsTest {
 	@Test
 	public void testSetMapAndGetMap() {
 		Map<String, MockBean> beans = new HashMap<>();
-		TypeReference<Map<String, MockBean>> reference = new TypeReference<Map<String, MockBean>>() {};
+		TypeReference<Map<String, MockBean>> reference = new TypeReference<>() {};
 		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
 
 		MockBean bean1 = new MockBean();
@@ -243,7 +243,7 @@ public abstract class BaseSettingsTest {
 	@Test
 	public void testSetListAndGetList() {
 		List<MockBean> beans = new ArrayList<>();
-		TypeReference<List<MockBean>> reference = new TypeReference<List<MockBean>>() {};
+		TypeReference<List<MockBean>> reference = new TypeReference<>() {};
 		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
 
 		MockBean bean1 = new MockBean();
@@ -265,7 +265,7 @@ public abstract class BaseSettingsTest {
 	@Test
 	public void testSetSetAndGetSet() {
 		Set<MockBean> beans = new HashSet<>();
-		TypeReference<Set<MockBean>> reference = new TypeReference<Set<MockBean>>() {};
+		TypeReference<Set<MockBean>> reference = new TypeReference<>() {};
 
 		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
 
@@ -351,7 +351,7 @@ public abstract class BaseSettingsTest {
 		settings.addSettingsListener( watcher );
 		assertThat( watcher.getEvents().size(), is( 0 ) );
 
-		// The value does not change so there should not be an extra eevent
+		// The value does not change so there should not be an extra event
 		settings.set( "a", null );
 		assertThat( watcher.getEvents().size(), is( 0 ) );
 
