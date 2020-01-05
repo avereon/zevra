@@ -73,8 +73,11 @@ class UriUtilTest {
 
 	@Test
 	void testRemoveQueryAndFragment() {
-		String root = "https://host:74/path/to/resource";
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( root + "?parm1=a&parm2=b" ) ), is( URI.create( root ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "program:product#update" ) ), is( URI.create( "program:product" ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://absolute/path?query" ) ), is( URI.create( "https://absolute/path" ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "/absolute/path?query#fragment" ) ), is( URI.create( "/absolute/path" ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "relative/path?query#fragment" ) ), is( URI.create( "relative/path" ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ), is( URI.create( "https://host:74/path/to/resource" ) ) );
 	}
 
 	@Test
@@ -83,7 +86,6 @@ class UriUtilTest {
 		assertThat( UriUtil.resolve( "." ), is( new File( "." ).getCanonicalFile().toURI() ) );
 		assertThat( UriUtil.resolve( "test" ), is( new File( "test" ).getCanonicalFile().toURI() ) );
 		assertThat( UriUtil.resolve( "/test" ), is( new File( "/test" ).getCanonicalFile().toURI() ) );
-
 		assertThat( UriUtil.resolve( "ssh://localhost" ), is( URI.create( "ssh://localhost" ) ) );
 	}
 

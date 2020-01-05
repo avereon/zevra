@@ -27,15 +27,22 @@ public final class UriUtil {
 		return path.substring( path.lastIndexOf( "/" ) + 1 );
 	}
 
-	public static URI removeQueryAndFragment( URI source ) {
-		StringBuilder builder = new StringBuilder();
+	public static URI removeQueryAndFragment( URI uri ) {
+		if( uri == null ) return null;
 
-		builder.append( source.getScheme() );
-		builder.append( "://" );
-		builder.append( source.getAuthority() );
-		builder.append( source.getPath() );
+		// Return a URI without query or fragment data
+		try {
+			if( uri.isOpaque() ) {
+				return new URI( uri.getScheme(), uri.getSchemeSpecificPart(), null );
+			} else {
+				return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), null, null );
+			}
+		} catch( URISyntaxException exception ) {
+			// Intentionally ignore exception - should never happen
+			log.error( "Error resolving asset URI: " + uri, exception );
+		}
 
-		return URI.create( builder.toString() );
+		return null;
 	}
 
 	/**
