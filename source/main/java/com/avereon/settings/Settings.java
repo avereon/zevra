@@ -205,12 +205,30 @@ public interface Settings {
 	Settings set( String key, Object value );
 
 	/**
+	 * Copy the values from the specified settings to this settings.
+	 *
+	 * @param settings The setting from which to get values
+	 * @return This settings object
+	 */
+	Settings copyFrom( Settings settings );
+
+	/**
 	 * Remove a value from the settings node. This is the same as setting the
 	 * value to null.
 	 *
 	 * @param key The value key
 	 */
 	Settings remove( String key );
+
+	/**
+	 * Flush the settings values. For settings implementations that store values this method should be used to store the values promptly.
+	 */
+	Settings flush();
+
+	/**
+	 * Delete this settings node.
+	 */
+	Settings delete();
 
 	/**
 	 * Get the default values for this settings node.
@@ -239,16 +257,6 @@ public interface Settings {
 	 * @param listener The settings listener
 	 */
 	void removeSettingsListener( EventHandler<SettingsEvent> listener );
-
-	/**
-	 * Flush the settings values. For settings implementations that store values this method should be used to store the values promptly.
-	 */
-	Settings flush();
-
-	/**
-	 * Delete this settings node.
-	 */
-	Settings delete();
 
 	@SuppressWarnings( "unused" )
 	static void print( Settings settings ) {

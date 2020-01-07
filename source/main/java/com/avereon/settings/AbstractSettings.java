@@ -144,6 +144,13 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
+	public Settings copyFrom( Settings settings ) {
+		// TODO Implement copyFrom
+		// NOTE This should probably be a deep copy
+		return this;
+	}
+
+	@Override
 	public Settings remove( String key ) {
 		set( key, null );
 		return this;
