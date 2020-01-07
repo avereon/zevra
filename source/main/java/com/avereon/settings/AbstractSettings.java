@@ -145,8 +145,14 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Settings copyFrom( Settings settings ) {
-		// TODO Implement copyFrom
-		// NOTE This should probably be a deep copy
+		// Shallow
+		for( String key : settings.getKeys() ) {
+			set( key, settings.get( key ) );
+		}
+		// Deep
+		for( String child : settings.getNodes() ) {
+			getNode( child ).copyFrom( settings.getNode( child ) );
+		}
 		return this;
 	}
 

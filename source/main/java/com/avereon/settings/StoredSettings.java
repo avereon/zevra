@@ -99,6 +99,20 @@ public class StoredSettings extends AbstractSettings {
 	@Override
 	public boolean exists( String path ) {
 		String nodePath = getNodePath( this.path, path );
+		return root.settings.get( nodePath ) != null;
+	}
+
+	/**
+	 * This checks if the node folder exists for the specified settings path. It
+	 * is possible, for new nodes or recently removed nodes, that this this method
+	 * return a different value than {@link #exists} if the changes have not yet
+	 * been flushed.
+	 *
+	 * @param path The child node settings path
+	 * @return True if the node folder exists, false otherwise
+	 */
+	public boolean fileExists( String path ) {
+		String nodePath = getNodePath( this.path, path );
 		// The substring(1) removes the leading slash
 		return Files.exists( root.folder.resolve( nodePath.substring( 1 ) ) );
 	}

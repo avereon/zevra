@@ -10,7 +10,7 @@ import java.util.*;
 import static com.avereon.settings.SettingsMatchers.eventHas;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseSettingsTest {
 
@@ -20,7 +20,20 @@ public abstract class BaseSettingsTest {
 
 	@Test
 	void testExists() {
-		assertThat( settings.exists( "/" ), is( true ) );
+		assertTrue( settings.exists( "/" ) );
+
+		Settings deep = settings.getNode( "deep" );
+		deep.set( "a", "A" );
+		assertThat( deep.get( "a" ), is( "A" ) );
+		assertTrue( settings.exists( "deep" ) );
+		assertTrue( settings.exists( "/deep" ) );
+
+		Settings deeper = deep.getNode( "deeper" );
+		deeper.set( "b", "B" );
+		assertThat( deeper.get( "b" ), is( "B" ) );
+		assertTrue( deep.exists( "deeper" ) );
+		assertFalse( deep.exists( "/deeper" ) );
+		assertTrue( settings.exists( "/deep/deeper" ) );
 	}
 
 	@Test
@@ -40,7 +53,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testGetNode() {
+	void testGetNode() {
 		Settings peer = settings.getNode( "peer" );
 		assertThat( peer, instanceOf( settings.getClass() ) );
 		assertThat( peer.getPath(), is( "/peer" ) );
@@ -52,14 +65,14 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testGetNodeWithParentAndName() {
+	void testGetNodeWithParentAndName() {
 		assertThat( settings.getNode( "", "test" ).getPath(), is( "/test" ) );
 		assertThat( settings.getNode( "/", "test" ).getPath(), is( "/test" ) );
 		assertThat( settings.getNode( "/test", "path" ).getPath(), is( "/test/path" ) );
 	}
 
 	@Test
-	public void testGetGrandNodes() {
+	void testGetGrandNodes() {
 		assertThat( settings.getPath(), startsWith( "" ) );
 
 		Settings childSettings = settings.getNode( "child" );
@@ -74,13 +87,13 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testGetNodeReturnsSameObject() {
+	void testGetNodeReturnsSameObject() {
 		assertThat( settings.getNode( "" ), is( settings ) );
 		assertThat( settings.getNode( "/" ), is( settings ) );
 	}
 
 	@Test
-	public void testGetNodes() {
+	void testGetNodes() {
 		String folder = "children/" + String.format( "%08x", new Random().nextInt() );
 		Settings childA = settings.getNode( folder + "/a" );
 		Settings childB = settings.getNode( folder + "/b" );
@@ -101,7 +114,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetStringAndGetString() {
+	void testSetStringAndGetString() {
 		String key = "key";
 		String value = "value";
 		assertThat( settings.get( key ), is( nullValue() ) );
@@ -114,7 +127,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetIntegerAndGetInteger() {
+	void testSetIntegerAndGetInteger() {
 		String key = "key";
 		Integer value = 5;
 		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
@@ -127,20 +140,22 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetStringAndGetBoolean() {
+	void testSetStringAndGetBoolean() {
 		String key = "key";
-		Boolean value = true;
 		assertThat( settings.get( key, Boolean.class ), is( nullValue() ) );
 
-		settings.set( key, String.valueOf( value ) );
-		assertThat( settings.get( key, Boolean.class ), is( value ) );
+		settings.set( key, String.valueOf( true ) );
+		assertThat( settings.get( key, Boolean.class ), is( true ) );
+
+		settings.set( key, String.valueOf( false ) );
+		assertThat( settings.get( key, Boolean.class ), is( false ) );
 
 		settings.set( key, null );
 		assertThat( settings.get( key, Boolean.class ), is( nullValue() ) );
 	}
 
 	@Test
-	public void testSetStringAndGetInteger() {
+	void testSetStringAndGetInteger() {
 		String key = "key";
 		Integer value = 5;
 		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
@@ -153,7 +168,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetStringAndGetLong() {
+	void testSetStringAndGetLong() {
 		String key = "key";
 		Long value = 5L;
 		assertThat( settings.get( key, Long.class ), is( nullValue() ) );
@@ -166,7 +181,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetStringAndGetFloat() {
+	void testSetStringAndGetFloat() {
 		String key = "key";
 		Float value = 5.0F;
 		assertThat( settings.get( key, Float.class ), is( nullValue() ) );
@@ -179,7 +194,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetStringAndGetDouble() {
+	void testSetStringAndGetDouble() {
 		String key = "key";
 		Double value = 5.0;
 		assertThat( settings.get( key, Double.class ), is( nullValue() ) );
@@ -192,7 +207,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetUriAndGetStringAndUri() throws Exception {
+	void testSetUriAndGetStringAndUri() throws Exception {
 		URI uri = new URI( "test:uri" );
 		settings.set( "uri", uri );
 
@@ -201,7 +216,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetBeanAndGetBean() {
+	void testSetBeanAndGetBean() {
 		MockBean bean = new MockBean();
 		bean.setIntegerPrimitiveProperty( 284 );
 		bean.setIntegerProperty( 1 );
@@ -217,7 +232,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetMapAndGetMap() {
+	void testSetMapAndGetMap() {
 		Map<String, MockBean> beans = new HashMap<>();
 		TypeReference<Map<String, MockBean>> reference = new TypeReference<>() {};
 		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
@@ -241,7 +256,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetListAndGetList() {
+	void testSetListAndGetList() {
 		List<MockBean> beans = new ArrayList<>();
 		TypeReference<List<MockBean>> reference = new TypeReference<>() {};
 		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
@@ -263,7 +278,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testSetSetAndGetSet() {
+	void testSetSetAndGetSet() {
 		Set<MockBean> beans = new HashSet<>();
 		TypeReference<Set<MockBean>> reference = new TypeReference<>() {};
 
@@ -286,17 +301,17 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testGetUsingDefaultValue() {
+	void testGetUsingDefaultValue() {
 		assertThat( settings.get( "missing", "default" ), is( "default" ) );
 	}
 
 	@Test
-	public void testGetBooleanUsingDefaultValue() {
+	void testGetBooleanUsingDefaultValue() {
 		assertThat( settings.get( "missing", Boolean.class, false ), is( false ) );
 	}
 
 	@Test
-	public void testGetValueFromDefaultSettings() {
+	void testGetValueFromDefaultSettings() {
 		String key = "key";
 		String value = "value";
 		String defaultValue = "defaultValue";
@@ -328,7 +343,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testGetBooleanFromStringDefault() {
+	void testGetBooleanFromStringDefault() {
 		String key = "key";
 		String value = "false";
 		String defaultValue = "true";
@@ -346,7 +361,7 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testUpdatedEvent() {
+	void testUpdatedEvent() {
 		SettingsEventWatcher watcher = new SettingsEventWatcher();
 		settings.addSettingsListener( watcher );
 		assertThat( watcher.getEvents().size(), is( 0 ) );
@@ -373,7 +388,34 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
-	public void testDelete() {
+	void testShallowCopyFrom() {
+		Settings source = new MapSettings();
+		source.set( "a", "A" );
+		source.set( "b", 2 );
+		settings.copyFrom( source );
+		assertThat( settings.get( "a" ), is( "A" ) );
+		assertThat( settings.get( "b", Integer.class ), is( 2 ) );
+	}
+
+	@Test
+	void testDeepCopyFrom() {
+		Settings source = new MapSettings();
+		source.set( "a", "A" );
+		source.set( "b", 2 );
+		Settings deep = source.getNode( "deep" );
+		deep.set( "c", "see" );
+		deep.set( "d", "D" );
+
+		settings.copyFrom( source );
+		assertThat( settings.get( "a" ), is( "A" ) );
+		assertThat( settings.get( "b", Integer.class ), is( 2 ) );
+		assertTrue( settings.exists( "deep" ) );
+		assertThat( settings.getNode( "deep" ).get( "c" ), is( "see" ) );
+		assertThat( settings.getNode( "deep" ).get( "d" ), is( "D" ) );
+	}
+
+	@Test
+	void testDelete() {
 		assertThat( settings.exists( "test" ), is( false ) );
 		Settings test = settings.getNode( "test" );
 		test.flush();
