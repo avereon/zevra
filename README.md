@@ -2,7 +2,7 @@
 
 # Zevra [![][build-status]](https://github.com/avereon/zevra/actions)
 
-A utility library commonly used in Avereon projects.
+A non-UX utility library used in many Avereon projects.
 
 ## Utilites
 
