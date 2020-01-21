@@ -70,7 +70,7 @@ public class LogUtil {
 
 		if( file != null ) {
 			File folder = new File( file ).getParentFile();
-			if( !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
+			if( !folder.exists() && !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
 
 			file = getLogFilePattern( new File( file ).getAbsolutePath() );
 			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
