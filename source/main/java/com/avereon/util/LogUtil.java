@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 public class LogUtil {
@@ -22,7 +23,7 @@ public class LogUtil {
 		configureLogging( source, parameters, null, null );
 	}
 
-	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path programDataFolder, String defaultFile ) {
+	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String defaultFile ) {
 		// Logging level conversion
 		//
 		// SLF4J -> Java
@@ -35,12 +36,18 @@ public class LogUtil {
 
 		String level = parameters.get( LogFlag.LOG_LEVEL );
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
+		if( file == null ) file = "program.log";
 
-		boolean nameOnly = file != null && !file.contains( File.separator );
-		if( nameOnly && programDataFolder != null ) file = new File( programDataFolder.toFile(), file ).toString();
+		if( file.endsWith( ".log" ) && !file.contains( "%u" ) ) {
+			String name = FileUtil.removeExtension( file );
+			file = name + ".%u.log";
+		}
+
+		boolean nameOnly = !file.contains( File.separator );
+		if( nameOnly && logFolder != null ) file = new File( logFolder.toFile(), file ).toString();
 
 		// Configure the simple formatter
-		// https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
+		// https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Formatter.html#syntax
 		StringBuilder builder = new StringBuilder( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
 
 		// Add the log console handler
@@ -51,26 +58,27 @@ public class LogUtil {
 		}
 
 		// Configure the console handler
-		builder.append( "java.util.logging.ConsoleHandler.level=ALL\n" );
+		builder.append( "java.util.logging.ConsoleHandler.level=" + getLogLevel( level ) + "\n" );
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
 		if( file != null ) {
 			new File( file ).getParentFile().mkdirs();
 			file = getLogFilePattern( new File( file ).getAbsolutePath() );
+			builder.append( "java.util.logging.FileHandler.level=" + getLogLevel( level ) + "\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( file ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
-			builder.append( "java.util.logging.FileHandler.level=ALL\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
 			builder.append( "java.util.logging.FileHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n" );
 		}
 
-		// Set the default log level
-		builder.append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
+		// Set the default log level for all other loggers
+		// Don't set this too low (debug, trace, all) because it can be noisy
+		builder.append( ".level=" ).append( getLogLevel( LogFlag.NONE ) ).append( "\n" );
 
 		// Set the javafx log level
-		builder.append( "javafx" ).append( ".level=" ).append( getLogLevel( "info" ) ).append( "\n" );
+		builder.append( "javafx" ).append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
 
 		// Set the program log level
 		String sourcePackage = source.getClass().getPackage().getName();
@@ -99,36 +107,32 @@ public class LogUtil {
 		String result = level == null ? LogFlag.INFO : level.toLowerCase();
 
 		switch( result ) {
-			case LogFlag.NONE: {
-				result = "OFF";
-				break;
-			}
 			case LogFlag.ERROR: {
-				result = "SEVERE";
+				result = Level.SEVERE.getName();
 				break;
 			}
 			case LogFlag.WARN: {
-				result = "WARNING";
+				result = Level.WARNING.getName();
 				break;
 			}
 			case LogFlag.INFO: {
-				result = "INFO";
+				result = Level.INFO.getName();
 				break;
 			}
 			case LogFlag.DEBUG: {
-				result = "FINE";
+				result = Level.FINE.getName();
 				break;
 			}
 			case LogFlag.TRACE: {
-				result = "FINEST";
+				result = Level.FINEST.getName();
 				break;
 			}
 			case LogFlag.ALL: {
-				result = "ALL";
+				result = Level.ALL.getName();
 				break;
 			}
 			default: {
-				result = "INFO";
+				result = Level.OFF.getName();
 				break;
 			}
 		}
