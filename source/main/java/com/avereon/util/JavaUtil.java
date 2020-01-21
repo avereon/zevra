@@ -40,6 +40,23 @@ public final class JavaUtil {
 		return Thread.currentThread().getStackTrace()[ level ].getClassName();
 	}
 
+	public static String getCallingMethodName() {
+		return getCallingMethodName( 3 );
+	}
+
+	public static String getCallingMethodName( int level ) {
+		return Thread.currentThread().getStackTrace()[ level ].getMethodName();
+	}
+
+	public static String getCaller() {
+		return getCaller( 3 );
+	}
+
+	public static String getCaller( int level ) {
+		StackTraceElement element = Thread.currentThread().getStackTrace()[ level ];
+		return element.getClassName() + "." + element.getMethodName();
+	}
+
 	/**
 	 * Get the simple class name from a full class name.
 	 *
