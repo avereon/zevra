@@ -34,7 +34,7 @@ public class LogUtil {
 		// DEBUG -> FINE
 		// TRACE -> FINEST
 
-		String level = parameters.get( LogFlag.LOG_LEVEL );
+		String level = getLogLevel( parameters.get( LogFlag.LOG_LEVEL ) );
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
 		if( file == null ) file = "program.log";
 
@@ -57,14 +57,23 @@ public class LogUtil {
 			builder.append( "handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler\n" );
 		}
 
+		// LOG HANDLER CONFIGURATIONS
+		/*
+		NOTE The level that filters out log events is the handler level.
+		The handler level is specified in the handler configurations below.
+		Also see logger level note below.
+		*/
+
 		// Configure the console handler
-		builder.append( "java.util.logging.ConsoleHandler.level=" + getLogLevel( level ) + "\n" );
+		builder.append( "java.util.logging.ConsoleHandler.level=" ).append( level ).append( "\n" );
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
 		if( file != null ) {
-			new File( file ).getParentFile().mkdirs();
+			File folder = new File( file ).getParentFile();
+			if( !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
+
 			file = getLogFilePattern( new File( file ).getAbsolutePath() );
-			builder.append( "java.util.logging.FileHandler.level=" + getLogLevel( level ) + "\n" );
+			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( file ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
@@ -73,20 +82,28 @@ public class LogUtil {
 			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n" );
 		}
 
-		// Set the default log level for all other loggers
+		// LOG LOGGER CONFIGURATIONS
+		/*
+		NOTE The level that loggers use to filter when creating log events is the logger level.
+		The logger level is specified in the logger configurations below. There is
+		no point in logging more than the handlers want to set them to the log level.
+		Also see handler level note above.
+		*/
+
+		// Set the javafx logger level
+		builder.append( "javafx" ).append( ".level=" ).append( level ).append( "\n" );
+
+		// Set the program logger level
+		String sourcePackage = source.getClass().getPackage().getName();
+		builder.append( sourcePackage ).append( ".level=" ).append( level ).append( "\n" );
+
+		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
 		builder.append( ".level=" ).append( getLogLevel( LogFlag.NONE ) ).append( "\n" );
 
-		// Set the javafx log level
-		builder.append( "javafx" ).append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
-
-		// Set the program log level
-		String sourcePackage = source.getClass().getPackage().getName();
-		builder.append( sourcePackage ).append( ".level=" ).append( getLogLevel( level ) ).append( "\n" );
-
+		// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 		// Initialize the logging
 		try {
-			// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
 		} catch( IOException exception ) {
