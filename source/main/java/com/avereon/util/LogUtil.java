@@ -15,6 +15,10 @@ import java.util.logging.LogManager;
 
 public class LogUtil {
 
+	public static Logger get( String name ) {
+		return LoggerFactory.getLogger( name );
+	}
+
 	public static Logger get( Class<?> clazz ) {
 		return LoggerFactory.getLogger( clazz );
 	}
@@ -34,7 +38,7 @@ public class LogUtil {
 		// DEBUG -> FINE
 		// TRACE -> FINEST
 
-		String level = getLogLevel( parameters.get( LogFlag.LOG_LEVEL ) );
+		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL ) ).getName();
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
 		if( file == null ) file = "program.log";
 
@@ -99,7 +103,7 @@ public class LogUtil {
 
 		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( getLogLevel( LogFlag.NONE ) ).append( "\n" );
+		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.NONE ).getName() ).append( "\n" );
 
 		// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 		// Initialize the logging
@@ -120,41 +124,30 @@ public class LogUtil {
 		return "%h/" + userHome.relativize( Paths.get( path ) ).toString().replace( '\\', '/' );
 	}
 
-	private static String getLogLevel( String level ) {
-		String result = level == null ? LogFlag.INFO : level.toLowerCase();
-
-		switch( result ) {
+	public static Level convertToJavaLogLevel( String level ) {
+		switch( level == null ? LogFlag.NONE : level.toLowerCase() ) {
 			case LogFlag.ERROR: {
-				result = Level.SEVERE.getName();
-				break;
+				return Level.SEVERE;
 			}
 			case LogFlag.WARN: {
-				result = Level.WARNING.getName();
-				break;
+				return Level.WARNING;
 			}
 			case LogFlag.INFO: {
-				result = Level.INFO.getName();
-				break;
+				return Level.INFO;
 			}
 			case LogFlag.DEBUG: {
-				result = Level.FINE.getName();
-				break;
+				return Level.FINE;
 			}
 			case LogFlag.TRACE: {
-				result = Level.FINEST.getName();
-				break;
+				return Level.FINEST;
 			}
 			case LogFlag.ALL: {
-				result = Level.ALL.getName();
-				break;
+				return Level.ALL;
 			}
 			default: {
-				result = Level.OFF.getName();
-				break;
+				return Level.OFF;
 			}
 		}
-
-		return result;
 	}
 
 }
