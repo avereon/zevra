@@ -53,7 +53,7 @@ public class LogUtil {
 		// TRACE -> FINEST
 
 		StringBuilder builder = new StringBuilder();
-		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL ) ).getName();
+		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO  ) ).getName();
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
 
 		boolean nameOnly = file != null && !file.contains( File.separator );
