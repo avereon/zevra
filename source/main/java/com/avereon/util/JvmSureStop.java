@@ -41,6 +41,8 @@ public class JvmSureStop extends Thread {
 
 	@Override
 	public void run() {
+		if( TestUtil.isTest() ) return;
+
 		try {
 			Thread.sleep( delay );
 		} catch( InterruptedException exception ) {
