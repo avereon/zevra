@@ -27,6 +27,20 @@ public class LogUtil {
 		configureLogging( source, parameters, null, null );
 	}
 
+	/**
+	 * Configure general logging for this JVM. This method does several things:
+	 * <ol>
+	 *   <li>Creates a ConsoleHandler set with the parameter log level</li>
+	 *   <li>Creates a FileHandler set with the parameter log level</li>
+	 *   <li>Sets the default log level to LogFlag.NONE</li>
+	 *   <li>Sets the source package log level to the parameter log level</li>
+	 * </ol>
+	 *
+	 * @param source
+	 * @param parameters
+	 * @param logFolder
+	 * @param defaultFile
+	 */
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String defaultFile ) {
 		// Logging level conversion
 		//
@@ -38,21 +52,16 @@ public class LogUtil {
 		// DEBUG -> FINE
 		// TRACE -> FINEST
 
-		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL ) ).getName();
+		StringBuilder builder = new StringBuilder();
+		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO  ) ).getName();
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
-		if( file == null ) file = "program.log";
 
-		if( file.endsWith( ".log" ) && !file.contains( "%u" ) ) {
-			String name = FileUtil.removeExtension( file );
-			file = name + ".%u.log";
-		}
-
-		boolean nameOnly = !file.contains( File.separator );
+		boolean nameOnly = file != null && !file.contains( File.separator );
 		if( nameOnly && logFolder != null ) file = new File( logFolder.toFile(), file ).toString();
 
 		// Configure the simple formatter
 		// https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Formatter.html#syntax
-		StringBuilder builder = new StringBuilder( ProgramFormatter.class.getName() + ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
+		builder.append( ProgramFormatter.class.getName() ).append( ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
 
 		// Add the log console handler
 		if( file == null ) {
@@ -94,22 +103,41 @@ public class LogUtil {
 		Also see handler level note above.
 		*/
 
-		// Set the javafx logger level
-		builder.append( "javafx" ).append( ".level=" ).append( level ).append( "\n" );
+		// Set the default logger level for all other loggers
+		// Don't set this too low (debug, trace, all) because it can be noisy
+		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.NONE ).getName() ).append( "\n" );
 
 		// Set the program logger level
 		String sourcePackage = source.getClass().getPackage().getName();
 		builder.append( sourcePackage ).append( ".level=" ).append( level ).append( "\n" );
-
-		// Set the default logger level for all other loggers
-		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.NONE ).getName() ).append( "\n" );
 
 		// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 		// Initialize the logging
 		try {
 			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
+		} catch( IOException exception ) {
+			exception.printStackTrace( System.err );
+		}
+	}
+
+	/**
+	 * Updates the logging configuration by setting the log level for the
+	 * package logger with the specified name.
+	 *
+	 * @param packageName The name of the package for the logger
+	 * @param levelName The level name to use for the package logger
+	 */
+	public static void setPackageLogLevel( String packageName, String levelName ) {
+		StringBuilder builder = new StringBuilder();
+		String level = convertToJavaLogLevel( levelName ).getName();
+
+		// Set the program logger level
+		builder.append( packageName ).append( ".level=" ).append( level ).append( "\n" );
+
+		try {
+			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
+			LogManager.getLogManager().updateConfiguration( input, k -> ( o, n ) -> n == null ? o : n );
 		} catch( IOException exception ) {
 			exception.printStackTrace( System.err );
 		}
