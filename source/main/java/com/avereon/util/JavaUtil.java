@@ -6,7 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.*;
 
 public final class JavaUtil {
@@ -33,28 +36,33 @@ public final class JavaUtil {
 	}
 
 	public static String getCallingClassName() {
-		return getCallingClassName( 3 );
+		return getCallingClassName( 1 );
 	}
 
 	public static String getCallingClassName( int level ) {
-		return Thread.currentThread().getStackTrace()[ level ].getClassName();
+		return getElement( level ).getClassName();
 	}
 
 	public static String getCallingMethodName() {
-		return getCallingMethodName( 3 );
+		return getCallingMethodName( 1 );
 	}
 
 	public static String getCallingMethodName( int level ) {
-		return Thread.currentThread().getStackTrace()[ level ].getMethodName();
+		return getElement( level ).getMethodName();
 	}
 
 	public static String getCaller() {
-		return getCaller( 3 );
+		return getCaller( 1 );
 	}
 
 	public static String getCaller( int level ) {
-		StackTraceElement element = Thread.currentThread().getStackTrace()[ level ];
+		StackTraceElement element = getElement( level );
 		return element.getClassName() + "." + element.getMethodName();
+	}
+
+	@SuppressWarnings( "OptionalGetWithoutIsPresent" )
+	private static StackTraceElement getElement( int level ) {
+		return StackWalker.getInstance().walk( s -> s.skip( level + 2 ).findFirst() ).get().toStackTraceElement();
 	}
 
 	/**

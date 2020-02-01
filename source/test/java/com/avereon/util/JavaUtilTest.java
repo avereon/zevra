@@ -22,8 +22,27 @@ class JavaUtilTest {
 
 	@Test
 	void testGetCallingClassNameWithLevel() {
-		assertThat( JavaUtil.getCallingClassName( 0 ), is( Thread.class.getName() ) );
-		assertThat( JavaUtil.getCallingClassName( 1 ), is( JavaUtil.class.getName() ) );
+		assertThat( JavaUtil.getCallingClassName( 0 ), is( JavaUtilTest.class.getName() ) );
+	}
+
+	@Test
+	void testGetCallingMethodName() {
+		assertThat( JavaUtil.getCallingMethodName(), is( "testGetCallingMethodName" ) );
+	}
+
+	@Test
+	void testGetCallingMethodNameWithLevel() {
+		assertThat( JavaUtil.getCallingMethodName( 0 ), is( "testGetCallingMethodNameWithLevel" ) );
+	}
+
+	@Test
+	void testGetCaller() {
+		assertThat( JavaUtil.getCaller(), is( JavaUtilTest.class.getName() + ".testGetCaller" ) );
+	}
+
+	@Test
+	void testGetCallerWithLevel() {
+		assertThat( JavaUtil.getCaller( 0 ), is( JavaUtilTest.class.getName() + ".testGetCallerWithLevel" ) );
 	}
 
 	@Test
