@@ -1,17 +1,16 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static java.lang.System.Logger.Level.ERROR;
+
 public final class UriUtil {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	public static URI addToPath( URI uri, String path ) {
 		String newPath = uri.getPath() + "/" + path;
@@ -39,7 +38,7 @@ public final class UriUtil {
 			}
 		} catch( URISyntaxException exception ) {
 			// Intentionally ignore exception - should never happen
-			log.error( "Error resolving asset URI: " + uri, exception );
+			log.log( ERROR, "Error resolving asset URI: " + uri, exception );
 		}
 
 		return null;
@@ -79,7 +78,7 @@ public final class UriUtil {
 				uri = new File( uri ).getCanonicalFile().toURI();
 			} catch( IOException exception ) {
 				// Intentionally ignore exception.
-				log.error( "Error resolving file URI: " + uri, exception );
+				log.log( ERROR, "Error resolving file URI: " + uri, exception );
 			}
 		}
 

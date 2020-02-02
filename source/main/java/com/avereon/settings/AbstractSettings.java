@@ -1,26 +1,26 @@
 package com.avereon.settings;
 
-import com.avereon.event.EventHandler;
 import com.avereon.event.EventBus;
+import com.avereon.event.EventHandler;
 import com.avereon.util.LogUtil;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.lang.System.Logger.Level.WARNING;
+
 public abstract class AbstractSettings implements Settings {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static final Map<Class<?>, OutboundConverter> outboundConverters;
 
@@ -255,7 +255,7 @@ public abstract class AbstractSettings implements Settings {
 		try {
 			return new ObjectMapper().writeValueAsString( value );
 		} catch( JsonProcessingException exception ) {
-			log.warn( "Error marshalling value", exception );
+			log.log( WARNING, "Error marshalling value", exception );
 			return null;
 		}
 	}
@@ -268,7 +268,7 @@ public abstract class AbstractSettings implements Settings {
 			ObjectMapper mapper = new ObjectMapper();
 			return (T)mapper.readerFor( mapper.constructType( type.getType() ) ).readValue( value );
 		} catch( IOException exception ) {
-			log.warn( "Error unmarshalling value", exception );
+			log.log( WARNING, "Error unmarshalling value", exception );
 			return null;
 		}
 	}

@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -11,13 +10,14 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * A convenience class to simplify the use of XML documents as descriptors. This
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class XmlDescriptor {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private Node node;
 
@@ -304,7 +304,7 @@ public class XmlDescriptor {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.error( "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 
 		return value;
@@ -326,7 +326,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.error( "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 		if( nodes == null ) return null;
 
@@ -394,7 +394,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.error( "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 		if( nodes == null ) return null;
 
@@ -404,7 +404,7 @@ public class XmlDescriptor {
 			try {
 				values.add( (String)xpath.evaluate( "normalize-space()", nodes.item( index ), XPathConstants.STRING ) );
 			} catch( XPathExpressionException exception ) {
-				log.error( "Error evaluating xpath: " + path, new Exception( path, exception ) );
+				log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 			}
 		}
 

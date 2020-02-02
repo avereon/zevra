@@ -1,15 +1,13 @@
 package com.avereon.product;
 
+import com.avereon.util.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.avereon.util.*;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
@@ -20,7 +18,7 @@ import java.util.*;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard extends BaseCard {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static final String CARD = "META-INF/product.card";
 

@@ -1,10 +1,9 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Map;
+
+import static java.lang.System.Logger.Level.*;
 
 /**
  * This shutdown hook is used to ensure that the program eventually terminates
@@ -19,7 +18,7 @@ import java.util.Map;
  */
 public class JvmSureStop extends Thread {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	/**
 	 * The amount of time to give the JVM to exit cleanly. After this amount of
@@ -49,14 +48,14 @@ public class JvmSureStop extends Thread {
 			return;
 		}
 
-		log.error( "JVM did not exit cleanly. Here are the running non-daemon threads:" );
+		log.log( ERROR, "JVM did not exit cleanly. Here are the running non-daemon threads:" );
 		Map<Thread, StackTraceElement[]> threadStacks = Thread.getAllStackTraces();
 		threadStacks.keySet().stream().filter( t -> !t.isDaemon() ).forEach( thread -> {
-			log.warn( "Thread: " + thread.getId() + " " + thread.getName() + "[g=" + thread.getThreadGroup() + "]" );
-			Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.info( "  " + e ) );
+			log.log( WARNING, "Thread: " + thread.getId() + " " + thread.getName() + "[g=" + thread.getThreadGroup() + "]" );
+			Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.log( INFO, "  " + e ) );
 		} );
 
-		log.error( "Halting now!" );
+		log.log( ERROR, "Halting now!" );
 		ThreadUtil.pause( 200 );
 
 		Runtime.getRuntime().halt( -1 );

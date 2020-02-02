@@ -1,8 +1,5 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,12 +12,23 @@ import java.util.logging.LogManager;
 
 public class LogUtil {
 
-	public static Logger get( String name ) {
-		return LoggerFactory.getLogger( name );
+	public static System.Logger log() {
+		return System.getLogger( JavaUtil.getCallingClassName( 1 ) );
 	}
 
-	public static Logger get( Class<?> clazz ) {
-		return LoggerFactory.getLogger( clazz );
+	@Deprecated
+	public static org.slf4j.Logger get() {
+		return org.slf4j.LoggerFactory.getLogger( JavaUtil.getCallingClassName( 1 ) );
+	}
+
+	@Deprecated
+	public static org.slf4j.Logger get( String name ) {
+		return org.slf4j.LoggerFactory.getLogger( name );
+	}
+
+	@Deprecated
+	public static org.slf4j.Logger get( Class<?> clazz ) {
+		return org.slf4j.LoggerFactory.getLogger( clazz );
 	}
 
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters ) {
@@ -53,7 +61,7 @@ public class LogUtil {
 		// TRACE -> FINEST
 
 		StringBuilder builder = new StringBuilder();
-		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO  ) ).getName();
+		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO ) ).getName();
 		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
 
 		boolean nameOnly = file != null && !file.contains( File.separator );

@@ -3,12 +3,10 @@ package com.avereon.settings;
 import com.avereon.util.FileUtil;
 import com.avereon.util.LogUtil;
 import com.avereon.util.PathUtil;
-import org.slf4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -17,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+
+import static java.lang.System.Logger.Level.*;
 
 public class StoredSettings extends AbstractSettings {
 
@@ -34,7 +34,7 @@ public class StoredSettings extends AbstractSettings {
 
 	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
 
@@ -142,7 +142,7 @@ public class StoredSettings extends AbstractSettings {
 		try( Stream<Path> list = Files.list( folder ) ) {
 			list.parallel().forEach( path -> names.add( path.getFileName().toString() ) );
 		} catch( IOException exception ) {
-			log.warn( "Unable to list paths: " + folder, exception );
+			log.log( WARNING, "Unable to list paths: " + folder, exception );
 		}
 
 		return names;
@@ -199,7 +199,7 @@ public class StoredSettings extends AbstractSettings {
 			// Delete the folder if empty
 			if( getNodes().size() == 0 ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
-			log.error( "Unable to delete settings folder: " + folder, exception );
+			log.log( ERROR, "Unable to delete settings folder: " + folder, exception );
 		}
 
 		return this;
@@ -217,7 +217,7 @@ public class StoredSettings extends AbstractSettings {
 			values.load( input );
 			getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.LOADED, getPath() ) );
 		} catch( IOException exception ) {
-			log.error( "Error loading settings file: " + file, exception );
+			log.log( ERROR, "Error loading settings file: " + file, exception );
 		}
 	}
 
@@ -226,14 +226,14 @@ public class StoredSettings extends AbstractSettings {
 		try {
 			Files.createDirectories( file.getParent() );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + file, exception );
+			log.log( ERROR, "Error saving settings file: " + file, exception );
 		}
 		try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 			values.store( output, null );
 			lastStoreTime.set( System.currentTimeMillis() );
 			getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
 		} catch( IOException exception ) {
-			log.error( "Error saving settings file: " + file, exception );
+			log.log( ERROR, "Error saving settings file: " + file, exception );
 		}
 	}
 

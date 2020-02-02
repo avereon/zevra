@@ -1,11 +1,8 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,10 +10,12 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import static java.lang.System.Logger.Level.ERROR;
+
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	public static final int LEFT = -1;
 
@@ -520,7 +519,7 @@ public final class TextUtil {
 				lines.add( line );
 			}
 		} catch( IOException exception ) {
-			log.error( "Error parsing text", exception );
+			log.log( ERROR, "Error parsing text", exception );
 		}
 
 		return lines;
@@ -536,7 +535,7 @@ public final class TextUtil {
 				count++;
 			}
 		} catch( IOException exception ) {
-			log.error( "Error parsing text", exception );
+			log.log( ERROR, "Error parsing text", exception );
 		}
 
 		return count;

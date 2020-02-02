@@ -1,9 +1,6 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +9,7 @@ import java.util.List;
 
 public class OperatingSystem {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	public enum Family {
 		UNKNOWN,

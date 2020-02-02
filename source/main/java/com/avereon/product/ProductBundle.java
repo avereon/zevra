@@ -1,20 +1,20 @@
 package com.avereon.product;
 
 import com.avereon.util.LogUtil;
-import org.slf4j.Logger;
 
-import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import static java.lang.System.Logger.Level.WARNING;
 
 /**
  * This class is to simplify the interface and use of resource bundles.
  */
 public class ProductBundle {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static final String DEFAULT_PATH = "/bundles";
 
@@ -52,7 +52,7 @@ public class ProductBundle {
 
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
-			log.warn( "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
+			log.log( WARNING, "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
 		}
 
 		return string;

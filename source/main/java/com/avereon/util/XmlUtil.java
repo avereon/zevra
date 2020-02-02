@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -17,8 +16,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
+
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * A convenience class for loading, saving, formatting, and querying XML
@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static final int DEFAULT_INDENT = 2;
 
@@ -99,7 +99,7 @@ public class XmlUtil {
 		try {
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.error( "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 
 		return value;
@@ -197,7 +197,7 @@ public class XmlUtil {
 		try {
 			save( node, output );
 		} catch( IOException exception ) {
-			log.error( "Error converting node to string", exception );
+			log.log( ERROR, "Error converting node to string", exception );
 		}
 		return output.toString();
 	}

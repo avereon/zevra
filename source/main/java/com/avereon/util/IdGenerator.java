@@ -1,14 +1,13 @@
 package com.avereon.util;
 
-import org.slf4j.Logger;
-
-import java.lang.invoke.MethodHandles;
 import java.security.MessageDigest;
 import java.util.Random;
 
+import static java.lang.System.Logger.Level.ERROR;
+
 public class IdGenerator {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static final Random RANDOM = new Random();
 
@@ -47,7 +46,7 @@ public class IdGenerator {
 				id ^= value;
 			}
 		} catch( Exception exception ) {
-			log.error( "Error computing id for: " + string, exception );
+			log.log( ERROR, "Error computing id for: " + string, exception );
 		}
 
 		return getId( id );
