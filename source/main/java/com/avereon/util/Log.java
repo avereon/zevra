@@ -31,20 +31,20 @@ public class Log {
 		return System.getLogger( JavaUtil.getCallingClassName( 1 ) );
 	}
 
-	@Deprecated
-	public static org.slf4j.Logger get() {
-		return org.slf4j.LoggerFactory.getLogger( JavaUtil.getCallingClassName( 1 ) );
-	}
-
-	@Deprecated
-	public static org.slf4j.Logger get( String name ) {
-		return org.slf4j.LoggerFactory.getLogger( name );
-	}
-
-	@Deprecated
-	public static org.slf4j.Logger get( Class<?> clazz ) {
-		return org.slf4j.LoggerFactory.getLogger( clazz );
-	}
+//	@Deprecated
+//	public static org.slf4j.Logger get() {
+//		return org.slf4j.LoggerFactory.getLogger( JavaUtil.getCallingClassName( 1 ) );
+//	}
+//
+//	@Deprecated
+//	public static org.slf4j.Logger get( String name ) {
+//		return org.slf4j.LoggerFactory.getLogger( name );
+//	}
+//
+//	@Deprecated
+//	public static org.slf4j.Logger get( Class<?> clazz ) {
+//		return org.slf4j.LoggerFactory.getLogger( clazz );
+//	}
 
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters ) {
 		configureLogging( source, parameters, null, null );
