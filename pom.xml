@@ -70,9 +70,11 @@
 				<!-- This configuration allows the JUnit test runner to find the unit tests -->
 				<configuration>
 					<argLine>
+						--add-opens=com.avereon.zevra/com.avereon.data=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.event=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.product=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.settings=ALL-UNNAMED
+						--add-opens=com.avereon.zevra/com.avereon.transaction=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.undo=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.util=ALL-UNNAMED,com.fasterxml.jackson.databind
 					</argLine>
