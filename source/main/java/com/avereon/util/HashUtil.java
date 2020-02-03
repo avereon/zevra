@@ -1,15 +1,14 @@
 package com.avereon.util;
 
 import java.io.*;
+import java.lang.System.Logger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static java.lang.System.Logger.Level.ERROR;
-
 public class HashUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 
@@ -57,7 +56,7 @@ public class HashUtil {
 		try( FileInputStream input = new FileInputStream( file ) ) {
 			return hash( input, strategy );
 		} catch( IOException exception ) {
-			log.log( ERROR, "Error reading file " + file, exception );
+			log.log( Log.ERROR, "Error reading file " + file, exception );
 			return null;
 		}
 	}
@@ -106,7 +105,7 @@ public class HashUtil {
 					digest.update( buffer, 0, count );
 				}
 			} catch( IOException exception ) {
-				log.log( ERROR, "Error reading stream", exception );
+				log.log( Log.ERROR, "Error reading stream", exception );
 				return null;
 			}
 
@@ -125,7 +124,7 @@ public class HashUtil {
 				digest = MessageDigest.getInstance( algorithm );
 			} catch( NoSuchAlgorithmException exception ) {
 				exception.printStackTrace( System.err );
-				log.log( ERROR, "Error creating digest", exception );
+				log.log( Log.ERROR, "Error creating digest", exception );
 			}
 			this.digest = digest;
 		}

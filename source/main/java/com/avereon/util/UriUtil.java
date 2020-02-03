@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-
-import static java.lang.System.Logger.Level.ERROR;
+import java.lang.System.Logger;
 
 public final class UriUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	public static URI addToPath( URI uri, String path ) {
 		String newPath = uri.getPath() + "/" + path;
@@ -38,7 +37,7 @@ public final class UriUtil {
 			}
 		} catch( URISyntaxException exception ) {
 			// Intentionally ignore exception - should never happen
-			log.log( ERROR, "Error resolving asset URI: " + uri, exception );
+			log.log( Log.ERROR, "Error resolving asset URI: " + uri, exception );
 		}
 
 		return null;
@@ -78,7 +77,7 @@ public final class UriUtil {
 				uri = new File( uri ).getCanonicalFile().toURI();
 			} catch( IOException exception ) {
 				// Intentionally ignore exception.
-				log.log( ERROR, "Error resolving file URI: " + uri, exception );
+				log.log( Log.ERROR, "Error resolving file URI: " + uri, exception );
 			}
 		}
 

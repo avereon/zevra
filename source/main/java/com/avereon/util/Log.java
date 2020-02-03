@@ -4,15 +4,30 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-public class LogUtil {
+public class Log {
 
-	public static System.Logger log() {
+	public static final System.Logger.Level OFF = System.Logger.Level.OFF;
+
+	public static final System.Logger.Level ERROR = System.Logger.Level.ERROR;
+
+	public static final System.Logger.Level WARN = System.Logger.Level.WARNING;
+
+	public static final System.Logger.Level INFO = System.Logger.Level.INFO;
+
+	public static final System.Logger.Level DEBUG = System.Logger.Level.DEBUG;
+
+	public static final System.Logger.Level TRACE = System.Logger.Level.TRACE;
+
+	public static final System.Logger.Level ALL = System.Logger.Level.ALL;
+
+	public static Logger log() {
 		return System.getLogger( JavaUtil.getCallingClassName( 1 ) );
 	}
 

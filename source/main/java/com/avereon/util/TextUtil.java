@@ -9,13 +9,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-
-import static java.lang.System.Logger.Level.ERROR;
+import java.lang.System.Logger;
 
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	public static final int LEFT = -1;
 
@@ -172,7 +171,8 @@ public final class TextUtil {
 	}
 
 	/**
-	 * Returns a printable string representation of a character by converting char values less than or equal to 32 or greater than or equal to 126 to the integer value surrounded by brackets.
+	 * Returns a printable string representation of a character by converting char values less than or equal to 32 or greater than or equal to 126 to the integer
+	 * value surrounded by brackets.
 	 * <p>
 	 * Example: An escape char (27) would be returned as: [27]
 	 * <p>
@@ -294,10 +294,13 @@ public final class TextUtil {
 
 	/**
 	 * <p>
-	 * Encode the char[] into a hex string. Secure means that at no time is the char[] converted, in its entirety, to or from a String. See the security note below.
+	 * Encode the char[] into a hex string. Secure means that at no time is the char[] converted, in its entirety, to or from a String. See the security note
+	 * below.
 	 * <p>
-	 * Security note: Objects of type String are immutable, meaning there are no methods defined that allow you to change (overwrite) or zero out the contents of a String after usage. This feature makes String objects unsuitable for storing
-	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can inspect the JVM memory. Security sensitive information should always be collected
+	 * Security note: Objects of type String are immutable, meaning there are no methods defined that allow you to change (overwrite) or zero out the contents of
+	 * a String after usage. This feature makes String objects unsuitable for storing
+	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can
+	 * inspect the JVM memory. Security sensitive information should always be collected
 	 * and stored in a char array instead.
 	 *
 	 * @param chars The characters to hex encode
@@ -317,10 +320,13 @@ public final class TextUtil {
 	}
 
 	/**
-	 * Decode a hex string into a char[]. Secure means that at no time is the char[] converted, in its entirety, to or from a String. See the security note below.
+	 * Decode a hex string into a char[]. Secure means that at no time is the char[] converted, in its entirety, to or from a String. See the security note
+	 * below.
 	 * <p>
-	 * Security note: Objects of type String are immutable, meaning there are no methods defined that allow you to change (overwrite) or zero out the contents of a String after usage. This feature makes String objects unsuitable for storing
-	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can inspect the JVM memory. Security sensitive information should always be collected
+	 * Security note: Objects of type String are immutable, meaning there are no methods defined that allow you to change (overwrite) or zero out the contents of
+	 * a String after usage. This feature makes String objects unsuitable for storing
+	 * security sensitive information, such as passwords. The String objects can easily be discovered using standard debugging tools or other methods that can
+	 * inspect the JVM memory. Security sensitive information should always be collected
 	 * and stored in a char array instead.
 	 *
 	 * @param string The hex encoded string to decode
@@ -519,7 +525,7 @@ public final class TextUtil {
 				lines.add( line );
 			}
 		} catch( IOException exception ) {
-			log.log( ERROR, "Error parsing text", exception );
+			log.log( Log.ERROR, "Error parsing text", exception );
 		}
 
 		return lines;
@@ -535,7 +541,7 @@ public final class TextUtil {
 				count++;
 			}
 		} catch( IOException exception ) {
-			log.log( ERROR, "Error parsing text", exception );
+			log.log( Log.ERROR, "Error parsing text", exception );
 		}
 
 		return count;

@@ -2,7 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
-public class LogUtilTest {
+public class LogTest {
 
 	int testingCount = 10000;
 

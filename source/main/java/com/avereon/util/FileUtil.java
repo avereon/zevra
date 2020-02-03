@@ -1,6 +1,7 @@
 package com.avereon.util;
 
 import java.io.*;
+import java.lang.System.Logger;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -20,7 +21,7 @@ public class FileUtil {
 
 	public static final Path TEMP_FOLDER = Paths.get( System.getProperty( "java.io.tmpdir" ) );
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	private static final long FILE_COPY_BUFFER_SIZE = SizeUnitBase2.MiB.getSize() * 25;
 

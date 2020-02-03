@@ -17,8 +17,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-
-import static java.lang.System.Logger.Level.ERROR;
+import java.lang.System.Logger;
 
 /**
  * A convenience class for loading, saving, formatting, and querying XML
@@ -27,7 +26,7 @@ import static java.lang.System.Logger.Level.ERROR;
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	private static final int DEFAULT_INDENT = 2;
 
@@ -99,7 +98,7 @@ public class XmlUtil {
 		try {
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 
 		return value;
@@ -197,7 +196,7 @@ public class XmlUtil {
 		try {
 			save( node, output );
 		} catch( IOException exception ) {
-			log.log( ERROR, "Error converting node to string", exception );
+			log.log( Log.ERROR, "Error converting node to string", exception );
 		}
 		return output.toString();
 	}

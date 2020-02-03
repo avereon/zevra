@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard extends BaseCard {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	private static final String CARD = "META-INF/product.card";
 

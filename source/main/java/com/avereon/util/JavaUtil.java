@@ -3,17 +3,16 @@ package com.avereon.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.System.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
 
-import static java.lang.System.Logger.Level.TRACE;
-
 public final class JavaUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	public static boolean isTest() {
 		try {
@@ -219,9 +218,9 @@ public final class JavaUtil {
 
 	public static void printClassLoader( Object object ) {
 		if( object instanceof Class ) {
-			log.log( TRACE, "Class loader for " + getClassName( (Class<?>)object ) + ": " + ((Class<?>)object).getClassLoader() );
+			log.log( Log.TRACE, "Class loader for " + getClassName( (Class<?>)object ) + ": " + ((Class<?>)object).getClassLoader() );
 		} else {
-			log.log( TRACE, "Class loader for " + getClassName( object.getClass() ) + ": " + getClassLoader( object ) );
+			log.log( Log.TRACE, "Class loader for " + getClassName( object.getClass() ) + ": " + getClassLoader( object ) );
 		}
 	}
 

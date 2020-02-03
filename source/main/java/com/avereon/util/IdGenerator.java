@@ -2,12 +2,11 @@ package com.avereon.util;
 
 import java.security.MessageDigest;
 import java.util.Random;
-
-import static java.lang.System.Logger.Level.ERROR;
+import java.lang.System.Logger;
 
 public class IdGenerator {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	private static final Random RANDOM = new Random();
 
@@ -46,7 +45,7 @@ public class IdGenerator {
 				id ^= value;
 			}
 		} catch( Exception exception ) {
-			log.log( ERROR, "Error computing id for: " + string, exception );
+			log.log( Log.ERROR, "Error computing id for: " + string, exception );
 		}
 
 		return getId( id );

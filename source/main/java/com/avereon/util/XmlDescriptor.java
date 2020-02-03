@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static java.lang.System.Logger.Level.ERROR;
+import java.lang.System.Logger;
 
 /**
  * A convenience class to simplify the use of XML documents as descriptors. This
@@ -38,7 +37,7 @@ import static java.lang.System.Logger.Level.ERROR;
  */
 public class XmlDescriptor {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final Logger log = Log.log();
 
 	private Node node;
 
@@ -304,7 +303,7 @@ public class XmlDescriptor {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 
 		return value;
@@ -326,7 +325,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 		if( nodes == null ) return null;
 
@@ -394,7 +393,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 		}
 		if( nodes == null ) return null;
 
@@ -404,11 +403,11 @@ public class XmlDescriptor {
 			try {
 				values.add( (String)xpath.evaluate( "normalize-space()", nodes.item( index ), XPathConstants.STRING ) );
 			} catch( XPathExpressionException exception ) {
-				log.log( ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+				log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
 			}
 		}
 
-		return values.toArray( new String[ values.size() ] );
+		return values.toArray( new String[ 0 ] );
 	}
 
 	/**
