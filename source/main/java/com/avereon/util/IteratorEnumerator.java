@@ -6,11 +6,11 @@ import java.util.Iterator;
 /**
  * Implementation found at: https://stackoverflow.com/questions/7085990/java-enumeration-from-setstring
  */
-class IteratorEnumeration<E> implements Enumeration<E> {
+public class IteratorEnumerator<E> implements Enumeration<E> {
 
 	private final Iterator<E> iterator;
 
-	public IteratorEnumeration( Iterator<E> iterator ) {
+	public IteratorEnumerator( Iterator<E> iterator ) {
 		this.iterator = iterator;
 	}
 
