@@ -4,10 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.System.Logger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -27,24 +28,9 @@ public class Log {
 
 	public static final System.Logger.Level ALL = System.Logger.Level.ALL;
 
-	public static Logger log() {
-		return System.getLogger( JavaUtil.getCallingClassName( 1 ) );
+	public static System.Logger log() {
+		return new SystemLoggerWrapper( System.getLogger( JavaUtil.getCallingClassName( 1 ) ) );
 	}
-
-//	@Deprecated
-//	public static org.slf4j.Logger get() {
-//		return org.slf4j.LoggerFactory.getLogger( JavaUtil.getCallingClassName( 1 ) );
-//	}
-//
-//	@Deprecated
-//	public static org.slf4j.Logger get( String name ) {
-//		return org.slf4j.LoggerFactory.getLogger( name );
-//	}
-//
-//	@Deprecated
-//	public static org.slf4j.Logger get( Class<?> clazz ) {
-//		return org.slf4j.LoggerFactory.getLogger( clazz );
-//	}
 
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters ) {
 		configureLogging( source, parameters, null, null );
@@ -199,6 +185,55 @@ public class Log {
 				return Level.OFF;
 			}
 		}
+	}
+
+	/**
+	 * This wrapper is specifically to address the situation where the
+	 * {@link #log(Level, Object)} method receives a Throwable as the object.
+	 */
+	private static class SystemLoggerWrapper implements System.Logger {
+
+		private System.Logger logger;
+
+		public SystemLoggerWrapper( System.Logger logger ) {
+			this.logger = logger;
+		}
+
+		@Override
+		public String getName() {return logger.getName();}
+
+		@Override
+		public boolean isLoggable( Level level ) {return logger.isLoggable( level );}
+
+		@Override
+		public void log( Level level, String msg ) {logger.log( level, msg );}
+
+		@Override
+		public void log( Level level, Supplier<String> msgSupplier ) {logger.log( level, msgSupplier );}
+
+		@Override
+		public void log( Level level, Object obj ) {
+			if( obj instanceof Throwable ) {
+				logger.log( level, (String)null, (Throwable)obj );
+			} else {
+				logger.log( level, obj );
+			}
+		}
+
+		@Override
+		public void log( Level level, String msg, Throwable thrown ) {logger.log( level, msg, thrown );}
+
+		@Override
+		public void log( Level level, Supplier<String> msgSupplier, Throwable thrown ) {logger.log( level, msgSupplier, thrown );}
+
+		@Override
+		public void log( Level level, String format, Object... params ) {logger.log( level, format, params );}
+
+		@Override
+		public void log( Level level, ResourceBundle bundle, String msg, Throwable thrown ) {logger.log( level, bundle, msg, thrown );}
+
+		@Override
+		public void log( Level level, ResourceBundle bundle, String format, Object... params ) {logger.log( level, bundle, format, params );}
 	}
 
 }
