@@ -417,7 +417,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		return modifiedChildren == null ? 0 : modifiedChildren.size();
 	}
 
-	Node getParent() {
+	public Node getParent() {
 		return parent;
 	}
 
