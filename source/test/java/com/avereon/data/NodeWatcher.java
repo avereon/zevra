@@ -1,15 +1,17 @@
 package com.avereon.data;
 
+import com.avereon.event.EventHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class NodeWatcher implements NodeListener {
+public class NodeWatcher implements EventHandler<NodeEvent> {
 
 	private List<NodeEvent> events = new CopyOnWriteArrayList<>();
 
 	@Override
-	public void nodeEvent( NodeEvent event ) {
+	public void handle( NodeEvent event ) {
 		events.add( event );
 	}
 

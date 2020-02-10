@@ -1,5 +1,8 @@
 package com.avereon.data;
 
+import com.avereon.event.Event;
+import com.avereon.event.EventBus;
+import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
 import com.avereon.util.Log;
@@ -67,8 +70,13 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	/**
 	 * The set of node listeners.
+	 *
+	 * @deprecated In favor of event hub
 	 */
-	private Set<NodeListener> listeners;
+	@Deprecated
+	//private Set<NodeListener> listeners;
+
+	private EventBus bus;
 
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
@@ -102,6 +110,10 @@ public class Node implements TxnEventTarget, Cloneable {
 		return modified;
 	}
 
+	public Node() {
+		bus = new EventBus();
+	}
+
 	/**
 	 * Set(true) or clear(false) the modified flag.
 	 *
@@ -115,7 +127,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			Txn.submit( new SetSelfModifiedOperation( this, oldValue, newValue ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR,  "Error setting flag: modified", exception );
+			log.log( Log.ERROR, "Error setting flag: modified", exception );
 		}
 	}
 
@@ -167,7 +179,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			Txn.submit( new SetResourceOperation( this, key, oldValue, newValue ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR,  "Error setting resource: " + key + "=" + newValue, exception );
+			log.log( Log.ERROR, "Error setting resource: " + key + "=" + newValue, exception );
 		}
 	}
 
@@ -177,36 +189,49 @@ public class Node implements TxnEventTarget, Cloneable {
 			Txn.submit( new RefreshOperation( this ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR,  "Error refreshing: " + this, exception );
+			log.log( Log.ERROR, "Error refreshing: " + this, exception );
 		}
 	}
 
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( listeners == null ) return;
+		//if( listeners == null ) return;
 
-		if( event instanceof NodeEvent ) {
-			NodeEvent nodeEvent = (NodeEvent)event;
-			for( NodeListener listener : listeners ) {
-				listener.nodeEvent( nodeEvent );
-			}
-		}
+		if( event instanceof NodeEvent ) bus.dispatch( event );
+
+//		if( event instanceof NodeEvent ) {
+//			NodeEvent nodeEvent = (NodeEvent)event;
+//			for( NodeListener listener : listeners ) {
+//				listener.nodeEvent( nodeEvent );
+//			}
+//		}
 	}
 
-	public Collection<NodeListener> getNodeListeners() {
-		return listeners == null ? new HashSet<>() : new HashSet<>( listeners );
+	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {return bus.register( type, handler );}
+
+	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return bus.unregister( type, handler );}
+
+	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
+		return bus.getEventHandlers();
 	}
 
-	public synchronized void addNodeListener( NodeListener listener ) {
-		if( listeners == null ) listeners = new CopyOnWriteArraySet<>();
-		listeners.add( listener );
-	}
-
-	public synchronized void removeNodeListener( NodeListener listener ) {
-		if( listeners == null ) return;
-		listeners.remove( listener );
-		if( listeners.size() == 0 ) listeners = null;
-	}
+//	@Deprecated
+//	public Collection<NodeListener> getNodeListeners() {
+//		return listeners == null ? new HashSet<>() : new HashSet<>( listeners );
+//	}
+//
+//	@Deprecated
+//	public synchronized void addNodeListener( NodeListener listener ) {
+//		if( listeners == null ) listeners = new CopyOnWriteArraySet<>();
+//		listeners.add( listener );
+//	}
+//
+//	@Deprecated
+//	public synchronized void removeNodeListener( NodeListener listener ) {
+//		if( listeners == null ) return;
+//		listeners.remove( listener );
+//		if( listeners.size() == 0 ) listeners = null;
+//	}
 
 	/**
 	 * Copy the values and resources from the specified node. This method will
@@ -387,7 +412,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR,  "Error setting flag: " + key, exception );
+			log.log( Log.ERROR, "Error setting flag: " + key, exception );
 		}
 	}
 
@@ -397,7 +422,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			getValueKeys().stream().sorted().forEach( k -> setValue( k, null ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR,  "Error clearing values", exception );
+			log.log( Log.ERROR, "Error clearing values", exception );
 		}
 	}
 
@@ -557,7 +582,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			return (Node)getTarget();
 		}
 
-		final void fireCascadingEvent( EventType<NodeEvent> type) {
+		final void fireCascadingEvent( EventType<NodeEvent> type ) {
 			getResult().addEvent( new NodeEvent( getNode(), type ) );
 			Node parent = getNode().getParent();
 			while( parent != null ) {
@@ -711,7 +736,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		@Override
 		protected void commit() {
 			putResource( key, oldValue, newValue );
-			if( !Objects.equals( oldValue, newValue ) ) 				fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			if( !Objects.equals( oldValue, newValue ) ) fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -733,7 +758,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		@Override
 		protected void commit() {
-			fireCascadingEvent(NodeEvent.NODE_CHANGED);
+			fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override

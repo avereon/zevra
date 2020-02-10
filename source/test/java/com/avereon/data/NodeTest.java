@@ -1,5 +1,7 @@
 package com.avereon.data;
 
+import com.avereon.event.Event;
+import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
 import com.avereon.transaction.Txn;
 import org.hamcrest.FeatureMatcher;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -1171,49 +1174,49 @@ class NodeTest {
 	@Test
 	void testAddDataListener() {
 		// Remove the default watcher
-		data.removeNodeListener( data.getWatcher() );
+		data.unregister( NodeEvent.ANY, data.getWatcher() );
 
-		NodeListener listener = e -> {};
-		data.addNodeListener( listener );
+		EventHandler<NodeEvent> listener = e -> {};
+		data.register( NodeEvent.ANY, listener );
 
-		Collection<NodeListener> listeners = data.getNodeListeners();
+		Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> handlers = data.getEventHandlers();
 
-		assertNotNull( listeners );
-		assertThat( listeners.size(), is( 1 ) );
-		assertThat( listeners, contains( listener ) );
+		assertNotNull( handlers );
+		assertThat( handlers.size(), is( 1 ) );
+		assertThat( handlers.get( NodeEvent.ANY ), contains( listener ) );
 	}
 
 	@Test
 	void testRemoveDataListener() {
 		// Remove the default watcher
-		data.removeNodeListener( data.getWatcher() );
+		data.unregister( NodeEvent.ANY, data.getWatcher() );
 
-		Collection<NodeListener> listeners;
-		NodeListener listener = e -> {};
+		Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> handlers;
+		EventHandler<NodeEvent> listener = e -> {};
 
-		data.addNodeListener( listener );
-		listeners = data.getNodeListeners();
-		assertNotNull( listeners );
-		assertThat( listeners.size(), is( 1 ) );
-		assertThat( listeners, contains( listener ) );
+		data.register( NodeEvent.ANY, listener );
+		handlers = data.getEventHandlers();
+		assertNotNull( handlers );
+		assertThat( handlers.size(), is( 1 ) );
+		assertThat( handlers.get( NodeEvent.ANY ), contains( listener ) );
 
-		data.removeNodeListener( listener );
-		listeners = data.getNodeListeners();
-		assertNotNull( listeners );
-		assertThat( listeners.size(), is( 0 ) );
-		assertThat( listeners, not( contains( listener ) ) );
+		data.unregister( NodeEvent.ANY, listener );
+		handlers = data.getEventHandlers();
+		assertNotNull( handlers );
+		assertThat( handlers.size(), is( 0 ) );
+		assertThat( handlers.get( NodeEvent.ANY ), not( contains( listener ) ) );
 
-		data.addNodeListener( listener );
-		listeners = data.getNodeListeners();
-		assertNotNull( listeners );
-		assertThat( listeners.size(), is( 1 ) );
-		assertThat( listeners, contains( listener ) );
+		data.register( NodeEvent.ANY, listener );
+		handlers = data.getEventHandlers();
+		assertNotNull( handlers );
+		assertThat( handlers.size(), is( 1 ) );
+		assertThat( handlers.get( NodeEvent.ANY ), contains( listener ) );
 
-		data.removeNodeListener( listener );
-		listeners = data.getNodeListeners();
-		assertNotNull( listeners );
-		assertThat( listeners.size(), is( 0 ) );
-		assertThat( listeners, not( contains( listener ) ) );
+		data.unregister( NodeEvent.ANY, listener );
+		handlers = data.getEventHandlers();
+		assertNotNull( handlers );
+		assertThat( handlers.size(), is( 0 ) );
+		assertThat( handlers.get( NodeEvent.ANY ), not( contains( listener ) ) );
 	}
 
 	@Test

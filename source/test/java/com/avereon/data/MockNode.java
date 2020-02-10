@@ -12,7 +12,7 @@ class MockNode extends Node {
 		definePrimaryKey( "id" );
 		setId( id );
 		setModified( false );
-		addNodeListener( watcher = new NodeWatcher() );
+		register( NodeEvent.ANY, watcher = new NodeWatcher() );
 	}
 
 	private String getId() {

@@ -1,6 +1,7 @@
 package com.avereon.event;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,15 +10,10 @@ public class EventBus implements EventDispatcher {
 
 	private EventBus parent;
 
-	private Map<EventType<? extends Event>, Collection<EventHandlerWrapper<?>>> handlers;
+	private Map<EventType<? extends Event>, Collection<EventHandler<Event>>> handlers;
 
 	public EventBus() {
-		this( null );
-	}
-
-	public EventBus( EventBus parent ) {
 		handlers = new ConcurrentHashMap<>();
-		parent( parent );
 	}
 
 	@Override
@@ -31,7 +27,7 @@ public class EventBus implements EventDispatcher {
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
 			handlers.computeIfPresent( type, ( t, handlers ) -> {
-				handlers.forEach( handler -> handler.dispatch( event ) );
+				handlers.forEach( handler -> handler.handle( event ) );
 				return handlers;
 			} );
 			type = type.getParentEventType();
@@ -48,43 +44,22 @@ public class EventBus implements EventDispatcher {
 		return this;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {
-		handlers.computeIfAbsent( type, k -> new HashSet<>() ).add( new EventHandlerWrapper<>( handler ) );
+		handlers.computeIfAbsent( type, k -> new HashSet<>() ).add( (EventHandler<Event>)handler );
 		return this;
 	}
 
 	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfPresent( type, ( t, c ) -> {
-			c.removeIf( w -> w.getHandler() == handler );
+			c.removeIf( w -> w == handler );
 			return c.isEmpty() ? null : c;
 		} );
 		return this;
 	}
 
-	private static class EventHandlerWrapper<T extends Event> implements EventDispatcher, EventHandler<T> {
-
-		private EventHandler<T> handler;
-
-		public EventHandlerWrapper( EventHandler<T> handler ) {
-			this.handler = handler;
-		}
-
-		public EventHandler<T> getHandler() {
-			return handler;
-		}
-
-		@Override
-		@SuppressWarnings( "unchecked" )
-		public Event dispatch( Event event ) {
-			handle( (T)event );
-			return event;
-		}
-
-		@Override
-		public void handle( T event ) {
-			handler.handle( event );
-		}
-
+	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
+		return new HashMap<>( handlers );
 	}
 
 }
