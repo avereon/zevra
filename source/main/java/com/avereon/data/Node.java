@@ -675,6 +675,15 @@ public class Node implements TxnEventTarget, Cloneable {
 			setValue( key, oldValue, newValue );
 
 			Node parent = getParent();
+
+			if( oldValue == null && newValue instanceof Node ) {
+				// NEXT Add CHILD_ADDED events
+				//getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
+			}
+			if( newValue == null && oldValue instanceof Node ) {
+				// NEXT Add CHILD_REMOVED events
+				//getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
+			}
 			EventType<? extends NodeEvent> type = NodeEvent.VALUE_CHANGED;
 			// TODO Enable value insert and remove events
 			//type = oldValue == null ? NodeEvent.VALUE_INSERT : type;
