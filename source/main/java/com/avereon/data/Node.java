@@ -418,6 +418,24 @@ public class Node implements TxnEventTarget, Cloneable {
 		return modifiedChildren == null ? 0 : modifiedChildren.size();
 	}
 
+	/**
+	 * Gets the number of parents in the tree between this node and the specified
+	 * node inclusive. If the specified node is this node then it returns 0. If
+	 * The specified node is not a parent of this node then it returns -1.
+	 */
+	public int distanceTo( Node target ) {
+		if( this == target ) return 0;
+
+		int count = 0;
+		Node node = this;
+		while( node != null && node != target ) {
+			count++;
+			node = node.getParent();
+		}
+
+		return node == null ? -1 : count;
+	}
+
 	@SuppressWarnings( "unchecked" )
 	public <T> T getParent() {
 		return (T)parent;

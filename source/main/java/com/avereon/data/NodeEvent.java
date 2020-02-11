@@ -21,8 +21,6 @@ public class NodeEvent extends TxnEvent {
 
 	// TODO Should there be PARENT_CHANGED events???
 
-	private Node node;
-
 	private String key;
 
 	private Object oldValue;
@@ -35,14 +33,13 @@ public class NodeEvent extends TxnEvent {
 
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
 		super( node, type );
-		this.node = node;
 		this.key = key;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
 	public Node getNode() {
-		return node;
+		return (Node)getSource();
 	}
 
 	public String getKey() {
@@ -69,7 +66,7 @@ public class NodeEvent extends TxnEvent {
 		builder.append( getClass().getSimpleName() );
 		builder.append( "[ " );
 		builder.append( "node=" );
-		builder.append( node );
+		builder.append( getNode() );
 		builder.append( ", type=" );
 		builder.append( getEventType() );
 		if( key != null ) {
@@ -89,7 +86,7 @@ public class NodeEvent extends TxnEvent {
 	public int hashCode() {
 		int code = 0;
 
-		if( node != null ) code |= node.hashCode();
+		if( getNode() != null ) code |= getNode().hashCode();
 		if( getEventType() != null ) code |= getEventType().hashCode();
 		if( key != null ) code |= key.hashCode();
 
@@ -101,7 +98,7 @@ public class NodeEvent extends TxnEvent {
 		if( !(object instanceof NodeEvent) ) return false;
 
 		NodeEvent that = (NodeEvent)object;
-		if( !Objects.equals( this.node, that.node ) ) return false;
+		if( !Objects.equals( this.getNode(), that.getNode() ) ) return false;
 		if( !Objects.equals( this.getEventType(), that.getEventType() ) ) return false;
 		return Objects.equals( this.key, that.key );
 	}

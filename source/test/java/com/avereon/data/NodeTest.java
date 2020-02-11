@@ -28,6 +28,23 @@ class NodeTest {
 	}
 
 	@Test
+	void testDistanceTo() {
+		MockNode grandParent = new MockNode( "grandParent" );
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+
+		assertThat( child.distanceTo( grandParent ), is( -1 ) );
+		assertThat( child.distanceTo( parent ), is( -1 ) );
+
+		grandParent.setValue( "child", parent );
+		parent.setValue( "child", child );
+
+		assertThat( child.distanceTo( grandParent ), is( 2 ) );
+		assertThat( child.distanceTo( parent ), is( 1 ) );
+		assertThat( child.distanceTo( child ), is( 0 ) );
+	}
+
+	@Test
 	void testNewNodeModifiedState() {
 		assertThat( data.isModified(), is( false ) );
 	}
