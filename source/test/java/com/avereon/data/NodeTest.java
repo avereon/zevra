@@ -891,10 +891,11 @@ class NodeTest {
 		assertThat( parent, hasStates( true, 0, 1 ) );
 		assertThat( child, hasStates( true, 0, 1 ) );
 		assertThat( grandChild, hasStates( true, 1, 0 ) );
-		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED, child, null, null, null );
+		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", null, "value" );
+		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED, parent, null, null, null );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", null, "value" );
-		assertEventState( child, childIndex++, NodeEvent.MODIFIED, grandChild, null, null, null );
+		assertEventState( child, childIndex++, NodeEvent.MODIFIED, child, null, null, null );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "attribute", null, "value" );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.MODIFIED );
@@ -908,6 +909,7 @@ class NodeTest {
 		assertThat( parent, hasStates( false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, 0, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", "value", null );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", "value", null );
@@ -1474,9 +1476,9 @@ class NodeTest {
 
 	@SuppressWarnings( "SameParameterValue" )
 	private static void assertEventState(
-		MockNode parent, int index, EventType<? extends NodeEvent> type, Node child, String key, Object oldValue, Object newValue
+		MockNode parent, int index, EventType<? extends NodeEvent> type, Node node, String key, Object oldValue, Object newValue
 	) {
-		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( parent, child, type, key, oldValue, newValue ) );
+		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
 	}
 
 	private static Matcher<NodeEvent> hasEventState( Node node, EventType<? extends NodeEvent> type ) {
@@ -1494,33 +1496,12 @@ class NodeTest {
 		return allOf( eventNode, eventType, eventKey, eventOldValue, eventNewValue );
 	}
 
-	private static Matcher<NodeEvent> hasEventState( Node node, Node child, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
-		Matcher<NodeEvent> eventNode = eventNode( is( node ) );
-		Matcher<NodeEvent> eventType = eventType( is( type ) );
-		Matcher<NodeEvent> eventChild = eventChild( is( child ) );
-		Matcher<NodeEvent> eventKey = eventKey( is( key ) );
-		Matcher<NodeEvent> eventOldValue = eventOldValue( is( oldValue ) );
-		Matcher<NodeEvent> eventNewValue = eventNewValue( is( newValue ) );
-		return allOf( eventNode, eventChild, eventType, eventKey, eventOldValue, eventNewValue );
-	}
-
 	private static Matcher<NodeEvent> eventNode( Matcher<? super Node> matcher ) {
 		return new FeatureMatcher<NodeEvent, Node>( matcher, "node", "node" ) {
 
 			@Override
 			protected Node featureValueOf( NodeEvent event ) {
 				return event.getNode();
-			}
-
-		};
-	}
-
-	private static Matcher<NodeEvent> eventChild( Matcher<? super Node> matcher ) {
-		return new FeatureMatcher<NodeEvent, Node>( matcher, "node", "node" ) {
-
-			@Override
-			protected Node featureValueOf( NodeEvent event ) {
-				return event.getChild();
 			}
 
 		};
@@ -1571,4 +1552,3 @@ class NodeTest {
 	}
 
 }
-;;

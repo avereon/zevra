@@ -2,6 +2,7 @@ package com.avereon.transaction;
 
 import com.avereon.event.EventType;
 import com.avereon.util.Log;
+
 import java.lang.System.Logger;
 
 import java.util.*;
@@ -124,7 +125,7 @@ public class Txn {
 
 		try {
 			commitLock.lock();
-			log.log( Log.TRACE,  System.identityHashCode( this ) + " locked by: " + Thread.currentThread() );
+			log.log( Log.TRACE, System.identityHashCode( this ) + " locked by: " + Thread.currentThread() );
 
 			// Send a commit begin event to all unique targets
 			sendEvent( TxnEvent.COMMIT_BEGIN, operations );
@@ -132,35 +133,32 @@ public class Txn {
 			// Process all the operations
 			List<TxnOperationResult> operationResults = new ArrayList<>( processOperations() );
 
-			// Go through each operation result and collect the events by dispatcher
+			// Go through each operation result and collect the events by target
+			// This process also removes duplicate events and puts them in the correct order
 			Map<TxnEventTarget, List<TxnEvent>> txnEvents = new HashMap<>();
 			for( TxnOperationResult operationResult : operationResults ) {
-				for( TxnEvent event : operationResult.getEvents() ) {
-					TxnEventTarget target = event.getTarget();
+				for( TxnEventWrapper wrapper : operationResult.getEvents() ) {
+					TxnEventTarget target = wrapper.getTarget();
+					TxnEvent event = wrapper.getEvent();
 					List<TxnEvent> events = txnEvents.computeIfAbsent( target, k -> new ArrayList<>() );
-					int index = events.indexOf( event );
-					if( index > -1 ) events.remove( index );
+					events.remove( event );
 					events.add( event );
 				}
 			}
 
-			for( Map.Entry<TxnEventTarget, List<TxnEvent>> entry : txnEvents.entrySet() ) {
-				TxnEventTarget target = entry.getKey();
-				List<TxnEvent> events = entry.getValue();
-
-				for( TxnEvent event : events ) {
-					try {
-						target.dispatch( event );
-					} catch( Throwable throwable ) {
-						log.log( Log.ERROR,  "Error dispatching transaction event", throwable );
-					}
+			// Dispatch the events to the targets
+			txnEvents.forEach( ( target, events ) -> events.forEach( event -> {
+				try {
+					target.dispatch( event );
+				} catch( Throwable throwable ) {
+					log.log( Log.ERROR, "Error dispatching transaction event", throwable );
 				}
-			}
+			} ) );
 		} finally {
 			sendEvent( TxnEvent.COMMIT_END, operations );
 			doReset();
 			commitLock.unlock();
-			log.log( Log.TRACE,  "Transaction[" + System.identityHashCode( this ) + "] committed!" );
+			log.log( Log.TRACE, "Transaction[" + System.identityHashCode( this ) + "] committed!" );
 		}
 	}
 

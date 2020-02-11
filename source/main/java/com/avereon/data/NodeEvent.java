@@ -29,24 +29,13 @@ public class NodeEvent extends TxnEvent {
 
 	private Object newValue;
 
-	private Node child;
-
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type ) {
-		this( node, null, type );
-	}
-
-	public NodeEvent( Node node, Node child, EventType<? extends NodeEvent> type ) {
-		this( node, child, type, null, null, null );
+		this( node, type, null, null, null );
 	}
 
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
-		this( node, null, type, key, oldValue, newValue );
-	}
-
-	public NodeEvent( Node node, Node child, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
-		super( child == null ? node : child, type, node );
+		super( node, type );
 		this.node = node;
-		this.child = child;
 		this.key = key;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
@@ -68,10 +57,6 @@ public class NodeEvent extends TxnEvent {
 		return newValue;
 	}
 
-	public Node getChild() {
-		return child;
-	}
-
 	@SuppressWarnings( "unchecked" )
 	public EventType<? extends NodeEvent> getEventType() {
 		return (EventType<? extends NodeEvent>)super.getEventType();
@@ -85,10 +70,6 @@ public class NodeEvent extends TxnEvent {
 		builder.append( "[ " );
 		builder.append( "node=" );
 		builder.append( node );
-		if( child != null ) {
-			builder.append( ", child=" );
-			builder.append( child );
-		}
 		builder.append( ", type=" );
 		builder.append( getEventType() );
 		if( key != null ) {
@@ -111,9 +92,6 @@ public class NodeEvent extends TxnEvent {
 		if( node != null ) code |= node.hashCode();
 		if( getEventType() != null ) code |= getEventType().hashCode();
 		if( key != null ) code |= key.hashCode();
-		//		if( oldValue != null ) code |= oldValue.hashCode();
-		//		if( newValue != null ) code |= newValue.hashCode();
-		if( child != null ) code |= child.hashCode();
 
 		return code;
 	}
@@ -125,10 +103,7 @@ public class NodeEvent extends TxnEvent {
 		NodeEvent that = (NodeEvent)object;
 		if( !Objects.equals( this.node, that.node ) ) return false;
 		if( !Objects.equals( this.getEventType(), that.getEventType() ) ) return false;
-		if( !Objects.equals( this.key, that.key ) ) return false;
-		//		if( !Objects.equals( this.oldValue, that.oldValue ) ) return false;
-		//		if( !Objects.equals( this.newValue, that.newValue ) ) return false;
-		return Objects.equals( this.child, that.child );
+		return Objects.equals( this.key, that.key );
 	}
 
 }

@@ -3,11 +3,11 @@ package com.avereon.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  TxnOperationResult {
+public class TxnOperationResult {
 
 	private TxnOperation action;
 
-	private List<TxnEvent> events = new ArrayList<>();
+	private List<TxnEventWrapper> events = new ArrayList<>();
 
 	TxnOperationResult( TxnOperation action ) {
 		this.action = action;
@@ -17,16 +17,12 @@ public class  TxnOperationResult {
 		return action;
 	}
 
-	public List<TxnEvent> getEvents() {
+	public List<TxnEventWrapper> getEvents() {
 		return events;
 	}
 
-	public void addEvent( TxnEvent event ) {
-		events.add( event );
-	}
-
-	public void removeEvent( TxnEvent event ) {
-		events.remove( event );
+	public void addEvent( TxnEventTarget target, TxnEvent event ) {
+		events.add( new TxnEventWrapper( target, event ) );
 	}
 
 }

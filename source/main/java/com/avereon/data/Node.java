@@ -558,11 +558,19 @@ public class Node implements TxnEventTarget, Cloneable {
 			return (Node)getTarget();
 		}
 
+		final void fireCascadingEvent( NodeEvent event ) {
+			Node node = getNode();
+			while( node != null ) {
+				getResult().addEvent( node, event );
+				node = node.getParent();
+			}
+		}
+
 		final void fireCascadingEvent( EventType<NodeEvent> type ) {
-			getResult().addEvent( new NodeEvent( getNode(), type ) );
+			getResult().addEvent( getNode(), new NodeEvent( getNode(), type ) );
 			Node parent = getNode().getParent();
 			while( parent != null ) {
-				getResult().addEvent( new NodeEvent( parent, type ) );
+				getResult().addEvent( parent, new NodeEvent( parent, type ) );
 				parent = parent.getParent();
 			}
 		}
@@ -599,16 +607,16 @@ public class Node implements TxnEventTarget, Cloneable {
 						Node child = (Node)value;
 						if( child.isModified() ) {
 							child.doSetSelfModified( false );
-							getResult().addEvent( new NodeEvent( child, NodeEvent.UNMODIFIED ) );
-							getResult().addEvent( new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
+							getResult().addEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
+							getResult().addEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
 						}
 					}
 				}
 			}
 
 			if( newValue != currentValue ) {
-				getResult().addEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
-				getResult().addEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
+				getResult().addEvent( getNode(), new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 				Txn.submit( updateModified );
 			}
 		}
@@ -654,10 +662,9 @@ public class Node implements TxnEventTarget, Cloneable {
 			boolean childRemove = newValue == null && oldValue instanceof Node;
 
 			// NEXT Should I fire cascading events??? It was expected
-			// NEXT And fix the whole parent/child thing in events
 			// fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			if( childAdd ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			if( childRemove ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
+			if( childAdd ) getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
+			if( childRemove ) getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
 
 			EventType<? extends NodeEvent> type = NodeEvent.VALUE_CHANGED;
 			// TODO Enable value insert and remove events
@@ -665,11 +672,12 @@ public class Node implements TxnEventTarget, Cloneable {
 			//type = newValue == null ? NodeEvent.VALUE_REMOVE : type;
 
 			// Send an event to the node about the value change
-			getResult().addEvent( new NodeEvent( getNode(), type, key, oldValue, newValue ) );
+			getResult().addEvent( getNode(), new NodeEvent( getNode(), type, key, oldValue, newValue ) );
 
 			// Send an event to the parent about the value change
 			Node parent = getParent();
-			if( parent != null ) getResult().addEvent( new NodeEvent( parent, getNode(), type, key, oldValue, newValue ) );
+			if( parent != null ) getResult().addEvent( getNode(), new NodeEvent( getNode(), type, key, oldValue, newValue ) );
+			fireCascadingEvent( new NodeEvent( getNode(), type, key, oldValue, newValue ) );
 
 			Txn.submit( updateModified );
 		}
@@ -768,7 +776,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			// Check if the modified values should change the modified flag
 			if( newValue != oldValue ) {
 				doSetSelfModified( newValue );
-				getResult().addEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				getResult().addEvent( getNode(), new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 			}
 
 			// Check all the parents for modification
@@ -777,7 +785,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			while( parent != null ) {
 				boolean priorModified = parent.isModified();
 				boolean parentChanged = parent.doSetChildModified( node, newValue );
-				if( parentChanged ) getResult().addEvent( new NodeEvent( parent, node, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				if( parentChanged ) getResult().addEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
 				parent = parent.getParent();
 			}
