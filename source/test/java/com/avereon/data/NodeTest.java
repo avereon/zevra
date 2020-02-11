@@ -864,6 +864,7 @@ class NodeTest {
 		assertThat( parent, hasStates( true, 1, 1 ) );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( grandChild, hasStates( false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.CHILD_ADDED, "child", null, grandChild );

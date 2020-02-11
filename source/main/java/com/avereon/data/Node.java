@@ -558,20 +558,27 @@ public class Node implements TxnEventTarget, Cloneable {
 			return (Node)getTarget();
 		}
 
+		final void fireEvent( NodeEvent event ) {
+			fireEvent( getNode(), event );
+		}
+
+		final void fireEvent( Node target, NodeEvent event ) {
+			getResult().addEvent( target, event );
+		}
+
 		final void fireCascadingEvent( NodeEvent event ) {
 			Node node = getNode();
 			while( node != null ) {
-				getResult().addEvent( node, event );
+				fireEvent( node, event );
 				node = node.getParent();
 			}
 		}
 
-		final void fireCascadingEvent( EventType<NodeEvent> type ) {
-			getResult().addEvent( getNode(), new NodeEvent( getNode(), type ) );
-			Node parent = getNode().getParent();
-			while( parent != null ) {
-				getResult().addEvent( parent, new NodeEvent( parent, type ) );
-				parent = parent.getParent();
+		final void fireTricklingEvent( EventType<NodeEvent> type ) {
+			Node node = getNode();
+			while( node != null ) {
+				getResult().addEvent( node, new NodeEvent( node, type ) );
+				node = node.getParent();
 			}
 		}
 
@@ -607,16 +614,16 @@ public class Node implements TxnEventTarget, Cloneable {
 						Node child = (Node)value;
 						if( child.isModified() ) {
 							child.doSetSelfModified( false );
-							getResult().addEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
-							getResult().addEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
+							fireEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
+							fireEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
 						}
 					}
 				}
 			}
 
 			if( newValue != currentValue ) {
-				getResult().addEvent( getNode(), new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
-				getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
+				fireEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				fireEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 				Txn.submit( updateModified );
 			}
 		}
@@ -641,7 +648,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		private Object newValue;
 
-		SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
+		private SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
 			super( node );
 			this.key = key;
 			this.oldValue = oldValue;
@@ -650,8 +657,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		@Override
 		protected void commit() throws TxnException {
-			Object currentValue = getValue( key );
-			if( Objects.equals( currentValue, newValue ) ) return;
+			if( Objects.equals( getValue( key ), newValue ) ) return;
 
 			// This operation must be created before any changes are made
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( Node.this );
@@ -660,24 +666,9 @@ public class Node implements TxnEventTarget, Cloneable {
 
 			boolean childAdd = oldValue == null && newValue instanceof Node;
 			boolean childRemove = newValue == null && oldValue instanceof Node;
-
-			// NEXT Should I fire cascading events??? It was expected
-			// fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			if( childAdd ) getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			if( childRemove ) getResult().addEvent( getNode(), new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
-
-			EventType<? extends NodeEvent> type = NodeEvent.VALUE_CHANGED;
-			// TODO Enable value insert and remove events
-			//type = oldValue == null ? NodeEvent.VALUE_INSERT : type;
-			//type = newValue == null ? NodeEvent.VALUE_REMOVE : type;
-
-			// Send an event to the node about the value change
-			getResult().addEvent( getNode(), new NodeEvent( getNode(), type, key, oldValue, newValue ) );
-
-			// Send an event to the parent about the value change
-			Node parent = getParent();
-			if( parent != null ) getResult().addEvent( getNode(), new NodeEvent( getNode(), type, key, oldValue, newValue ) );
-			fireCascadingEvent( new NodeEvent( getNode(), type, key, oldValue, newValue ) );
+			if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
+			if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
+			fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
 
 			Txn.submit( updateModified );
 		}
@@ -729,7 +720,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		@Override
 		protected void commit() {
 			putResource( key, oldValue, newValue );
-			if( !Objects.equals( oldValue, newValue ) ) fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			if( !Objects.equals( oldValue, newValue ) ) fireTricklingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -751,7 +742,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		@Override
 		protected void commit() {
-			fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			fireTricklingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -776,7 +767,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			// Check if the modified values should change the modified flag
 			if( newValue != oldValue ) {
 				doSetSelfModified( newValue );
-				getResult().addEvent( getNode(), new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				fireEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 			}
 
 			// Check all the parents for modification
@@ -785,12 +776,12 @@ public class Node implements TxnEventTarget, Cloneable {
 			while( parent != null ) {
 				boolean priorModified = parent.isModified();
 				boolean parentChanged = parent.doSetChildModified( node, newValue );
-				if( parentChanged ) getResult().addEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				if( parentChanged ) fireEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
 				parent = parent.getParent();
 			}
 
-			fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			fireTricklingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
