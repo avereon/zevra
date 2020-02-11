@@ -26,10 +26,8 @@ public class EventBus implements EventDispatcher {
 		// Go through all the handlers of the event type and all handlers of all
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
-			handlers.computeIfPresent( type, ( t, handlers ) -> {
-				handlers.forEach( handler -> handler.handle( event ) );
-				return handlers;
-			} );
+			Collection<EventHandler<Event>> typeHandlers = handlers.get( type );
+			if( typeHandlers != null ) typeHandlers.forEach( handler -> handler.handle( event ) );
 			type = type.getParentEventType();
 		}
 
