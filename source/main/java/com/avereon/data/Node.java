@@ -194,43 +194,20 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	@Override
 	public void dispatch( TxnEvent event ) {
-		//if( listeners == null ) return;
-
 		if( event instanceof NodeEvent ) bus.dispatch( event );
-
-		//		if( event instanceof NodeEvent ) {
-		//			NodeEvent nodeEvent = (NodeEvent)event;
-		//			for( NodeListener listener : listeners ) {
-		//				listener.nodeEvent( nodeEvent );
-		//			}
-		//		}
 	}
 
-	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {return bus.register( type, handler );}
+	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {
+		return bus.register( type, handler );
+	}
 
-	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return bus.unregister( type, handler );}
+	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
+		return bus.unregister( type, handler );
+	}
 
 	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return bus.getEventHandlers();
 	}
-
-	//	@Deprecated
-	//	public Collection<NodeListener> getNodeListeners() {
-	//		return listeners == null ? new HashSet<>() : new HashSet<>( listeners );
-	//	}
-	//
-	//	@Deprecated
-	//	public synchronized void addNodeListener( NodeListener listener ) {
-	//		if( listeners == null ) listeners = new CopyOnWriteArraySet<>();
-	//		listeners.add( listener );
-	//	}
-	//
-	//	@Deprecated
-	//	public synchronized void removeNodeListener( NodeListener listener ) {
-	//		if( listeners == null ) return;
-	//		listeners.remove( listener );
-	//		if( listeners.size() == 0 ) listeners = null;
-	//	}
 
 	/**
 	 * Copy the values and resources from the specified node. This method will
@@ -675,6 +652,10 @@ public class Node implements TxnEventTarget, Cloneable {
 
 			boolean childAdd = oldValue == null && newValue instanceof Node;
 			boolean childRemove = newValue == null && oldValue instanceof Node;
+
+			// NEXT Should I fire cascading events??? It was expected
+			// NEXT And fix the whole parent/child thing in events
+			// fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
 			if( childAdd ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
 			if( childRemove ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
 
