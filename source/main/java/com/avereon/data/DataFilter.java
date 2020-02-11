@@ -8,6 +8,6 @@ public interface DataFilter<T> {
 	 * @param node The node to test.
 	 * @return True if the node should be accepted, false otherwise.
 	 */
-	public boolean accept( T node );
+	boolean accept( T node );
 
 }

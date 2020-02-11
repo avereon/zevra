@@ -7,7 +7,6 @@ import com.avereon.event.EventType;
 import com.avereon.transaction.*;
 import com.avereon.util.Log;
 
-import java.lang.System.Logger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Node implements TxnEventTarget, Cloneable {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.log();
 
 	/**
 	 * The modified flag key.
@@ -199,12 +198,12 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		if( event instanceof NodeEvent ) bus.dispatch( event );
 
-//		if( event instanceof NodeEvent ) {
-//			NodeEvent nodeEvent = (NodeEvent)event;
-//			for( NodeListener listener : listeners ) {
-//				listener.nodeEvent( nodeEvent );
-//			}
-//		}
+		//		if( event instanceof NodeEvent ) {
+		//			NodeEvent nodeEvent = (NodeEvent)event;
+		//			for( NodeListener listener : listeners ) {
+		//				listener.nodeEvent( nodeEvent );
+		//			}
+		//		}
 	}
 
 	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {return bus.register( type, handler );}
@@ -215,23 +214,23 @@ public class Node implements TxnEventTarget, Cloneable {
 		return bus.getEventHandlers();
 	}
 
-//	@Deprecated
-//	public Collection<NodeListener> getNodeListeners() {
-//		return listeners == null ? new HashSet<>() : new HashSet<>( listeners );
-//	}
-//
-//	@Deprecated
-//	public synchronized void addNodeListener( NodeListener listener ) {
-//		if( listeners == null ) listeners = new CopyOnWriteArraySet<>();
-//		listeners.add( listener );
-//	}
-//
-//	@Deprecated
-//	public synchronized void removeNodeListener( NodeListener listener ) {
-//		if( listeners == null ) return;
-//		listeners.remove( listener );
-//		if( listeners.size() == 0 ) listeners = null;
-//	}
+	//	@Deprecated
+	//	public Collection<NodeListener> getNodeListeners() {
+	//		return listeners == null ? new HashSet<>() : new HashSet<>( listeners );
+	//	}
+	//
+	//	@Deprecated
+	//	public synchronized void addNodeListener( NodeListener listener ) {
+	//		if( listeners == null ) listeners = new CopyOnWriteArraySet<>();
+	//		listeners.add( listener );
+	//	}
+	//
+	//	@Deprecated
+	//	public synchronized void removeNodeListener( NodeListener listener ) {
+	//		if( listeners == null ) return;
+	//		listeners.remove( listener );
+	//		if( listeners.size() == 0 ) listeners = null;
+	//	}
 
 	/**
 	 * Copy the values and resources from the specified node. This method will
@@ -674,16 +673,11 @@ public class Node implements TxnEventTarget, Cloneable {
 
 			setValue( key, oldValue, newValue );
 
-			Node parent = getParent();
+			boolean childAdd = oldValue == null && newValue instanceof Node;
+			boolean childRemove = newValue == null && oldValue instanceof Node;
+			if( childAdd ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
+			if( childRemove ) getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
 
-			if( oldValue == null && newValue instanceof Node ) {
-				// NEXT Add CHILD_ADDED events
-				//getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			}
-			if( newValue == null && oldValue instanceof Node ) {
-				// NEXT Add CHILD_REMOVED events
-				//getResult().addEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
-			}
 			EventType<? extends NodeEvent> type = NodeEvent.VALUE_CHANGED;
 			// TODO Enable value insert and remove events
 			//type = oldValue == null ? NodeEvent.VALUE_INSERT : type;
@@ -693,6 +687,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			getResult().addEvent( new NodeEvent( getNode(), type, key, oldValue, newValue ) );
 
 			// Send an event to the parent about the value change
+			Node parent = getParent();
 			if( parent != null ) getResult().addEvent( new NodeEvent( parent, getNode(), type, key, oldValue, newValue ) );
 
 			Txn.submit( updateModified );
