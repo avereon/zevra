@@ -1,8 +1,12 @@
 package com.avereon.settings;
 
+import com.avereon.event.Event;
+import com.avereon.event.EventBus;
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventType;
 import com.avereon.util.TypeReference;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -244,19 +248,11 @@ public interface Settings {
 	 */
 	void setDefaultValues( Map<String, Object> defaults );
 
-	/**
-	 * Add a settings listener to this node. The settings listener will not receive event from child nodes.
-	 *
-	 * @param listener The settings listener
-	 */
-	void addSettingsListener( EventHandler<SettingsEvent> listener );
+	<T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler );
 
-	/**
-	 * Remove a settings listener from this node.
-	 *
-	 * @param listener The settings listener
-	 */
-	void removeSettingsListener( EventHandler<SettingsEvent> listener );
+	<T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler );
+
+	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers();
 
 	@SuppressWarnings( "unused" )
 	static void print( Settings settings ) {

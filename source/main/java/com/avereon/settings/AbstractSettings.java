@@ -1,7 +1,9 @@
 package com.avereon.settings;
 
+import com.avereon.event.Event;
 import com.avereon.event.EventBus;
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventType;
 import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TypeReference;
@@ -288,14 +290,13 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public void addSettingsListener( EventHandler<SettingsEvent> listener ) {
-		getEventBus().register( SettingsEvent.ANY, listener );
-	}
+	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {return eventBus.register( type, handler );}
 
 	@Override
-	public void removeSettingsListener( EventHandler<SettingsEvent> listener ) {
-		getEventBus().unregister( SettingsEvent.ANY, listener );
-	}
+	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return eventBus.unregister( type, handler );}
+
+	@Override
+	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {return eventBus.getEventHandlers();}
 
 	public EventBus getEventBus() {
 		return eventBus;

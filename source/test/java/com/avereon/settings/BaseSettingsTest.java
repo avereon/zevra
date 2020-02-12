@@ -363,7 +363,7 @@ public abstract class BaseSettingsTest {
 	@Test
 	void testUpdatedEvent() {
 		SettingsEventWatcher watcher = new SettingsEventWatcher();
-		settings.addSettingsListener( watcher );
+		settings.register( SettingsEvent.ANY, watcher );
 		assertThat( watcher.getEvents().size(), is( 0 ) );
 
 		// The value does not change so there should not be an extra event
