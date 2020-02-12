@@ -27,7 +27,7 @@ public class EventBus implements EventDispatcher {
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
 			Collection<EventHandler<Event>> typeHandlers = handlers.get( type );
-			if( typeHandlers != null ) typeHandlers.forEach( handler -> handler.handle( event ) );
+			if( typeHandlers != null ) new HashSet<>( typeHandlers ).forEach( handler -> handler.handle( event ) );
 			type = type.getParentEventType();
 		}
 
@@ -50,7 +50,7 @@ public class EventBus implements EventDispatcher {
 
 	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfPresent( type, ( t, c ) -> {
-			c.removeIf( w -> w == handler );
+			c.removeIf( h -> h == handler );
 			return c.isEmpty() ? null : c;
 		} );
 		return this;
