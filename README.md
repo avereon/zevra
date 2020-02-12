@@ -1,4 +1,4 @@
-[build-status]: https://github.com/avereon/zevra/workflows/Avereon%20Zevra%20CI/badge.svg "Build status"
+[build-status]: https://github.com/avereon/zevra/workflows/Avereon%20Zevra%20Continuous/badge.svg "Build status"
 
 # Zevra [![][build-status]](https://github.com/avereon/zevra/actions)
 
