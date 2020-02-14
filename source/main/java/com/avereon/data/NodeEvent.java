@@ -9,7 +9,11 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( "VALUE_CHANGED" );
 
+	public static final EventType<NodeEvent> ADDING_CHILD = new EventType<>( "ADDING_CHILD" );
+
 	public static final EventType<NodeEvent> CHILD_ADDED = new EventType<>( "CHILD_ADDED" );
+
+	public static final EventType<NodeEvent> REMOVING_CHILD = new EventType<>( "REMOVING_CHILD" );
 
 	public static final EventType<NodeEvent> CHILD_REMOVED = new EventType<>( "CHILD_REMOVED" );
 
