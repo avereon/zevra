@@ -326,6 +326,10 @@ public class Node implements TxnEventTarget, Cloneable {
 		return hashcode;
 	}
 
+	public <T extends Node> Comparator<T> getComparator() {
+		return new NodeComparator<>( naturalKeyList );
+	}
+
 	protected void definePrimaryKey( String... keys ) {
 		if( primaryKeyList == null ) {
 			primaryKeyList = List.of( keys );

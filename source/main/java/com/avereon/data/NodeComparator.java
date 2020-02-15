@@ -9,7 +9,11 @@ public class NodeComparator<T extends Node> implements Comparator<T> {
 	private List<String> keys;
 
 	public NodeComparator( String... keys ) {
-		this.keys = Arrays.asList( keys );
+		this( Arrays.asList( keys ) );
+	}
+
+	public NodeComparator( List<String> keys ) {
+		this.keys = keys;
 	}
 
 	@Override
@@ -23,7 +27,7 @@ public class NodeComparator<T extends Node> implements Comparator<T> {
 			int comparison = String.valueOf( valueA ).compareTo( String.valueOf( valueB ) );
 			if( comparison != 0 ) return comparison;
 		}
-
 		return 0;
 	}
+
 }
