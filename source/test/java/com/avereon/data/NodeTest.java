@@ -206,7 +206,7 @@ class NodeTest {
 
 	@Test
 	void testSetNullValueToNull() {
-		String key = "value";
+		String key = "key";
 		assertThat( data.getValue( key ), is( nullValue() ) );
 		data.setValue( key, null );
 		assertThat( data.getEventCount(), is( 0 ) );
@@ -234,47 +234,47 @@ class NodeTest {
 	}
 
 	@Test
-	void testNullValueValues() {
+	void testNullValues() {
 		int index = 0;
 
 		// Assert initial values
-		assertThat( data.getValue( "attribute" ), is( nullValue() ) );
+		assertThat( data.getValue( "key" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value to null and make sure nothing happens
-		data.setValue( "attribute", null );
-		assertThat( data.getValue( "attribute" ), is( nullValue() ) );
+		data.setValue( "key", null );
+		assertThat( data.getValue( "key" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value
-		data.setValue( "attribute", "value" );
-		assertThat( data.getValue( "attribute" ), is( "value" ) );
+		data.setValue( "key", "value" );
+		assertThat( data.getValue( "key" ), is( "value" ) );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", null, "value" );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, "value" );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value to the same value and make sure nothing happens
-		data.setValue( "attribute", "value" );
-		assertThat( data.getValue( "attribute" ), is( "value" ) );
+		data.setValue( "key", "value" );
+		assertThat( data.getValue( "key" ), is( "value" ) );
 		assertThat( data, hasStates( true, 1, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value back to null
-		data.setValue( "attribute", null );
-		assertThat( data.getValue( "attribute" ), is( nullValue() ) );
+		data.setValue( "key", null );
+		assertThat( data.getValue( "key" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", "value", null );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", "value", null );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value to null again and make sure nothing happens
-		data.setValue( "attribute", null );
-		assertThat( data.getValue( "attribute" ), is( nullValue() ) );
+		data.setValue( "key", null );
+		assertThat( data.getValue( "key" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 	}
@@ -466,6 +466,37 @@ class NodeTest {
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
+		data.setValue( "u", 1 );
+		data.setValue( "v", 2 );
+		data.setValue( "w", 3 );
+		assertThat( data, hasStates( false, 0, 0 ) );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", null, 1 );
+//		assertEventState( data, index++, NodeEvent.MODIFIED );
+//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", null, 2 );
+//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", null, 3 );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( index ) );
+
+		data.clear();
+		assertThat( data, hasStates( false, 0, 0 ) );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", 1, null );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", 2, null );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", 3, null );
+//		assertEventState( data, index++, NodeEvent.UNMODIFIED );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( index ) );
+	}
+
+	@Test
+	void testClearWithModifyingValues() {
+		int index = 0;
+		assertThat( data, hasStates( false, 0, 0 ) );
+		assertThat( data.getEventCount(), is( index ) );
+
 		data.setValue( "x", 1 );
 		data.setValue( "y", 2 );
 		data.setValue( "z", 3 );
@@ -490,25 +521,25 @@ class NodeTest {
 	}
 
 	@Test
-	void testResourceKeys() {
-		data.putResource( "key", "value" );
-		assertThat( data.getResourceKeys(), containsInAnyOrder( "key" ) );
+	void testValueKeys() {
+		data.setValue( "key", "value" );
+		assertThat( data.getValueKeys(), containsInAnyOrder( "key" ) );
 	}
 
 	@Test
-	void testResource() {
+	void testValue() {
 		int index = 0;
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
-		data.putResource( "name", "value" );
-		assertThat( data.getResource( "name" ), is( "value" ) );
+		data.setValue( "name", "mock" );
+		assertThat( data.getValue( "name" ), is( "mock" ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
-		data.putResource( "name", null );
-		assertThat( data.getResource( "name" ), is( nullValue() ) );
+		data.setValue( "name", null );
+		assertThat( data.getValue( "name" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
@@ -544,8 +575,8 @@ class NodeTest {
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
-		child.putResource( "name", "value" );
-		assertThat( child.getResource( "name" ), is( "value" ) );
+		child.setValue( "name", "mock" );
+		assertThat( child.getValue( "name" ), is( "mock" ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
@@ -553,20 +584,14 @@ class NodeTest {
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
-		child.putResource( "name", null );
-		assertThat( child.getResource( "name" ), is( nullValue() ) );
+		child.setValue( "name", null );
+		assertThat( child.getValue( "name" ), is( nullValue() ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
-	}
-
-	@Test
-	void testGetResourceWithDefault() {
-		assertThat( data.getResource( "key" ), is( nullValue() ) );
-		assertThat( data.getResource( "key", "default" ), is( "default" ) );
 	}
 
 	@Test
@@ -576,29 +601,29 @@ class NodeTest {
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set a value
-		data.setValue( "attribute", "value0" );
+		data.setValue( "key", "value0" );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", null, "value0" );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, "value0" );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the value to the same value
-		data.setValue( "attribute", "value0" );
+		data.setValue( "key", "value0" );
 		assertThat( data, hasStates( true, 1, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Modify the value
-		data.setValue( "attribute", "value1" );
+		data.setValue( "key", "value1" );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", "value0", "value1" );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", "value0", "value1" );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Remove the attribute.
-		data.setValue( "attribute", null );
+		data.setValue( "key", null );
 		assertThat( data, hasStates( false, 0, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", "value1", null );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", "value1", null );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
@@ -611,9 +636,9 @@ class NodeTest {
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Change a value
-		data.setValue( "attribute", "value0" );
+		data.setValue( "key", "value0" );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "attribute", null, "value0" );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, "value0" );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
@@ -709,28 +734,28 @@ class NodeTest {
 		int index = 0;
 
 		// Set an attribute on the child to modify the child and parent
-		child.setValue( "attribute", "value0" );
+		child.setValue( "key", "value0" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", null, "value0" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", null, "value0" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
 
 		// Change the attribute value on the child
-		child.setValue( "attribute", "value1" );
+		child.setValue( "key", "value1" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", "value0", "value1" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value0", "value1" );
 		// The parent is already modified so there should not be a modified event here
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
 
 		// Set the child attribute back to null to unmodify the child and parent
-		child.setValue( "attribute", null );
+		child.setValue( "key", null );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", "value1", null );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value1", null );
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
@@ -750,10 +775,10 @@ class NodeTest {
 		int index = 0;
 
 		// Set an attribute on the child to modify the child and parent
-		child.setValue( "attribute", "value0" );
+		child.setValue( "key", "value0" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", null, "value0" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", null, "value0" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
@@ -781,19 +806,19 @@ class NodeTest {
 		int index = 0;
 
 		// Test setting a value on the child node modifies the parent
-		child.setValue( "attribute", "value" );
+		child.setValue( "key", "value" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", null, "value" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", null, "value" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
 
 		// Test clear the value on the child node unmodifies the parent
-		child.setValue( "attribute", null );
+		child.setValue( "key", null );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", "value", null );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value", null );
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
@@ -813,36 +838,36 @@ class NodeTest {
 		int index = 0;
 
 		// Set an attribute on the child to a non-null value and clear the modified flags
-		child.setValue( "attribute", "value0" );
+		child.setValue( "key", "value0" );
 		parent.setModified( false );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", null, "value0" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", null, "value0" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 
 		// Change the attribute value on the child
-		child.setValue( "attribute", "value1" );
+		child.setValue( "key", "value1" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", "value0", "value1" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value0", "value1" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
 
 		// Set the child attribute to the same value, should do nothing
-		child.setValue( "attribute", "value1" );
+		child.setValue( "key", "value1" );
 		assertThat( child, hasStates( true, 1, 0 ) );
 		assertThat( parent, hasStates( true, 0, 1 ) );
 		assertThat( parent.getEventCount(), is( index ) );
 
 		// Set the child attribute back to value0
-		child.setValue( "attribute", "value0" );
+		child.setValue( "key", "value0" );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertThat( parent, hasStates( false, 0, 0 ) );
-		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "attribute", "value1", "value0" );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value1", "value0" );
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( index ) );
@@ -905,17 +930,17 @@ class NodeTest {
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
 
 		// Test setting a value on the child node modifies the parents
-		grandChild.setValue( "attribute", "value" );
+		grandChild.setValue( "key", "value" );
 		assertThat( parent, hasStates( true, 0, 1 ) );
 		assertThat( child, hasStates( true, 0, 1 ) );
 		assertThat( grandChild, hasStates( true, 1, 0 ) );
-		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", null, "value" );
+		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", null, "value" );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED, parent, null, null, null );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", null, "value" );
+		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", null, "value" );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED, child, null, null, null );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "attribute", null, "value" );
+		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "key", null, "value" );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.MODIFIED );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
@@ -923,17 +948,17 @@ class NodeTest {
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
 
 		// Test unsetting the value on the child node unmodifies the parents
-		grandChild.setValue( "attribute", null );
+		grandChild.setValue( "key", null );
 		assertThat( parent, hasStates( false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, 0, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
-		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", "value", null );
+		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", "value", null );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "attribute", "value", null );
+		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", "value", null );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "attribute", "value", null );
+		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "key", "value", null );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.NODE_CHANGED );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
@@ -1296,33 +1321,33 @@ class NodeTest {
 	@Test
 	void testCopyFromUsingResources() {
 		Node node1 = new Node();
-		node1.putResource( "key1", "value1" );
-		node1.putResource( "key2", "value2" );
+		node1.setValue( "key1", "value1" );
+		node1.setValue( "key2", "value2" );
 
 		Node node2 = new Node();
-		node2.putResource( "key2", "valueB" );
+		node2.setValue( "key2", "valueB" );
 
 		node2.copyFrom( node1 );
-		assertThat( node1.getResource( "key1" ), is( "value1" ) );
-		assertThat( node1.getResource( "key2" ), is( "value2" ) );
-		assertThat( node2.getResource( "key1" ), is( "value1" ) );
-		assertThat( node2.getResource( "key2" ), is( "valueB" ) );
+		assertThat( node1.getValue( "key1" ), is( "value1" ) );
+		assertThat( node1.getValue( "key2" ), is( "value2" ) );
+		assertThat( node2.getValue( "key1" ), is( "value1" ) );
+		assertThat( node2.getValue( "key2" ), is( "valueB" ) );
 	}
 
 	@Test
 	void testCopyFromWithOverwriteUsingResources() {
 		Node node1 = new Node();
-		node1.putResource( "key1", "value1" );
-		node1.putResource( "key2", "value2" );
+		node1.setValue( "key1", "value1" );
+		node1.setValue( "key2", "value2" );
 
 		Node node2 = new Node();
-		node2.putResource( "key2", "valueB" );
+		node2.setValue( "key2", "valueB" );
 
 		node2.copyFrom( node1, true );
-		assertThat( node1.getResource( "key1" ), is( "value1" ) );
-		assertThat( node1.getResource( "key2" ), is( "value2" ) );
-		assertThat( node2.getResource( "key1" ), is( "value1" ) );
-		assertThat( node2.getResource( "key2" ), is( "value2" ) );
+		assertThat( node1.getValue( "key1" ), is( "value1" ) );
+		assertThat( node1.getValue( "key2" ), is( "value2" ) );
+		assertThat( node2.getValue( "key1" ), is( "value1" ) );
+		assertThat( node2.getValue( "key2" ), is( "value2" ) );
 	}
 
 	@Test

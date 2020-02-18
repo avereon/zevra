@@ -38,13 +38,13 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	private Map<String, Object> values;
 
-	/**
-	 * The node resources. This map provides a way to associate objects without
-	 * affecting the data model as a whole. Adding or removing resources does not
-	 * affect the node state nor does it cause any kind of event. This is simply a
-	 * storage mechanism.
-	 */
-	private Map<String, Object> resources;
+	//	/**
+	//	 * The node resources. This map provides a way to associate objects without
+	//	 * affecting the data model as a whole. Adding or removing resources does not
+	//	 * affect the node state nor does it cause any kind of event. This is simply a
+	//	 * storage mechanism.
+	//	 */
+	//	private Map<String, Object> resources;
 
 	/**
 	 * The collection of edges this node is associated with. The node may be the
@@ -61,6 +61,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * The list of value keys that specify the natural key.
 	 */
 	private List<String> naturalKeyList;
+
+	/**
+	 * The set of value keys that can modify the node.
+	 */
+	private Set<String> modifyingKeySet;
 
 	/**
 	 * The set of value keys that are read only.
@@ -154,33 +159,26 @@ public class Node implements TxnEventTarget, Cloneable {
 	//
 	//	}
 
-	public Set<String> getResourceKeys() {
-		return resources == null ? Collections.emptySet() : resources.keySet();
-	}
-
-	public <T> T getResource( String key ) {
-		return getResource( key, null );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	protected <T> T getResource( String key, T defaultValue ) {
-		if( key == null ) throw new NullPointerException( "Resource key cannot be null" );
-
-		T value = resources == null ? null : (T)resources.get( key );
-
-		return value != null ? value : defaultValue;
-	}
-
-	public <T> void putResource( String key, T newValue ) {
-		T oldValue = getResource( key );
-		try {
-			Txn.create();
-			Txn.submit( new SetResourceOperation( this, key, oldValue, newValue ) );
-			Txn.commit();
-		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting resource: " + key + "=" + newValue, exception );
-		}
-	}
+	//	@Deprecated
+	//	public Set<String> getResourceKeys() {
+	//		return getValueKeys();
+	//	}
+	//
+	//	@Deprecated
+	//	public <T> T getResource( String key ) {
+	//		return getValue( key, null );
+	//	}
+	//
+	//	@Deprecated
+	//	@SuppressWarnings( "unchecked" )
+	//	protected <T> T getResource( String key, T defaultValue ) {
+	//		return getValue( key, defaultValue );
+	//	}
+	//
+	//	@Deprecated
+	//	public <T> void putResource( String key, T newValue ) {
+	//		setValue( key, newValue );
+	//	}
 
 	public void refresh() {
 		try {
@@ -233,11 +231,6 @@ public class Node implements TxnEventTarget, Cloneable {
 		// Clone values
 		for( String key : node.getValueKeys() ) {
 			if( overwrite || getValue( key ) == null ) setValue( key, node.getValue( key ) );
-		}
-
-		// Clone resources
-		for( String key : node.getResourceKeys() ) {
-			if( overwrite || getResource( key ) == null ) putResource( key, node.getResource( key ) );
 		}
 
 		return (T)this;
@@ -358,6 +351,21 @@ public class Node implements TxnEventTarget, Cloneable {
 		return readOnlySet != null && readOnlySet.contains( key );
 	}
 
+	protected void addModifyingKeys( String... keys ) {
+		if( modifyingKeySet == null ) modifyingKeySet = new CopyOnWriteArraySet<>();
+		modifyingKeySet.addAll( Set.of( keys ) );
+	}
+
+	protected void removeModifyingKeys( String... keys ) {
+		if( modifyingKeySet == null ) return;
+		modifyingKeySet.removeAll( Set.of( keys ) );
+		if( modifyingKeySet.isEmpty() ) modifyingKeySet = null;
+	}
+
+	protected boolean isModifyingKey( String key ) {
+		return modifyingKeySet != null && modifyingKeySet.contains( key );
+	}
+
 	protected Set<String> getValueKeys() {
 		return values == null ? Collections.emptySet() : values.keySet();
 	}
@@ -384,10 +392,9 @@ public class Node implements TxnEventTarget, Cloneable {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( readOnlySet != null && readOnlySet.contains( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
-		Object oldValue = getValue( key );
-
 		try {
 			Txn.create();
+			Object oldValue = getValue( key );
 			if( newValue instanceof Node ) checkForExistingParent( (Node)newValue );
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
 			Txn.commit();
@@ -481,17 +488,17 @@ public class Node implements TxnEventTarget, Cloneable {
 		updateModified();
 	}
 
-	private <T> void doPutResource( String key, T oldValue, T newValue ) {
-		if( newValue == null ) {
-			if( resources != null ) {
-				resources.remove( key );
-				if( resources.size() == 0 ) resources = null;
-			}
-		} else {
-			if( resources == null ) resources = new ConcurrentHashMap<>();
-			resources.put( key, newValue );
-		}
-	}
+	//	private <T> void doPutResource( String key, T oldValue, T newValue ) {
+	//		if( newValue == null ) {
+	//			if( resources != null ) {
+	//				resources.remove( key );
+	//				if( resources.size() == 0 ) resources = null;
+	//			}
+	//		} else {
+	//			if( resources == null ) resources = new ConcurrentHashMap<>();
+	//			resources.put( key, newValue );
+	//		}
+	//	}
 
 	private void doSetValue( String key, Object oldValue, Object newValue ) {
 		if( newValue == null ) {
@@ -581,27 +588,27 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 
 		final void fireEvent( NodeEvent event ) {
-			fireEvent( getNode(), event );
-		}
-
-		final void fireEvent( Node target, NodeEvent event ) {
-			getResult().addEvent( target, event );
+			fireTargetedEvent( getNode(), event );
 		}
 
 		final void fireCascadingEvent( NodeEvent event ) {
 			Node node = getNode();
 			while( node != null ) {
-				fireEvent( node, event );
+				fireTargetedEvent( node, event );
 				node = node.getParent();
 			}
 		}
 
-		final void fireTricklingEvent( EventType<NodeEvent> type ) {
+		final void fireSlidingEvent( EventType<NodeEvent> type ) {
 			Node node = getNode();
 			while( node != null ) {
-				getResult().addEvent( node, new NodeEvent( node, type ) );
+				fireTargetedEvent( node, new NodeEvent( node, type ) );
 				node = node.getParent();
 			}
+		}
+
+		final void fireTargetedEvent( Node target, NodeEvent event ) {
+			getResult().addEvent( target, event );
 		}
 
 	}
@@ -636,8 +643,8 @@ public class Node implements TxnEventTarget, Cloneable {
 						Node child = (Node)value;
 						if( child.isModified() ) {
 							child.doSetSelfModified( false );
-							fireEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
-							fireEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
+							fireTargetedEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
+							fireTargetedEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
 						}
 					}
 				}
@@ -684,20 +691,37 @@ public class Node implements TxnEventTarget, Cloneable {
 			// This operation must be created before any changes are made
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( Node.this );
 
-			setValue( key, oldValue, newValue );
+			doSetValue( key, oldValue, newValue );
 
-			boolean childAdd = oldValue == null && newValue instanceof Node;
-			boolean childRemove = newValue == null && oldValue instanceof Node;
-			if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-			if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
-			fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
+			if( isModifyingKey( key ) ) {
+				// Update the modified value map
+				Object preValue = modifiedValues == null ? null : modifiedValues.get( key );
+				if( preValue == null ) {
+					// Only add the value if there is not an existing previous value
+					if( modifiedValues == null ) modifiedValues = new ConcurrentHashMap<>();
+					modifiedValues.put( key, oldValue == null ? NULL : oldValue );
+				} else if( Objects.equals( preValue == NULL ? null : preValue, newValue ) ) {
+					if( modifiedValues != null ) {
+						modifiedValues.remove( key );
+						if( modifiedValues.size() == 0 ) modifiedValues = null;
+					}
+				}
 
-			Txn.submit( updateModified );
+				boolean childAdd = oldValue == null && newValue instanceof Node;
+				boolean childRemove = newValue == null && oldValue instanceof Node;
+				if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
+				if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
+				fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
+
+				Txn.submit( updateModified );
+			}
+
+			fireSlidingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
 		protected void revert() {
-			setValue( key, newValue, oldValue );
+			doSetValue( key, newValue, oldValue );
 		}
 
 		@Override
@@ -705,55 +729,38 @@ public class Node implements TxnEventTarget, Cloneable {
 			return "set value " + key + " " + oldValue + " -> " + newValue;
 		}
 
-		private void setValue( String key, Object oldValue, Object newValue ) {
-			doSetValue( key, oldValue, newValue );
-
-			// Update the modified value map
-			Object preValue = modifiedValues == null ? null : modifiedValues.get( key );
-			if( preValue == null ) {
-				// Only add the value if there is not an existing previous value
-				if( modifiedValues == null ) modifiedValues = new ConcurrentHashMap<>();
-				modifiedValues.put( key, oldValue == null ? NULL : oldValue );
-			} else if( Objects.equals( preValue == NULL ? null : preValue, newValue ) ) {
-				if( modifiedValues != null ) {
-					modifiedValues.remove( key );
-					if( modifiedValues.size() == 0 ) modifiedValues = null;
-				}
-			}
-		}
-
 	}
 
-	private class SetResourceOperation extends NodeTxnOperation {
-
-		private String key;
-
-		private Object oldValue;
-
-		private Object newValue;
-
-		SetResourceOperation( Node node, String key, Object oldValue, Object newValue ) {
-			super( node );
-			this.key = key;
-			this.oldValue = oldValue;
-			this.newValue = newValue;
-		}
-
-		@Override
-		protected void commit() {
-			putResource( key, oldValue, newValue );
-			if( !Objects.equals( oldValue, newValue ) ) fireTricklingEvent( NodeEvent.NODE_CHANGED );
-		}
-
-		@Override
-		protected void revert() {
-			putResource( key, newValue, oldValue );
-		}
-
-		private void putResource( String key, Object oldValue, Object newValue ) {
-			doPutResource( key, oldValue, newValue );
-		}
-	}
+	//	private class SetResourceOperation extends NodeTxnOperation {
+	//
+	//		private String key;
+	//
+	//		private Object oldValue;
+	//
+	//		private Object newValue;
+	//
+	//		SetResourceOperation( Node node, String key, Object oldValue, Object newValue ) {
+	//			super( node );
+	//			this.key = key;
+	//			this.oldValue = oldValue;
+	//			this.newValue = newValue;
+	//		}
+	//
+	//		@Override
+	//		protected void commit() {
+	//			putResource( key, oldValue, newValue );
+	//			if( !Objects.equals( oldValue, newValue ) ) fireSlidingEvent( NodeEvent.NODE_CHANGED );
+	//		}
+	//
+	//		@Override
+	//		protected void revert() {
+	//			putResource( key, newValue, oldValue );
+	//		}
+	//
+	//		private void putResource( String key, Object oldValue, Object newValue ) {
+	//			doPutResource( key, oldValue, newValue );
+	//		}
+	//	}
 
 	@SuppressWarnings( "InnerClassMayBeStatic" )
 	private class RefreshOperation extends NodeTxnOperation {
@@ -764,7 +771,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		@Override
 		protected void commit() {
-			fireTricklingEvent( NodeEvent.NODE_CHANGED );
+			fireSlidingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -798,12 +805,12 @@ public class Node implements TxnEventTarget, Cloneable {
 			while( parent != null ) {
 				boolean priorModified = parent.isModified();
 				boolean parentChanged = parent.doSetChildModified( node, newValue );
-				if( parentChanged ) fireEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				if( parentChanged ) fireTargetedEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
 				parent = parent.getParent();
 			}
 
-			fireTricklingEvent( NodeEvent.NODE_CHANGED );
+			fireSlidingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
