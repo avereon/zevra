@@ -1,7 +1,7 @@
 package com.avereon.settings;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventBus;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
 import com.avereon.util.Log;
@@ -29,7 +29,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private Map<String, Object> defaultValues;
 
-	private EventBus eventBus;
+	private EventHub eventHub;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -60,7 +60,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	protected AbstractSettings() {
-		this.eventBus = new EventBus();
+		this.eventHub = new EventHub();
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public abstract class AbstractSettings implements Settings {
 
 		// Settings change event should only be fired if the values are different
 		//if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
-		if( !Objects.equals( oldValue, newValue ) ) getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
+		if( !Objects.equals( oldValue, newValue ) ) getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
 
 		return this;
 	}
@@ -290,16 +290,16 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {return eventBus.register( type, handler );}
+	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {return eventHub.register( type, handler );}
 
 	@Override
-	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return eventBus.unregister( type, handler );}
+	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return eventHub.unregister( type, handler );}
 
 	@Override
-	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {return eventBus.getEventHandlers();}
+	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {return eventHub.getEventHandlers();}
 
-	public EventBus getEventBus() {
-		return eventBus;
+	public EventHub getEventHub() {
+		return eventHub;
 	}
 
 	String getNodePath( String root, String path ) {

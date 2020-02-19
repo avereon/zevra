@@ -1,7 +1,7 @@
 package com.avereon.settings;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventBus;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
 import com.avereon.util.TypeReference;
@@ -248,9 +248,9 @@ public interface Settings {
 	 */
 	void setDefaultValues( Map<String, Object> defaults );
 
-	<T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler );
+	<T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler );
 
-	<T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler );
+	<T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler );
 
 	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers();
 

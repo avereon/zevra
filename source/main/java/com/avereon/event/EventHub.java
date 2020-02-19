@@ -6,17 +6,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EventBus implements EventDispatcher {
+public class EventHub {
 
-	private EventBus parent;
+	private EventHub parent;
 
 	private Map<EventType<? extends Event>, Collection<EventHandler<Event>>> handlers;
 
-	public EventBus() {
+	public EventHub() {
 		handlers = new ConcurrentHashMap<>();
 	}
 
-	@Override
 	public Event dispatch( Event event ) {
 		// While the type of the incoming event is known, the parent event types,
 		// used later in the method are not well known. They could be of any event
@@ -37,18 +36,18 @@ public class EventBus implements EventDispatcher {
 		return event;
 	}
 
-	public EventBus parent( EventBus parent ) {
+	public EventHub parent( EventHub parent ) {
 		this.parent = parent;
 		return this;
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {
+	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfAbsent( type, k -> new HashSet<>() ).add( (EventHandler<Event>)handler );
 		return this;
 	}
 
-	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
+	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		handlers.computeIfPresent( type, ( t, c ) -> {
 			c.removeIf( h -> h == handler );
 			return c.isEmpty() ? null : c;

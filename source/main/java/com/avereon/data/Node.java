@@ -1,7 +1,7 @@
 package com.avereon.data;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventBus;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
@@ -80,7 +80,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	@Deprecated
 	//private Set<NodeListener> listeners;
 
-	private EventBus bus;
+	private EventHub bus;
 
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
@@ -115,7 +115,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	public Node() {
-		bus = new EventBus();
+		bus = new EventHub();
 	}
 
 	/**
@@ -195,11 +195,11 @@ public class Node implements TxnEventTarget, Cloneable {
 		if( event instanceof NodeEvent ) bus.dispatch( event );
 	}
 
-	public <T extends Event> EventBus register( EventType<? super T> type, EventHandler<? super T> handler ) {
+	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
 		return bus.register( type, handler );
 	}
 
-	public <T extends Event> EventBus unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
+	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		return bus.unregister( type, handler );
 	}
 

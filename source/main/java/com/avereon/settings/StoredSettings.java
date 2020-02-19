@@ -214,7 +214,7 @@ public class StoredSettings extends AbstractSettings {
 		if( !Files.exists( file ) || Files.isDirectory( file ) ) return;
 		try( FileInputStream input = new FileInputStream( file.toFile() ) ) {
 			values.load( input );
-			getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.LOADED, getPath() ) );
+			getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.LOADED, getPath() ) );
 		} catch( IOException exception ) {
 			log.log( Log.ERROR, "Error loading settings file: " + file, exception );
 		}
@@ -230,7 +230,7 @@ public class StoredSettings extends AbstractSettings {
 		try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 			values.store( output, null );
 			lastStoreTime.set( System.currentTimeMillis() );
-			getEventBus().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
+			getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
 		} catch( IOException exception ) {
 			log.log( Log.ERROR, "Error saving settings file: " + file, exception );
 		}
