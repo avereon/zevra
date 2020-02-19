@@ -15,9 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
-import java.lang.System.Logger;
 
 public class StoredSettings extends AbstractSettings {
+
+	private static final System.Logger log = Log.get();
 
 	/**
 	 * Data will be persisted at most this fast.
@@ -32,8 +33,6 @@ public class StoredSettings extends AbstractSettings {
 	private static final String SETTINGS_EXTENSION = ".properties";
 
 	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
-
-	private static final Logger log = Log.log();
 
 	private static Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
 

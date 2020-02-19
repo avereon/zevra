@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.lang.System.Logger;
 
 /**
  * A convenience class to simplify the use of XML documents as descriptors. This
@@ -37,7 +36,7 @@ import java.lang.System.Logger;
  */
 public class XmlDescriptor {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private Node node;
 

@@ -1,4 +1,4 @@
-package com.avereon.util;
+package com.avereon.product;
 
 import java.math.BigInteger;
 import java.util.*;

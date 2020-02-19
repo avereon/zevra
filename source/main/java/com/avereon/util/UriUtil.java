@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.lang.System.Logger;
 
 public final class UriUtil {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	public static URI addToPath( URI uri, String path ) {
 		String newPath = uri.getPath() + "/" + path;

@@ -28,7 +28,7 @@ public class Log {
 
 	public static final System.Logger.Level ALL = System.Logger.Level.ALL;
 
-	public static System.Logger log() {
+	public static System.Logger get() {
 		return new SystemLoggerWrapper( System.getLogger( JavaUtil.getCallingClassName( 1 ) ) );
 	}
 

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Node implements TxnEventTarget, Cloneable {
 
-	private static final System.Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	/**
 	 * The modified flag key.

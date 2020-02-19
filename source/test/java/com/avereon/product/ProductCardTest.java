@@ -1,7 +1,5 @@
 package com.avereon.product;
 
-import com.avereon.util.Contributor;
-import com.avereon.util.Maintainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;

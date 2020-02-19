@@ -1,5 +1,6 @@
-package com.avereon.util;
+package com.avereon.product;
 
+import com.avereon.util.Person;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;

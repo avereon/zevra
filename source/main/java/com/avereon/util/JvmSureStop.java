@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import java.lang.System.Logger;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -17,7 +16,7 @@ import java.util.Map;
  */
 public class JvmSureStop extends Thread {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	/**
 	 * The amount of time to give the JVM to exit cleanly. After this amount of

@@ -2,11 +2,10 @@ package com.avereon.util;
 
 import java.security.MessageDigest;
 import java.util.Random;
-import java.lang.System.Logger;
 
 public class IdGenerator {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static final Random RANDOM = new Random();
 

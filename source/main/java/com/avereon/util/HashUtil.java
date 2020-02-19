@@ -1,14 +1,13 @@
 package com.avereon.util;
 
 import java.io.*;
-import java.lang.System.Logger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class HashUtil {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 

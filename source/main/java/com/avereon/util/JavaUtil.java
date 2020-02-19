@@ -3,7 +3,6 @@ package com.avereon.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.System.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -12,7 +11,7 @@ import java.util.*;
 
 public final class JavaUtil {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	public static boolean isTest() {
 		try {

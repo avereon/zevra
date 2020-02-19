@@ -1,4 +1,6 @@
-package com.avereon.util;
+package com.avereon.product;
+
+import com.avereon.util.DateUtil;
 
 import java.util.Date;
 import java.util.TimeZone;

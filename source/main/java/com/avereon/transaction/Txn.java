@@ -3,8 +3,6 @@ package com.avereon.transaction;
 import com.avereon.event.EventType;
 import com.avereon.util.Log;
 
-import java.lang.System.Logger;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Txn {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static final ThreadLocal<Deque<Txn>> threadLocalTransactions = new ThreadLocal<>();
 

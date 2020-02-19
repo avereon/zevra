@@ -17,7 +17,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.lang.System.Logger;
 
 /**
  * A convenience class for loading, saving, formatting, and querying XML
@@ -26,7 +25,7 @@ import java.lang.System.Logger;
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static final int DEFAULT_INDENT = 2;
 

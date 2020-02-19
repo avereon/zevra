@@ -1,5 +1,6 @@
-package com.avereon.util;
+package com.avereon.product;
 
+import com.avereon.product.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;

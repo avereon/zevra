@@ -9,12 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-import java.lang.System.Logger;
 
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	public static final int LEFT = -1;
 

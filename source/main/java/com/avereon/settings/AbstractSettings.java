@@ -1,8 +1,8 @@
 package com.avereon.settings;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
@@ -17,11 +17,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.lang.System.Logger;
 
 public abstract class AbstractSettings implements Settings {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static final Map<Class<?>, OutboundConverter> outboundConverters;
 

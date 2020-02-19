@@ -2,7 +2,6 @@ package com.avereon.product;
 
 import com.avereon.util.Log;
 
-import java.lang.System.Logger;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -13,7 +12,7 @@ import java.util.ResourceBundle;
  */
 public class ProductBundle {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static final String DEFAULT_PATH = "/bundles";
 

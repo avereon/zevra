@@ -1,7 +1,6 @@
 package com.avereon.util;
 
 import java.io.*;
-import java.lang.System.Logger;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,7 +9,7 @@ import java.util.List;
 
 public class OperatingSystem {
 
-	private static final Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	public enum Family {
 		UNKNOWN,
