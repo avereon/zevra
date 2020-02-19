@@ -1,6 +1,6 @@
 package com.avereon.transaction;
 
-public class TxnEventWrapper {
+class TxnEventWrapper {
 
 	private TxnEventTarget target;
 

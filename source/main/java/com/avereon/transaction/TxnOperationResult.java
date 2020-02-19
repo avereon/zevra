@@ -3,7 +3,12 @@ package com.avereon.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TxnOperationResult {
+/**
+ * The results of a completed transaction operation. These results are collected
+ * as part of the commit operation and the events are distributed when the
+ * commit is successful.
+ */
+class TxnOperationResult {
 
 	private TxnOperation action;
 

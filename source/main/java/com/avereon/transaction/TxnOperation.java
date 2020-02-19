@@ -1,6 +1,10 @@
 package com.avereon.transaction;
 
-// May also be named unit, task, step, etc.
+/**
+ * Represents a single operation that is processed during the commit process and
+ * generates a result that is collected and published when the commit
+ * successfully completes.
+ */
 public abstract class TxnOperation {
 
 	public enum Status {
