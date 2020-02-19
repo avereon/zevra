@@ -8,7 +8,7 @@ import java.util.List;
  * as part of the commit operation and the events are distributed when the
  * commit is successful.
  */
-class TxnOperationResult {
+public class TxnOperationResult {
 
 	private TxnOperation action;
 
@@ -22,12 +22,12 @@ class TxnOperationResult {
 		return action;
 	}
 
-	public List<TxnEventWrapper> getEvents() {
-		return events;
-	}
-
 	public void addEvent( TxnEventTarget target, TxnEvent event ) {
 		events.add( new TxnEventWrapper( target, event ) );
+	}
+
+	List<TxnEventWrapper> getEvents() {
+		return events;
 	}
 
 }
