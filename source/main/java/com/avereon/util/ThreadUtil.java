@@ -32,6 +32,12 @@ public class ThreadUtil {
 		}
 	}
 
+	public static final Thread asDaemon( Runnable runnable ) {
+		Thread thread = new Thread( runnable );
+		thread.setDaemon( true );
+		return thread;
+	}
+
 	public static final ThreadFactory createDaemonThreadFactory() {
 		return new DaemonThreadFactory();
 	}
