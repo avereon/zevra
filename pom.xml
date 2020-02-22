@@ -42,7 +42,7 @@
 		<product-identifier>${project.artifactId}</product-identifier>
 		<project-timestamp>${maven.build.timestamp}</project-timestamp>
 
-		<jackson.version>2.10.0</jackson.version>
+		<jackson.version>2.10.2</jackson.version>
 	</properties>
 
 	<dependencies>
