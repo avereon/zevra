@@ -4,23 +4,23 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
 
-public class EventWatcher<T extends Event> implements EventHandler<T> {
+public class EventWatcher implements EventHandler<Event> {
 
 	public static final long DEFAULT_WAIT_TIMEOUT = 10000;
 
-	private Queue<T> events = new ConcurrentLinkedQueue<>();
+	private Queue<Event> events = new ConcurrentLinkedQueue<>();
 
 	@Override
-	public synchronized void handle( T event ) {
+	public synchronized void handle( Event event ) {
 		events.offer( event );
 		notifyAll();
 	}
 
-	public void waitForEvent( EventType<? extends T> type ) throws InterruptedException, TimeoutException {
+	public void waitForEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
 		waitForEvent( type, DEFAULT_WAIT_TIMEOUT );
 	}
 
-	public void waitForNextEvent( EventType<? extends T> type ) throws InterruptedException, TimeoutException {
+	public void waitForNextEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
 		waitForNextEvent( type, DEFAULT_WAIT_TIMEOUT );
 	}
 
@@ -34,7 +34,7 @@ public class EventWatcher<T extends Event> implements EventHandler<T> {
 	 * @param timeout How long, in milliseconds, to wait for the event
 	 * @throws InterruptedException If the timeout is exceeded
 	 */
-	public synchronized void waitForEvent( EventType<? extends T> type, long timeout ) throws InterruptedException, TimeoutException {
+	public synchronized void waitForEvent( EventType<? extends Event> type, long timeout ) throws InterruptedException, TimeoutException {
 		boolean shouldWait = timeout > 0;
 		long start = System.currentTimeMillis();
 		long duration = 0;
@@ -58,7 +58,7 @@ public class EventWatcher<T extends Event> implements EventHandler<T> {
 	 * @param timeout How long, in milliseconds, to wait for the event
 	 * @throws InterruptedException If the timeout is exceeded
 	 */
-	public synchronized void waitForNextEvent( EventType<? extends T> type, long timeout ) throws InterruptedException, TimeoutException {
+	public synchronized void waitForNextEvent( EventType<? extends Event> type, long timeout ) throws InterruptedException, TimeoutException {
 		findNext( type );
 		waitForEvent( type, timeout );
 	}
