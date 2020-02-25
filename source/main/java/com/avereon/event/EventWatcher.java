@@ -6,7 +6,7 @@ import java.util.concurrent.TimeoutException;
 
 public class EventWatcher implements EventHandler<Event> {
 
-	public static final long DEFAULT_WAIT_TIMEOUT = 10000;
+	public static final long DEFAULT_WAIT_TIMEOUT = 2000;
 
 	private Queue<Event> events = new ConcurrentLinkedQueue<>();
 
