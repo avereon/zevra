@@ -13,7 +13,7 @@ public class EventHub {
 	private Map<EventType<? extends Event>, Collection<EventHandler<Event>>> handlers;
 
 	public EventHub() {
-		handlers = new ConcurrentHashMap<>();
+		this.handlers = new ConcurrentHashMap<>();
 	}
 
 	public Event dispatch( Event event ) {
@@ -57,6 +57,10 @@ public class EventHub {
 
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return new HashMap<>( handlers );
+	}
+
+	protected EventHub getParent() {
+		return parent;
 	}
 
 }
