@@ -10,6 +10,7 @@ module com.avereon.zevra {
 
 	exports com.avereon.data;
 	exports com.avereon.event;
+	exports com.avereon.math;
 	exports com.avereon.product;
 	exports com.avereon.settings;
 	exports com.avereon.transaction;
