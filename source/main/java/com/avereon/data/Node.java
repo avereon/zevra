@@ -80,7 +80,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	@Deprecated
 	//private Set<NodeListener> listeners;
 
-	private EventHub bus;
+	private EventHub hub;
 
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
@@ -115,7 +115,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	public Node() {
-		bus = new EventHub();
+		hub = new EventHub();
 	}
 
 	/**
@@ -192,19 +192,23 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) bus.dispatch( event );
+		if( event instanceof NodeEvent ) hub.dispatch( event );
 	}
 
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
-		return bus.register( type, handler );
+		return hub.register( type, handler );
 	}
 
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
-		return bus.unregister( type, handler );
+		return hub.unregister( type, handler );
 	}
 
 	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
-		return bus.getEventHandlers();
+		return hub.getEventHandlers();
+	}
+
+	protected EventHub getEventHub() {
+		return hub;
 	}
 
 	/**
