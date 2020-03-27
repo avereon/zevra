@@ -8,12 +8,12 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 
-	exports com.avereon.able;
 	exports com.avereon.data;
 	exports com.avereon.event;
 	exports com.avereon.math;
 	exports com.avereon.product;
 	exports com.avereon.settings;
+	exports com.avereon.skill;
 	exports com.avereon.transaction;
 	exports com.avereon.undo;
 	exports com.avereon.util;
