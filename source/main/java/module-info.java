@@ -8,6 +8,7 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 
+	exports com.avereon.able;
 	exports com.avereon.data;
 	exports com.avereon.event;
 	exports com.avereon.math;
