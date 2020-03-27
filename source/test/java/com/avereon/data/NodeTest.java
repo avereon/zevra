@@ -9,10 +9,7 @@ import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -281,6 +278,10 @@ class NodeTest {
 
 	@Test
 	void testGetAndSetValue() {
+
+		List<NodeEvent> events = new ArrayList<>();
+		data.register( "x", events::add );
+
 		int index = 0;
 		assertThat( data.getValue( "x" ), is( nullValue() ) );
 		assertThat( data.getValue( "y" ), is( nullValue() ) );
@@ -293,6 +294,7 @@ class NodeTest {
 		assertThat( data.getValue( "y" ), is( nullValue() ) );
 		assertThat( data.getValue( "z" ), is( nullValue() ) );
 		assertThat( data, hasStates( true, 1, 0 ) );
+		assertThat( events.get( 0 ), hasEventState( data, NodeEvent.VALUE_CHANGED, "x", null, 1.0 ) );
 		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", null, 1.0 );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
@@ -303,6 +305,7 @@ class NodeTest {
 		assertThat( data.getValue( "y" ), is( nullValue() ) );
 		assertThat( data.getValue( "z" ), is( nullValue() ) );
 		assertThat( data, hasStates( true, 1, 0 ) );
+		assertThat( events.get( 1 ), hasEventState( data, NodeEvent.VALUE_CHANGED, "x", 1.0, 0.0 ) );
 		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", 1.0, 0.0 );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
@@ -470,12 +473,12 @@ class NodeTest {
 		data.setValue( "v", 2 );
 		data.setValue( "w", 3 );
 		assertThat( data, hasStates( false, 0, 0 ) );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", null, 1 );
-//		assertEventState( data, index++, NodeEvent.MODIFIED );
-//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", null, 2 );
-//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", null, 3 );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", null, 1 );
+		//		assertEventState( data, index++, NodeEvent.MODIFIED );
+		//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", null, 2 );
+		//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", null, 3 );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
@@ -483,10 +486,10 @@ class NodeTest {
 
 		data.clear();
 		assertThat( data, hasStates( false, 0, 0 ) );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", 1, null );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", 2, null );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", 3, null );
-//		assertEventState( data, index++, NodeEvent.UNMODIFIED );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", 1, null );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "y", 2, null );
+		//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "z", 3, null );
+		//		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 	}
@@ -531,6 +534,10 @@ class NodeTest {
 		int index = 0;
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
+
+		//		List<NodeEvent> events = new ArrayList<>();
+		//		data.register( "name", events::add );
+		//		assertThat( events.get( 0 ).getEventType(), is( NodeEvent.VALUE_CHANGED ) );
 
 		data.setValue( "name", "mock" );
 		assertThat( data.getValue( "name" ), is( "mock" ) );

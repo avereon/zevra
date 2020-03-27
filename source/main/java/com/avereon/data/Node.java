@@ -82,6 +82,8 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	private EventHub hub;
 
+	private Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
+
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
 	 * This is updated when the self modified flag, values or children are changed.
@@ -116,6 +118,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	public Node() {
 		hub = new EventHub();
+		valueChangeHandlers = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -192,7 +195,12 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) hub.dispatch( event );
+		if( event instanceof NodeEvent ) dispatch( (NodeEvent)event );
+	}
+
+	private void dispatch( NodeEvent event ) {
+		if( event.getEventType() == NodeEvent.VALUE_CHANGED ) valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
+		hub.dispatch( event );
 	}
 
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
@@ -209,6 +217,14 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	protected EventHub getEventHub() {
 		return hub;
+	}
+
+	public void register( String key, EventHandler<NodeEvent> handler ) {
+		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new CopyOnWriteArraySet<>() ).add( handler );
+	}
+
+	public void unregister( String key, EventHandler<? extends NodeEvent> handler ) {
+		valueChangeHandlers.getOrDefault( key, Set.of() ).remove( handler );
 	}
 
 	/**
