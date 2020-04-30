@@ -611,6 +611,12 @@ public class Node implements TxnEventTarget, Cloneable {
 			fireTargetedEvent( getNode(), event );
 		}
 
+		/**
+		 * Fire a cascading event. A cascading event is where the same event is sent
+		 * to the node and all parents.
+		 *
+		 * @param event
+		 */
 		final void fireCascadingEvent( NodeEvent event ) {
 			Node node = getNode();
 			while( node != null ) {
@@ -619,6 +625,11 @@ public class Node implements TxnEventTarget, Cloneable {
 			}
 		}
 
+		/**
+		 * Fire a sliding event. A sliding event is where a new event of the same
+		 * type is generated for the node and each parent.
+		 * @param type
+		 */
 		final void fireSlidingEvent( EventType<NodeEvent> type ) {
 			Node node = getNode();
 			while( node != null ) {
