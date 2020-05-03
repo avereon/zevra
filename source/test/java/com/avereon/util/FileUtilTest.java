@@ -408,6 +408,16 @@ class FileUtilTest {
 		assertTrue( Files.isDirectory( valid ) );
 	}
 
+	@Test
+	void testFindValidFolder() {
+		Path path = FileUtil.getTempFolder();
+		assertTrue( Files.exists( path ) );
+
+		Path valid = FileUtil.findValidFolder( path );
+		assertTrue( Files.exists( valid ) );
+		assertTrue( Files.isDirectory( valid ) );
+	}
+
 	private void assertFileCopy( long time, Path source, Path target ) throws IOException {
 		try {
 			FileOutputStream fileOutput = new FileOutputStream( source.toFile() );

@@ -531,7 +531,16 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidParent( Path path ) {
-		Path parent = path.getParent();
+		return findValidFolder( path.getParent() );
+	}
+
+	/**
+	 * Find the closest valid (existing folder) parent for the given path.
+	 *
+	 * @param path The path for which to find a valid parent
+	 */
+	public static Path findValidFolder( Path path ) {
+		Path parent = path;
 		while( Files.notExists( parent ) || !Files.isDirectory( parent ) ) {
 			parent = parent.getParent();
 		}
