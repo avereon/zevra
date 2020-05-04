@@ -163,20 +163,22 @@ class OperatingSystemTest {
 	void testElevateProcessMac() throws Exception {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 
-		String programName = "Zevra";
-		ProcessBuilder builder = new ProcessBuilder( programName );
-		File elevate = new File( System.getProperty( "java.io.tmpdir" ), programName );
+		String program = "vi";
+		ProcessBuilder builder = new ProcessBuilder( program );
+		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate" );
 
-		OperatingSystem.elevateProcessBuilder( programName, builder );
+		OperatingSystem.elevateProcessBuilder( program, builder );
+
 		assertThat( builder.command().get( 0 ), is( elevate.getCanonicalPath() ) );
-		assertThat( builder.command().get( 1 ), is( programName ) );
+		assertThat( builder.command().get( 1 ), is( program ) );
 		assertThat( builder.command().size(), is( 2 ) );
 	}
 
 	@Test
 	void testElevateProcessUnix() throws Exception {
-		String program = "vi";
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+
+		String program = "vi";
 		ProcessBuilder builder = new ProcessBuilder( program );
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
@@ -212,7 +214,9 @@ class OperatingSystemTest {
 	@Test
 	void testElevateProcessWindows() throws Exception {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		ProcessBuilder builder = new ProcessBuilder( "notepad.exe" );
+
+		String program = "notepad.exe";
+		ProcessBuilder builder = new ProcessBuilder( program );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" );
 
 		OperatingSystem.elevateProcessBuilder( "Notepad", builder );
@@ -220,7 +224,7 @@ class OperatingSystemTest {
 		int index = 0;
 		assertThat( builder.command().get( index++ ), is( "wscript" ) );
 		assertThat( builder.command().get( index++ ), is( elevate.getCanonicalPath() ) );
-		assertThat( builder.command().get( index++ ), is( "notepad.exe" ) );
+		assertThat( builder.command().get( index++ ), is( program ) );
 		assertThat( builder.command().size(), is( index ) );
 	}
 

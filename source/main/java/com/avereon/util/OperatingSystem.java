@@ -535,7 +535,7 @@ public class OperatingSystem {
 		List<String> commands = new ArrayList<>();
 
 		if( isMac() ) {
-			commands.add( extractMacElevate( title ).getPath() );
+			commands.add( extractMacElevate().getPath() );
 		} else if( isUnix() ) {
 			File pkexec = new File( "/usr/bin/pkexec" );
 			File gksudo = new File( "/usr/bin/gksudo" );
