@@ -12,6 +12,84 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
+/**
+ * A generic data node supporting getting and setting values, a modified (or
+ * dirty) flag, {@link Event events} and {@link Txn transactions}. It is
+ * expected that this class be inherited and that sub-classes will be configured
+ * to represent specific data types. For example, consider this Person type:
+ *
+ * <pre>
+ * public class Person extends Node {
+ *
+ *   public Person( String id ) {
+ *     definePrimaryKey( "id" );
+ *     defineNaturalKey( "name" );
+ *     setModifyingKeys( "name" );
+ *     setValue( "id", id );
+ *   }
+ *
+ *   public String getId() {
+ *     return getValue( "id" );
+ *   }
+ *
+ *   public String getName() {
+ *     return getValue( "name" );
+ *   }
+ *
+ *   public Person setName( String name ) {
+ *     setValue( "name", name );
+ *     return this;
+ *   }
+ *
+ *   ...
+ *
+ * }
+ * </pre>
+ * <p>
+ * This class defines a Person type with a primary key of &quot;id&quot; and a
+ * natural key of &quot;name&quot;. Both primary keys and natural keys are use
+ * in the calculation of {@link #hashCode()} and {@link #equals(Object)}. It is
+ * good practice to always define a single value primary key. It is not
+ * required to define a natural key.
+ *
+ * <h2>The Modified Flag</h2>
+ * The modified flag allows users of the data type to know if an instance has
+ * been modified since {@code setModified( false );} was last called. Note that
+ * only modifying keys can affect the modified flag. Using the Person class
+ * above if the name is Foo and the modified flag is false, setting the name to
+ * Bar will cause the modified flag to be set to true. Setting the name back to
+ * Foo will cause the modified flag to be set back to false, since the name was
+ * originally Foo.
+ *
+ * <h2>Modifying Values</h2>
+ * By default no values will cause the modified flag to change. In order for a
+ * change in a value to cause a change in the modified flag it must be
+ * configured as a modifying value with the {@link #addModifyingKeys(String...)}
+ * method. Note in the example above that the "name" value was set as a
+ * modifying key. This means that a change to the name value will cause the
+ * modified flag to change, but changes with other values will not cause the
+ * modified flag to change.
+ *
+ * <h2>Events</h2>
+ * Events are produced for almost any action on a data node. Exactly what events
+ * are produced can be rather complex depending on the data structure, the
+ * transaction state and the actions taken. However, simple situations should be
+ * straightforward. For example, setting a value will cause a
+ * {@link NodeEvent#VALUE_CHANGED} event and a {@link NodeEvent#NODE_CHANGED}
+ * event. If the value was a modifying value then a {@link NodeEvent#MODIFIED}
+ * or {@link NodeEvent#UNMODIFIED} event would also be produced. Events
+ * produced during an active {@link Txn transaction} are not fired until the
+ * transaction is committed. Events are not fired if the transaction is
+ * rolled back.
+ *
+ * <h2>Value Events</h2>
+ * Event handlers can also be registered for changes to specific values. This is
+ * to handle the case where lambdas are registered for changes the the value.
+ * Example:
+ * <pre>
+ *   person.register( "name", e -> updatePersonName( e.getNewValue() ) );
+ * </pre>
+ */
 public class Node implements TxnEventTarget, Cloneable {
 
 	private static final System.Logger log = Log.get();
@@ -628,6 +706,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		/**
 		 * Fire a sliding event. A sliding event is where a new event of the same
 		 * type is generated for the node and each parent.
+		 *
 		 * @param type
 		 */
 		final void fireSlidingEvent( EventType<NodeEvent> type ) {
