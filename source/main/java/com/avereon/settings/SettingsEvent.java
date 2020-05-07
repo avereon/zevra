@@ -15,11 +15,11 @@ public class SettingsEvent extends Event {
 
 	public static final EventType<SettingsEvent> LOADED = new EventType<>( ANY, "LOADED" );
 
-	private String path;
+	private final String path;
 
-	private String key;
+	private final String key;
 
-	private Object newValue;
+	private final Object newValue;
 
 	public SettingsEvent( Object source, EventType<SettingsEvent> type, String path ) {
 		this( source, type, path, null, null );

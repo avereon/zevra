@@ -13,10 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractSettings implements Settings {
 
@@ -29,6 +28,8 @@ public abstract class AbstractSettings implements Settings {
 	private Map<String, Object> defaultValues;
 
 	private EventHub eventHub;
+
+	private Map<String, Set<EventHandler<SettingsEvent>>> valueChangeHandlers;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -60,6 +61,8 @@ public abstract class AbstractSettings implements Settings {
 
 	protected AbstractSettings() {
 		this.eventHub = new EventHub();
+		this.valueChangeHandlers = new ConcurrentHashMap<>();
+		this.eventHub.register( SettingsEvent.CHANGED, this::dispatch );
 	}
 
 	@Override
@@ -295,6 +298,16 @@ public abstract class AbstractSettings implements Settings {
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return eventHub.unregister( type, handler );}
 
 	@Override
+	public void register( String key, EventHandler<SettingsEvent> handler ) {
+		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new CopyOnWriteArraySet<>() ).add( handler );
+	}
+
+	@Override
+	public void unregister( String key, EventHandler<? extends SettingsEvent> handler ) {
+		valueChangeHandlers.getOrDefault( key, Set.of() ).remove( handler );
+	}
+
+	@Override
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {return eventHub.getEventHandlers();}
 
 	public EventHub getEventHub() {
@@ -303,6 +316,10 @@ public abstract class AbstractSettings implements Settings {
 
 	String getNodePath( String root, String path ) {
 		return PathUtil.normalize( PathUtil.isAbsolute( path ) ? path : PathUtil.resolve( root, path ) );
+	}
+
+	private void dispatch( SettingsEvent event ) {
+		valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
 	}
 
 	private interface OutboundConverter {

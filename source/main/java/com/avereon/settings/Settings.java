@@ -1,8 +1,8 @@
 package com.avereon.settings;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.util.TypeReference;
 
@@ -92,7 +92,8 @@ public interface Settings {
 	boolean exists( String path );
 
 	/**
-	 * Get a settings object for the specified path. If the path starts with the separator character then the path is absolute. If the path does not start with the separator character then the path is relative to this settings node.
+	 * Get a settings object for the specified path. If the path starts with the separator character then the path is absolute. If the path does not start with
+	 * the separator character then the path is relative to this settings node.
 	 * <p>
 	 * Multiple requests from the same settings tree using the same path return the same settings object.
 	 *
@@ -102,7 +103,8 @@ public interface Settings {
 	Settings getNode( String path );
 
 	/**
-	 * Get a settings object for the specified parent path and name. If the path starts with the separator character then the path is absolute. If the path does not start with the separator character then the path is relative to this settings
+	 * Get a settings object for the specified parent path and name. If the path starts with the separator character then the path is absolute. If the path does
+	 * not start with the separator character then the path is relative to this settings
 	 * node.
 	 * <p>
 	 * Multiple requests from the same settings tree using the same path return the same settings object.
@@ -251,6 +253,10 @@ public interface Settings {
 	<T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler );
 
 	<T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler );
+
+	void register( String key, EventHandler<SettingsEvent> handler );
+
+	void unregister( String key, EventHandler<? extends SettingsEvent> handler );
 
 	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers();
 

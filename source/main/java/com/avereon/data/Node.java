@@ -150,14 +150,6 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	private Set<String> readOnlySet;
 
-	/**
-	 * The set of node listeners.
-	 *
-	 * @deprecated In favor of event hub
-	 */
-	@Deprecated
-	//private Set<NodeListener> listeners;
-
 	private EventHub hub;
 
 	private Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
