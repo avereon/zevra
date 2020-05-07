@@ -9,11 +9,7 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( "VALUE_CHANGED" );
 
-	public static final EventType<NodeEvent> ADDING_CHILD = new EventType<>( "ADDING_CHILD" );
-
 	public static final EventType<NodeEvent> CHILD_ADDED = new EventType<>( "CHILD_ADDED" );
-
-	public static final EventType<NodeEvent> REMOVING_CHILD = new EventType<>( "REMOVING_CHILD" );
 
 	public static final EventType<NodeEvent> CHILD_REMOVED = new EventType<>( "CHILD_REMOVED" );
 
@@ -23,13 +19,11 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> NODE_CHANGED = new EventType<>( "NODE_CHANGED" );
 
-	// TODO Should there be PARENT_CHANGED events???
+	private final String key;
 
-	private String key;
+	private final Object oldValue;
 
-	private Object oldValue;
-
-	private Object newValue;
+	private final Object newValue;
 
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type ) {
 		this( node, type, null, null, null );

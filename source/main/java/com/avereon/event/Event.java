@@ -8,7 +8,7 @@ public class Event extends EventObject {
 
 	public static final EventType<Event> ANY = EventType.ROOT;
 
-	private EventType<? extends Event> type;
+	private final EventType<? extends Event> type;
 
 	private final String toString;
 

@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 /**
  * A generic data node supporting getting and setting values, a modified (or
- * dirty) flag, {@link Event events} and {@link Txn transactions}. It is
+ * dirty) flag, {@link NodeEvent events} and {@link Txn transactions}. It is
  * expected that this class be inherited and that sub-classes will be configured
  * to represent specific data types. For example, consider this Person type:
- *
+ * <p>
  * <pre>
  * public class Person extends Node {
  *
@@ -54,12 +54,14 @@ import java.util.stream.Collectors;
  *
  * <h2>The Modified Flag</h2>
  * The modified flag allows users of the data type to know if an instance has
- * been modified since {@code setModified( false );} was last called. Note that
- * only modifying keys can affect the modified flag. Using the Person class
- * above if the name is Foo and the modified flag is false, setting the name to
- * Bar will cause the modified flag to be set to true. Setting the name back to
- * Foo will cause the modified flag to be set back to false, since the name was
- * originally Foo.
+ * been modified since {@link #setModified(boolean) setModifed(false)} was last
+ * called. Note that
+ * only {@link #addModifyingKeys(String...) modifying values} can affect the
+ * modified flag. Using the Person class
+ * above, if the name is "Foo" and the modified flag is false, setting the name to
+ * "Bar" will cause the modified flag to be set to true. Setting the name back to
+ * "Foo" will cause the modified flag to be set back to false, since the name was
+ * originally "Foo".
  *
  * <h2>Modifying Values</h2>
  * By default no values will cause the modified flag to change. In order for a
@@ -79,32 +81,59 @@ import java.util.stream.Collectors;
  * event. If the value was a modifying value then a {@link NodeEvent#MODIFIED}
  * or {@link NodeEvent#UNMODIFIED} event would also be produced. Events
  * produced during an active {@link Txn transaction} are not fired until the
- * transaction is committed. Events are not fired if the transaction is
- * rolled back.
+ * transaction is committed. Events are not fired if the transaction fails and
+ * is rolled back.
  *
  * <h2>Value Events</h2>
  * Event handlers can also be registered for changes to specific values. This is
  * to handle the case where lambdas are registered for changes the the value.
  * Example:
  * <pre>
- *   person.register( "name", e -> updatePersonName( e.getNewValue() ) );
+ *   person.register( "name", e -> displayPersonName( e.getNewValue() ) );
  * </pre>
+ *
+ * <h2>Transactions</h2>
+ * Multiple changes to a data node can be grouped together using {@link Txn
+ * transactions}. Using the {@link Txn} class to create and commit a transaction
+ * is fairly simple:
+ * <p>
+ * <pre>
+ *   Txn.create();
+ *   person.setName( "Bar" );
+ *   person.setFavoriteColor( "green" );
+ *   Txn.commit();
+ * </pre>
+ * As noted above, events produced during an active {@link Txn transaction} are
+ * not fired until the transaction is committed. Events are not fired if the
+ * transaction fails and is rolled back.
+ *
+ * <h2>Child Data Nodes</h2>
+ * Adding a Node to a Node is a common practice. This allows for structured
+ * data models. This mostly affects how the modified flag and events are
+ * handled. If a child node is modified, the parent node is also modified. Also,
+ * some events that occur on a child node are also bubbled up to the parent
+ * node. Particularly, {@link NodeEvent#VALUE_CHANGED} events are propagated to
+ * parent nodes.
  */
 public class Node implements TxnEventTarget, Cloneable {
 
 	private static final System.Logger log = Log.get();
 
 	/**
-	 * The modified flag key.
-	 */
-	@Deprecated
-	public static final String MODIFIED = "flag.modified";
-
-	/**
 	 * A special object to represent previously null values in the modifiedValues
 	 * map.
 	 */
 	private static final Object NULL = new Object();
+
+	/**
+	 * The node event hub.
+	 */
+	private final EventHub hub;
+
+	/**
+	 * The node value change handlers, a special set of handlers for value changes.
+	 */
+	private final Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
 
 	/**
 	 * The parent of the node.
@@ -115,20 +144,6 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * The node values.
 	 */
 	private Map<String, Object> values;
-
-	//	/**
-	//	 * The node resources. This map provides a way to associate objects without
-	//	 * affecting the data model as a whole. Adding or removing resources does not
-	//	 * affect the node state nor does it cause any kind of event. This is simply a
-	//	 * storage mechanism.
-	//	 */
-	//	private Map<String, Object> resources;
-
-	/**
-	 * The collection of edges this node is associated with. The node may be the
-	 * source or may be the target of the edge.
-	 */
-	private Set<Edge> edges;
 
 	/**
 	 * The list of value keys that specify the primary key.
@@ -149,10 +164,6 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * The set of value keys that are read only.
 	 */
 	private Set<String> readOnlySet;
-
-	private EventHub hub;
-
-	private Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
 
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
@@ -186,13 +197,21 @@ public class Node implements TxnEventTarget, Cloneable {
 		return modified;
 	}
 
+	/**
+	 * Create a new, generic, empty data node. It is generally expected that the
+	 * Node class will be inherited, instead of used directly, but there is no
+	 * restriction creating "generic" nodes.
+	 */
 	public Node() {
 		hub = new EventHub();
 		valueChangeHandlers = new ConcurrentHashMap<>();
 	}
 
 	/**
-	 * Set(true) or clear(false) the modified flag.
+	 * Set or clear the modified flag. Usually this method is used to clear the
+	 * modified flag by setting the value to false. But it is also allowed to
+	 * explicitly set the modified value to true for any reason to mark the node
+	 * modified.
 	 *
 	 * @param newValue The new modified flag value
 	 */
@@ -208,51 +227,13 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
-	//	public Set<Edge> getLinks() {
-	//		return new HashSet<>( edges );
-	//	}
-	//
-	//	public Edge link( Node target ) {
-	//		return link( target, false );
-	//	}
-	//
-	//	public Edge link( Node target, boolean directed ) {
-	//		Edge edge = new Edge( this, target, directed );
-	//		addEdge( edge );
-	//		target.addEdge( edge );
-	//		return edge;
-	//	}
-	//
-	//	public void unlink( Node target ) {
-	//		// Find all edges where target is a source or target
-	//		for( Edge edge : findEdges( this.edges, this, target ) ) {
-	//			edge.getSource().removeEdge( edge );
-	//			edge.getTarget().removeEdge( edge );
-	//		}
-	//
-	//	}
-
-	//	@Deprecated
-	//	public Set<String> getResourceKeys() {
-	//		return getValueKeys();
-	//	}
-	//
-	//	@Deprecated
-	//	public <T> T getResource( String key ) {
-	//		return getValue( key, null );
-	//	}
-	//
-	//	@Deprecated
-	//	@SuppressWarnings( "unchecked" )
-	//	protected <T> T getResource( String key, T defaultValue ) {
-	//		return getValue( key, defaultValue );
-	//	}
-	//
-	//	@Deprecated
-	//	public <T> void putResource( String key, T newValue ) {
-	//		setValue( key, newValue );
-	//	}
-
+	/**
+	 * Request that a {@link NodeEvent#NODE_CHANGED} event occur. This is usually
+	 * used to cause the node handlers to run if they were added after the node
+	 * was changed. This is common during node initialization where the state is
+	 * set, the modified flag cleared, the handlers added and then this method is
+	 * called.
+	 */
 	public void refresh() {
 		try {
 			Txn.create();
@@ -263,37 +244,89 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
+	/**
+	 * Dispatch a {@link TxnEvent} to the data node. This method should not be
+	 * called by other classes other than the {@link Txn transaction} classes.
+	 *
+	 * @param event The transaction event
+	 */
 	@Override
 	public void dispatch( TxnEvent event ) {
 		if( event instanceof NodeEvent ) dispatch( (NodeEvent)event );
 	}
 
+	/**
+	 * Dispatch a {@link NodeEvent} to the data node. This method should not be
+	 * called by other classes other than the {@link Node data} classes.
+	 *
+	 * @param event The data node event
+	 */
 	private void dispatch( NodeEvent event ) {
 		if( event.getEventType() == NodeEvent.VALUE_CHANGED ) valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
 		hub.dispatch( event );
 	}
 
+	/**
+	 * Register an event handler with this data node.
+	 *
+	 * @param type The event type
+	 * @param handler The event handler
+	 * @param <T> The type of event to handle
+	 * @return The data node's {@link EventHub}
+	 */
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
 		return hub.register( type, handler );
 	}
 
+	/**
+	 * Unregister an event handler from this data node.
+	 *
+	 * @param type The event type
+	 * @param handler The event handler
+	 * @param <T> The type of event to handle
+	 * @return The data node's {@link EventHub}
+	 */
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		return hub.unregister( type, handler );
 	}
 
+	/**
+	 * Get a map of all the event handlers for this node by event type.
+	 *
+	 * @return A map of the event handlers keyed by event type
+	 */
 	Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return hub.getEventHandlers();
 	}
 
+	/**
+	 * Get this data node's {@link EventHub}
+	 *
+	 * @return The data node event hub
+	 */
 	protected EventHub getEventHub() {
 		return hub;
 	}
 
+	/**
+	 * Register a value changed event handler for a specific value key. This is
+	 * useful to register lambda style event handlers for specific value changes.
+	 *
+	 * @param key The value key
+	 * @param handler The value changed handler
+	 */
 	public void register( String key, EventHandler<NodeEvent> handler ) {
 		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new CopyOnWriteArraySet<>() ).add( handler );
+		// TODO Is there a way to throw away lambda handlers when they are not used?
 	}
 
-	public void unregister( String key, EventHandler<? extends NodeEvent> handler ) {
+	/**
+	 * Unregister a value changed event handler for a specific value key.
+	 *
+	 * @param key The value key
+	 * @param handler The value changed handler
+	 */
+	public void unregister( String key, EventHandler<NodeEvent> handler ) {
 		valueChangeHandlers.getOrDefault( key, Set.of() ).remove( handler );
 	}
 
@@ -326,15 +359,25 @@ public class Node implements TxnEventTarget, Cloneable {
 		return (T)this;
 	}
 
+	/**
+	 * Get a string representation of this node. By default this implementation
+	 * only returns the primary and natural keys and values. For a full list of
+	 * values use {@link #toString(boolean) toString(true)}. For a list of
+	 * specific values use {@link #toString(List)}.
+	 *
+	 * @return A string representation of this node
+	 */
 	@Override
 	public String toString() {
 		return toString( false );
 	}
 
-	public String toString( String... keys ) {
-		return toString( Arrays.asList( keys ) );
-	}
-
+	/**
+	 * Get a string representation of this node, optionally including all values.
+	 *
+	 * @param allValues Whether to include all values or not
+	 * @return A string representation of this node
+	 */
 	public String toString( boolean allValues ) {
 		List<String> keys = new ArrayList<>();
 		if( primaryKeyList != null ) keys.addAll( primaryKeyList );
@@ -348,6 +391,24 @@ public class Node implements TxnEventTarget, Cloneable {
 		return toString( keys );
 	}
 
+	/**
+	 * Get a string representation of this node but only with the requested
+	 * value keys included.
+	 *
+	 * @param keys The value keys to include
+	 * @return A string representation of this node
+	 */
+	public String toString( String... keys ) {
+		return toString( Arrays.asList( keys ) );
+	}
+
+	/**
+	 * Get a string representation of this node but only with the requested
+	 * value keys included.
+	 *
+	 * @param keys The value keys to include
+	 * @return A string representation of this node
+	 */
 	public String toString( List<String> keys ) {
 		StringBuilder builder = new StringBuilder();
 
@@ -409,10 +470,22 @@ public class Node implements TxnEventTarget, Cloneable {
 		return hashcode;
 	}
 
+	/**
+	 * Get a comparator using the natural key values to compare.
+	 *
+	 * @param <T> The node type
+	 * @return A node comparator
+	 */
 	public <T extends Node> Comparator<T> getComparator() {
 		return new NodeComparator<>( naturalKeyList );
 	}
 
+	/**
+	 * Define the primary key for this type. This method is usually called from
+	 * the class constructor.
+	 *
+	 * @param keys The value keys to use as the primary key
+	 */
 	protected void definePrimaryKey( String... keys ) {
 		if( primaryKeyList == null ) {
 			primaryKeyList = List.of( keys );
@@ -421,6 +494,12 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
+	/**
+	 * Define the primary key for this type. This method is usually called from
+	 * the class constructor.
+	 *
+	 * @param keys The value keys to use as the natural key
+	 */
 	protected void defineNaturalKey( String... keys ) {
 		if( naturalKeyList == null ) {
 			naturalKeyList = List.of( keys );
@@ -429,6 +508,11 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
+	/**
+	 * Define what value keys should be marked read-only.
+	 *
+	 * @param keys The value keys to mark as read-only
+	 */
 	protected void defineReadOnly( String... keys ) {
 		if( readOnlySet == null ) {
 			readOnlySet = Set.of( keys );
@@ -437,47 +521,101 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
+	/**
+	 * Check if the value key is read-only.
+	 *
+	 * @param key The value key
+	 * @return True if the value key is read-only, false otherwise
+	 */
 	protected boolean isReadOnly( String key ) {
 		return readOnlySet != null && readOnlySet.contains( key );
 	}
 
+	/**
+	 * Add value keys that can change the modified flag if the value is changed.
+	 *
+	 * @param keys The value keys
+	 */
 	protected void addModifyingKeys( String... keys ) {
 		if( modifyingKeySet == null ) modifyingKeySet = new CopyOnWriteArraySet<>();
 		modifyingKeySet.addAll( Set.of( keys ) );
 	}
 
+	/**
+	 * Remove value keys that can change the modified flag if the value is changed.
+	 *
+	 * @param keys The value keys
+	 */
 	protected void removeModifyingKeys( String... keys ) {
 		if( modifyingKeySet == null ) return;
 		modifyingKeySet.removeAll( Set.of( keys ) );
 		if( modifyingKeySet.isEmpty() ) modifyingKeySet = null;
 	}
 
+	/**
+	 * Check if the value key is a modifying value key.
+	 *
+	 * @param key The value key
+	 * @return True if the value key is a modifying value key, false otherwise
+	 */
 	protected boolean isModifyingKey( String key ) {
 		return modifyingKeySet != null && modifyingKeySet.contains( key );
 	}
 
+	/**
+	 * Get the set of value keys.
+	 *
+	 * @return The set of value keys
+	 */
 	protected Set<String> getValueKeys() {
 		return values == null ? Collections.emptySet() : values.keySet();
 	}
 
+	/**
+	 * Get the values of a specific type
+	 *
+	 * @param clazz The type of value to find
+	 * @param <T> The value type
+	 * @return A collection of the values of the specific type
+	 */
 	@SuppressWarnings( "unchecked" )
 	protected <T> Collection<T> getValues( Class<T> clazz ) {
 		return (Collection<T>)getValueKeys().stream().map( this::getValue ).filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
 	}
 
+	/**
+	 * Get the value at the specific key.
+	 *
+	 * @param key The value key
+	 * @param <T> The value type
+	 * @return The value
+	 */
 	protected <T> T getValue( String key ) {
 		return getValue( key, null );
 	}
 
+	/**
+	 * Get the value for the specific key or the default value if the value has
+	 * not been previously set. Note that this method does not set the value.
+	 *
+	 * @param key The value key
+	 * @param defaultValue The default value
+	 * @param <T> The value type
+	 * @return The value
+	 */
 	@SuppressWarnings( "unchecked" )
 	protected <T> T getValue( String key, T defaultValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
-
 		T value = values == null ? null : (T)values.get( key );
-
 		return value != null ? value : defaultValue;
 	}
 
+	/**
+	 * Set the value at the specific key.
+	 *
+	 * @param key The value key
+	 * @param newValue The value
+	 */
 	protected void setValue( String key, Object newValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( readOnlySet != null && readOnlySet.contains( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
@@ -493,6 +631,9 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
+	/**
+	 * Remove all values from this node.
+	 */
 	protected void clear() {
 		try {
 			Txn.create();
@@ -537,6 +678,13 @@ public class Node implements TxnEventTarget, Cloneable {
 		return node == null ? -1 : count;
 	}
 
+	/**
+	 * Get the parent node of this node or null if the node does not have a
+	 * parent.
+	 *
+	 * @param <T> The parent type
+	 * @return The parent node or null
+	 */
 	@SuppressWarnings( "unchecked" )
 	public <T> T getParent() {
 		return (T)parent;
@@ -558,15 +706,6 @@ public class Node implements TxnEventTarget, Cloneable {
 		return path;
 	}
 
-	void addEdge( Edge edge ) {
-		if( edges == null ) edges = new CopyOnWriteArraySet<>();
-		edges.add( edge );
-	}
-
-	void removeEdge( Edge edge ) {
-		edges.remove( edge );
-	}
-
 	private void doSetSelfModified( boolean newValue ) {
 		selfModified = newValue;
 
@@ -577,18 +716,6 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		updateModified();
 	}
-
-	//	private <T> void doPutResource( String key, T oldValue, T newValue ) {
-	//		if( newValue == null ) {
-	//			if( resources != null ) {
-	//				resources.remove( key );
-	//				if( resources.size() == 0 ) resources = null;
-	//			}
-	//		} else {
-	//			if( resources == null ) resources = new ConcurrentHashMap<>();
-	//			resources.put( key, newValue );
-	//		}
-	//	}
 
 	private void doSetValue( String key, Object oldValue, Object newValue ) {
 		if( newValue == null ) {
@@ -653,18 +780,6 @@ public class Node implements TxnEventTarget, Cloneable {
 			if( node == parent ) throw new CircularReferenceException( "Circular reference detected in parent path: " + node );
 			parent = parent.getParent();
 		}
-	}
-
-	@Deprecated
-	private Set<Edge> findEdges( Set<Edge> edges, Node source, Node target ) {
-		Set<Edge> result = new HashSet<>();
-
-		for( Edge edge : edges ) {
-			if( edge.getSource() == source && edge.getTarget() == target ) result.add( edge );
-			if( edge.getTarget() == source && edge.getSource() == target ) result.add( edge );
-		}
-
-		return result;
 	}
 
 	private static abstract class NodeTxnOperation extends TxnOperation {
@@ -832,37 +947,6 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 
 	}
-
-	//	private class SetResourceOperation extends NodeTxnOperation {
-	//
-	//		private String key;
-	//
-	//		private Object oldValue;
-	//
-	//		private Object newValue;
-	//
-	//		SetResourceOperation( Node node, String key, Object oldValue, Object newValue ) {
-	//			super( node );
-	//			this.key = key;
-	//			this.oldValue = oldValue;
-	//			this.newValue = newValue;
-	//		}
-	//
-	//		@Override
-	//		protected void commit() {
-	//			putResource( key, oldValue, newValue );
-	//			if( !Objects.equals( oldValue, newValue ) ) fireSlidingEvent( NodeEvent.NODE_CHANGED );
-	//		}
-	//
-	//		@Override
-	//		protected void revert() {
-	//			putResource( key, newValue, oldValue );
-	//		}
-	//
-	//		private void putResource( String key, Object oldValue, Object newValue ) {
-	//			doPutResource( key, oldValue, newValue );
-	//		}
-	//	}
 
 	@SuppressWarnings( "InnerClassMayBeStatic" )
 	private class RefreshOperation extends NodeTxnOperation {

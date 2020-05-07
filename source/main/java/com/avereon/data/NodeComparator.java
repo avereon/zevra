@@ -4,9 +4,15 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * A {@link Comparator} for {@link Node nodes}. The comparator is constructed
+ * with the keys that should be compared.
+ *
+ * @param <T> The node type
+ */
 public class NodeComparator<T extends Node> implements Comparator<T> {
 
-	private List<String> keys;
+	private final List<String> keys;
 
 	public NodeComparator( String... keys ) {
 		this( Arrays.asList( keys ) );
