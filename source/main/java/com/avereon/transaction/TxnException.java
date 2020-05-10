@@ -1,6 +1,5 @@
 package com.avereon.transaction;
 
-@SuppressWarnings( { "WeakerAccess" } )
 public class TxnException extends Exception {
 
 	public TxnException() {

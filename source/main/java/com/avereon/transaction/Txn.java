@@ -8,23 +8,36 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Txn is a thread scoped transaction utility for creating and processing
- * transactions on a specific thread.
+ * Txn is a transaction utility. Transactions are thread local for convenience
+ * since most transactions are created and committed on the same thread.
+ * Creating a new transaction will append to an existing transaction unless the
+ * transaction is explicitly created as a nested transaction. Example:
+ * <pre>
+ *   ...
+ *   public void setPoint( double x, double y ) {
+ *     // Note that SetX and SetY are implementations of TxnOperation
+ *     Txn.create();
+ *     Txn.submit( new SetX( x ) );
+ *     Txn.submit( new SetY( y ) );
+ *     Txn.commit();
+ *   }
+ *   ...
+ * </pre>
  */
 public class Txn {
 
 	private static final System.Logger log = Log.get();
 
-	private static final ThreadLocal<Deque<Txn>> threadLocalTransactions = new ThreadLocal<>();
+	private static final ThreadLocal<Deque<Txn>> transactions = new ThreadLocal<>();
 
 	private final ReentrantLock commitLock = new ReentrantLock();
 
-	private Queue<TxnOperation> operations;
+	private final Queue<TxnOperation> operations;
 
 	private int depth;
 
 	static {
-		threadLocalTransactions.set( new ArrayDeque<>() );
+		transactions.set( new ArrayDeque<>() );
 	}
 
 	private Txn() {
@@ -98,23 +111,23 @@ public class Txn {
 	}
 
 	private static Txn peekTransaction() {
-		Deque<Txn> deque = threadLocalTransactions.get();
+		Deque<Txn> deque = transactions.get();
 		return deque == null ? null : deque.peekFirst();
 	}
 
 	private static Txn pushTransaction() {
-		Deque<Txn> deque = threadLocalTransactions.get();
-		if( deque == null ) threadLocalTransactions.set( deque = new ArrayDeque<>() );
+		Deque<Txn> deque = transactions.get();
+		if( deque == null ) transactions.set( deque = new ArrayDeque<>() );
 		Txn transaction = new Txn();
 		deque.offerFirst( transaction );
 		return transaction;
 	}
 
 	private static Txn pullTransaction() {
-		Deque<Txn> deque = threadLocalTransactions.get();
+		Deque<Txn> deque = transactions.get();
 		if( deque == null ) return null;
 		Txn transaction = deque.pollFirst();
-		if( deque.size() == 0 ) threadLocalTransactions.set( null );
+		if( deque.size() == 0 ) transactions.set( null );
 		return transaction;
 	}
 
@@ -144,6 +157,8 @@ public class Txn {
 				}
 			}
 
+			sendEvent( TxnEvent.COMMIT_SUCCESS, operations );
+
 			// Dispatch the events to the targets
 			txnEvents.forEach( ( target, events ) -> events.forEach( event -> {
 				try {
@@ -152,6 +167,9 @@ public class Txn {
 					log.log( Log.ERROR, "Error dispatching transaction event", throwable );
 				}
 			} ) );
+		} catch( TxnException throwable ) {
+			sendEvent( TxnEvent.COMMIT_FAIL, operations );
+			throw throwable;
 		} finally {
 			sendEvent( TxnEvent.COMMIT_END, operations );
 			doReset();

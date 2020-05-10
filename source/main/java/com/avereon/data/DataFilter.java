@@ -1,5 +1,10 @@
 package com.avereon.data;
 
+/**
+ * A functional interface for filtering data nodes.
+ *
+ * @param <T> The data node type
+ */
 public interface DataFilter<T> {
 
 	/**

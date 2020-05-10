@@ -169,6 +169,7 @@ class TxnTest {
 
 		int index = 0;
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().size(), is( index ) );
 	}
@@ -189,17 +190,20 @@ class TxnTest {
 
 		int index = 0;
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().size(), is( index ) );
 	}
 
 	private static class MockTxnEventTarget implements TxnEventTarget {
 
-		private List<TxnEvent> events;
+		private final List<TxnEvent> events;
 
 		MockTxnEventTarget() {
 			events = new CopyOnWriteArrayList<>();

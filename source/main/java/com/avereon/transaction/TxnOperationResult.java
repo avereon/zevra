@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class TxnOperationResult {
 
-	private TxnOperation action;
+	private final TxnOperation action;
 
-	private List<TxnEventWrapper> events = new ArrayList<>();
+	private final List<TxnEventWrapper> events = new ArrayList<>();
 
 	TxnOperationResult( TxnOperation action ) {
 		this.action = action;

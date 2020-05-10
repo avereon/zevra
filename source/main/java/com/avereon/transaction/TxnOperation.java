@@ -1,7 +1,7 @@
 package com.avereon.transaction;
 
 /**
- * Represents a single operation that is processed during the commit process and
+ * A single Txn operation that is processed during the commit process and
  * generates a result that is collected and published when the commit
  * successfully completes.
  */
@@ -16,9 +16,9 @@ public abstract class TxnOperation {
 		FAILED
 	}
 
-	private TxnEventTarget target;
+	private final TxnEventTarget target;
 
-	private TxnOperationResult result;
+	private final TxnOperationResult result;
 
 	private TxnOperation.Status status;
 
@@ -44,7 +44,7 @@ public abstract class TxnOperation {
 		return status;
 	}
 
-	TxnOperationResult callCommit() throws TxnException {
+	final TxnOperationResult callCommit() throws TxnException {
 		try {
 			status = Status.COMMITTING;
 			commit();
@@ -56,7 +56,7 @@ public abstract class TxnOperation {
 		return getResult();
 	}
 
-	void callRevert() throws TxnException {
+	final void callRevert() throws TxnException {
 		try {
 			status = Status.REVERTING;
 			revert();

@@ -2,9 +2,9 @@ package com.avereon.transaction;
 
 class TxnEventWrapper {
 
-	private TxnEventTarget target;
+	private final TxnEventTarget target;
 
-	private TxnEvent event;
+	private final TxnEvent event;
 
 	TxnEventWrapper( TxnEventTarget target, TxnEvent event ) {
 		if( target == null ) throw new NullPointerException( "Target cannot be null" );
