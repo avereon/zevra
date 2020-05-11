@@ -59,7 +59,7 @@ public class ProgramFormatter extends Formatter {
 	}
 
 	private String getLevel( Level level ) {
-		String result = "[I]";
+		String result;
 
 		switch( level.getName() ) {
 			case ("SEVERE"): {
@@ -78,9 +78,12 @@ public class ProgramFormatter extends Formatter {
 				result = "[D]";
 				break;
 			}
-			case ("FINEST"): {
+			case ("FINER"): {
 				result = "[T]";
 				break;
+			}
+			default: {
+				result = "[" + level.getName() + "]";
 			}
 		}
 
@@ -88,8 +91,7 @@ public class ProgramFormatter extends Formatter {
 	}
 
 	private static String getSimpleFormat( Function<String, String> defaultPropertyGetter ) {
-		String format = null;
-		if( format == null ) format = defaultPropertyGetter.apply( FORMAT_PROPERTY_KEY );
+		String format = defaultPropertyGetter.apply( FORMAT_PROPERTY_KEY );
 		if( format == null ) format = getLoggingProperty( FORMAT_PROPERTY_KEY );
 		if( format == null ) format = DEFAULT_FORMAT;
 		return format;
