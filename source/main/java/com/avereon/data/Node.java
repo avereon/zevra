@@ -568,7 +568,17 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return The set of value keys
 	 */
 	protected Set<String> getValueKeys() {
-		return values == null ? Collections.emptySet() : values.keySet();
+		return Collections.unmodifiableSet( values == null ? Collections.emptySet() : values.keySet() );
+	}
+
+	/**
+	 * Determine if a particular value key is set.
+	 *
+	 * @param key The key to check
+	 * @return True if the key is set, false otherwise
+	 */
+	protected boolean exists( String key  ) {
+		return getValueKeys().contains( key );
 	}
 
 	/**
@@ -616,7 +626,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param key The value key
 	 * @param newValue The value
 	 */
-	protected void setValue( String key, Object newValue ) {
+	protected <T> T setValue( String key, T newValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( readOnlySet != null && readOnlySet.contains( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
@@ -629,6 +639,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting flag: " + key, exception );
 		}
+		return newValue;
 	}
 
 	/**
