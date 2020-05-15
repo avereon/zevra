@@ -21,7 +21,9 @@ public final class UriUtil {
 
 	public static String parseName( URI uri ) {
 		String path = uri.getPath();
-		return path.substring( path.lastIndexOf( "/" ) + 1 );
+		if( path.endsWith( "/" ) ) path = path.substring( 0, path.length() - 1 );
+		path = path.substring( path.lastIndexOf( "/" ) + 1 );
+		return path.isEmpty() ? "/" : path;
 	}
 
 	public static URI removeQueryAndFragment( URI uri ) {
