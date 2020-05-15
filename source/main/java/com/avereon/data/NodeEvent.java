@@ -44,12 +44,14 @@ public class NodeEvent extends TxnEvent {
 		return key;
 	}
 
-	public Object getOldValue() {
-		return oldValue;
+	@SuppressWarnings( "unchecked" )
+	public <T> T getOldValue() {
+		return (T)oldValue;
 	}
 
-	public Object getNewValue() {
-		return newValue;
+	@SuppressWarnings( "unchecked" )
+	public <T> T getNewValue() {
+		return (T)newValue;
 	}
 
 	@SuppressWarnings( "unchecked" )

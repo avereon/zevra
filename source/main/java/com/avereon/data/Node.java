@@ -133,7 +133,8 @@ public class Node implements TxnEventTarget, Cloneable {
 	/**
 	 * The node value change handlers, a special set of handlers for value changes.
 	 */
-	private final Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
+	//private final Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
+	private final Map<String, Map<EventHandler<NodeEvent>, EventHandler<NodeEvent>>> valueChangeHandlers;
 
 	/**
 	 * The parent of the node.
@@ -262,7 +263,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param event The data node event
 	 */
 	private void dispatch( NodeEvent event ) {
-		if( event.getEventType() == NodeEvent.VALUE_CHANGED ) valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
+		if( event.getEventType() == NodeEvent.VALUE_CHANGED ) valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
 		hub.dispatch( event );
 	}
 
@@ -316,8 +317,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param handler The value changed handler
 	 */
 	public void register( String key, EventHandler<NodeEvent> handler ) {
-		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new CopyOnWriteArraySet<>() ).add( handler );
-		// TODO Is there a way to throw away lambda handlers when they are not used?
+		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new WeakHashMap<>() ).put( handler, handler );
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param handler The value changed handler
 	 */
 	public void unregister( String key, EventHandler<NodeEvent> handler ) {
-		valueChangeHandlers.getOrDefault( key, Set.of() ).remove( handler );
+		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
 	}
 
 	/**
@@ -577,7 +577,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param key The key to check
 	 * @return True if the key is set, false otherwise
 	 */
-	protected boolean exists( String key  ) {
+	protected boolean exists( String key ) {
 		return getValueKeys().contains( key );
 	}
 
@@ -811,7 +811,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		 * Fire a cascading event. A cascading event is where the same event is sent
 		 * to the node and all parents.
 		 *
-		 * @param event
+		 * @param event The event
 		 */
 		final void fireCascadingEvent( NodeEvent event ) {
 			Node node = getNode();
@@ -825,7 +825,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		 * Fire a sliding event. A sliding event is where a new event of the same
 		 * type is generated for the node and each parent.
 		 *
-		 * @param type
+		 * @param type The event type
 		 */
 		final void fireSlidingEvent( EventType<NodeEvent> type ) {
 			Node node = getNode();
@@ -843,9 +843,9 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	private class SetSelfModifiedOperation extends NodeTxnOperation {
 
-		private boolean oldValue;
+		private final boolean oldValue;
 
-		private boolean newValue;
+		private final boolean newValue;
 
 		private SetSelfModifiedOperation( Node node, boolean oldValue, boolean newValue ) {
 			super( node );
@@ -899,11 +899,11 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	private class SetValueOperation extends NodeTxnOperation {
 
-		private String key;
+		private final String key;
 
-		private Object oldValue;
+		private final Object oldValue;
 
-		private Object newValue;
+		private final Object newValue;
 
 		private SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
 			super( node );
@@ -937,8 +937,8 @@ public class Node implements TxnEventTarget, Cloneable {
 
 				boolean childAdd = oldValue == null && newValue instanceof Node;
 				boolean childRemove = newValue == null && oldValue instanceof Node;
-				if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, oldValue, newValue ) );
-				if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, newValue ) );
+				if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
+				if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
 				fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
 
 				Txn.submit( updateModified );
@@ -977,7 +977,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	private class UpdateModifiedOperation extends NodeTxnOperation {
 
-		private boolean oldValue;
+		private final boolean oldValue;
 
 		UpdateModifiedOperation( Node node ) {
 			super( node );
