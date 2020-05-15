@@ -66,6 +66,7 @@ class UriUtilTest {
 
 	@Test
 	void testParseName() {
+		assertThat( UriUtil.parseName( URI.create( "file:///C:/" ) ), is( "C:" ) );
 		assertThat( UriUtil.parseName( URI.create( "https://host:74" ) ), is( "/" ) );
 		assertThat( UriUtil.parseName( URI.create( "https://host:74/" ) ), is( "/" ) );
 		assertThat( UriUtil.parseName( URI.create( "https://host:74/path/to/resource" ) ), is( "resource" ) );
