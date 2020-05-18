@@ -523,16 +523,25 @@ public class FileUtil {
 	}
 
 	/**
-	 * Find the closest valid (existing folder) parent for the given file.
+	 * Find the closest existing parent folder for the given file.
 	 *
 	 * @param file The file for which to find a valid parent folder
 	 */
-	public static File findValidParent( File file ) {
-		return findValidParent( file.toPath() ).toFile();
+	public static Path findValidParent( String file ) {
+		return findValidParent( Paths.get( file ) );
 	}
 
 	/**
-	 * Find the closest valid (existing folder) parent for the given path.
+	 * Find the closest existing parent folder for the given file.
+	 *
+	 * @param file The file for which to find a valid parent folder
+	 */
+	public static Path findValidParent( File file ) {
+		return findValidParent( file.toPath() );
+	}
+
+	/**
+	 * Find the closest existing parent folder for the given path.
 	 *
 	 * @param path The path for which to find a valid parent
 	 */
@@ -541,16 +550,33 @@ public class FileUtil {
 	}
 
 	/**
-	 * Find the closest valid (existing folder) parent for the given path.
+	 * Find the closest existing folder for the given path.
+	 *
+	 * @param path The path for which to find a valid parent
+	 */
+	public static Path findValidFolder( String path ) {
+		return findValidFolder( Paths.get( path ) );
+	}
+
+	/**
+	 * Find the closest existing folder for the given file.
+	 *
+	 * @param file The file for which to find a valid parent
+	 */
+	public static Path findValidFolder( File file ) {
+		return findValidFolder( file.toPath() );
+	}
+
+	/**
+	 * Find the closest existing folder for the given path.
 	 *
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( Path path ) {
-		Path parent = path;
-		while( Files.notExists( parent ) || !Files.isDirectory( parent ) ) {
-			parent = parent.getParent();
+		while( Files.notExists( path ) || !Files.isDirectory( path ) ) {
+			path = path.getParent();
 		}
-		return parent;
+		return path;
 	}
 
 }
