@@ -76,9 +76,12 @@ public class FileUtil {
 			}
 			text.append( String.format( "%3.1f", (float)precise / base ) );
 		} else {
-			text.append( String.valueOf( coefficient ) );
+			text.append( coefficient );
 		}
-		if( showUnit ) text.append( unitString );
+		if( showUnit ) {
+			if( !compact ) text.append( " " );
+			text.append( unitString );
+		}
 
 		return text.toString();
 	}
@@ -135,9 +138,12 @@ public class FileUtil {
 			}
 			text.append( String.format( "%3.1f", (float)precise / base ) );
 		} else {
-			text.append( String.valueOf( coefficient ) );
+			text.append( coefficient );
 		}
-		if( showUnit ) text.append( unitString );
+		if( showUnit ) {
+			if( !compact ) text.append( " " );
+			text.append( unitString );
+		}
 
 		return text.toString();
 	}

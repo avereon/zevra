@@ -37,88 +37,116 @@ class FileUtilTest {
 
 	@Test
 	void testGetHumanSize() {
-		assertThat( FileUtil.getHumanSize( 0 ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSize( 1 ), is( "1B" ) );
-		assertThat( FileUtil.getHumanSize( 12 ), is( "12B" ) );
-		assertThat( FileUtil.getHumanSize( 123 ), is( "123B" ) );
-		assertThat( FileUtil.getHumanSize( 1234 ), is( "1.2KB" ) );
-		assertThat( FileUtil.getHumanSize( 12345 ), is( "12KB" ) );
-		assertThat( FileUtil.getHumanSize( 123456 ), is( "123KB" ) );
-		assertThat( FileUtil.getHumanSize( 1234567 ), is( "1.2MB" ) );
-		assertThat( FileUtil.getHumanSize( 12345678 ), is( "12MB" ) );
-		assertThat( FileUtil.getHumanSize( 123456789 ), is( "123MB" ) );
+		assertThat( FileUtil.getHumanSize( 0 ), is( "0 B" ) );
+		assertThat( FileUtil.getHumanSize( 1 ), is( "1 B" ) );
+		assertThat( FileUtil.getHumanSize( 12 ), is( "12 B" ) );
+		assertThat( FileUtil.getHumanSize( 123 ), is( "123 B" ) );
+		assertThat( FileUtil.getHumanSize( 1234 ), is( "1.2 KB" ) );
+		assertThat( FileUtil.getHumanSize( 12345 ), is( "12 KB" ) );
+		assertThat( FileUtil.getHumanSize( 123456 ), is( "123 KB" ) );
+		assertThat( FileUtil.getHumanSize( 1234567 ), is( "1.2 MB" ) );
+		assertThat( FileUtil.getHumanSize( 12345678 ), is( "12 MB" ) );
+		assertThat( FileUtil.getHumanSize( 123456789 ), is( "123 MB" ) );
 
-		assertThat( FileUtil.getHumanSize( -0 ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSize( -1 ), is( "-1B" ) );
-		assertThat( FileUtil.getHumanSize( -12 ), is( "-12B" ) );
-		assertThat( FileUtil.getHumanSize( -123 ), is( "-123B" ) );
-		assertThat( FileUtil.getHumanSize( -1234 ), is( "-1.2KB" ) );
-		assertThat( FileUtil.getHumanSize( -12345 ), is( "-12KB" ) );
-		assertThat( FileUtil.getHumanSize( -123456 ), is( "-123KB" ) );
-		assertThat( FileUtil.getHumanSize( -1234567 ), is( "-1.2MB" ) );
-		assertThat( FileUtil.getHumanSize( -12345678 ), is( "-12MB" ) );
-		assertThat( FileUtil.getHumanSize( -123456789 ), is( "-123MB" ) );
+		assertThat( FileUtil.getHumanSize( -0 ), is( "0 B" ) );
+		assertThat( FileUtil.getHumanSize( -1 ), is( "-1 B" ) );
+		assertThat( FileUtil.getHumanSize( -12 ), is( "-12 B" ) );
+		assertThat( FileUtil.getHumanSize( -123 ), is( "-123 B" ) );
+		assertThat( FileUtil.getHumanSize( -1234 ), is( "-1.2 KB" ) );
+		assertThat( FileUtil.getHumanSize( -12345 ), is( "-12 KB" ) );
+		assertThat( FileUtil.getHumanSize( -123456 ), is( "-123 KB" ) );
+		assertThat( FileUtil.getHumanSize( -1234567 ), is( "-1.2 MB" ) );
+		assertThat( FileUtil.getHumanSize( -12345678 ), is( "-12 MB" ) );
+		assertThat( FileUtil.getHumanSize( -123456789 ), is( "-123 MB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() - 1 ), is( "999B" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() ), is( "1.0KB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() - 1 ), is( "999 B" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() ), is( "1.0 KB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() - 1 ), is( "999KB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() ), is( "1.0MB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() - 1 ), is( "999 KB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() ), is( "1.0 MB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() - 1 ), is( "999MB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() ), is( "1.0GB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() - 1 ), is( "999 MB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() ), is( "1.0 GB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() - 1 ), is( "999GB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() ), is( "1.0TB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() - 1 ), is( "999 GB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() ), is( "1.0 TB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() - 1 ), is( "999TB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() ), is( "1.0PB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() - 1 ), is( "999 TB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() ), is( "1.0 PB" ) );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() - 1 ), is( "999PB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() ), is( "1.0EB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() - 1 ), is( "999 PB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() ), is( "1.0 EB" ) );
+	}
+
+	@Test
+	void testGetHumanSizeCompact() {
+		assertThat( FileUtil.getHumanSize( 0, true ), is( "0B" ) );
+		assertThat( FileUtil.getHumanSize( 1, true ), is( "1B" ) );
+		assertThat( FileUtil.getHumanSize( 12, true ), is( "12B" ) );
+		assertThat( FileUtil.getHumanSize( 123, true ), is( "123B" ) );
+		assertThat( FileUtil.getHumanSize( 1234, true ), is( "1.2K" ) );
+		assertThat( FileUtil.getHumanSize( 12345, true ), is( "12K" ) );
+		assertThat( FileUtil.getHumanSize( 123456, true ), is( "123K" ) );
+		assertThat( FileUtil.getHumanSize( 1234567, true ), is( "1.2M" ) );
+		assertThat( FileUtil.getHumanSize( 12345678, true ), is( "12M" ) );
+		assertThat( FileUtil.getHumanSize( 123456789, true ), is( "123M" ) );
 	}
 
 	@Test
 	void testGetHumanBinSize() {
-		assertThat( FileUtil.getHumanSizeBase2( 0 ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1 ), is( "1B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12 ), is( "12B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123 ), is( "123B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234 ), is( "1.2KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345 ), is( "12KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456 ), is( "120KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234567 ), is( "1.2MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345678 ), is( "11MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456789 ), is( "117MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 0 ), is( "0 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1 ), is( "1 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12 ), is( "12 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123 ), is( "123 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1234 ), is( "1.2 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12345 ), is( "12 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123456 ), is( "120 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1234567 ), is( "1.2 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12345678 ), is( "11 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123456789 ), is( "117 MiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( -0 ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1 ), is( "-1B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12 ), is( "-12B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123 ), is( "-123B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1234 ), is( "-1.2KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12345 ), is( "-12KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123456 ), is( "-120KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1234567 ), is( "-1.2MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12345678 ), is( "-11MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123456789 ), is( "-117MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -0 ), is( "0 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -1 ), is( "-1 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -12 ), is( "-12 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -123 ), is( "-123 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -1234 ), is( "-1.2 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -12345 ), is( "-12 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -123456 ), is( "-120 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -1234567 ), is( "-1.2 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -12345678 ), is( "-11 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -123456789 ), is( "-117 MiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() - 1 ), is( "1023B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() ), is( "1.0KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() - 1 ), is( "1023 B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() ), is( "1.0 KiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() - 1 ), is( "1023KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() ), is( "1.0MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() - 1 ), is( "1023 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() ), is( "1.0 MiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() - 1 ), is( "1023MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() ), is( "1.0GiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() - 1 ), is( "1023 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() ), is( "1.0 GiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() - 1 ), is( "1023GiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() ), is( "1.0TiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() - 1 ), is( "1023 GiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() ), is( "1.0 TiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() - 1 ), is( "1023TiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() ), is( "1.0PiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() - 1 ), is( "1023 TiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() ), is( "1.0 PiB" ) );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() - 1 ), is( "1023PiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() ), is( "1.0EiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() - 1 ), is( "1023 PiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() ), is( "1.0 EiB" ) );
+	}
+
+	@Test
+	void testGetHumanBinSizeCompact() {
+		assertThat( FileUtil.getHumanSizeBase2( 0, true ), is( "0B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1, true ), is( "1B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12, true ), is( "12B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123, true ), is( "123B" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1234, true ), is( "1.2K" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12345, true ), is( "12K" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123456, true ), is( "120K" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 1234567, true ), is( "1.2M" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 12345678, true ), is( "11M" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 123456789, true ), is( "117M" ) );
 	}
 
 	@Test
