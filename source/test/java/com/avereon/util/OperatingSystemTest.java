@@ -166,12 +166,14 @@ class OperatingSystemTest {
 		String program = "vi";
 		ProcessBuilder builder = new ProcessBuilder( program );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate" );
+		elevate.delete();
 
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
 		assertThat( builder.command().get( 0 ), is( elevate.getCanonicalPath() ) );
 		assertThat( builder.command().get( 1 ), is( program ) );
 		assertThat( builder.command().size(), is( 2 ) );
+		elevate.delete();
 	}
 
 	@Test
@@ -218,6 +220,7 @@ class OperatingSystemTest {
 		String program = "notepad.exe";
 		ProcessBuilder builder = new ProcessBuilder( program );
 		File elevate = new File( System.getProperty( "java.io.tmpdir" ), "elevate.js" );
+		elevate.delete();
 
 		OperatingSystem.elevateProcessBuilder( "Notepad", builder );
 
@@ -226,6 +229,8 @@ class OperatingSystemTest {
 		assertThat( builder.command().get( index++ ), is( elevate.getCanonicalPath() ) );
 		assertThat( builder.command().get( index++ ), is( program ) );
 		assertThat( builder.command().size(), is( index ) );
+
+		elevate.delete();
 	}
 
 	@Test
