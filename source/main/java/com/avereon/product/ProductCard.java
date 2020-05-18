@@ -115,7 +115,12 @@ public class ProductCard extends BaseCard {
 		this.name = values.getProperty( "name" );
 		this.provider = values.getProperty( "provider" );
 		this.providerUrl = values.getProperty( "providerUri" );
-		this.inception = Integer.parseInt( values.getProperty( "inception" ) );
+
+		try {
+			this.inception = Integer.parseInt( values.getProperty( "inception" ) );
+		} catch( NumberFormatException exception ) {
+			throw new IllegalArgumentException( "The product card has not been processed by Maven");
+		}
 
 		this.summary = values.getProperty( "summary" );
 		this.description = values.getProperty( "description" );
