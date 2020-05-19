@@ -153,6 +153,20 @@ class UriUtilTest {
 	}
 
 	@Test
+	void testHasParent() {
+		assertFalse( UriUtil.hasParent( URI.create( "/" ) ) );
+		assertFalse( UriUtil.hasParent( URI.create( "file:/" ) ) );
+
+		assertFalse( UriUtil.hasParent( URI.create( "" ) ) );
+		assertFalse( UriUtil.hasParent( URI.create( "/../../.." ) ) );
+
+		assertTrue( UriUtil.hasParent( URI.create( "/test" ) ) );
+		assertTrue( UriUtil.hasParent( URI.create( "/test/" ) ) );
+		assertTrue( UriUtil.hasParent( URI.create( "file:/test" ) ) );
+		assertTrue( UriUtil.hasParent( URI.create( "file:/test/" ) ) );
+	}
+
+	@Test
 	void testGetParentWithRootUri() {
 		assertThat( UriUtil.getParent( URI.create( "/") ).toString(), is( "/" ) );
 		assertThat( UriUtil.getParent( URI.create( "file:/") ).toString(), is( "file:/" ) );

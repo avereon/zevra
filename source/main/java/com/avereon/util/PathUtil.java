@@ -5,9 +5,11 @@ import java.util.List;
 
 public class PathUtil {
 
-	private static final String SEPARATOR = "/";
+	public static final String SEPARATOR = "/";
 
-	private static final String PARENT = "..";
+	public static final String PARENT = "..";
+
+	public static final String SELF = ".";
 
 	private static final String DOUBLE_SEPARATOR = SEPARATOR + SEPARATOR;
 
@@ -24,7 +26,7 @@ public class PathUtil {
 	}
 
 	public static boolean isRoot( String path ) {
-		return path != null && path.equals( SEPARATOR );
+		return SEPARATOR.equals( path );
 	}
 
 	public static String getName( String path ) {
@@ -62,8 +64,8 @@ public class PathUtil {
 		if( isRoot( path ) ) return null;
 		if( EMPTY.equals( path ) ) return null;
 		int index = path.lastIndexOf( SEPARATOR );
-		if( index < 0 ) return EMPTY;
 		if( index == 0 ) return SEPARATOR;
+		if( index < 0 ) return EMPTY;
 		return path.substring( 0, index );
 	}
 

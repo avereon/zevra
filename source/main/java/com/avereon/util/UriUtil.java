@@ -114,7 +114,27 @@ public final class UriUtil {
 	 * Does the URI represent a root path.
 	 */
 	public static boolean isRoot( URI uri ) {
-		return uri.normalize().getPath().equals( "/" );
+		return PathUtil.isRoot( uri.normalize().getPath() );
+	}
+
+	/**
+	 * Check if the URI is in normalized form, meaning all "." and ".." parts have
+	 * been resolved.
+	 *
+	 * @param uri The URI to check
+	 * @return True if the URI is normalized, false otherwise
+	 */
+	public static boolean isNormalized( URI uri ) {
+		if( uri.isOpaque() ) return true;
+		PathUtil.parseNames( uri.getPath() );
+		for( String item : PathUtil.parseNames( uri.getPath() ) ) {
+			if( PathUtil.PARENT.equals( item ) || PathUtil.SELF.equals( item ) ) return false;
+		}
+		return true;
+	}
+
+	public static boolean hasParent( URI uri ) {
+		return !uri.isOpaque() && isNormalized( uri ) && !(uri.equals( getParent( uri ) ));
 	}
 
 	/**
@@ -124,22 +144,24 @@ public final class UriUtil {
 	 * @return The parent URI
 	 */
 	public static URI getParent( URI uri ) {
-		Deque<String> queue = new LinkedList<>();
+		List<String> schemes = new ArrayList<>();
 
+		// Normalize and check for failed normalization
 		uri = uri.normalize();
+		if( !isNormalized( uri ) ) return uri;
 
 		// Unstack the schemes
 		while( uri.isOpaque() ) {
-			queue.add( uri.getScheme() );
+			schemes.add( uri.getScheme() );
 			uri = URI.create( uri.getRawSchemeSpecificPart() );
 		}
 
 		// Resolve the parent
-		if( !isRoot( uri ) ) uri = uri.resolve( uri.getPath().endsWith( "/" ) ? ".." : "" );
+		if( !isRoot( uri ) ) uri = uri.resolve( uri.getPath().endsWith( PathUtil.SEPARATOR ) ? PathUtil.PARENT : "" );
 
 		// Restack the schemes
-		String scheme;
-		while( (scheme = queue.pollLast()) != null ) {
+		Collections.reverse( schemes );
+		for( String scheme : schemes ) {
 			uri = URI.create( scheme + ":" + uri.toString() );
 		}
 
@@ -156,7 +178,7 @@ public final class UriUtil {
 
 		Map<String, String> parameters = new HashMap<>();
 
-		String[] values = query.split( "\\&" );
+		String[] values = query.split( "&" );
 
 		for( String value : values ) {
 			int index = value.indexOf( "=" );
