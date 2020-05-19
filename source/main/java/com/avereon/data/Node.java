@@ -786,10 +786,10 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	private void checkForCircularReference( Node node ) {
-		Node parent = this;
-		while( parent != null ) {
-			if( node == parent ) throw new CircularReferenceException( "Circular reference detected in parent path: " + node );
-			parent = parent.getParent();
+		Node next = this;
+		while( next != null ) {
+			if( node == next ) throw new CircularReferenceException( "Circular reference detected in parent path: " + node );
+			next = next.getParent();
 		}
 	}
 

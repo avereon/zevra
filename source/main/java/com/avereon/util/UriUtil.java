@@ -111,6 +111,13 @@ public final class UriUtil {
 	}
 
 	/**
+	 * Does the URI represent a root path.
+	 */
+	public static boolean isRoot( URI uri ) {
+		return uri.normalize().getPath().equals( "/" );
+	}
+
+	/**
 	 * Get the parent URI taking into account opaque URI's.
 	 *
 	 * @param uri The URI from which to get the parent URI
@@ -119,13 +126,18 @@ public final class UriUtil {
 	public static URI getParent( URI uri ) {
 		Deque<String> queue = new LinkedList<>();
 
+		uri = uri.normalize();
+
+		// Unstack the schemes
 		while( uri.isOpaque() ) {
 			queue.add( uri.getScheme() );
 			uri = URI.create( uri.getRawSchemeSpecificPart() );
 		}
 
-		uri = uri.resolve( "." );
+		// Resolve the parent
+		if( !isRoot( uri ) ) uri = uri.resolve( uri.getPath().endsWith( "/" ) ? ".." : "" );
 
+		// Restack the schemes
 		String scheme;
 		while( (scheme = queue.pollLast()) != null ) {
 			uri = URI.create( scheme + ":" + uri.toString() );

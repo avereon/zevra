@@ -8,6 +8,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UriUtilTest {
 
@@ -125,6 +127,35 @@ class UriUtilTest {
 		assertThat( UriUtil.getParent( absolute ).toString(), is( "file:/test/folder/" ) );
 		assertThat( UriUtil.getParent( opaque ).toString(), is( "jar:file:/test/folder/" ) );
 		assertThat( UriUtil.getParent( doubleOpaque ).toString(), is( "double:jar:file:/test/folder/" ) );
+	}
+
+	@Test
+	void testGetParentWithFolder() {
+		URI absolute = URI.create( "file:/test/folder/" );
+		URI opaque = URI.create( "jar:" + absolute.toString() );
+		URI doubleOpaque = URI.create( "double:jar:" + absolute.toString() );
+
+		assertThat( UriUtil.getParent( absolute ).toString(), is( "file:/test/" ) );
+		assertThat( UriUtil.getParent( opaque ).toString(), is( "jar:file:/test/" ) );
+		assertThat( UriUtil.getParent( doubleOpaque ).toString(), is( "double:jar:file:/test/" ) );
+	}
+
+	@Test
+	void testIsRoot() {
+		assertTrue( UriUtil.isRoot( URI.create( "/" ) ) );
+		assertTrue( UriUtil.isRoot( URI.create( "file:/" ) ) );
+
+		assertFalse( UriUtil.isRoot( URI.create( "" ) ) );
+		assertFalse( UriUtil.isRoot( URI.create( "/test" ) ) );
+		assertFalse( UriUtil.isRoot( URI.create( "/test/" ) ) );
+		assertFalse( UriUtil.isRoot( URI.create( "file:/test" ) ) );
+		assertFalse( UriUtil.isRoot( URI.create( "file:/test/" ) ) );
+	}
+
+	@Test
+	void testGetParentWithRootUri() {
+		assertThat( UriUtil.getParent( URI.create( "/") ).toString(), is( "/" ) );
+		assertThat( UriUtil.getParent( URI.create( "file:/") ).toString(), is( "file:/" ) );
 	}
 
 	@Test
