@@ -39,7 +39,6 @@ public class JvmSureStop extends Thread {
 	@Override
 	public void run() {
 		try {
-			log.log( Log.INFO, "JvmSureStop waiting for program to exit..." + TestUtil.isTest() );
 			if( TestUtil.isTest() ) return;
 
 			try {
