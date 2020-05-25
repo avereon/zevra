@@ -38,25 +38,30 @@ public class JvmSureStop extends Thread {
 
 	@Override
 	public void run() {
-		if( TestUtil.isTest() ) return;
-
 		try {
-			Thread.sleep( delay );
-		} catch( InterruptedException exception ) {
-			return;
+			log.log( Log.INFO, "JvmSureStop waiting for program to exit..." + TestUtil.isTest() );
+			if( TestUtil.isTest() ) return;
+
+			try {
+				Thread.sleep( delay );
+			} catch( InterruptedException exception ) {
+				return;
+			}
+
+			log.log( Log.ERROR, "JVM did not exit cleanly. Here are the running non-daemon threads:" );
+			Map<Thread, StackTraceElement[]> threadStacks = Thread.getAllStackTraces();
+			threadStacks.keySet().stream().filter( t -> !t.isDaemon() ).forEach( thread -> {
+				log.log( Log.WARN, "Thread: " + thread.getId() + " " + thread.getName() + "[g=" + thread.getThreadGroup() + "]" );
+				Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.log( Log.INFO, "  " + e ) );
+			} );
+
+			log.log( Log.ERROR, "Halting now!" );
+			ThreadUtil.pause( 200 );
+
+			Runtime.getRuntime().halt( -1 );
+		} catch( Throwable throwable ) {
+			log.log( Log.ERROR, throwable );
 		}
-
-		log.log( Log.ERROR, "JVM did not exit cleanly. Here are the running non-daemon threads:" );
-		Map<Thread, StackTraceElement[]> threadStacks = Thread.getAllStackTraces();
-		threadStacks.keySet().stream().filter( t -> !t.isDaemon() ).forEach( thread -> {
-			log.log( Log.WARN, "Thread: " + thread.getId() + " " + thread.getName() + "[g=" + thread.getThreadGroup() + "]" );
-			Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.log( Log.INFO, "  " + e ) );
-		} );
-
-		log.log( Log.ERROR, "Halting now!" );
-		ThreadUtil.pause( 200 );
-
-		Runtime.getRuntime().halt( -1 );
 	}
 
 }

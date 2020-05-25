@@ -114,11 +114,10 @@ public class Log {
 
 		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.NONE ).getName() ).append( "\n" );
+		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.INFO ).getName() ).append( "\n" );
 
-		// Set the program logger level
-		String sourcePackage = source.getClass().getPackage().getName();
-		builder.append( sourcePackage ).append( ".level=" ).append( level ).append( "\n" );
+		// Set the logger level for all Avereon products
+		builder.append( "com.avereon" ).append( ".level=" ).append( level ).append( "\n" );
 
 		// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
 		// Initialize the logging
