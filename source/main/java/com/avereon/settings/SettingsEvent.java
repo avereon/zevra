@@ -21,15 +21,19 @@ public class SettingsEvent extends Event {
 
 	private final Object newValue;
 
-	public SettingsEvent( Object source, EventType<SettingsEvent> type, String path ) {
-		this( source, type, path, null, null );
+	public SettingsEvent( Settings settings, EventType<SettingsEvent> type, String path ) {
+		this( settings, type, path, null, null );
 	}
 
-	public SettingsEvent( Object source, EventType<SettingsEvent> type, String path, String key, Object newValue ) {
-		super( source, type );
+	public SettingsEvent( Settings settings, EventType<SettingsEvent> type, String path, String key, Object newValue ) {
+		super( settings, type );
 		this.path = path;
 		this.key = key;
 		this.newValue = newValue;
+	}
+
+	public Settings getSettings() {
+		return (Settings)getSource();
 	}
 
 	public String getPath() {
@@ -61,7 +65,7 @@ public class SettingsEvent extends Event {
 			builder.append( ":" );
 			builder.append( key );
 		}
-		if( getEventType() == CHANGED ){
+		if( getEventType() == CHANGED ) {
 			builder.append( ":" );
 			builder.append( newValue );
 		}
