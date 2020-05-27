@@ -2,11 +2,11 @@ package com.avereon.skill;
 
 public interface Identified {
 
-	// NOTE Do not change this key with a plan to migrate the values
+	// NOTE Do not change the value of this key without a plan to migrate persisted values
 	String KEY = "id";
 
-	String getId();
+	String getProductId();
 
-	void setId( String id );
+	void setProductId( String id );
 
 }
