@@ -89,7 +89,7 @@ public interface Settings {
 	 * @param path The node path to check
 	 * @return True if the node exists, false otherwise
 	 */
-	boolean exists( String path );
+	boolean nodeExists( String path );
 
 	/**
 	 * Get a settings object for the specified path. If the path starts with the separator character then the path is absolute. If the path does not start with
@@ -137,6 +137,15 @@ public interface Settings {
 	 * @return The value keys for this settings node
 	 */
 	Set<String> getKeys();
+
+	/**
+	 * Check if a specific value exists. A value exists if {@link #get(String)}
+	 * returns a non-null value.
+	 *
+	 * @param key The value key
+	 * @return True if the value exists, false otherwise
+	 */
+	boolean exists( String key );
 
 	/**
 	 * Shortcut to calling get( key, String.class ). Calling this method for

@@ -19,21 +19,21 @@ public abstract class BaseSettingsTest {
 	protected Settings settings;
 
 	@Test
-	void testExists() {
-		assertTrue( settings.exists( "/" ) );
+	void testNodeExists() {
+		assertTrue( settings.nodeExists( "/" ) );
 
 		Settings deep = settings.getNode( "deep" );
 		deep.set( "a", "A" );
 		assertThat( deep.get( "a" ), is( "A" ) );
-		assertTrue( settings.exists( "deep" ) );
-		assertTrue( settings.exists( "/deep" ) );
+		assertTrue( settings.nodeExists( "deep" ) );
+		assertTrue( settings.nodeExists( "/deep" ) );
 
 		Settings deeper = deep.getNode( "deeper" );
 		deeper.set( "b", "B" );
 		assertThat( deeper.get( "b" ), is( "B" ) );
-		assertTrue( deep.exists( "deeper" ) );
-		assertFalse( deep.exists( "/deeper" ) );
-		assertTrue( settings.exists( "/deep/deeper" ) );
+		assertTrue( deep.nodeExists( "deeper" ) );
+		assertFalse( deep.nodeExists( "/deeper" ) );
+		assertTrue( settings.nodeExists( "/deep/deeper" ) );
 	}
 
 	@Test
@@ -111,6 +111,19 @@ public abstract class BaseSettingsTest {
 
 		Settings children = settings.getNode( folder );
 		assertThat( children.getNodes().size(), is( 3 ) );
+	}
+
+	@Test
+	void testExists() {
+		String key = "key";
+		String value = "value";
+		assertFalse( settings.exists( key ) );
+
+		settings.set( key, value );
+		assertTrue( settings.exists( key ) );
+
+		settings.set( key, null );
+		assertFalse( settings.exists( key ) );
 	}
 
 	@Test
@@ -409,19 +422,19 @@ public abstract class BaseSettingsTest {
 		settings.copyFrom( source );
 		assertThat( settings.get( "a" ), is( "A" ) );
 		assertThat( settings.get( "b", Integer.class ), is( 2 ) );
-		assertTrue( settings.exists( "deep" ) );
+		assertTrue( settings.nodeExists( "deep" ) );
 		assertThat( settings.getNode( "deep" ).get( "c" ), is( "see" ) );
 		assertThat( settings.getNode( "deep" ).get( "d" ), is( "D" ) );
 	}
 
 	@Test
 	void testDelete() {
-		assertThat( settings.exists( "test" ), is( false ) );
+		assertThat( settings.nodeExists( "test" ), is( false ) );
 		Settings test = settings.getNode( "test" );
 		test.flush();
-		assertThat( settings.exists( "test" ), is( true ) );
+		assertThat( settings.nodeExists( "test" ), is( true ) );
 		test.delete();
-		assertThat( settings.exists( "test" ), is( false ) );
+		assertThat( settings.nodeExists( "test" ), is( false ) );
 	}
 
 }

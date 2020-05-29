@@ -66,6 +66,11 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
+	public boolean exists( String path ) {
+		return getValue( path ) != null;
+	}
+
+	@Override
 	public String get( String key ) {
 		return get( key, String.class );
 	}

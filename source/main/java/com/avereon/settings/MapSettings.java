@@ -49,7 +49,7 @@ public class MapSettings extends AbstractSettings {
 	}
 
 	@Override
-	public boolean exists( String path ) {
+	public boolean nodeExists( String path ) {
 		return root.settings.get( getNodePath( this.path, path ) ) != null;
 	}
 

@@ -95,7 +95,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	@Override
-	public boolean exists( String path ) {
+	public boolean nodeExists( String path ) {
 		String nodePath = getNodePath( this.path, path );
 		return root.settings.get( nodePath ) != null;
 	}
@@ -103,7 +103,7 @@ public class StoredSettings extends AbstractSettings {
 	/**
 	 * This checks if the node folder exists for the specified settings path. It
 	 * is possible, for new nodes or recently removed nodes, that this this method
-	 * return a different value than {@link #exists} if the changes have not yet
+	 * return a different value than {@link #nodeExists} if the changes have not yet
 	 * been flushed.
 	 *
 	 * @param path The child node settings path
@@ -192,7 +192,10 @@ public class StoredSettings extends AbstractSettings {
 		root.settings.remove( getPath() );
 		try {
 			// Delete the file
-			FileUtil.delete( getFile() );
+			Path file = getFile();
+			if( !FileUtil.delete( file ) ){
+				log.log( Log.WARN, "Unable to delete file=" + file );
+			}
 
 			// Delete the folder if empty
 			if( getNodes().size() == 0 ) FileUtil.delete( folder );
