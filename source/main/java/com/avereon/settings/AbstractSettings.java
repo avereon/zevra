@@ -27,9 +27,11 @@ public abstract class AbstractSettings implements Settings {
 
 	private Map<String, Object> defaultValues;
 
-	private EventHub eventHub;
+	private boolean deleted;
 
-	private Map<String, Set<EventHandler<SettingsEvent>>> valueChangeHandlers;
+	private final EventHub eventHub;
+
+	private final Map<String, Set<EventHandler<SettingsEvent>>> valueChangeHandlers;
 
 	static {
 		outboundConverters = new HashMap<>();
@@ -279,6 +281,14 @@ public abstract class AbstractSettings implements Settings {
 			log.log( Log.WARN, "Error unmarshalling value", exception );
 			return null;
 		}
+	}
+
+	protected boolean isDeleted() {
+		return deleted;
+	}
+
+	protected void setDeleted() {
+		this.deleted = true;
 	}
 
 	@Override

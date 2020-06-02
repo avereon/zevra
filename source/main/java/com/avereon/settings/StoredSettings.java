@@ -186,6 +186,7 @@ public class StoredSettings extends AbstractSettings {
 	@Override
 	public synchronized Settings delete() {
 		synchronized( scheduleLock ) {
+			setDeleted();
 			if( task != null ) task.cancel();
 		}
 
@@ -193,7 +194,7 @@ public class StoredSettings extends AbstractSettings {
 		try {
 			// Delete the file
 			Path file = getFile();
-			if( !FileUtil.delete( file ) ){
+			if( !FileUtil.delete( file ) ) {
 				log.log( Log.WARN, "Unable to delete file=" + file );
 			}
 
@@ -240,6 +241,8 @@ public class StoredSettings extends AbstractSettings {
 
 	private void scheduleSave( boolean immediate ) {
 		synchronized( scheduleLock ) {
+			if( isDeleted() ) return;
+
 			long storeTime = lastStoreTime.get();
 			long dirtyTime = lastDirtyTime.get();
 
@@ -274,6 +277,8 @@ public class StoredSettings extends AbstractSettings {
 
 		@Override
 		public void run() {
+			if( isDeleted() ) return;
+			
 			// If there is an executor, use it to run the task, otherwise run the task on the timer thread
 			if( executor != null && !executor.isShutdown() ) {
 				executor.submit( StoredSettings.this::save );
