@@ -40,8 +40,9 @@ public class NodeEvent extends TxnEvent {
 		this.newValue = newValue;
 	}
 
-	public Node getNode() {
-		return (Node)getSource();
+	@SuppressWarnings( "unchecked" )
+	public <T> T getNode() {
+		return (T)getSource();
 	}
 
 	public String getKey() {
@@ -70,7 +71,7 @@ public class NodeEvent extends TxnEvent {
 		builder.append( getClass().getSimpleName() );
 		builder.append( "[ " );
 		builder.append( "node=" );
-		builder.append( getNode() );
+		builder.append( (Node)getNode() );
 		builder.append( ", type=" );
 		builder.append( getEventType() );
 		if( key != null ) {
