@@ -439,6 +439,7 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -567,6 +568,7 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -900,6 +902,7 @@ class NodeTest {
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -916,6 +919,7 @@ class NodeTest {
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( grandChild, grandChildIndex++, NodeEvent.ADDED );
 		assertEventState( child, childIndex++, NodeEvent.CHILD_ADDED, "child", null, grandChild );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "child", null, grandChild );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED );
@@ -988,6 +992,7 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -1054,6 +1059,7 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -1133,6 +1139,7 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
@@ -1192,6 +1199,7 @@ class NodeTest {
 		assertThat( parent0, hasStates( true, 1, 0 ) );
 		assertThat( parent1, hasStates( false, 0, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent0, parent0Index++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent0, parent0Index++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent0, parent0Index++, NodeEvent.MODIFIED );
@@ -1220,10 +1228,12 @@ class NodeTest {
 		assertThat( parent0, hasStates( true, 1, 0 ) );
 		assertThat( parent1, hasStates( true, 1, 0 ) );
 		assertThat( child, hasStates( false, 0, 0 ) );
+		assertEventState( child, childIndex++, NodeEvent.REMOVED );
 		assertEventState( parent0, parent0Index++, NodeEvent.CHILD_REMOVED, "child", child, null );
 		assertEventState( parent0, parent0Index++, NodeEvent.VALUE_CHANGED, "child", child, null );
 		assertEventState( parent0, parent0Index++, NodeEvent.MODIFIED );
 		assertEventState( parent0, parent0Index++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		assertEventState( parent1, parent1Index++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent1, parent1Index++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent1, parent1Index++, NodeEvent.MODIFIED );

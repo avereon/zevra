@@ -813,8 +813,8 @@ public class Node implements TxnEventTarget, Cloneable {
 		 *
 		 * @param event The event
 		 */
-		final void fireCascadingEvent( NodeEvent event ) {
-			Node node = getNode();
+		protected final void fireCascadingEvent( NodeEvent event ) {
+			Node node = event.getNode();
 			while( node != null ) {
 				fireTargetedEvent( node, event );
 				node = node.getParent();
@@ -937,8 +937,14 @@ public class Node implements TxnEventTarget, Cloneable {
 
 				boolean childAdd = oldValue == null && newValue instanceof Node;
 				boolean childRemove = newValue == null && oldValue instanceof Node;
-				if( childAdd ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
-				if( childRemove ) fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+				if( childAdd ) {
+					fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
+					fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
+				}
+				if( childRemove ) {
+					fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
+					fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+				}
 				fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
 
 				Txn.submit( updateModified );
