@@ -3,12 +3,29 @@ package com.avereon.event;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class TestEventHub {
+
+	@Test
+	void testRemovingEventHandlerFromItself() {
+		EventHub bus = new EventHub();
+
+		EventHandler<TestEvent> handler = e -> {};
+		bus.register( Event.ANY, handler );
+		bus.register( Event.ANY, e -> bus.unregister( Event.ANY, handler ) );
+
+		try {
+			bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
+		} catch( ConcurrentModificationException exception  ) {
+			fail( "EventBus.dispatch() not implemented in a way that prevents ConcurrentModificationException" );
+		}
+	}
 
 	@Test
 	void testHandle() {

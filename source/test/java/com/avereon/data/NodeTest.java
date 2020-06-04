@@ -31,7 +31,7 @@ class NodeTest {
 		MockNode b = new MockNode( "b" );
 		a.setValue( "child", b );
 
-		// This shows the problem with listeners on the same value with the nodes
+		// This shows the problem with listeners on the same key and the nodes
 		// related to each other. The event from b is also propagated to a and
 		// now a receives the value change event from b...unknowingly.
 		AtomicInteger count = new AtomicInteger();
