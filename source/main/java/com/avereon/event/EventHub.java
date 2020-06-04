@@ -1,6 +1,7 @@
 package com.avereon.event;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,10 @@ public class EventHub {
 		// Go through all the handlers of the event type and all handlers of all
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
-			handlers.getOrDefault( type, Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
+			// Put the handlers in a new map to avoid concurrent modification issues
+			var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
+			// Dispatch the event to all the handlers
+			typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
 			type = type.getParentEventType();
 		}
 
@@ -38,7 +42,7 @@ public class EventHub {
 	}
 
 	public EventHub parent( EventHub parent ) {
-		this.parent = parent == null? ROOT : parent;
+		this.parent = parent == null ? ROOT : parent;
 		return this;
 	}
 
@@ -61,8 +65,8 @@ public class EventHub {
 		return handlers.keySet().stream().collect( Collectors.toMap( k -> k, k -> handlers.get( k ).values() ) );
 	}
 
-//	protected EventHub getParent() {
-//		return parent;
-//	}
+	//	protected EventHub getParent() {
+	//		return parent;
+	//	}
 
 }
