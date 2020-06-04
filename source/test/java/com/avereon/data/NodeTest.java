@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -22,6 +23,23 @@ class NodeTest {
 	@BeforeEach
 	void setup() {
 		data = new MockNode();
+	}
+
+	@Test
+	void testEventSpreadOnValueChangeEvents() {
+		MockNode a = new MockNode( "a" );
+		MockNode b = new MockNode( "b" );
+		a.setValue( "child", b );
+
+		// This shows the problem with listeners on the same value with the nodes
+		// related to each other. The event from b is also propagated to a and
+		// now a receives the value change event from b...unknowingly.
+		AtomicInteger count = new AtomicInteger();
+		a.register( "key", e -> count.incrementAndGet() );
+		b.register( "key", e -> count.incrementAndGet() );
+
+		b.setValue( "key", "b"  );
+		assertThat( count.get(), is( 1 ) );
 	}
 
 	@Test
