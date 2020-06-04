@@ -323,7 +323,9 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {return eventHub.getEventHandlers();}
+	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
+		return eventHub.getEventHandlers();
+	}
 
 	public EventHub getEventHub() {
 		return eventHub;

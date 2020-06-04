@@ -1,16 +1,18 @@
 package com.avereon.event;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class EventHub {
 
-	private EventHub parent;
+	private static final EventHub ROOT = new EventHub();
 
-	private Map<EventType<? extends Event>, Collection<EventHandler<Event>>> handlers;
+	private final Map<EventType<? extends Event>, Map<EventHandler<Event>, EventHandler<Event>>> handlers;
+
+	private EventHub parent = ROOT;
 
 	public EventHub() {
 		this.handlers = new ConcurrentHashMap<>();
@@ -25,42 +27,42 @@ public class EventHub {
 		// Go through all the handlers of the event type and all handlers of all
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
-			Collection<EventHandler<Event>> typeHandlers = handlers.get( type );
-			if( typeHandlers != null ) new HashSet<>( typeHandlers ).forEach( handler -> handler.handle( event ) );
+			handlers.getOrDefault( type, Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
 			type = type.getParentEventType();
 		}
 
-		// If there is a parent event hub, pass the event to it
-		if( parent != null ) parent.dispatch( event );
+		// Dispatch the event to the parent hub
+		if( this != ROOT ) parent.dispatch( event );
 
 		return event;
 	}
 
 	public EventHub parent( EventHub parent ) {
-		this.parent = parent;
+		this.parent = parent == null? ROOT : parent;
 		return this;
 	}
 
 	@SuppressWarnings( "unchecked" )
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
-		handlers.computeIfAbsent( type, k -> new HashSet<>() ).add( (EventHandler<Event>)handler );
+		EventHandler<Event> eventHandler = (EventHandler<Event>)handler;
+		handlers.computeIfAbsent( type, ( k ) -> new WeakHashMap<>() ).put( eventHandler, eventHandler );
 		return this;
 	}
 
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
-		handlers.computeIfPresent( type, ( t, c ) -> {
-			c.removeIf( h -> h == handler );
-			return c.isEmpty() ? null : c;
+		handlers.computeIfPresent( type, ( t, m ) -> {
+			m.remove( handler );
+			return m.isEmpty() ? null : m;
 		} );
 		return this;
 	}
 
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
-		return new HashMap<>( handlers );
+		return handlers.keySet().stream().collect( Collectors.toMap( k -> k, k -> handlers.get( k ).values() ) );
 	}
 
-	protected EventHub getParent() {
-		return parent;
-	}
+//	protected EventHub getParent() {
+//		return parent;
+//	}
 
 }

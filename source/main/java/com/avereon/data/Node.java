@@ -133,7 +133,6 @@ public class Node implements TxnEventTarget, Cloneable {
 	/**
 	 * The node value change handlers, a special set of handlers for value changes.
 	 */
-	//private final Map<String, Set<EventHandler<NodeEvent>>> valueChangeHandlers;
 	private final Map<String, Map<EventHandler<NodeEvent>, EventHandler<NodeEvent>>> valueChangeHandlers;
 
 	/**
@@ -263,7 +262,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param event The data node event
 	 */
 	private void dispatch( NodeEvent event ) {
-		if( event.getEventType() == NodeEvent.VALUE_CHANGED ) valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
+		// Dispatch to value change handlers only when the event is on itself
+		boolean self = event.getNode() == this;
+		boolean valueChanged = event.getEventType() == NodeEvent.VALUE_CHANGED;
+		if( self && valueChanged ) valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
+
 		hub.dispatch( event );
 	}
 
@@ -312,6 +315,10 @@ public class Node implements TxnEventTarget, Cloneable {
 	/**
 	 * Register a value changed event handler for a specific value key. This is
 	 * useful to register lambda style event handlers for specific value changes.
+	 * <p>
+	 * NOTE: These handlers only receive value changed events that happen on this
+	 * node not on any child nodes like normal listeners.
+	 * </p>
 	 *
 	 * @param key The value key
 	 * @param handler The value changed handler
