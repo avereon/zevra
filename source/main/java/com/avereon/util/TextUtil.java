@@ -15,6 +15,8 @@ public final class TextUtil {
 
 	private static final System.Logger log = Log.get();
 
+	public static final String EMPTY = "";
+
 	public static final int LEFT = -1;
 
 	public static final int CENTER = 0;
