@@ -21,6 +21,7 @@ public class LogTest {
 		PrintStream original = System.err;
 
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_LEVEL, LogFlag.ALL ) );
+		Log.setPackageLogLevel( getClass().getPackageName(), LogFlag.ALL );
 
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream( output );
