@@ -952,10 +952,10 @@ public class Node implements TxnEventTarget, Cloneable {
 					fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
 					fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
 				}
-				fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
-
 				Txn.submit( updateModified );
 			}
+
+			fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
 
 			fireSlidingEvent( NodeEvent.NODE_CHANGED );
 		}
