@@ -116,13 +116,19 @@ public class Log {
 		// Don't set this too low (debug, trace, all) because it can be noisy
 		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.INFO ).getName() ).append( "\n" );
 
-		// Set the logger level for all Avereon products
-		builder.append( "com.avereon" ).append( ".level=" ).append( level ).append( "\n" );
+		// NOTE Log levels can be customized with Log.setPackageLogLevel()
 
-		// NOTE For this to work as expected the slf4j-jdk14 artifact must be on the classpath
+		// The final configuration
+		String configuration = builder.toString();
+		try {
+			if( logFolder != null ) FileUtil.save( configuration, logFolder.resolve( "log.config.properties" ) );
+		} catch( IOException exception ) {
+			exception.printStackTrace( System.err );
+		}
+
 		// Initialize the logging
 		try {
-			InputStream input = new ByteArrayInputStream( builder.toString().getBytes( StandardCharsets.UTF_8 ) );
+			InputStream input = new ByteArrayInputStream( configuration.getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
 		} catch( IOException exception ) {
 			exception.printStackTrace( System.err );
