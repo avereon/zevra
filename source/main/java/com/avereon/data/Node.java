@@ -265,7 +265,18 @@ public class Node implements TxnEventTarget, Cloneable {
 		// Dispatch to value change handlers only when the event is on itself
 		boolean self = event.getNode() == this;
 		boolean valueChanged = event.getEventType() == NodeEvent.VALUE_CHANGED;
-		if( self && valueChanged ) valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ).forEach( ( k, v ) -> v.handle( event ) );
+		if( self && valueChanged ) {
+			ConcurrentModificationException exception;
+			do {
+				try {
+					exception = null;
+					var valueHandlers = new HashMap<>( valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ) );
+					valueHandlers.forEach( ( k, v ) -> v.handle( event ) );
+				} catch( ConcurrentModificationException cme ) {
+					exception = cme;
+				}
+			} while( exception != null );
+		}
 
 		hub.dispatch( event );
 	}

@@ -1,9 +1,6 @@
 package com.avereon.event;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -28,11 +25,19 @@ public class EventHub {
 		// Go through all the handlers of the event type and all handlers of all
 		// the parent event types, passing the event to each handler.
 		while( type != null ) {
-			// Put the handlers in a new map to avoid concurrent modification issues
-			var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
-			// Dispatch the event to all the handlers
-			typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
-			type = type.getParentEventType();
+			// If a ConcurrentModificationException occurs, try again until a clean
+			// copy of the map can be generated.
+			ConcurrentModificationException exception;
+			do {
+				try {
+					exception = null;
+					var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
+					typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
+					type = type.getParentEventType();
+				} catch( ConcurrentModificationException cme ) {
+					exception = cme;
+				}
+			} while( exception != null );
 		}
 
 		// Dispatch the event to the parent hub
