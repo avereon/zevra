@@ -349,6 +349,10 @@ public class OperatingSystem {
 		return String.format( "%s/%s/%s", getPlatformFolder(), getArchitectureFolder(), mapLibraryName( libname ) );
 	}
 
+	public static String getExeSuffix() {
+		return isWindows() ? ".exe" : "";
+	}
+
 	static void clearProcessElevatedFlag() {
 		elevated = null;
 	}

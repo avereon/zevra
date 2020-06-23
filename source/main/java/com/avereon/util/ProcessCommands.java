@@ -1,5 +1,6 @@
 package com.avereon.util;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
@@ -7,6 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>
+ * Convenience class to generate command line values for processes.
+ * </p>
+ * <p>
+ * Prior to Java 14 the only official way to start a Java VM was to use the java
+ * (or javaw) launchers provided with the Java runtime. Starting with Java 14
+ * there is an official way to generate platform custom runtime launchers that
+ * are usually named for the product.
+ * </p>
+ */
 public class ProcessCommands {
 
 	public static String getCommandLineAsString() {
@@ -15,9 +27,25 @@ public class ProcessCommands {
 
 	public static List<String> getCommandLine() {
 		List<String> commands = new ArrayList<>();
-		commands.add( OperatingSystem.getJavaExecutablePath() );
+		commands.add( getLauncherPath() );
 		commands.addAll( ManagementFactory.getRuntimeMXBean().getInputArguments() );
 		return commands;
+	}
+
+	/**
+	 * Get the Java VM launcher path. Prior to Java 14 this returns the official
+	 * java launcher that comes with the runtime. Starting with Java 14, if the
+	 * java.launcher.path (set by the launcher) and the java.launcher.name (set
+	 * by the application) are both set, then this returns the path to the
+	 * custom launcher.
+	 *
+	 * @return The Java VM launcher path
+	 */
+	public static String getLauncherPath() {
+		String launcherPath = System.getProperty( "java.launcher.path" );
+		String launcherName = System.getProperty( "java.launcher.name" );
+		if( launcherPath != null && launcherName != null ) return launcherPath + File.separator + launcherName;
+		return OperatingSystem.getJavaExecutablePath() + OperatingSystem.getExeSuffix();
 	}
 
 	public static List<String> forModule() {
@@ -27,22 +55,24 @@ public class ProcessCommands {
 		return forModule( null, modulePath, moduleMain, moduleMainClass );
 	}
 
-	@Deprecated
-	public static List<String> forModule( String mainModule, String mainClass ) {
-		return forModule( null, mainModule, mainClass );
-	}
+	//	@Deprecated
+	//	public static List<String> forModule( String mainModule, String mainClass ) {
+	//		return forModule( null, mainModule, mainClass );
+	//	}
+	//
+	//	@Deprecated
+	//	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
+	//		return forModule( null, modulePath, mainModule, mainClass );
+	//	}
+	//
+	//	@Deprecated
+	//	public static List<String> forModule( String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
+	//		return forModule( null, modulePath, mainModule, mainClass, parameters, extraCommands );
+	//	}
 
-	@Deprecated
-	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
-		return forModule( null, modulePath, mainModule, mainClass );
-	}
-
-	@Deprecated
-	public static List<String> forModule( String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
-		return forModule( null, modulePath, mainModule, mainClass, parameters, extraCommands );
-	}
-
-	public static List<String> forModule( String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
+	public static List<String> forModule(
+		String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands
+	) {
 
 		List<String> commands = forModule( javaExecutablePath, modulePath, mainModule, mainClass );
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );

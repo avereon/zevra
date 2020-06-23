@@ -2,6 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
@@ -12,6 +13,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ProcessCommandsTest {
+
+	@Test
+	void testGetLauncherPath() {
+		// This assumes both java.launcher.path and java.launcher.name are null
+		assertThat( ProcessCommands.getLauncherPath(), is( OperatingSystem.getJavaExecutablePath() ) );
+
+		System.setProperty( "java.launcher.path", "/this/is/the/launcher/path" );
+		System.setProperty( "java.launcher.name", "Mock" );
+		assertThat( ProcessCommands.getLauncherPath(), is( "/this/is/the/launcher/path" + File.separator + "Mock" + OperatingSystem.getExeSuffix() ) );
+	}
 
 	@Test
 	void testForModuleWithNull() {

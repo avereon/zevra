@@ -44,6 +44,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.LINUX ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Community" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
 	}
 
 	@Test
@@ -59,6 +60,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Apple" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
 
 		// Test the process launch workaround
 		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ), is( "FORK" ) );
@@ -77,6 +79,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
 
 	@Test
@@ -92,6 +95,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
 
 	@Test
@@ -107,6 +111,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
 
 	@Test
@@ -122,6 +127,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
 		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
+		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
 
 	@Test
@@ -160,6 +166,7 @@ class OperatingSystemTest {
 	}
 
 	@Test
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
 	void testElevateProcessMac() throws Exception {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 
@@ -214,6 +221,7 @@ class OperatingSystemTest {
 	}
 
 	@Test
+	@SuppressWarnings( "ResultOfMethodCallIgnored" )
 	void testElevateProcessWindows() throws Exception {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 
