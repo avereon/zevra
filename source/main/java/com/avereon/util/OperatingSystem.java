@@ -28,11 +28,11 @@ public class OperatingSystem {
 		PPC
 	}
 
-	public static String ELEVATED_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
-
-	public static String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
+	public static String PROCESS_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
 
 	public static String NORMAL_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-normal";
+
+	public static String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
 
 	private static Architecture architecture;
 
@@ -130,8 +130,8 @@ public class OperatingSystem {
 	 * @return true if the process has elevated privileges.
 	 */
 	public static boolean isProcessElevated() {
-		String override = System.getProperty( ELEVATED_PRIVILEGE_KEY );
-		if( override == null ) override = System.getenv( ELEVATED_PRIVILEGE_KEY );
+		String override = System.getProperty( PROCESS_PRIVILEGE_KEY );
+		if( override == null ) override = System.getenv( PROCESS_PRIVILEGE_KEY );
 		if( ELEVATED_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.TRUE;
 		if( NORMAL_PRIVILEGE_VALUE.equals( override ) ) elevated = Boolean.FALSE;
 		return elevated == null ? isAdminUser() : elevated;
@@ -204,7 +204,7 @@ public class OperatingSystem {
 		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
 		builder.command( command );
-		builder.environment().put( ELEVATED_PRIVILEGE_KEY, ELEVATED_PRIVILEGE_VALUE );
+		builder.environment().put( PROCESS_PRIVILEGE_KEY, ELEVATED_PRIVILEGE_VALUE );
 		return builder;
 	}
 

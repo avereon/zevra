@@ -28,7 +28,7 @@ class OperatingSystemTest {
 
 	@BeforeEach
 	void setup() {
-		System.clearProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY );
+		System.clearProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY );
 		System.clearProperty( "java.launcher.path" );
 		System.clearProperty( "java.launcher.name" );
 	}
@@ -136,11 +136,11 @@ class OperatingSystemTest {
 	void testIsProcessElevatedMac() {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
 		OperatingSystem.clearProcessElevatedFlag();
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
 
@@ -148,11 +148,11 @@ class OperatingSystemTest {
 	void testIsProcessElevatedUnix() {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
 		OperatingSystem.clearProcessElevatedFlag();
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
 
@@ -162,7 +162,7 @@ class OperatingSystemTest {
 		OperatingSystem.clearProcessElevatedFlag();
 		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
 
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		OperatingSystem.clearProcessElevatedFlag();
 		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
 	}
@@ -246,7 +246,7 @@ class OperatingSystemTest {
 	@Test
 	void testReduceProcessMac() throws Exception {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "textmate" );
 
 		OperatingSystem.reduceProcessBuilder( builder );
@@ -263,7 +263,7 @@ class OperatingSystemTest {
 	@Test
 	void testReduceProcessUnix() throws Exception {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( "vi" );
 
 		OperatingSystem.reduceProcessBuilder( builder );
@@ -280,7 +280,7 @@ class OperatingSystemTest {
 	@Test
 	void testReduceProcessWindows() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
+		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		ProcessBuilder builder = new ProcessBuilder( OperatingSystem.getJavaLauncherPath(), "-jar", "C:\\Program Files\\Escape\\program.jar", "-update", "false" );
 
 		IOException exception = null;
