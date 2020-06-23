@@ -38,10 +38,15 @@ public class ProcessCommands {
 		return forModule( null, modulePath, moduleMain, moduleMainClass );
 	}
 
-	public static List<String> forModule(
+	public static List<String> forModule( Parameters parameters, String... extraCommands ) {
+		List<String> commands = forModule();
+		commands.addAll( getParameterCommands( parameters, extraCommands ) );
+		return commands;
+	}
+
+	static List<String> forModule(
 		String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands
 	) {
-
 		List<String> commands = forModule( javaExecutablePath, modulePath, mainModule, mainClass );
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
