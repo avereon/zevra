@@ -27,25 +27,9 @@ public class ProcessCommands {
 
 	public static List<String> getCommandLine() {
 		List<String> commands = new ArrayList<>();
-		commands.add( getLauncherPath() );
+		commands.add( OperatingSystem.getJavaLauncherPath() );
 		commands.addAll( ManagementFactory.getRuntimeMXBean().getInputArguments() );
 		return commands;
-	}
-
-	/**
-	 * Get the Java VM launcher path. Prior to Java 14 this returns the official
-	 * java launcher that comes with the runtime. Starting with Java 14, if the
-	 * java.launcher.path (set by the launcher) and the java.launcher.name (set
-	 * by the application) are both set, then this returns the path to the
-	 * custom launcher.
-	 *
-	 * @return The Java VM launcher path
-	 */
-	public static String getLauncherPath() {
-		String launcherPath = System.getProperty( "java.launcher.path" );
-		String launcherName = System.getProperty( "java.launcher.name" );
-		if( launcherPath != null && launcherName != null ) return launcherPath + File.separator + launcherName;
-		return OperatingSystem.getJavaExecutablePath() + OperatingSystem.getExeSuffix();
 	}
 
 	public static List<String> forModule() {
@@ -79,7 +63,7 @@ public class ProcessCommands {
 		return commands;
 	}
 
-	public static List<String> forModule( String javaExecutablePath, String modulePath, String mainModule, String mainClass ) {
+	public static List<String> forModule( String javaLauncherPath, String modulePath, String mainModule, String mainClass ) {
 		List<String> commands = new ArrayList<>();
 
 		//if( modulePath == null ) throw new NullPointerException( "Module path cannot be null"  );
@@ -87,7 +71,7 @@ public class ProcessCommands {
 		if( mainClass == null ) throw new NullPointerException( "Module main class cannot be null" );
 
 		// Add the java executable path
-		commands.add( javaExecutablePath == null ? OperatingSystem.getJavaExecutablePath() : javaExecutablePath );
+		commands.add( javaLauncherPath == null ? OperatingSystem.getJavaLauncherPath() : javaLauncherPath );
 
 		// Add the VM parameters to the commands
 		RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();

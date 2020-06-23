@@ -29,6 +29,8 @@ class OperatingSystemTest {
 	@BeforeEach
 	void setup() {
 		System.clearProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY );
+		System.clearProperty( "java.launcher.path" );
+		System.clearProperty( "java.launcher.name" );
 	}
 
 	@Test
@@ -42,7 +44,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "2.6.32_45" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86_64" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.LINUX ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "java" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Community" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
 	}
@@ -58,7 +60,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "10" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "ppc" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "java" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "java" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Apple" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
 
@@ -77,7 +79,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.1" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -93,7 +95,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.2" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -109,7 +111,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.3" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -125,7 +127,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "10.0" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaExecutableName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -279,12 +281,7 @@ class OperatingSystemTest {
 	void testReduceProcessWindows() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		System.setProperty( OperatingSystem.ELEVATED_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		ProcessBuilder builder = new ProcessBuilder( OperatingSystem.getJavaExecutablePath(),
-			"-jar",
-			"C:\\Program Files\\Escape\\program.jar",
-			"-update",
-			"false"
-		);
+		ProcessBuilder builder = new ProcessBuilder( OperatingSystem.getJavaLauncherPath(), "-jar", "C:\\Program Files\\Escape\\program.jar", "-update", "false" );
 
 		IOException exception = null;
 		try {
@@ -301,7 +298,7 @@ class OperatingSystemTest {
 	void testGetJavaExecutablePath() {
 		String java = OperatingSystem.isWindows() ? "javaw" : "java";
 		String javaPath = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + java;
-		assertThat( OperatingSystem.getJavaExecutablePath(), is( javaPath ) );
+		assertThat( OperatingSystem.getJavaLauncherPath(), is( javaPath ) );
 	}
 
 	@Test
@@ -359,6 +356,29 @@ class OperatingSystemTest {
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( UNIX_SHARED_DATA ) ) );
+	}
+
+	@Test
+	void testGetJavaLauncherName() {
+		System.clearProperty( "java.launcher.name" );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( OperatingSystem.isWindows() ? "javaw" : "java" ) );
+
+		System.setProperty( "java.launcher.name", "Mock" );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "Mock" ) );
+	}
+
+	@Test
+	void testGetJavaLauncherPath() {
+		System.clearProperty( "java.launcher.path" );
+		System.clearProperty( "java.launcher.name" );
+		assertThat(
+			OperatingSystem.getJavaLauncherPath(),
+			is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() )
+		);
+
+		System.setProperty( "java.launcher.path", "/this/is/the/launcher/path" );
+		System.setProperty( "java.launcher.name", "Mock" );
+		assertThat( OperatingSystem.getJavaLauncherPath(), is( "/this/is/the/launcher/path" + File.separator + "Mock" ) );
 	}
 
 }

@@ -234,17 +234,31 @@ public class OperatingSystem {
 		return builder;
 	}
 
-	public static String getJavaExecutableName() {
+	public static String getJavaLauncherName() {
+		// Custom launcher
+		String launcherName = System.getProperty( "java.launcher.name" );
+		if( launcherName != null ) return launcherName;
+
+		// Official launcher
 		return isWindows() ? "javaw" : "java";
 	}
 
-	public static String getJavaExecutablePath() {
-		StringBuilder builder = new StringBuilder( System.getProperty( "java.home" ) );
-		builder.append( File.separator );
-		builder.append( "bin" );
-		builder.append( File.separator );
-		builder.append( getJavaExecutableName() );
-		return builder.toString();
+	/**
+	 * Get the Java VM launcher path. Prior to Java 14 this returns the official
+	 * java launcher that comes with the runtime. Starting with Java 14, if the
+	 * java.launcher.path (set by the launcher) and the java.launcher.name (set
+	 * by the application) are both set, then this returns the path to the
+	 * custom launcher.
+	 *
+	 * @return The Java VM launcher path
+	 */
+	public static String getJavaLauncherPath() {
+		// Custom launcher
+		String launcherPath = System.getProperty( "java.launcher.path" );
+		if( launcherPath != null ) return launcherPath + File.separator + getJavaLauncherName();
+
+		// Official launcher
+		return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + getJavaLauncherName();
 	}
 
 	/**
