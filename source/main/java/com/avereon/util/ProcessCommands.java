@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
@@ -38,21 +37,6 @@ public class ProcessCommands {
 		String moduleMainClass = System.getProperty( "jdk.module.main.class" );
 		return forModule( null, modulePath, moduleMain, moduleMainClass );
 	}
-
-	//	@Deprecated
-	//	public static List<String> forModule( String mainModule, String mainClass ) {
-	//		return forModule( null, mainModule, mainClass );
-	//	}
-	//
-	//	@Deprecated
-	//	public static List<String> forModule( String modulePath, String mainModule, String mainClass ) {
-	//		return forModule( null, modulePath, mainModule, mainClass );
-	//	}
-	//
-	//	@Deprecated
-	//	public static List<String> forModule( String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands ) {
-	//		return forModule( null, modulePath, mainModule, mainClass, parameters, extraCommands );
-	//	}
 
 	public static List<String> forModule(
 		String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands
