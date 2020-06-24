@@ -17,7 +17,7 @@ public class LogTest {
 	private final String timestampPattern = datePattern + " " + timePattern;
 
 	@Test
-	public void testLog() throws IOException {
+	void testLog() throws IOException {
 		PrintStream original = System.err;
 
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_LEVEL, LogFlag.ALL ) );
@@ -45,6 +45,16 @@ public class LogTest {
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[I\\] .*INFO $" ) );
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[D\\] .*DEBUG $" ) );
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[T\\] .*TRACE $" ) );
+	}
+
+	@Test
+	void testConfigure() {
+		String name = "test.%u.log";
+		String home = System.getProperty( "user.home" );
+		String expected = new File( name ).getAbsoluteFile().toString().replace( home, "%h" );
+
+		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_FILE, name ) );
+		assertThat( Log.getLogFile(), is( expected ) );
 	}
 
 }

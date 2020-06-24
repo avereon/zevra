@@ -91,7 +91,7 @@ public class Log {
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
 		if( file != null ) {
-			File folder = new File( file ).getParentFile();
+			File folder = new File( file ).getAbsoluteFile().getParentFile();
 			if( !folder.exists() && !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
 
 			file = getLogFilePattern( new File( file ).getAbsolutePath() );
