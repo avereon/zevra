@@ -162,6 +162,7 @@ public class Log {
 	}
 
 	private static String getLogFilePattern( String path ) {
+		if( path.startsWith( "%h/" ) ) path = path.substring( 3 );
 		Path userHome = Paths.get( System.getProperty( "user.home" ) );
 		return "%h/" + userHome.relativize( Paths.get( path ) ).toString().replace( '\\', '/' );
 	}
