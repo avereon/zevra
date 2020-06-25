@@ -29,6 +29,12 @@ public class PathUtil {
 		return SEPARATOR.equals( path );
 	}
 
+	/**
+	 * Get the name (last element) in the path.
+	 *
+	 * @param path The path
+	 * @return The name
+	 */
 	public static String getName( String path ) {
 		if( path == null ) return null;
 		String[] names = parseNames( path );
@@ -36,11 +42,26 @@ public class PathUtil {
 	}
 
 	/**
+	 * <p>
+	 * Resolve a new path string from a root with an additional path.
+	 * </p>
+	 * <p>
+	 * Examples:
+	 * <ul>
+	 *   <li>resolve( "", "" ) -> ""</li>
+	 *   <li>resolve( "/root", "path" ) -> "/root/path"</li>
+	 *   <li>resolve( "/root/", "path" ) -> "/root/path"</li>
+	 *   <li>resolve( "/root", "/path" ) -> "/path"</li>
+	 *   <li>resolve( "root", "path" ) -> "root/path"</li>
+	 * </ul>
+	 * </p>
+	 * <p>
 	 * NOTE: This method does not normalize the path.
+	 * </p>
 	 *
-	 * @param root
-	 * @param path
-	 * @return
+	 * @param root The root path to start with
+	 * @param path The path to resolve against the root
+	 * @return The new resolved path
 	 */
 	public static String resolve( String root, String path ) {
 		if( root == null || path == null ) return null;

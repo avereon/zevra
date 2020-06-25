@@ -63,6 +63,7 @@ class PathUtilTest {
 		assertThat( PathUtil.getName( "/" ), is( "/" ) );
 		assertThat( PathUtil.getName( "/test" ), is( "test" ) );
 		assertThat( PathUtil.getName( "/test/path" ), is( "path" ) );
+		assertThat( PathUtil.getName( "/test/path/" ), is( "path" ) );
 	}
 
 	@Test
