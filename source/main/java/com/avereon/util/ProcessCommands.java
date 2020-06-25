@@ -90,7 +90,7 @@ public class ProcessCommands {
 	private static List<String> getParameterCommands( Parameters parameters, String... extraCommands ) {
 		Parameters extraParameters = Parameters.parse( extraCommands ).add( parameters );
 
-		// Collect program flags.
+		// Collect program flags
 		Map<String, List<String>> flags = new HashMap<>();
 		for( String name : extraParameters.getFlags() ) {
 			flags.put( name, extraParameters.getValues( name ) );
@@ -98,14 +98,14 @@ public class ProcessCommands {
 
 		List<String> commands = new ArrayList<>();
 
-		// Add the collected flags.
+		// Add the collected flags
 		for( String flag : flags.keySet() ) {
 			List<String> values = flags.get( flag );
 			commands.add( flag );
 			if( values.size() > 1 || !"true".equals( values.get( 0 ) ) ) commands.addAll( values );
 		}
 
-		// Add the collected URIs.
+		// Add the collected URIs
 		List<String> uris = extraParameters.getUris();
 		if( uris.size() > 0 ) commands.addAll( uris );
 

@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -159,6 +161,14 @@ public class Log {
 
 	public static String getLogFile() {
 		return LogManager.getLogManager().getProperty( "java.util.logging.FileHandler.pattern" );
+	}
+
+	public static void flush() {
+		LogManager manager = LogManager.getLogManager();
+		manager.getLoggerNames().asIterator().forEachRemaining( name -> {
+			Handler[] handlers = manager.getLogger( name ).getHandlers();
+			Arrays.stream( handlers ).forEach( Handler::flush );
+		} );
 	}
 
 	private static String getLogFilePattern( String path ) {
