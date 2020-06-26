@@ -116,7 +116,7 @@ public class Log {
 
 		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.INFO ).getName() ).append( "\n" );
+		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.WARN ).getName() ).append( "\n" );
 
 		// NOTE Log levels can be customized with Log.setPackageLogLevel()
 
