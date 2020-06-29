@@ -65,17 +65,17 @@ public class Log {
 
 		StringBuilder builder = new StringBuilder();
 		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO ) ).getName();
-		String file = parameters.get( LogFlag.LOG_FILE, defaultFile );
+		String filePattern = parameters.get( LogFlag.LOG_FILE, defaultFile );
 
-		boolean nameOnly = file != null && !file.contains( File.separator );
-		if( nameOnly && logFolder != null ) file = new File( logFolder.toFile(), file ).toString();
+		boolean nameOnly = filePattern != null && !filePattern.contains( File.separator );
+		if( nameOnly && logFolder != null ) filePattern = new File( logFolder.toFile(), filePattern ).toString();
 
 		// Configure the simple formatter
 		// https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Formatter.html#syntax
 		builder.append( ProgramFormatter.class.getName() ).append( ".format=%1$tF %1$tT.%1$tL %4$s %2$s: %5$s %6$s%n\n" );
 
 		// Add the log console handler
-		if( file == null ) {
+		if( filePattern == null ) {
 			builder.append( "handlers=java.util.logging.ConsoleHandler\n" );
 		} else {
 			builder.append( "handlers=java.util.logging.ConsoleHandler,java.util.logging.FileHandler\n" );
@@ -92,13 +92,15 @@ public class Log {
 		builder.append( "java.util.logging.ConsoleHandler.level=" ).append( level ).append( "\n" );
 		builder.append( "java.util.logging.ConsoleHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 
-		if( file != null ) {
-			File folder = new File( file ).getAbsoluteFile().getParentFile();
+		if( filePattern != null ) {
+			filePattern = reduceFilePattern( new File( filePattern ).getAbsolutePath() );
+
+			File file = new File( expandFilePattern( filePattern ) );
+			File folder = file.getAbsoluteFile().getParentFile();
 			if( !folder.exists() && !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
 
-			file = getLogFilePattern( new File( file ).getAbsolutePath() );
 			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
-			builder.append( "java.util.logging.FileHandler.pattern=" ).append( file ).append( "\n" );
+			builder.append( "java.util.logging.FileHandler.pattern=" ).append( filePattern ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
 			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
@@ -171,10 +173,14 @@ public class Log {
 		} );
 	}
 
-	private static String getLogFilePattern( String path ) {
+	static String reduceFilePattern( String path ) {
 		if( path.startsWith( "%h/" ) ) path = path.substring( 3 );
 		Path userHome = Paths.get( System.getProperty( "user.home" ) );
 		return "%h/" + userHome.relativize( Paths.get( path ) ).toString().replace( '\\', '/' );
+	}
+
+	static String expandFilePattern( String path ) {
+		return path.replace( "%h", System.getProperty( "user.home" ) );
 	}
 
 	public static Level convertToJavaLogLevel( String level ) {

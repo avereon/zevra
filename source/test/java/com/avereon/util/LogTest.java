@@ -57,4 +57,22 @@ public class LogTest {
 		assertThat( Log.getLogFile(), is( expected ) );
 	}
 
+	@Test
+	void testReduceFilePattern() {
+		String home = System.getProperty( "user.home" );
+		String name = "test.%u.log";
+		String path = home + File.separator + name;
+
+		assertThat( Log.reduceFilePattern( path ), is( "%h" + File.separator + name ) );
+	}
+
+	@Test
+	void testExpandFilePattern() {
+		String home = System.getProperty( "user.home" );
+		String name = "test.%u.log";
+		String path = home + File.separator + name;
+
+		assertThat( Log.expandFilePattern( "%h" + File.separator + name ), is( path ) );
+	}
+
 }
