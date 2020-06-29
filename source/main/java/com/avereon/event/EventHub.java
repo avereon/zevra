@@ -70,8 +70,8 @@ public class EventHub {
 		return handlers.keySet().stream().collect( Collectors.toMap( k -> k, k -> handlers.get( k ).values() ) );
 	}
 
-	//	protected EventHub getParent() {
-	//		return parent;
-	//	}
+	protected EventHub getParent() {
+		return parent;
+	}
 
 }
