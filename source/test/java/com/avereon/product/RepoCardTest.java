@@ -74,7 +74,7 @@ class RepoCardTest {
 	@Test
 	void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Example Repo\", \"url\" : \"http://example.com/repo\"}";
-		RepoCard card = new RepoCard().load( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
+		RepoCard card = new RepoCard().fromJson( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
 		assertThat( card.getName(), is( "Example Repo" ) );
 	}
 

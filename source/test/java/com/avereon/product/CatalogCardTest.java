@@ -21,7 +21,7 @@ class CatalogCardTest {
 	void testLoad() throws Exception {
 		String data = "{\"timestamp\":\"1557457963562\",\"products\":[\"product1\",\"product2\"]}";
 		RepoCard repo = new RepoCard();
-		CatalogCard card = CatalogCard.load( repo, new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
+		CatalogCard card = CatalogCard.fromJson( repo, new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
 
 		assertThat( card.getTimestamp(), is( 1557457963562L ) );
 		assertThat( card.getProducts(), org.hamcrest.CoreMatchers.hasItems( "product1", "product2" ) );

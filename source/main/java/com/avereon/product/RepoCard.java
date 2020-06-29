@@ -34,11 +34,11 @@ public class RepoCard extends BaseCard {
 		this.icons = Collections.unmodifiableList( List.of() );
 	}
 
-	public RepoCard load( InputStream input ) throws IOException {
-		return load( input, null );
+	public RepoCard fromJson( InputStream input ) throws IOException {
+		return fromJson( input, null );
 	}
 
-	public RepoCard load( InputStream input, URI source ) throws IOException {
+	public RepoCard fromJson( InputStream input, URI source ) throws IOException {
 		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
 		if( source != null ) this.url = UriUtil.removeQueryAndFragment( source ).toString();
 		return copyFrom( card );

@@ -48,13 +48,13 @@ public class CatalogCard extends BaseCard {
 	 * The set of products in the repository. The set contains the product
 	 * artifact ids only.
 	 *
-	 * @param products
+	 * @param products The set of product ids
 	 */
 	public void setProducts( Set<String> products ) {
 		this.products = products == null ? Set.of() : new HashSet<>( products );
 	}
 
-	public static CatalogCard load( RepoCard repo, InputStream input ) throws IOException {
+	public static CatalogCard fromJson( RepoCard repo, InputStream input ) throws IOException {
 		CatalogCard catalog = new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
 		catalog.setRepo( repo );
 		return catalog;

@@ -14,6 +14,7 @@ public abstract class BaseCard {
 		return internalId;
 	}
 
+	@SuppressWarnings( "UnusedReturnValue" )
 	public BaseCard setInternalId( String internalId ) {
 		this.internalId = internalId;
 		return this;

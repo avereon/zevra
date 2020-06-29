@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class ProductCardTest {
 
 	@Test
-	void testInit() throws Exception {
-		ProductCard card = new ProductCard().init( getClass() );
+	void testCard() {
+		ProductCard card = new ProductCard().card( getClass() );
 
 		assertThat( card.getGroup(), is( "com.avereon" ) );
 		assertThat( card.getArtifact(), is( "zevra" ) );
@@ -44,8 +45,8 @@ class ProductCardTest {
 	}
 
 	@Test
-	void testLoad() throws Exception {
-		ProductCard card = new ProductCard().load( getClass() );
+	void testJsonCard() {
+		ProductCard card = new ProductCard().jsonCard( getClass() );
 		assertThat( card.getProductKey(), is( "com.avereon.zevra" ) );
 
 		assertThat( card.getGroup(), is( "com.avereon" ) );
@@ -221,7 +222,7 @@ class ProductCardTest {
 	@Test
 	void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Zevra\", \"extra\" : \"unknown\"}";
-		ProductCard card = new ProductCard().load( new ByteArrayInputStream( state.getBytes( "UTF-8" ) ), null );
+		ProductCard card = new ProductCard().fromJson( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
 		assertThat( card.getName(), is( "Zevra" ) );
 	}
 

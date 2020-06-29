@@ -81,25 +81,31 @@ public class ProductCard extends BaseCard {
 
 	public ProductCard() {}
 
-	public ProductCard init( Product product ) throws IOException {
-		return init( product.getClass() );
+	public ProductCard card( Product product ) {
+		return card( product.getClass() );
 	}
 
-	public ProductCard init( Class<?> source ) throws IOException {
+	public ProductCard card( Class<?> source ) {
+		try {
+			return fromCard( source );
+		} catch( IOException exception ) {
+			throw new RuntimeException( "Error loading product card", exception );
+		}
+	}
+
+	//	public ProductCard fromCard( Product product ) throws IOException {
+	//		return fromCard( product.getClass() );
+	//	}
+
+	private ProductCard fromCard( Class<?> source ) throws IOException {
 		/*
 		 * NOTE Using the class loader instead of the class to find the resource
 		 * does not work as expected when loading products from the classpath.
 		 */
-		return init( source.getResourceAsStream( "/" + INFO ) );
+		return fromCard( source.getResourceAsStream( "/" + INFO ) );
 	}
 
-	//	public ProductCard init( ClassLoader loader ) throws IOException {
-	//		try( InputStream input = loader.getResourceAsStream( INFO ) ) {
-	//			return init( input );
-	//		}
-	//	}
-
-	public ProductCard init( InputStream input ) throws IOException {
+	private ProductCard fromCard( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
 
 		Properties values = new Properties();
@@ -119,7 +125,7 @@ public class ProductCard extends BaseCard {
 		try {
 			this.inception = Integer.parseInt( values.getProperty( "inception" ) );
 		} catch( NumberFormatException exception ) {
-			throw new IllegalArgumentException( "The product card has not been processed by Maven");
+			throw new IllegalArgumentException( "The product card has not been processed by Maven" );
 		}
 
 		this.summary = values.getProperty( "summary" );
@@ -133,29 +139,35 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	public ProductCard load( Product product ) throws IOException {
-		return load( product.getClass() );
+	public ProductCard jsonCard( Product product ) {
+		return jsonCard( product.getClass() );
 	}
 
-	public ProductCard load( Class<?> clazz ) throws IOException {
+	public ProductCard jsonCard( Class<?> source ) {
+		try {
+			return new ProductCard().fromJson( source );
+		} catch( IOException exception ) {
+			throw new RuntimeException( "Error loading product card: " + getClass().getName(), exception );
+		}
+	}
+
+	private ProductCard fromJson( Product product ) throws IOException {
+		return fromJson( product.getClass() );
+	}
+
+	private ProductCard fromJson( Class<?> clazz ) throws IOException {
 		/*
 		 * NOTE Using the class loader instead of the class to find the resource
 		 * does not work as expected when loading products from the classpath.
 		 */
-		return load( clazz.getResourceAsStream( "/" + CARD ) );
+		return fromJson( clazz.getResourceAsStream( "/" + CARD ) );
 	}
 
-	//	public ProductCard load( ClassLoader loader ) throws IOException {
-	//		try( InputStream input = loader.getResourceAsStream( CARD ) ) {
-	//			return load( input, null );
-	//		}
-	//	}
-
-	public ProductCard load( InputStream input ) throws IOException {
-		return load( input, null );
+	private ProductCard fromJson( InputStream input ) throws IOException {
+		return fromJson( input, null );
 	}
 
-	public ProductCard load( InputStream input, URI source ) throws IOException {
+	public ProductCard fromJson( InputStream input, URI source ) throws IOException {
 		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
 		ProductCard card = new ObjectMapper().readerFor( new TypeReference<ProductCard>() {} ).readValue( input );
 		if( source != null ) this.productUri = UriUtil.removeQueryAndFragment( source ).toString();
