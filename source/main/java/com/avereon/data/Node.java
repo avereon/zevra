@@ -577,7 +577,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return True if the value key is a modifying value key, false otherwise
 	 */
 	protected boolean isModifyingKey( String key ) {
-		return modifyingKeySet != null && modifyingKeySet.contains( key );
+		return Optional.ofNullable( modifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
 	}
 
 	/**
