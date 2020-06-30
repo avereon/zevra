@@ -43,6 +43,12 @@ public class ProcessCommands {
 		return new ArrayList<>( List.of( OperatingSystem.getJavaLauncherPath() ) );
 	}
 
+	public static List<String> forLauncher( Parameters parameters, String... extraCommands ) {
+		List<String> commands = forLauncher();
+		commands.addAll( getParameterCommands( parameters, extraCommands ) );
+		return commands;
+	}
+
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String mainModule = System.getProperty( "jdk.module.main" );
