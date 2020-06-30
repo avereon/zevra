@@ -31,11 +31,30 @@ public class ProcessCommands {
 		return commands;
 	}
 
+	public static List<String> forLauncher() {
+		String launcher = OperatingSystem.getJavaLauncherName();
+		if( launcher.startsWith( "java" ) ) return forModule();
+		return new ArrayList<>( List.of( OperatingSystem.getJavaLauncherPath() ) );
+	}
+
+	public static List<String> forLauncher( Class<?> mainClass ) {
+		String launcher = OperatingSystem.getJavaLauncherName();
+		if( launcher.startsWith( "java" ) ) return forModule( mainClass );
+		return new ArrayList<>( List.of( OperatingSystem.getJavaLauncherPath() ) );
+	}
+
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
-		String moduleMain = System.getProperty( "jdk.module.main" );
-		String moduleMainClass = System.getProperty( "jdk.module.main.class" );
-		return forModule( null, modulePath, moduleMain, moduleMainClass );
+		String mainModule = System.getProperty( "jdk.module.main" );
+		String mainClass = System.getProperty( "jdk.module.main.class" );
+		return forModule( null, modulePath, mainModule, mainClass );
+	}
+
+	public static List<String> forModule( Class<?> source ) {
+		String modulePath = System.getProperty( "jdk.module.path" );
+		String mainModule = source.getModule().getName();
+		String mainClass = source.getName();
+		return forModule( null, modulePath, mainModule, mainClass );
 	}
 
 	public static List<String> forModule( Parameters parameters, String... extraCommands ) {
