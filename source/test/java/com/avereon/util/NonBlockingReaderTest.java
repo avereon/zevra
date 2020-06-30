@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 class NonBlockingReaderTest {
 
-	private static long delay = 50;
+	private static final long delay = 50;
 
 	@Test
 	void testReadLine() throws Exception {
@@ -40,7 +40,7 @@ class NonBlockingReaderTest {
 			} finally {
 				if( reader != null ) reader.close();
 			}
-		} catch( java.io.IOException exception ) {
+		} catch( IOException exception ) {
 			exception.printStackTrace();
 		}
 	}
