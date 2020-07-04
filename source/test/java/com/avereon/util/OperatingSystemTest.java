@@ -79,7 +79,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.1" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -95,7 +95,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.2" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -111,7 +111,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "6.3" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}
@@ -127,7 +127,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getVersion(), is( "10.0" ) );
 		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
 		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw" ) );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
 		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
 		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
 	}

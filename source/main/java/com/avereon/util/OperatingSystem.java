@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OperatingSystem {
 
@@ -235,12 +236,12 @@ public class OperatingSystem {
 	}
 
 	public static String getJavaLauncherName() {
-		// Custom launcher
-		String launcherName = System.getProperty( "java.launcher.name" );
-		if( launcherName != null ) return launcherName;
+		String launcherName;
 
-		// Official launcher
-		return isWindows() ? "javaw" : "java";
+		String customLauncherName = System.getProperty( "java.launcher.name" );
+		launcherName = Objects.requireNonNullElseGet( customLauncherName, () -> isWindows() ? "javaw" : "java" );
+
+		return launcherName + getExeSuffix();
 	}
 
 	/**
