@@ -182,12 +182,12 @@ public class Parameters {
 		flags.addAll( parameters.flags );
 
 		for( String flag : parameters.getFlags() ) {
-			List<String> oldValues = getValues( flag );
-			List<String> newValues = parameters.getValues( flag );
+			List<String> oldValues = getValuesFromMap( flag );
+			List<String> newValues = parameters.getValuesFromMap( flag );
 			if( oldValues == null ) {
 				values.put( removePrefix( flag ), newValues );
-			} else {
-				if( !isTrue( flag ) ) oldValues.addAll( newValues );
+			} else if( !isTrue( flag ) ) {
+				oldValues.addAll( newValues );
 			}
 		}
 
@@ -259,6 +259,16 @@ public class Parameters {
 	}
 
 	public List<String> getValues( String flag ) {
+		List<String> list = getValuesFromMap( flag );
+		//		if( list == null ) {
+		//			String value = get( flag );
+		//			if( value != null ) list = new ArrayList<>( List.of( value ) );
+		//		}
+
+		return list == null ? List.of() : list;
+	}
+
+	private List<String> getValuesFromMap( String flag ) {
 		return values.get( removePrefix( flag ) );
 	}
 
