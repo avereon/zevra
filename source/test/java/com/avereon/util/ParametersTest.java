@@ -32,6 +32,15 @@ class ParametersTest {
 	}
 
 	@Test
+	void testEmptyValues() {
+		Parameters parameters = Parameters.parse();
+		assertThat( parameters.getUris().size(), is( 0 ) );
+		assertThat( parameters.getValues( "help" ).size(), is( 0 ) );
+		assertThat( parameters.getOriginalCommands().size(), is( 0 ) );
+		assertThat( parameters.getResolvedCommands().size(), is( 0 ) );
+	}
+
+	@Test
 	void testParse() {
 		Parameters parameters = Parameters.parse( "-help" );
 		assertThat( parameters.get( "help" ), is( "true" ) );
