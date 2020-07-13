@@ -306,7 +306,7 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public void setDefaultValues( Map<?, ?> defaultValues ) {
-		this.defaultValues = Collections.unmodifiableMap( defaultValues );
+		this.defaultValues = defaultValues == null ? null : Collections.unmodifiableMap( defaultValues );
 	}
 
 	@Override
