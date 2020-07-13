@@ -6,6 +6,7 @@ import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.util.TypeReference;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -250,14 +251,16 @@ public interface Settings {
 	 *
 	 * @return The default values map
 	 */
-	Map<String, Object> getDefaultValues();
+	Map<?, ?> getDefaultValues();
 
 	/**
 	 * Set the default values for this settings node.
 	 *
 	 * @param defaults The default values map
 	 */
-	void setDefaultValues( Map<String, Object> defaults );
+	void setDefaultValues( Map<?, ?> defaults );
+
+	void loadDefaultValues( Object source, String path) throws IOException;
 
 	<T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler );
 

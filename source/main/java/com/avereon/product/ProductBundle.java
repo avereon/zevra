@@ -60,7 +60,7 @@ public class ProductBundle {
 		// NOTE Be sure to open the bundles in the module definition
 		// Example: opens com.avereon.xenon.bundles;
 		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + bundleKey, Locale.getDefault(), module );
-		return bundle.containsKey( valueKey ) ? MessageFormat.format( bundle.getString( valueKey ), values ) : other;
+		return (valueKey != null && bundle.containsKey( valueKey ) ) ? MessageFormat.format( bundle.getString( valueKey ), values ) : other;
 	}
 
 }

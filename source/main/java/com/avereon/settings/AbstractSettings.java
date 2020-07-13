@@ -6,12 +6,15 @@ import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
+import com.avereon.util.TextUtil;
 import com.avereon.util.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +28,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private static final Map<Class<?>, InboundConverter> inboundConverters;
 
-	private Map<String, Object> defaultValues;
+	private Map<?, ?> defaultValues;
 
 	private boolean deleted;
 
@@ -122,7 +125,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	private String getDefault( String key ) {
-		Map<String, Object> defaultValues = getDefaultValues();
+		Map<?, ?> defaultValues = getDefaultValues();
 		if( defaultValues == null ) return null;
 
 		Object objectValue = defaultValues.get( key );
@@ -297,13 +300,21 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public Map<String, Object> getDefaultValues() {
+	public Map<?, ?> getDefaultValues() {
 		return defaultValues;
 	}
 
 	@Override
-	public void setDefaultValues( Map<String, Object> defaultValues ) {
-		this.defaultValues = defaultValues;
+	public void setDefaultValues( Map<?, ?> defaultValues ) {
+		this.defaultValues = Collections.unmodifiableMap( defaultValues );
+	}
+
+	@Override
+	public void loadDefaultValues( Object source, String path) throws IOException {
+		Properties properties = new Properties();
+		InputStream defaultSettingsInput = source.getClass().getResourceAsStream( path );
+		if( defaultSettingsInput != null ) properties.load( new InputStreamReader( defaultSettingsInput, TextUtil.CHARSET ) );
+		setDefaultValues( properties );
 	}
 
 	@Override

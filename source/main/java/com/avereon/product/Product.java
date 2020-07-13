@@ -1,5 +1,7 @@
 package com.avereon.product;
 
+import com.avereon.settings.Settings;
+
 import java.nio.file.Path;
 
 public interface Product {
@@ -9,6 +11,13 @@ public interface Product {
 	ClassLoader getClassLoader();
 
 	ProductBundle rb();
+
+	/**
+	 * Get the product settings.
+	 *
+	 * @return The product settings
+	 */
+	Settings getSettings();
 
 	/**
 	 * Get the shared product data folder. This is the location where the product
