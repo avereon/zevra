@@ -1,8 +1,8 @@
 package com.avereon.data;
 
 import com.avereon.event.Event;
-import com.avereon.event.EventHub;
 import com.avereon.event.EventHandler;
+import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
 import com.avereon.util.Log;
@@ -10,7 +10,9 @@ import com.avereon.util.Log;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A generic data node supporting getting and setting values, a modified (or
@@ -600,6 +602,15 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	/**
+	 * Get all the values.
+	 *
+	 * @return A collection of all the values
+	 */
+	protected Collection<?> getValues() {
+		return values.values();
+	}
+
+	/**
 	 * Get the values of a specific type
 	 *
 	 * @param clazz The type of value to find
@@ -608,7 +619,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	@SuppressWarnings( "unchecked" )
 	protected <T> Collection<T> getValues( Class<T> clazz ) {
-		return (Collection<T>)getValueKeys().stream().map( this::getValue ).filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
+		return (Collection<T>)values.values().stream().filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
 	}
 
 	/**
@@ -620,6 +631,24 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	protected <T> T getValue( String key ) {
 		return getValue( key, null );
+	}
+
+	/**
+	 * If the specified key is not already associated with a value (or is mapped
+	 * to {@code null}), attempts to compute its value using the given mapping
+	 * function and enters it into this map unless {@code null}.
+	 *
+	 * @param key The value key
+	 * @param function The function to compute a value
+	 * @param <T> The value type
+	 * @return The value
+	 */
+	protected <T> T computeIfAbsent( String key, Function<String, ? extends T> function ) {
+		if( getValue( key ) == null ) {
+			T value = function.apply( key );
+			setValue( key, value );
+		}
+		return getValue( key );
 	}
 
 	/**
@@ -671,6 +700,15 @@ public class Node implements TxnEventTarget, Cloneable {
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error clearing values", exception );
 		}
+	}
+
+	@SuppressWarnings( "unchecked" )
+	protected <T> Stream<T> stream() {
+		return (Stream<T>)values.values().stream();
+	}
+
+	protected boolean isEmpty() {
+		return values.isEmpty();
 	}
 
 	boolean isModifiedByValue() {
