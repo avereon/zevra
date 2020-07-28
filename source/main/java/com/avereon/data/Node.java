@@ -607,7 +607,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return A collection of all the values
 	 */
 	protected Collection<?> getValues() {
-		return values.values();
+		return values == null ? Set.of() : values.values();
 	}
 
 	/**
@@ -619,7 +619,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	@SuppressWarnings( "unchecked" )
 	protected <T> Collection<T> getValues( Class<T> clazz ) {
-		return (Collection<T>)values.values().stream().filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
+		return (Collection<T>)getValues().stream().filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
 	}
 
 	/**
@@ -644,11 +644,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return The value
 	 */
 	protected <T> T computeIfAbsent( String key, Function<String, ? extends T> function ) {
-		if( getValue( key ) == null ) {
-			T value = function.apply( key );
-			setValue( key, value );
-		}
-		return getValue( key );
+		T value = getValue( key );
+		if( value != null ) return value;
+		value = function.apply( key );
+		setValue( key, value );
+		return value;
 	}
 
 	/**
@@ -704,11 +704,11 @@ public class Node implements TxnEventTarget, Cloneable {
 
 	@SuppressWarnings( "unchecked" )
 	protected <T> Stream<T> stream() {
-		return (Stream<T>)values.values().stream();
+		return (Stream<T>)(values == null ? Set.of() : values.values()).stream();
 	}
 
 	protected boolean isEmpty() {
-		return values.isEmpty();
+		return values == null || values.isEmpty();
 	}
 
 	boolean isModifiedByValue() {

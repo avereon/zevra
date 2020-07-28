@@ -137,7 +137,7 @@ class NodeTest {
 	}
 
 	@Test
-	void testValues() {
+	void testGetAndSetValue() {
 		String key = "key";
 		Object value = "value";
 		assertThat( data.getValue( key ), is( nullValue() ) );
@@ -295,8 +295,7 @@ class NodeTest {
 	}
 
 	@Test
-	void testGetAndSetValue() {
-
+	void testGetAndSetValueEvents() {
 		List<NodeEvent> events = new ArrayList<>();
 		data.register( "x", events::add );
 
@@ -569,6 +568,48 @@ class NodeTest {
 		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "name", "mock", null );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
+	}
+
+	@Test
+	void testComputeIfAbsent() {
+		int index = 0;
+		assertThat( data, hasStates( false, 0, 0 ) );
+		assertThat( data.getEventCount(), is( index ) );
+
+		assertNull( data.getValue( "name" ) );
+		assertThat( data.computeIfAbsent( "name", k -> "mock" ), is( "mock" ) );
+		assertThat( data.getValue( "name" ), is( "mock" ) );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "name", null, "mock" );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( index ) );
+
+		data.setValue( "name", null );
+		assertThat( data.getValue( "name" ), is( nullValue() ) );
+		assertThat( data, hasStates( false, 0, 0 ) );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "name", "mock", null );
+		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( index ) );
+	}
+
+	@Test
+	void testValues() {
+		assertThat( data.getValues(), is( Set.of() ) );
+		data.setValue( "0", 0 );
+		data.setValue( "a", "A" );
+		data.setValue( "b", "B" );
+		assertThat( data.getValues(), containsInAnyOrder( 0, "A", "B" ) );
+		assertTrue( data.isModified() );
+	}
+
+	@Test
+	void testValuesOfType() {
+		assertThat( data.getValues( String.class ), is( Set.of() ) );
+		data.setValue( "0", 0 );
+		data.setValue( "a", "A" );
+		data.setValue( "b", "B" );
+		assertThat( data.getValues( Integer.class ), containsInAnyOrder( 0 ) );
+		assertThat( data.getValues( String.class ), containsInAnyOrder( "A", "B" ) );
+		assertTrue( data.isModified() );
 	}
 
 	@Test
