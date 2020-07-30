@@ -2,7 +2,7 @@ package com.avereon.data;
 
 class MockNode extends Node {
 
-	private NodeWatcher watcher;
+	private final NodeWatcher watcher;
 
 	MockNode() {
 		this( null );

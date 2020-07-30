@@ -10,6 +10,7 @@ import com.avereon.util.Log;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -138,6 +139,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	private final Map<String, Map<EventHandler<NodeEvent>, EventHandler<NodeEvent>>> valueChangeHandlers;
 
 	/**
+	 * The node id.
+	 */
+	private String id;
+
+	/**
 	 * The parent of the node.
 	 */
 	private Node parent;
@@ -161,6 +167,8 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * The set of value keys that can modify the node.
 	 */
 	private Set<String> modifyingKeySet;
+
+	private boolean allKeysModify;
 
 	/**
 	 * The set of value keys that are read only.
@@ -189,6 +197,17 @@ public class Node implements TxnEventTarget, Cloneable {
 	private Set<Node> modifiedChildren;
 
 	/**
+	 * Create a new, generic, empty data node. It is generally expected that the
+	 * Node class will be inherited, instead of used directly, but there is no
+	 * restriction creating "generic" nodes.
+	 */
+	public Node() {
+		this.hub = new EventHub();
+		this.valueChangeHandlers = new ConcurrentHashMap<>();
+		this.id = NodeSet.PREFIX + UUID.randomUUID().toString();
+	}
+
+	/**
 	 * Is the node modified. The node is modified if any data value has been
 	 * modified or any child node has been modified since the last time the
 	 * modified flag was cleared.
@@ -197,16 +216,6 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	public boolean isModified() {
 		return modified;
-	}
-
-	/**
-	 * Create a new, generic, empty data node. It is generally expected that the
-	 * Node class will be inherited, instead of used directly, but there is no
-	 * restriction creating "generic" nodes.
-	 */
-	public Node() {
-		hub = new EventHub();
-		valueChangeHandlers = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -227,6 +236,10 @@ public class Node implements TxnEventTarget, Cloneable {
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting flag: modified", exception );
 		}
+	}
+
+	void setAllKeysModify() {
+		this.allKeysModify = true;
 	}
 
 	/**
@@ -500,6 +513,10 @@ public class Node implements TxnEventTarget, Cloneable {
 		return new NodeComparator<>( naturalKeyList );
 	}
 
+	protected List<String> getPrimaryKey() {
+		return Collections.unmodifiableList( primaryKeyList );
+	}
+
 	/**
 	 * Define the primary key for this type. This method is usually called from
 	 * the class constructor.
@@ -507,11 +524,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param keys The value keys to use as the primary key
 	 */
 	protected void definePrimaryKey( String... keys ) {
-		if( primaryKeyList == null ) {
-			primaryKeyList = List.of( keys );
-		} else {
-			throw new IllegalStateException( "Primary key already set" );
-		}
+		primaryKeyList = List.of( keys );
+	}
+
+	protected List<String> getNaturalKey() {
+		return Collections.unmodifiableList( naturalKeyList );
 	}
 
 	/**
@@ -521,11 +538,11 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param keys The value keys to use as the natural key
 	 */
 	protected void defineNaturalKey( String... keys ) {
-		if( naturalKeyList == null ) {
-			naturalKeyList = List.of( keys );
-		} else {
-			throw new IllegalStateException( "Natural key already set" );
-		}
+		naturalKeyList = List.of( keys );
+	}
+
+	protected Set<String> getReadOnlyKeys() {
+		return Collections.unmodifiableSet( readOnlySet );
 	}
 
 	/**
@@ -534,11 +551,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param keys The value keys to mark as read-only
 	 */
 	protected void defineReadOnly( String... keys ) {
-		if( readOnlySet == null ) {
-			readOnlySet = Set.of( keys );
-		} else {
-			throw new IllegalStateException( "Read only keys already set" );
-		}
+		readOnlySet = Set.of( keys );
 	}
 
 	/**
@@ -579,7 +592,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return True if the value key is a modifying value key, false otherwise
 	 */
 	protected boolean isModifyingKey( String key ) {
-		return Optional.ofNullable( modifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
+		return allKeysModify || Optional.ofNullable( modifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
 	}
 
 	/**
@@ -588,7 +601,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return The set of value keys
 	 */
 	protected Set<String> getValueKeys() {
-		return Collections.unmodifiableSet( values == null ? Collections.emptySet() : values.keySet() );
+		return Collections.unmodifiableSet( Optional.ofNullable( values ).map( Map::keySet ).orElse( Set.of() ) );
 	}
 
 	/**
@@ -633,6 +646,29 @@ public class Node implements TxnEventTarget, Cloneable {
 		return getValue( key, null );
 	}
 
+	protected <T extends Node> Set<T> getValues( String key ) {
+		return new HashSet<>( getValue( key ) );
+	}
+
+	protected <T extends Node> List<T> getValueList( String key, Comparator<T> comparator ) {
+		List<T> list = new ArrayList<>( getValues(key) );
+		list.sort( comparator );
+		return list;
+	}
+
+	protected <T extends Node> void addToSet( String key, T value ) {
+		computeIfAbsent( key, k -> new NodeSet<>() ).add( value );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	protected <T extends Node> void removeFromSet( String key, T value ) {
+		computeIfPresent( key, ( k, s ) -> {
+			NodeSet<T> set = (NodeSet<T>)s;
+			set.remove( value );
+			return set.isEmpty() ? null : set;
+		} );
+	}
+
 	/**
 	 * If the specified key is not already associated with a value (or is mapped
 	 * to {@code null}), attempts to compute its value using the given mapping
@@ -646,9 +682,24 @@ public class Node implements TxnEventTarget, Cloneable {
 	protected <T> T computeIfAbsent( String key, Function<String, ? extends T> function ) {
 		T value = getValue( key );
 		if( value != null ) return value;
-		value = function.apply( key );
-		setValue( key, value );
-		return value;
+		return setValue( key, function.apply( key ) );
+	}
+
+	/**
+	 * If the specified key is present (not {@link null}), attempts to recompute
+	 * its value using the given mapping function and enters it into this map. If
+	 * the new value is {@code null} the entry is removed.
+	 *
+	 * @param key The value key
+	 * @param function The function to compute a value
+	 * @param <T> The value type
+	 * @return The value
+	 */
+	protected <T> T computeIfPresent( String key, BiFunction<String, ? super T, ? extends T> function ) {
+		Objects.requireNonNull( function );
+		T value = getValue( key );
+		if( value == null ) return null;
+		return setValue( key, function.apply( key, value ) );
 	}
 
 	/**
@@ -680,13 +731,54 @@ public class Node implements TxnEventTarget, Cloneable {
 		try {
 			Txn.create();
 			Object oldValue = getValue( key );
-			if( newValue instanceof Node ) checkForExistingParent( (Node)newValue );
+			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting flag: " + key, exception );
+			log.log( Log.ERROR, "Error setting key: " + key, exception );
 		}
 		return newValue;
+	}
+
+	protected boolean addNodes( Collection<? extends Node> collection ) {
+		boolean changed = false;
+		try {
+			Txn.create();
+			for( Node node : collection ) {
+				String key = node.getCollectionId();
+				if( hasKey( key ) ) continue;
+				Object oldValue = getValue( key );
+				removeFromParent( node );
+				Txn.submit( new SetValueOperation( this, key, oldValue, node ) );
+				changed = true;
+			}
+			Txn.commit();
+		} catch( TxnException exception ) {
+			log.log( Log.ERROR, "Error adding collection", exception );
+			return false;
+		}
+		return changed;
+	}
+
+	protected boolean removeNodes( Collection<?> collection ) {
+		boolean changed = false;
+		try {
+			Txn.create();
+			for( Object object : collection ) {
+				if( !(object instanceof Node) ) continue;
+				Node node = (Node)object;
+				String key = node.getCollectionId();
+				if( !hasKey( key ) ) continue;
+				Object oldValue = getValue( key );
+				Txn.submit( new SetValueOperation( this, key, oldValue, null ) );
+				changed = true;
+			}
+			Txn.commit();
+		} catch( TxnException exception ) {
+			log.log( Log.ERROR, "Error removing collection", exception );
+			return false;
+		}
+		return changed;
 	}
 
 	/**
@@ -703,12 +795,29 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	protected <T> Stream<T> stream() {
+	protected <T> Stream<T> streamNodes() {
 		return (Stream<T>)(values == null ? Set.of() : values.values()).stream();
 	}
 
 	protected boolean isEmpty() {
 		return values == null || values.isEmpty();
+	}
+
+	protected int size() {
+		return values == null ? 0 : values.size();
+	}
+
+	protected boolean hasKey( String key ) {
+		return values != null && values.containsKey( key );
+	}
+
+	String getCollectionId() {
+		return id;
+	}
+
+	Node setCollectionId( String id ) {
+		this.id = Objects.requireNonNull( id );
+		return this;
 	}
 
 	boolean isModifiedByValue() {
@@ -732,7 +841,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * node inclusive. If the specified node is this node then it returns 0. If
 	 * The specified node is not a parent of this node then it returns -1.
 	 */
-	public int distanceTo( Node target ) {
+	int distanceTo( Node target ) {
 		if( this == target ) return 0;
 
 		int count = 0;
@@ -753,7 +862,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @return The parent node or null
 	 */
 	@SuppressWarnings( "unchecked" )
-	public <T> T getParent() {
+	public <T extends Node> T getParent() {
 		return (T)parent;
 	}
 
@@ -766,7 +875,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		return getNodePath( null );
 	}
 
-	private List<Node> getNodePath( Node stop ) {
+	List<Node> getNodePath( Node stop ) {
 		List<Node> path = new ArrayList<>();
 		if( this != stop && parent != null ) path = parent.getNodePath();
 		path.add( this );
@@ -832,7 +941,7 @@ public class Node implements TxnEventTarget, Cloneable {
 		return set;
 	}
 
-	private void checkForExistingParent( Node child ) {
+	private void removeFromParent( Node child ) {
 		Node parent = child.getParent();
 		if( parent != null ) {
 			parent.getValueKeys().forEach( k -> {

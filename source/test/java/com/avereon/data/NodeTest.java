@@ -95,9 +95,9 @@ class NodeTest {
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
-		data.setValue( "id", 423984 );
+		data.setValue( "key", 423984 );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "id", null, 423984 );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, 423984 );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
@@ -115,16 +115,16 @@ class NodeTest {
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
-		data.setValue( "id", 423984 );
+		data.setValue( "key", 423984 );
 		assertThat( data, hasStates( true, 1, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "id", null, 423984 );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, 423984 );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
 
-		data.setValue( "id", null );
+		data.setValue( "key", null );
 		assertThat( data, hasStates( false, 0, 0 ) );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "id", 423984, null );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", 423984, null );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( index ) );
