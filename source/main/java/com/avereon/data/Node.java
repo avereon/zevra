@@ -647,7 +647,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected <T extends Node> Set<T> getValues( String key ) {
-		return new HashSet<>( getValue( key ) );
+		return exists( key) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
 	}
 
 	protected <T extends Node> List<T> getValueList( String key, Comparator<T> comparator ) {

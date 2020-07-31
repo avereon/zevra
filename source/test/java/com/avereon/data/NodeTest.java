@@ -613,6 +613,29 @@ class NodeTest {
 	}
 
 	@Test
+	void testNodeSetAddRemove() {
+		MockNode item = new MockNode();
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+
+		data.addItem( item );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
+		assertTrue( data.isModified() );
+
+		data.removeItem( item );
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertFalse( data.isModified() );
+
+		data.addItem( item );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
+		data.setModified( false );
+		assertFalse( data.isModified() );
+
+		data.removeItem( item );
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertTrue( data.isModified() );
+	}
+
+	@Test
 	void testResourceChangesOnChildCausesParentNodeChangedEvent() {
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );

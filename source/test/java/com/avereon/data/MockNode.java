@@ -1,6 +1,10 @@
 package com.avereon.data;
 
-class MockNode extends Node {
+import java.util.Set;
+
+class MockNode extends IdNode {
+
+	public static final String ITEMS = "items";
 
 	private final NodeWatcher watcher;
 
@@ -9,27 +13,30 @@ class MockNode extends Node {
 	}
 
 	MockNode( String id ) {
-		definePrimaryKey( "id" );
-		addModifyingKeys( "id", "key", "child", "a", "b", "x", "y", "z" );
-
-		setId( id );
-		setModified( false );
+		if( id != null ) setId( id );
+		addModifyingKeys( "key", "child", "a", "b", "x", "y", "z" );
 		register( NodeEvent.ANY, watcher = new NodeWatcher() );
 	}
 
-	private String getId() {
-		return getValue( "id" );
+	public Set<MockNode> getItems() {
+		return getValue( ITEMS );
 	}
 
-	private void setId( String id ) {
-		setValue( "id", id );
+	public MockNode addItem( MockNode item ) {
+		addToSet( ITEMS, item );
+		return this;
+	}
+
+	public MockNode removeItem( MockNode item ) {
+		removeFromSet( ITEMS, item );
+		return this;
 	}
 
 	public NodeWatcher getWatcher() {
 		return watcher;
 	}
 
-	int getEventCount() {
+	public int getEventCount() {
 		return watcher.getEvents().size();
 	}
 
