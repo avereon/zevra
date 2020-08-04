@@ -363,6 +363,14 @@ public class Node implements TxnEventTarget, Cloneable {
 		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
 	}
 
+	//	public <T extends Event> void register( String key, EventType<? super T> type, EventHandler<NodeEvent> handler ) {
+	//		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new WeakHashMap<>() ).put( handler, handler );
+	//	}
+	//
+	//	public <T extends Event> void unregister( String key, EventType<? super T> type, EventHandler<NodeEvent> handler ) {
+	//		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
+	//	}
+
 	/**
 	 * Copy the values and resources from the specified node. This method will
 	 * only fill in missing values and resources from the specified node.
@@ -647,26 +655,24 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected <T extends Node> Set<T> getValues( String key ) {
-		return exists( key) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
+		return exists( key ) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
 	}
 
 	protected <T extends Node> List<T> getValueList( String key, Comparator<T> comparator ) {
-		List<T> list = new ArrayList<>( getValues(key) );
+		List<T> list = new ArrayList<>( getValues( key ) );
 		list.sort( comparator );
 		return list;
 	}
 
 	protected <T extends Node> void addToSet( String key, T value ) {
-		computeIfAbsent( key, k -> new NodeSet<>() ).add( value );
+		getValue( key, doSetValue( key, null, new NodeSet<>() ) ).add( value );
 	}
 
-	@SuppressWarnings( "unchecked" )
 	protected <T extends Node> void removeFromSet( String key, T value ) {
-		computeIfPresent( key, ( k, s ) -> {
-			NodeSet<T> set = (NodeSet<T>)s;
-			set.remove( value );
-			return set.isEmpty() ? null : set;
-		} );
+		NodeSet<T> set = getValue( key );
+		if( set == null ) return;
+		set.remove( value );
+		if( set.isEmpty() ) doSetValue( key ,set, null );
 	}
 
 	/**
@@ -893,9 +899,9 @@ public class Node implements TxnEventTarget, Cloneable {
 		updateModified();
 	}
 
-	private void doSetValue( String key, Object oldValue, Object newValue ) {
+	private <S, T> T doSetValue( String key, S oldValue, T newValue ) {
 		if( newValue == null ) {
-			if( values == null ) return;
+			if( values == null ) return null;
 			values.remove( key );
 			if( values.size() == 0 ) values = null;
 			if( oldValue instanceof Node ) ((Node)oldValue).setParent( null );
@@ -906,6 +912,8 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 
 		updateModified();
+
+		return newValue;
 	}
 
 	private boolean doSetChildModified( Node child, boolean modified ) {
