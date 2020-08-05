@@ -7,10 +7,11 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /**
- * This class is intended to be used by {@link Node} implementers for internal
- * collections of common items. Take, for example, an Organization model that
- * allows an arbitrary number of Person nodes. Both Organization and Person
- * should extends from {@link Node} or {@link IdNode}.
+ * This class is the internal implementation of a {@link Node} {@link Set}. In
+ * general, implementers should not need to directly work with this class, but
+ * its intended used is documented here for reference. Take, for example, an
+ * Organization model that allows an arbitrary number of Person nodes. Both
+ * Organization and Person should extend from {@link Node} or {@link IdNode}.
  * <pre>
  *   public class Organization extends IdNode {
  *     ...
@@ -43,13 +44,13 @@ import java.util.function.IntFunction;
  *
  * @param <T> The type of {@link Node}s in the {@link NodeSet}
  */
-public class NodeSet<T extends Node> extends Node implements Set<T> {
+class NodeSet<T extends Node> extends Node implements Set<T> {
 
 	static final String PREFIX = "node-set-key-";
 
 	private static final System.Logger log = Log.get();
 
-	public NodeSet() {
+	NodeSet() {
 		setAllKeysModify();
 	}
 

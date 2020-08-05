@@ -614,16 +614,40 @@ class NodeTest {
 
 	@Test
 	void testNodeSetAddRemove() {
+		int index = 0;
 		MockNode item = new MockNode();
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.addItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
-		assertTrue( data.isModified() );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		NodeSet<MockNode> items = data.getValue( MockNode.ITEMS );
+
+		for( NodeEvent e : item.getWatcher().getEvents() ) {
+			System.out.println( "item.e=" + e );
+		}
+		for( NodeEvent e : data.getWatcher().getEvents() ) {
+			System.out.println( "data.e=" + e );
+		}
+
+		assertThat( item.getEventCount(), is( 5 ) );
+		assertEventState( item, index++, NodeEvent.ADDED );
+
+		// FIXME Why are there parent events on the item?
+		// Because these events come from the parent, they are untestable
+		// TODO assertEventState( item, index++, NodeEvent.CHILD_ADDED );
+
+		// NEXT Continue testing events
+		//assertEventState( item, index++, NodeEvent.NODE_CHANGED );
+
+//		assertThat( data.getEventCount(), is( index ) );
+//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, MockNode.ITEMS, null, item );
+//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 
 		data.removeItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
-		assertFalse( data.isModified() );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.addItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
@@ -633,6 +657,32 @@ class NodeTest {
 		data.removeItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
 		assertTrue( data.isModified() );
+	}
+
+	@Test
+	void testAddMultipleSetItems() {
+		MockNode item1 = new MockNode();
+		MockNode item2 = new MockNode();
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+
+		data.addItem( item1 );
+		data.addItem( item2 );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item1, item2 ) );
+	}
+
+	@Test
+	void testRemoveFromMultipleSetItems() {
+		MockNode item1 = new MockNode();
+		MockNode item2 = new MockNode();
+		data.addItem( item1 ).addItem( item2 );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item1, item2 ) );
+
+		data.removeItem( item1 );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item2 ) );
+
+		data.removeItem( item2 );
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertNull( data.getValue( MockNode.ITEMS) );
 	}
 
 	@Test
@@ -1456,35 +1506,35 @@ class NodeTest {
 	@Test
 	void testToString() {
 		data.defineNaturalKey( "firstName", "lastName", "birthDate" );
-		assertThat( data.toString(), is( "MockNode[]" ) );
+		assertThat( data.toString(), is( "MockNode{}" ) );
 
 		Date birthDate = new Date( 0 );
 		data.setValue( "firstName", "Jane" );
 		data.setValue( "birthDate", birthDate );
-		assertThat( data.toString(), is( "MockNode[firstName=Jane,birthDate=" + birthDate.toString() + "]" ) );
+		assertThat( data.toString(), is( "MockNode{firstName=Jane,birthDate=" + birthDate.toString() + "}" ) );
 
 		data.setValue( "lastName", "Doe" );
-		assertThat( data.toString(), is( "MockNode[firstName=Jane,lastName=Doe,birthDate=" + birthDate.toString() + "]" ) );
+		assertThat( data.toString(), is( "MockNode{firstName=Jane,lastName=Doe,birthDate=" + birthDate.toString() + "}" ) );
 	}
 
 	@Test
 	void testToStringWithSomeValues() {
 		data.defineNaturalKey( "firstName", "lastName", "birthDate" );
-		assertThat( data.toString(), is( "MockNode[]" ) );
+		assertThat( data.toString(), is( "MockNode{}" ) );
 
 		data.setValue( "firstName", "Jane" );
 		data.setValue( "lastName", "Doe" );
-		assertThat( data.toString( "firstName" ), is( "MockNode[firstName=Jane]" ) );
-		assertThat( data.toString( "lastName" ), is( "MockNode[lastName=Doe]" ) );
+		assertThat( data.toString( "firstName" ), is( "MockNode{firstName=Jane}" ) );
+		assertThat( data.toString( "lastName" ), is( "MockNode{lastName=Doe}" ) );
 	}
 
 	@Test
 	void testToStringWithAllValues() {
-		assertThat( data.toString( true ), is( "MockNode[]" ) );
+		assertThat( data.toString( true ), is( "MockNode{}" ) );
 
 		data.setValue( "firstName", "Jane" );
 		data.setValue( "lastName", "Doe" );
-		assertThat( data.toString( true ), is( "MockNode[firstName=Jane,lastName=Doe]" ) );
+		assertThat( data.toString( true ), is( "MockNode{firstName=Jane,lastName=Doe}" ) );
 	}
 
 	@Test

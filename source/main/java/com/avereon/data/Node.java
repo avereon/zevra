@@ -455,7 +455,7 @@ public class Node implements TxnEventTarget, Cloneable {
 
 		boolean first = true;
 		builder.append( getClass().getSimpleName() );
-		builder.append( "[" );
+		builder.append( "{" );
 		if( keys != null ) {
 			for( String key : keys ) {
 				Object value = getValue( key );
@@ -467,7 +467,7 @@ public class Node implements TxnEventTarget, Cloneable {
 				first = false;
 			}
 		}
-		builder.append( "]" );
+		builder.append( "}" );
 
 		return builder.toString();
 	}
@@ -665,14 +665,15 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected <T extends Node> void addToSet( String key, T value ) {
-		getValue( key, doSetValue( key, null, new NodeSet<>() ) ).add( value );
+		//getValue( key, doSetValue( key, null, new NodeSet<>() ) ).add( value );
+		computeIfAbsent( key, k -> doSetValue( k, null, new NodeSet<>() ) ).add( value );
 	}
 
 	protected <T extends Node> void removeFromSet( String key, T value ) {
 		NodeSet<T> set = getValue( key );
 		if( set == null ) return;
 		set.remove( value );
-		if( set.isEmpty() ) doSetValue( key ,set, null );
+		if( set.isEmpty() ) doSetValue( key, set, null );
 	}
 
 	/**
