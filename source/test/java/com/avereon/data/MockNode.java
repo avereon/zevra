@@ -2,7 +2,9 @@ package com.avereon.data;
 
 import java.util.Set;
 
-class MockNode extends IdNode {
+class MockNode extends Node {
+
+	public static final String MID = "mid";
 
 	public static final String ITEMS = "items";
 
@@ -13,9 +15,19 @@ class MockNode extends IdNode {
 	}
 
 	MockNode( String id ) {
-		if( id != null ) setId( id );
-		addModifyingKeys( "key", "child", "a", "b", "x", "y", "z", ITEMS );
+		definePrimaryKey( MID );
+		if( id != null ) setMockId( id );
+		addModifyingKeys( ITEMS, "key", "child", "a", "b", "x", "y", "z" );
 		register( NodeEvent.ANY, watcher = new NodeWatcher() );
+	}
+
+	public String getMockId() {
+		return getValue( MID );
+	}
+
+	public MockNode setMockId( String id ) {
+		setValue( MID, id );
+		return this;
 	}
 
 	/**

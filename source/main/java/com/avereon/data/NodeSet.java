@@ -124,9 +124,12 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 	}
 
 	@Override
+	@SuppressWarnings( { "SuspiciousMethodCalls", "NullableProblems" } )
 	public boolean retainAll( Collection<?> c ) {
-		// TODO Implement retainAll()
-		return false;
+		Collection<T> remaining = getSetValues();
+		remaining.removeAll( c );
+		removeAll( remaining );
+		return remaining.size() > 0;
 	}
 
 	@Override
@@ -159,7 +162,6 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 		return (Collection<T>)getValues();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Set<T> of() {
 		return Set.of();
 	}

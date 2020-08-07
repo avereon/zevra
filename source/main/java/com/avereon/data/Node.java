@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -508,7 +509,7 @@ public class Node implements TxnEventTarget, Cloneable {
 			}
 		}
 
-		return hashcode;
+		return hashcode == 0 ? super.hashCode() : hashcode;
 	}
 
 	/**
@@ -643,17 +644,6 @@ public class Node implements TxnEventTarget, Cloneable {
 		return (Collection<T>)getValues().stream().filter( clazz::isInstance ).collect( Collectors.toUnmodifiableSet() );
 	}
 
-	/**
-	 * Get the value at the specific key.
-	 *
-	 * @param key The value key
-	 * @param <T> The value type
-	 * @return The value
-	 */
-	protected <T> T getValue( String key ) {
-		return getValue( key, null );
-	}
-
 	protected <T extends Node> Set<T> getValues( String key ) {
 		return exists( key ) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
 	}
@@ -665,8 +655,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected <T extends Node> void addToSet( String key, T value ) {
-		//getValue( key, doSetValue( key, null, new NodeSet<>() ) ).add( value );
-		computeIfAbsent( key, k -> doSetValue( k, null, new NodeSet<>() ) ).add( value );
+		getValue( key, () -> doSetValue( key, null, new NodeSet<>() ) ).add( value );
 	}
 
 	protected <T extends Node> void removeFromSet( String key, T value ) {
@@ -710,6 +699,17 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	/**
+	 * Get the value at the specific key.
+	 *
+	 * @param key The value key
+	 * @param <T> The value type
+	 * @return The value
+	 */
+	protected <T> T getValue( String key ) {
+		return getValue( key, (T)null );
+	}
+
+	/**
 	 * Get the value for the specific key or the default value if the value has
 	 * not been previously set. Note that this method does not set the value.
 	 *
@@ -718,11 +718,25 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * @param <T> The value type
 	 * @return The value
 	 */
-	@SuppressWarnings( "unchecked" )
 	protected <T> T getValue( String key, T defaultValue ) {
-		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
+		return getValue( key, () -> defaultValue );
+	}
+
+	/**
+	 * Get the value for the specific key or compute the default value with the
+	 * specified {@link Supplier} if the value has not been previously set. Note
+	 * that this method does not set the value.
+	 *
+	 * @param key The value key
+	 * @param supplier The default value {@link Supplier}
+	 * @param <T> The value type
+	 * @return The value
+	 */
+	@SuppressWarnings( "unchecked" )
+	protected <T> T getValue( String key, Supplier<T> supplier ) {
+		Objects.requireNonNull( key, "Value key cannot be null" );
 		T value = values == null ? null : (T)values.get( key );
-		return value != null ? value : defaultValue;
+		return value != null ? value : supplier.get();
 	}
 
 	/**

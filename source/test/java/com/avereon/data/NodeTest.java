@@ -614,7 +614,6 @@ class NodeTest {
 
 	@Test
 	void testNodeSetAddRemove() {
-		int index = 0;
 		MockNode item = new MockNode();
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
@@ -622,28 +621,6 @@ class NodeTest {
 		data.addItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
 		assertThat( data, hasStates( true, 0, 1 ) );
-		NodeSet<MockNode> items = data.getValue( MockNode.ITEMS );
-
-		for( NodeEvent e : item.getWatcher().getEvents() ) {
-			System.out.println( "item.e=" + e );
-		}
-		for( NodeEvent e : data.getWatcher().getEvents() ) {
-			System.out.println( "data.e=" + e );
-		}
-
-		assertThat( item.getEventCount(), is( 5 ) );
-		assertEventState( item, index++, NodeEvent.ADDED );
-
-		// FIXME Why are there parent events on the item?
-		// Because these events come from the parent, they are untestable
-		// TODO assertEventState( item, index++, NodeEvent.CHILD_ADDED );
-
-		// NEXT Continue testing events
-		//assertEventState( item, index++, NodeEvent.NODE_CHANGED );
-
-//		assertThat( data.getEventCount(), is( index ) );
-//		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, MockNode.ITEMS, null, item );
-//		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 
 		data.removeItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
@@ -652,11 +629,51 @@ class NodeTest {
 		data.addItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item ) );
 		data.setModified( false );
-		assertFalse( data.isModified() );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.removeItem( item );
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
-		assertTrue( data.isModified() );
+		assertThat( data, hasStates( true, 0, 1 ) );
+	}
+
+	@Test
+	void testNodeSetAddRemoveDataStructure() {
+		MockNode item = new MockNode();
+		assertNull( item.getParent() );
+
+		data.addItem( item );
+		assertNotNull( item.getParent() );
+		assertThat( item.getParent(), isA( NodeSet.class ) );
+		assertThat( item.getParent().getParent(), is( data ) );
+
+		data.removeItem( item );
+		assertNull( item.getParent() );
+	}
+
+	@Test
+	void testNodeSetAddRemoveEvents() {
+		int itemIndex = 0;
+		int dataIndex = 0;
+		MockNode item = new MockNode();
+
+		data.addItem( item );
+		assertEventState( item, itemIndex++, NodeEvent.ADDED );
+		assertThat( item.getEventCount(), is( itemIndex ) );
+		assertEventState( data, dataIndex++, NodeEvent.CHILD_ADDED, item.getParent(), item.getCollectionId(), null, item );
+		assertEventState( data, dataIndex++, NodeEvent.VALUE_CHANGED, item.getParent(), item.getCollectionId(), null, item );
+		assertEventState( data, dataIndex++, NodeEvent.MODIFIED );
+		assertEventState( data, dataIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( dataIndex ) );
+
+		Node set = item.getParent();
+		data.removeItem( item );
+		assertEventState( item, itemIndex++, NodeEvent.REMOVED );
+		assertThat( item.getEventCount(), is( itemIndex ) );
+		assertEventState( data, dataIndex++, NodeEvent.CHILD_REMOVED, set, item.getCollectionId(), item, null );
+		assertEventState( data, dataIndex++, NodeEvent.VALUE_CHANGED, set, item.getCollectionId(), item, null );
+		assertEventState( data, dataIndex++, NodeEvent.UNMODIFIED );
+		assertEventState( data, dataIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( data.getEventCount(), is( dataIndex ) );
 	}
 
 	@Test
@@ -664,10 +681,19 @@ class NodeTest {
 		MockNode item1 = new MockNode();
 		MockNode item2 = new MockNode();
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.addItem( item1 );
+		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item1 ) );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		data.setModified( false );
+		assertThat( data, hasStates( false, 0, 0 ) );
+
 		data.addItem( item2 );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item1, item2 ) );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		data.setModified( false );
+		assertThat( data, hasStates( false, 0, 0 ) );
 	}
 
 	@Test
@@ -676,13 +702,22 @@ class NodeTest {
 		MockNode item2 = new MockNode();
 		data.addItem( item1 ).addItem( item2 );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item1, item2 ) );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		data.setModified( false );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.removeItem( item1 );
 		assertThat( data.getValues( MockNode.ITEMS ), containsInAnyOrder( item2 ) );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		data.setModified( false );
+		assertThat( data, hasStates( false, 0, 0 ) );
 
 		data.removeItem( item2 );
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
-		assertNull( data.getValue( MockNode.ITEMS) );
+		assertNull( data.getValue( MockNode.ITEMS ) );
+		assertThat( data, hasStates( true, 0, 1 ) );
+		data.setModified( false );
+		assertThat( data, hasStates( false, 0, 0 ) );
 	}
 
 	@Test
@@ -1548,27 +1583,33 @@ class NodeTest {
 			data.setValue( "id", "987654321" );
 			fail( "Should throw an IllegalStateException" );
 		} catch( IllegalStateException exception ) {
-			// Intentially ignore exception
+			// Intentionally ignore exception
 		}
 		assertThat( data.getValue( "id" ), is( "123456789" ) );
 	}
 
 	@Test
 	void testHashCode() {
+		String key = UUID.randomUUID().toString();
+		String lastName = "Doe";
+
 		data.defineNaturalKey( "firstName", "lastName", "birthDate" );
-		assertThat( data.hashCode(), is( 0 ) );
+		assertThat( data.hashCode(), is( System.identityHashCode( data ) ) );
 
 		// Test the primary key
-		data.setValue( "id", 2849234 );
-		assertThat( data.hashCode(), is( 2849234 ) );
+		data.setValue( MockNode.MID, key );
+		assertThat( data.hashCode(), is( key.hashCode() ) );
 
 		// Test the natural key
-		data.setValue( "lastName", "Doe" );
-		assertThat( data.hashCode(), is( 2782408 ) );
+		data.setValue( "lastName", lastName );
+		assertThat( data.hashCode(), is( key.hashCode() ^ lastName.hashCode() ) );
 	}
 
 	@Test
 	void testEquals() {
+		String key = UUID.randomUUID().toString();
+		String lastName = "Doe";
+
 		MockNode data1 = new MockNode();
 		data1.defineNaturalKey( "firstName", "lastName", "birthDate" );
 		MockNode data2 = new MockNode();
@@ -1576,17 +1617,17 @@ class NodeTest {
 		assertThat( data1.equals( data2 ), is( true ) );
 
 		// Test the primary key
-		data1.setValue( "id", 2849234 );
+		data1.setValue( MockNode.MID, key );
 		assertThat( data1.equals( data2 ), is( false ) );
 
-		data2.setValue( "id", 2849234 );
+		data2.setValue( MockNode.MID, key );
 		assertThat( data1.equals( data2 ), is( true ) );
 
 		// Test the natural key
-		data1.setValue( "lastName", "Doe" );
+		data1.setValue( "lastName", lastName );
 		assertThat( data1.equals( data2 ), is( false ) );
 
-		data2.setValue( "lastName", "Doe" );
+		data2.setValue( "lastName", lastName );
 		assertThat( data1.equals( data2 ), is( true ) );
 	}
 
