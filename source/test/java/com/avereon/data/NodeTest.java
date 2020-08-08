@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -292,6 +293,11 @@ class NodeTest {
 		assertThat( data.getValue( "key" ), is( nullValue() ) );
 		assertThat( data, hasStates( false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
+	}
+
+	@Test
+	void testGetWithNullSupplier() {
+		assertNull( data.getValue( "x", (Supplier<String>)null ) );
 	}
 
 	@Test

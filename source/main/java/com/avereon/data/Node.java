@@ -736,7 +736,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	protected <T> T getValue( String key, Supplier<T> supplier ) {
 		Objects.requireNonNull( key, "Value key cannot be null" );
 		T value = values == null ? null : (T)values.get( key );
-		return value != null ? value : supplier.get();
+		return value != null ? value : supplier != null ? supplier.get() : null;
 	}
 
 	/**
