@@ -17,7 +17,7 @@ class MockNode extends Node {
 	MockNode( String id ) {
 		definePrimaryKey( MID );
 		if( id != null ) setMockId( id );
-		addModifyingKeys( ITEMS, "key", "child", "a", "b", "x", "y", "z" );
+		addModifyingKeys( ITEMS, "key", "child", "a", "b", "c", "x", "y", "z" );
 		register( NodeEvent.ANY, watcher = new NodeWatcher() );
 	}
 
