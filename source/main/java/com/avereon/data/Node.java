@@ -761,8 +761,8 @@ public class Node implements TxnEventTarget, Cloneable {
 		return newValue;
 	}
 
-	protected Map<String, String> asMap( String... keys ) {
-		return Arrays.stream( keys ).filter( k -> values.get( k )!= null ).collect( Collectors.toMap( k -> k, k -> String.valueOf( values.get( k ) ) ) );
+	protected Map<String, Object> asMap( String... keys ) {
+		return Arrays.stream( keys ).filter( k -> values.get( k )!= null ).collect( Collectors.toMap( k -> k, k ->  values.get( k ) ) );
 	}
 
 	protected boolean addNodes( Collection<? extends Node> collection ) {

@@ -27,6 +27,21 @@ class NodeTest {
 	}
 
 	@Test
+	void testAsMap() {
+		Object o = new Object();
+		data.setValue( "0", 0 );
+		data.setValue( "a", "A" );
+		data.setValue( "n", "not included");
+		data.setValue( "o", o );
+
+		// Intentionally don't include 'n' to make sure it is not included
+		assertThat( data.asMap( "0", "a", "o" ), is( Map.of( "0", 0, "a", "A", "o", o ) ) );
+
+		// Intentionally try to include 'b' to make sure null values are not included
+		assertThat( data.asMap( "0", "a", "b", "o" ), is( Map.of( "0", 0, "a", "A", "o", o ) ) );
+	}
+
+	@Test
 	void testEventSpreadOnValueChangeEvents() {
 		MockNode a = new MockNode( "a" );
 		MockNode b = new MockNode( "b" );
