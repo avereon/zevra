@@ -889,6 +889,12 @@ public class Node implements TxnEventTarget, Cloneable {
 	 */
 	@SuppressWarnings( "unchecked" )
 	public <T extends Node> T getParent() {
+		if( parent instanceof NodeSet ) return parent.getParent();
+		return (T)parent;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	<T extends Node> T getTrueParent() {
 		return (T)parent;
 	}
 

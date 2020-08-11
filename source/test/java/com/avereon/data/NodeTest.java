@@ -673,8 +673,8 @@ class NodeTest {
 
 		data.addItem( item );
 		assertNotNull( item.getParent() );
-		assertThat( item.getParent(), isA( NodeSet.class ) );
-		assertThat( item.getParent().getParent(), is( data ) );
+		assertThat( item.getTrueParent(), isA( NodeSet.class ) );
+		assertThat( item.getParent(), is( data ) );
 
 		data.removeItem( item );
 		assertNull( item.getParent() );
@@ -689,13 +689,13 @@ class NodeTest {
 		data.addItem( item );
 		assertEventState( item, itemIndex++, NodeEvent.ADDED );
 		assertThat( item.getEventCount(), is( itemIndex ) );
-		assertEventState( data, dataIndex++, NodeEvent.CHILD_ADDED, item.getParent(), item.getCollectionId(), null, item );
-		assertEventState( data, dataIndex++, NodeEvent.VALUE_CHANGED, item.getParent(), item.getCollectionId(), null, item );
+		assertEventState( data, dataIndex++, NodeEvent.CHILD_ADDED, item.getTrueParent(), item.getCollectionId(), null, item );
+		assertEventState( data, dataIndex++, NodeEvent.VALUE_CHANGED, item.getTrueParent(), item.getCollectionId(), null, item );
 		assertEventState( data, dataIndex++, NodeEvent.MODIFIED );
 		assertEventState( data, dataIndex++, NodeEvent.NODE_CHANGED );
 		assertThat( data.getEventCount(), is( dataIndex ) );
 
-		Node set = item.getParent();
+		Node set = item.getTrueParent();
 		data.removeItem( item );
 		assertEventState( item, itemIndex++, NodeEvent.REMOVED );
 		assertThat( item.getEventCount(), is( itemIndex ) );
