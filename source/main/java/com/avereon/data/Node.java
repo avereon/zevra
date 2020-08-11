@@ -762,11 +762,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected Map<String, String> asMap( String... keys ) {
-		Map<String, String> map = new HashMap<>();
-		for( String key : keys ) {
-			map.put( key, String.valueOf( values.get( key ) ) );
-		}
-		return map;
+		return Arrays.stream( keys ).filter( k -> values.get( k )!= null ).collect( Collectors.toMap( k -> k, k -> String.valueOf( values.get( k ) ) ) );
 	}
 
 	protected boolean addNodes( Collection<? extends Node> collection ) {
