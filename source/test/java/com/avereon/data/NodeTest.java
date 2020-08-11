@@ -634,6 +634,15 @@ class NodeTest {
 	}
 
 	@Test
+	void testNodeSetAddWithNull() {
+		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );
+		assertThat( data, hasStates( false, 0, 0 ) );
+
+		data.addItem( null );
+		assertThat( data, hasStates( false, 0, 0 ) );
+	}
+
+	@Test
 	void testNodeSetAddRemove() {
 		MockNode item = new MockNode();
 		assertThat( data.getValues( MockNode.ITEMS ), is( Set.of() ) );

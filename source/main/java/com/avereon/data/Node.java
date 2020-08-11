@@ -655,6 +655,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected <T extends Node> void addToSet( String key, T value ) {
+		if( value == null ) return;
 		getValue( key, () -> doSetValue( key, null, new NodeSet<>() ) ).add( value );
 	}
 
