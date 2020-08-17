@@ -763,7 +763,7 @@ public class Node implements TxnEventTarget, Cloneable {
 	}
 
 	protected Map<String, Object> asMap( String... keys ) {
-		return Arrays.stream( keys ).filter( k -> values.get( k )!= null ).collect( Collectors.toMap( k -> k, k ->  values.get( k ) ) );
+		return Arrays.stream( keys ).filter( k -> values.get( k ) != null ).collect( Collectors.toMap( k -> k, k -> values.get( k ) ) );
 	}
 
 	protected boolean addNodes( Collection<? extends Node> collection ) {
@@ -984,8 +984,12 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 	}
 
-	private void checkForCircularReference( Node node ) {
-		Node next = this;
+	private void checkForCircularReference( Node parent ) {
+		checkForCircularReference( parent, this );
+	}
+
+	private static void checkForCircularReference( Node parent, Node node ) {
+		Node next = parent;
 		while( next != null ) {
 			if( node == next ) throw new CircularReferenceException( "Circular reference detected in parent path: " + node );
 			next = next.getParent();

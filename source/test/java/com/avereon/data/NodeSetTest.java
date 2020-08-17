@@ -7,8 +7,8 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NodeSetTest {
 
@@ -17,6 +17,18 @@ public class NodeSetTest {
 	@BeforeEach
 	void setup() {
 		set = new NodeSet<>();
+	}
+
+	@Test
+	void testCircularReferenceCheck() {
+		MockNode node = new MockNode();
+		try {
+			node.addItem( node );
+			fail( "CircularReferenceException should be thrown" );
+		} catch( CircularReferenceException exception ) {
+			// Intentionally ignore exception.
+			assertThat( exception.getMessage(), startsWith( "Circular reference detected" ) );
+		}
 	}
 
 	@Test
@@ -51,7 +63,7 @@ public class NodeSetTest {
 
 	@Test
 	void testAddAll() {
-		Set<MockNode> nodes = Set.of( new MockNode( "a"), new MockNode( "b") );
+		Set<MockNode> nodes = Set.of( new MockNode( "a" ), new MockNode( "b" ) );
 		assertThat( set.size(), is( 0 ) );
 		set.addAll( nodes );
 		assertThat( set.size(), is( 2 ) );
