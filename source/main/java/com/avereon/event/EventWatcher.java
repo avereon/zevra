@@ -20,6 +20,10 @@ public class EventWatcher implements EventHandler<Event> {
 		this.timeout = timeout;
 	}
 
+	public long getTimeout() {
+		return timeout;
+	}
+
 	@Override
 	public synchronized void handle( Event event ) {
 		events.offer( event );
