@@ -6,9 +6,19 @@ import java.util.concurrent.TimeoutException;
 
 public class EventWatcher implements EventHandler<Event> {
 
-	public static final long DEFAULT_WAIT_TIMEOUT = 2000;
+	public static final long DEFAULT_WAIT_TIMEOUT = 5000;
 
-	private Queue<Event> events = new ConcurrentLinkedQueue<>();
+	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
+
+	private long timeout;
+
+	public EventWatcher() {
+		this( DEFAULT_WAIT_TIMEOUT );
+	}
+
+	public EventWatcher( long timeout ) {
+		this.timeout = timeout;
+	}
 
 	@Override
 	public synchronized void handle( Event event ) {
@@ -17,11 +27,11 @@ public class EventWatcher implements EventHandler<Event> {
 	}
 
 	public void waitForEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
-		waitForEvent( type, DEFAULT_WAIT_TIMEOUT );
+		waitForEvent( type, timeout );
 	}
 
 	public void waitForNextEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
-		waitForNextEvent( type, DEFAULT_WAIT_TIMEOUT );
+		waitForNextEvent( type, timeout );
 	}
 
 	/**
