@@ -4,9 +4,9 @@ public final class EventType<T extends Event> {
 
 	public static final EventType<Event> ROOT = new EventType<>( null, "EVENT" );
 
-	private EventType<? super T> parent;
+	private final EventType<? super T> parent;
 
-	private String name;
+	private final String name;
 
 	public EventType( final String name ) {
 		this( ROOT, name );

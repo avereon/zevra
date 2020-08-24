@@ -10,7 +10,7 @@ public class EventWatcher implements EventHandler<Event> {
 
 	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
 
-	private long timeout;
+	private final long timeout;
 
 	public EventWatcher() {
 		this( DEFAULT_WAIT_TIMEOUT );
