@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class SettingsEventWatcher implements EventHandler<SettingsEvent> {
+public class SettingsEventWatcher implements EventHandler<SettingsEvent> {
 
 	private List<SettingsEvent> events = new CopyOnWriteArrayList<>();
 

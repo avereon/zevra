@@ -19,6 +19,8 @@ public class SettingsEvent extends Event {
 
 	private final String key;
 
+	private final Object oldValue;
+
 	private final Object newValue;
 
 	public SettingsEvent( Settings settings, EventType<SettingsEvent> type, String path ) {
@@ -26,9 +28,14 @@ public class SettingsEvent extends Event {
 	}
 
 	public SettingsEvent( Settings settings, EventType<SettingsEvent> type, String path, String key, Object newValue ) {
+		this( settings, type, path, key, null, newValue );
+	}
+
+	public SettingsEvent( Settings settings, EventType<SettingsEvent> type, String path, String key, Object oldValue, Object newValue ) {
 		super( settings, type );
 		this.path = path;
 		this.key = key;
+		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
@@ -44,6 +51,10 @@ public class SettingsEvent extends Event {
 		return key;
 	}
 
+	public Object getOldValue() {
+		return oldValue;
+	}
+
 	public Object getNewValue() {
 		return newValue;
 	}
@@ -57,18 +68,9 @@ public class SettingsEvent extends Event {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder( super.toString() );
-		if( path != null ) {
-			builder.append( ":" );
-			builder.append( path );
-		}
-		if( key != null ) {
-			builder.append( ":" );
-			builder.append( key );
-		}
-		if( getEventType() == CHANGED ) {
-			builder.append( ":" );
-			builder.append( newValue );
-		}
+		if( path != null ) builder.append( " path=" ).append( path );
+		if( key != null ) builder.append( " key=" ).append( key );
+		if( getEventType() == CHANGED ) builder.append( " old=" ).append( oldValue ).append( " new=" ).append( newValue );
 		return builder.toString();
 	}
 

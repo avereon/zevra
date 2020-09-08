@@ -13,13 +13,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NodeSettingsWrapper implements Settings {
 
 	private final Node node;
 
+	private final EventHub eventHub;
+
 	public NodeSettingsWrapper( Node node ) {
 		this.node = node;
+		this.eventHub = new EventHub();
+		this.eventHub.register( SettingsEvent.CHANGED, this::dispatch );
+
+		node.register( NodeEvent.VALUE_CHANGED, e -> eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, this.getPath(), e.getKey(), e.getOldValue(), e.getNewValue() ) ) );
 	}
 
 	@Override
@@ -143,14 +150,19 @@ public class NodeSettingsWrapper implements Settings {
 		throw new UnsupportedOperationException( "Default values not supported" );
 	}
 
+	private Map<EventHandler<? extends SettingsEvent>, EventHandler<? extends NodeEvent>> settingsHandlers = new ConcurrentHashMap<>();
+
 	@Override
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
-		throw new UnsupportedOperationException( "Use Node.register() instead" );
+		eventHub.register( type, handler );
+		return eventHub;
 	}
 
 	@Override
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
-		throw new UnsupportedOperationException( "Use Node.unregister() instead" );
+//		throw new UnsupportedOperationException( "Use Node.unregister() instead" );
+		eventHub.unregister( type, handler );
+		return eventHub;
 	}
 
 	@Override
@@ -166,6 +178,10 @@ public class NodeSettingsWrapper implements Settings {
 	@Override
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return node.getEventHandlers();
+	}
+
+	private void dispatch( SettingsEvent event ) {
+		//valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
 	}
 
 }

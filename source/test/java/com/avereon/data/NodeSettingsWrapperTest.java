@@ -1,34 +1,82 @@
 package com.avereon.data;
 
+import com.avereon.settings.SettingsEvent;
+import com.avereon.settings.SettingsEventWatcher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static com.avereon.settings.SettingsMatchers.eventHas;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NodeSettingsWrapperTest {
 
+	private MockNode node;
+
+	private NodeSettingsWrapper settings;
+
+	@BeforeEach
+	public void setup() {
+		node = new MockNode();
+		settings = new NodeSettingsWrapper( node );
+	}
+
 	@Test
-	public void testSetAndGet() {
-		MockNode node = new MockNode();
-		NodeSettingsWrapper settings = new NodeSettingsWrapper( node );
-		assertNull( settings.get( "value" ) );
+	public void testEventHandling() {
+		SettingsEventWatcher watcher = new SettingsEventWatcher();
+		settings.register( SettingsEvent.CHANGED, watcher );
+		assertThat( watcher.getEvents().size(), is( 0 ) );
+
+		node.setValue( "value", Double.MAX_VALUE );
+
+		int index = 0;
+		assertThat( watcher.getEvents().get( index++ ), eventHas( settings, SettingsEvent.CHANGED, settings.getPath(), "value", null, Double.MAX_VALUE ) );
+		assertThat( watcher.getEvents().size(), is( index ) );
+	}
+
+	@Test
+	public void testFlush() {
+		assertThat( settings.flush(), is( settings ) );
+	}
+
+	@Test
+	public void testExists() {
+		assertFalse( settings.exists( "value" ) );
 
 		settings.set( "value", Double.MAX_VALUE );
-		assertThat( settings.get( "value", Double.class ), is( Double.MAX_VALUE ) );
-		assertThat( settings.get( "value" ), is( String.valueOf( Double.MAX_VALUE ) ) );
+		assertTrue( settings.exists( "value" ) );
+
+		settings.remove( "value" );
+		assertFalse( settings.exists( "value" ) );
+	}
+
+	@Test
+	public void testGetName() {
+		assertThat( settings.getName(), is( node.getCollectionId() ) );
+	}
+
+	@Test
+	public void testGetPath() {
+		assertThat( settings.getPath(), is( node.getCollectionId() ) );
 	}
 
 	@Test
 	public void testRemove() {
-		MockNode node = new MockNode();
-		NodeSettingsWrapper settings = new NodeSettingsWrapper( node );
 		settings.set( "value", Double.MAX_VALUE );
 		assertNotNull( settings.get( "value" ) );
 
 		settings.remove( "value" );
 		assertNull( settings.get( "value" ) );
+	}
+
+	@Test
+	public void testSetAndGet() {
+		assertNull( settings.get( "value" ) );
+
+		settings.set( "value", Double.MAX_VALUE );
+		assertThat( settings.get( "value", Double.class ), is( Double.MAX_VALUE ) );
+		assertThat( settings.get( "value" ), is( String.valueOf( Double.MAX_VALUE ) ) );
 	}
 
 }
