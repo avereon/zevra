@@ -12,8 +12,11 @@ public class EventHub {
 
 	private EventHub parent = ROOT;
 
+	private Map<Class<? extends Event>, Event > priorEvent;
+
 	public EventHub() {
 		this.handlers = new ConcurrentHashMap<>();
+		this.priorEvent = new ConcurrentHashMap<>();
 	}
 
 	public Event dispatch( Event event ) {
@@ -21,6 +24,8 @@ public class EventHub {
 		// used later in the method are not well known. They could be of any event
 		// type and therefore this variable needs to allow any event type.
 		EventType<?> type = event.getEventType();
+
+		priorEvent.put( event.getClass(), event );
 
 		// Go through all the handlers of the event type and all handlers of all
 		// the parent event types, passing the event to each handler.
@@ -68,6 +73,11 @@ public class EventHub {
 
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return handlers.keySet().stream().collect( Collectors.toMap( k -> k, k -> handlers.get( k ).values() ) );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public <T extends Event> T getPriorEvent( Class<? extends Event> type ) {
+		return (T)priorEvent.get( type );
 	}
 
 	protected EventHub getParent() {

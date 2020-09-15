@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -51,6 +52,23 @@ class EventHubTest {
 		assertThat( testEvents2.size(), is( 3 ) );
 		assertThat( aEvents.size(), is( 1 ) );
 		assertThat( bEvents.size(), is( 1 ) );
+	}
+
+	@Test
+	void testPrior() {
+		EventHub bus = new EventHub();
+		assertThat( bus.getPriorEvent( TestEvent.class ), is( nullValue() ) );
+		TestEvent any = new TestEvent( this, TestEvent.ANY );
+		bus.dispatch( any );
+		assertThat( bus.getPriorEvent( TestEvent.class ), is( any ) );
+
+		TestEvent a = new TestEvent( this, TestEvent.A );
+		bus.dispatch( a );
+		assertThat( bus.getPriorEvent( TestEvent.class ), is( a ) );
+
+		TestEvent b = new TestEvent( this, TestEvent.B );
+		bus.dispatch( b );
+		assertThat( bus.getPriorEvent( TestEvent.class ), is( b ) );
 	}
 
 	private static class TestEvent extends Event {
