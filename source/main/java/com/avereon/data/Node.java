@@ -119,7 +119,7 @@ import java.util.stream.Stream;
  * node. Particularly, {@link NodeEvent#VALUE_CHANGED} events are propagated to
  * parent nodes.
  */
-public class Node implements TxnEventTarget, Cloneable {
+public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	private static final System.Logger log = Log.get();
 
@@ -196,6 +196,8 @@ public class Node implements TxnEventTarget, Cloneable {
 	 * cleared. This set is set to null when the modified flag is cleared.
 	 */
 	private Set<Node> modifiedChildren;
+
+	private Comparator<Node> comparator;
 
 	/**
 	 * Create a new, generic, empty data node. It is generally expected that the
@@ -510,6 +512,12 @@ public class Node implements TxnEventTarget, Cloneable {
 		}
 
 		return hashcode == 0 ? super.hashCode() : hashcode;
+	}
+
+	@Override
+	public int compareTo( Node that ) {
+		if( comparator == null ) comparator = getComparator();
+		return comparator.compare( this, that );
 	}
 
 	/**
