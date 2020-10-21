@@ -30,8 +30,7 @@ public final class TextUtil {
 	private static final char DEFAULT_PAD_CHAR = ' ';
 
 	public static boolean isEmpty( String string ) {
-		if( string == null ) return true;
-		return string.trim().length() == 0;
+		return string == null || string.isBlank();
 	}
 
 	public static boolean areEqual( String string1, String string2 ) {
