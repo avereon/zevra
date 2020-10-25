@@ -15,7 +15,6 @@ module com.avereon.zevra {
 	exports com.avereon.settings;
 	exports com.avereon.skill;
 	exports com.avereon.transaction;
-	exports com.avereon.undo;
 	exports com.avereon.util;
 
 }

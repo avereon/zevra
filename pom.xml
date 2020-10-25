@@ -77,7 +77,6 @@
 						--add-opens=com.avereon.zevra/com.avereon.product=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.settings=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.transaction=ALL-UNNAMED
-						--add-opens=com.avereon.zevra/com.avereon.undo=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.util=ALL-UNNAMED,com.fasterxml.jackson.databind
 					</argLine>
 				</configuration>
