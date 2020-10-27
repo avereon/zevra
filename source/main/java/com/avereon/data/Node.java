@@ -270,33 +270,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) dispatch( (NodeEvent)event );
-	}
-
-	/**
-	 * Dispatch a {@link NodeEvent} to the data node. This method should not be
-	 * called by other classes other than the {@link Node data} classes.
-	 *
-	 * @param event The data node event
-	 */
-	private void dispatch( NodeEvent event ) {
-		// Dispatch to value change handlers only when the event is on itself
-		boolean self = event.getNode() == this;
-		boolean valueChanged = event.getEventType() == NodeEvent.VALUE_CHANGED;
-		if( self && valueChanged ) {
-			ConcurrentModificationException exception;
-			do {
-				try {
-					exception = null;
-					var valueHandlers = new HashMap<>( valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ) );
-					valueHandlers.forEach( ( k, v ) -> v.handle( event ) );
-				} catch( ConcurrentModificationException cme ) {
-					exception = cme;
-				}
-			} while( exception != null );
-		}
-
-		hub.dispatch( event );
+		if( event instanceof NodeEvent ) doDispatch( (NodeEvent)event );
 	}
 
 	/**
@@ -586,7 +560,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 *
 	 * @param keys The value keys
 	 */
-	protected void addModifyingKeys( String... keys ) {
+	public void addModifyingKeys( String... keys ) {
 		if( modifyingKeySet == null ) modifyingKeySet = new CopyOnWriteArraySet<>();
 		modifyingKeySet.addAll( Set.of( keys ) );
 	}
@@ -596,7 +570,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 *
 	 * @param keys The value keys
 	 */
-	protected void removeModifyingKeys( String... keys ) {
+	public void removeModifyingKeys( String... keys ) {
 		if( modifyingKeySet == null ) return;
 		modifyingKeySet.removeAll( Set.of( keys ) );
 		if( modifyingKeySet.isEmpty() ) modifyingKeySet = null;
@@ -608,7 +582,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param key The value key
 	 * @return True if the value key is a modifying value key, false otherwise
 	 */
-	protected boolean isModifyingKey( String key ) {
+	public boolean isModifyingKey( String key ) {
 		return allKeysModify || Optional.ofNullable( modifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
 	}
 
@@ -714,7 +688,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param <T> The value type
 	 * @return The value
 	 */
-	protected <T> T getValue( String key ) {
+	public <T> T getValue( String key ) {
 		return getValue( key, (T)null );
 	}
 
@@ -727,7 +701,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param <T> The value type
 	 * @return The value
 	 */
-	protected <T> T getValue( String key, T defaultValue ) {
+	public <T> T getValue( String key, T defaultValue ) {
 		return getValue( key, () -> defaultValue );
 	}
 
@@ -742,7 +716,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @return The value
 	 */
 	@SuppressWarnings( "unchecked" )
-	protected <T> T getValue( String key, Supplier<T> supplier ) {
+	public <T> T getValue( String key, Supplier<T> supplier ) {
 		Objects.requireNonNull( key, "Value key cannot be null" );
 		T value = values == null ? null : (T)values.get( key );
 		return value != null ? value : supplier != null ? supplier.get() : null;
@@ -754,7 +728,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param key The value key
 	 * @param newValue The value
 	 */
-	protected <T> T setValue( String key, T newValue ) {
+	public <T> T setValue( String key, T newValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( readOnlySet != null && readOnlySet.contains( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
@@ -990,6 +964,32 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				if( parent.getValue( k ).equals( child ) ) parent.setValue( k, null );
 			} );
 		}
+	}
+
+	/**
+	 * Dispatch a {@link NodeEvent} to the data node. This method should not be
+	 * called by other classes other than the {@link Node data} classes.
+	 *
+	 * @param event The data node event
+	 */
+	private void doDispatch( NodeEvent event ) {
+		// Dispatch to value change handlers only when the event is on itself
+		boolean self = event.getNode() == this;
+		boolean valueChanged = event.getEventType() == NodeEvent.VALUE_CHANGED;
+		if( self && valueChanged ) {
+			ConcurrentModificationException exception;
+			do {
+				try {
+					exception = null;
+					var valueHandlers = new HashMap<>( valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ) );
+					valueHandlers.forEach( ( k, v ) -> v.handle( event ) );
+				} catch( ConcurrentModificationException cme ) {
+					exception = cme;
+				}
+			} while( exception != null );
+		}
+
+		hub.dispatch( event );
 	}
 
 	private void checkForCircularReference( Node parent ) {
