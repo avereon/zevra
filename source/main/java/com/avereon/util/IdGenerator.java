@@ -1,5 +1,6 @@
 package com.avereon.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 
@@ -9,13 +10,9 @@ public class IdGenerator {
 
 	private static final Random RANDOM = new Random();
 
-	private static char[] map;
-
-	static {
-		// The character map must contain 16 characters, no more, no less
-		// List of consonant letters with no descenders in no particular order
-		map = "mhnflcdtvkxzrwbs".toCharArray();
-	}
+	// The character map must contain 16 characters, no more, no less
+	// List of consonant letters with no descenders in no particular order
+	private static final char[] map = "mhnflcdtvkxzrwbs".toCharArray();
 
 	public static String getId() {
 		return getId( System.currentTimeMillis() ^ RANDOM.nextLong() );
@@ -37,7 +34,7 @@ public class IdGenerator {
 
 		try {
 			MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
-			byte[] hash = digest.digest( string.getBytes( "UTF-8" ) );
+			byte[] hash = digest.digest( string.getBytes( StandardCharsets.UTF_8 ) );
 			for( int index = 0; index < hash.length; index++ ) {
 				long value = hash[ index ];
 				value = value << (index % 8 * 8);
