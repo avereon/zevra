@@ -86,6 +86,11 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
+	public String get( String key, Object defaultValue ) {
+		return get( key, String.class, String.valueOf( defaultValue ) );
+	}
+
+	@Override
 	public <T> T get( String key, Class<T> type ) {
 		return get( key, new TypeReference<>( type ) {} );
 	}

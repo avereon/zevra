@@ -167,6 +167,8 @@ public interface Settings {
 	 */
 	String get( String key, String defaultValue );
 
+	String get( String key, Object defaultValue );
+
 	/**
 	 * Get a value from the settings node. This method is useful for specifying
 	 * that the return type be a simple data type.
