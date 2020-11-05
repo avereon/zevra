@@ -87,6 +87,11 @@ public class NodeSettingsWrapper implements Settings {
 	}
 
 	@Override
+	public String get( String key, Object defaultValue ) {
+		return get( key, String.valueOf( defaultValue ) );
+	}
+
+	@Override
 	public <T> T get( String key, Class<T> type ) {
 		return node.getValue( key );
 	}

@@ -319,6 +319,11 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
+	void testGetUsingDefaultValueWithObject() {
+		assertThat( settings.get( "missing", false ), is( "false" ) );
+	}
+
+	@Test
 	void testGetBooleanUsingDefaultValue() {
 		assertThat( settings.get( "missing", Boolean.class, false ), is( false ) );
 	}
