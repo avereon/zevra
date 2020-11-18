@@ -190,9 +190,11 @@ public class ProductCard extends BaseCard {
 	public ProductCard copyFrom( ProductCard card ) {
 		this.group = card.group;
 		this.artifact = card.artifact;
-		this.packaging = card.packaging;
 		this.version = card.version;
 		this.timestamp = card.timestamp;
+
+		this.packaging = card.packaging;
+		this.packagingVersion = card.packagingVersion;
 
 		this.icons = card.icons;
 		this.name = card.name;

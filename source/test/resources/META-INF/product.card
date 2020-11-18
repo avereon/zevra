@@ -3,6 +3,8 @@
   "artifact": "zevra",
   "version": "0.0-SNAPSHOT",
   "timestamp": "2018-01-01 00:00:00",
+  "packaging": "lib",
+  "packagingVersion": "2.7",
 	"icons": [ "library", "https://avereon.com/download/latest/zevra/product/icon" ],
   "name": "Zevra",
   "provider": "Avereon",

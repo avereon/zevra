@@ -54,6 +54,9 @@ class ProductCardTest {
 		assertThat( card.getVersion(), is( "0.0-SNAPSHOT" ) );
 		assertThat( card.getTimestamp(), is( "2018-01-01 00:00:00" ) );
 
+		assertThat( card.getPackaging(), is( "lib" ) );
+		assertThat( card.getPackagingVersion(), is( "2.7" ) );
+
 		assertThat( card.getName(), is( "Zevra" ) );
 		assertThat( card.getIcons(), contains( "library", "https://avereon.com/download/latest/zevra/product/icon" ) );
 		assertThat( card.getProvider(), is( "Avereon" ) );
