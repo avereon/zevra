@@ -158,6 +158,7 @@ class ProductCardTest {
 		card.setGroup( "com.avereon" );
 		card.setArtifact( "zevra" );
 		card.setPackaging( "lib" );
+		card.setPackagingVersion( "2.7" );
 		card.setVersion( "1.0.0" );
 		card.setTimestamp( "2018-01-01 00:00:00" );
 		card.setIcons( List.of( "avereon", "https://avereon.com/download/stable/avereon/provider/icon" ) );
@@ -176,9 +177,10 @@ class ProductCardTest {
 		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
 		assertThat( reader.readLine(), is( "  \"group\" : \"com.avereon\"," ) );
 		assertThat( reader.readLine(), is( "  \"artifact\" : \"zevra\"," ) );
-		assertThat( reader.readLine(), is( "  \"packaging\" : \"lib\"," ) );
 		assertThat( reader.readLine(), is( "  \"version\" : \"1.0.0\"," ) );
 		assertThat( reader.readLine(), is( "  \"timestamp\" : \"2018-01-01 00:00:00\"," ) );
+		assertThat( reader.readLine(), is( "  \"packaging\" : \"lib\"," ) );
+		assertThat( reader.readLine(), is( "  \"packagingVersion\" : \"2.7\"," ) );
 		assertThat( reader.readLine(), is( "  \"icons\" : [ \"avereon\", \"https://avereon.com/download/stable/avereon/provider/icon\" ]," ) );
 		assertThat( reader.readLine(), is( "  \"name\" : \"Zevra\"," ) );
 		assertThat( reader.readLine(), is( "  \"provider\" : null," ) );

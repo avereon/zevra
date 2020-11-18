@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
@@ -32,11 +31,13 @@ public class ProductCard extends BaseCard {
 
 	private String artifact;
 
-	private String packaging;
-
 	private String version;
 
 	private String timestamp;
+
+	private String packaging;
+
+	private String packagingVersion;
 
 	@JsonIgnore
 	private Release release;
@@ -81,13 +82,25 @@ public class ProductCard extends BaseCard {
 
 	public ProductCard() {}
 
+	public static ProductCard card( Path path ) throws IOException {
+		try ( FileInputStream input = new FileInputStream( path.toFile() ) ) {
+			return new ProductCard().fromJson( input );
+		}
+	}
+
+	public static ProductCard info( Path path ) throws IOException {
+		try ( FileInputStream input = new FileInputStream( path.toFile() ) ) {
+			return new ProductCard().fromInfo( input );
+		}
+	}
+
 	public ProductCard card( Product product ) {
 		return card( product.getClass() );
 	}
 
 	public ProductCard card( Class<?> source ) {
 		try {
-			return fromCard( source );
+			return fromInfo( source );
 		} catch( IOException exception ) {
 			throw new RuntimeException( "Error loading product card", exception );
 		}
@@ -97,15 +110,15 @@ public class ProductCard extends BaseCard {
 	//		return fromCard( product.getClass() );
 	//	}
 
-	private ProductCard fromCard( Class<?> source ) throws IOException {
+	private ProductCard fromInfo( Class<?> source ) throws IOException {
 		/*
 		 * NOTE Using the class loader instead of the class to find the resource
 		 * does not work as expected when loading products from the classpath.
 		 */
-		return fromCard( source.getResourceAsStream( "/" + INFO ) );
+		return fromInfo( source.getResourceAsStream( "/" + INFO ) );
 	}
 
-	private ProductCard fromCard( InputStream input ) throws IOException {
+	private ProductCard fromInfo( InputStream input ) throws IOException {
 		if( input == null ) throw new NullPointerException( "InputStream cannot be null" );
 
 		Properties values = new Properties();
@@ -237,15 +250,6 @@ public class ProductCard extends BaseCard {
 		return packaging;
 	}
 
-	public ProductCard setPackaging( String packaging ) {
-		this.packaging = packaging;
-		return this;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
 	public ProductCard setVersion( String version ) {
 		this.version = version;
 		updateRelease();
@@ -260,6 +264,24 @@ public class ProductCard extends BaseCard {
 		this.timestamp = timestamp;
 		updateRelease();
 		return this;
+	}
+
+	public ProductCard setPackaging( String packaging ) {
+		this.packaging = packaging;
+		return this;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public ProductCard setPackagingVersion( String version ) {
+		this.packagingVersion = version;
+		return this;
+	}
+
+	public String getPackagingVersion() {
+		return packagingVersion;
 	}
 
 	public Release getRelease() {
