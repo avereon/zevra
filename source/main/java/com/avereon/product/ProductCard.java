@@ -83,13 +83,13 @@ public class ProductCard extends BaseCard {
 	public ProductCard() {}
 
 	public static ProductCard card( Path path ) throws IOException {
-		try ( FileInputStream input = new FileInputStream( path.toFile() ) ) {
+		try ( FileInputStream input = new FileInputStream( path.resolve( CARD ).toFile() ) ) {
 			return new ProductCard().fromJson( input );
 		}
 	}
 
 	public static ProductCard info( Path path ) throws IOException {
-		try ( FileInputStream input = new FileInputStream( path.toFile() ) ) {
+		try ( FileInputStream input = new FileInputStream( path.resolve( INFO ).toFile() ) ) {
 			return new ProductCard().fromInfo( input );
 		}
 	}
