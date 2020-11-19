@@ -42,6 +42,9 @@
 		<product-identifier>${project.artifactId}</product-identifier>
 		<project-timestamp>${maven.build.timestamp}</project-timestamp>
 
+		<!-- Needs to stay at a version compatible with all projects and the website -->
+		<java.version>11</java.version>
+
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
 		<jackson.version>2.11.1</jackson.version>
