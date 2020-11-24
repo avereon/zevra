@@ -37,7 +37,7 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size    The size to convert to human readable
 	 * @param compact If the unit should use compact notation
 	 * @return The human readable size string
 	 */
@@ -48,8 +48,8 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
 	 *
-	 * @param size The size to convert to human readable
-	 * @param compact If the unit should use compact notation
+	 * @param size     The size to convert to human readable
+	 * @param compact  If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
 	 * @return The human readable size string
 	 */
@@ -99,7 +99,7 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-2.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size    The size to convert to human readable
 	 * @param compact If the unit should use compact notation
 	 * @return The human readable size string
 	 */
@@ -110,8 +110,8 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-2.
 	 *
-	 * @param size The size to convert to human readable
-	 * @param compact If the unit should use compact notation
+	 * @param size     The size to convert to human readable
+	 * @param compact  If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
 	 * @return The human readable size string
 	 */
@@ -251,8 +251,7 @@ public class FileUtil {
 	private static void copyFileToFile( File source, File target, LongConsumer progressCallback ) throws IOException {
 		if( target.exists() && target.isDirectory() ) throw new IOException( "Destination is a directory: " + target );
 
-		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos
-			.getChannel() ) {
+		try( FileInputStream fis = new FileInputStream( source ); FileChannel input = fis.getChannel(); FileOutputStream fos = new FileOutputStream( target ); FileChannel output = fos.getChannel() ) {
 			final long size = input.size();
 			long count;
 			long position = 0;
@@ -478,7 +477,7 @@ public class FileUtil {
 	/**
 	 * Create a temporary folder.
 	 *
-	 * @param path The temp folder path
+	 * @param path   The temp folder path
 	 * @param prefix The temp folder prefix
 	 * @return The temp folder Path object
 	 * @throws IOException If an I/O error occurs

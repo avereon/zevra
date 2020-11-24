@@ -14,12 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class BaseSettingsTest {
 
-	static final String SETTINGS_NAME = "AvereonSettingsTest";
-
 	protected Settings settings;
 
 	@Test
 	void testNodeExists() {
+		if( settings instanceof StoredSettings ) System.out.println( ((StoredSettings)settings).getFile() );
 		assertTrue( settings.nodeExists( "/" ) );
 
 		Settings deep = settings.getNode( "deep" );

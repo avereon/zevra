@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StoredSettingsTest extends BaseSettingsTest {
 
+	private static final String SETTINGS_NAME = "AvereonSettingsTest";
+
 	private Path path;
 
 	@BeforeEach
@@ -23,18 +25,21 @@ class StoredSettingsTest extends BaseSettingsTest {
 
 	@AfterEach
 	void cleanup() throws Exception {
-		FileUtil.delete( path );
+		settings.delete();
+		if( Files.exists( path ) ) throw new IllegalStateException( "File still exists: " + path );
+		Thread.sleep(100);
+		if( Files.exists( path ) ) throw new IllegalStateException( "File came back after delete: " + path );
 	}
 
 	@Test
 	void testSaveAfterDelete() {
 		settings.set( "test", "1" );
-		assertTrue( Files.exists( path ));
+		assertTrue( Files.exists( path ) );
 		settings.delete();
-		assertFalse( Files.exists( path ));
+		assertFalse( Files.exists( path ) );
 		settings.set( "test", "2" );
 		settings.flush();
-		assertFalse( Files.exists( path ));
+		assertFalse( Files.exists( path ) );
 	}
 
 }

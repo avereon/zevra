@@ -11,10 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class StoredSettings extends AbstractSettings {
 
@@ -34,26 +33,26 @@ public class StoredSettings extends AbstractSettings {
 
 	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
 
-	private static Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
+	private static final Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
 
 	// Settings map store in root node
 	private Map<String, StoredSettings> settings;
 
-	private ExecutorService executor;
+	private final ExecutorService executor;
 
-	private StoredSettings root;
+	private final StoredSettings root;
 
-	private String path;
+	private final String path;
 
-	private Path folder;
+	private final Path folder;
 
-	private Properties values;
+	private final Properties values;
 
-	private AtomicLong lastDirtyTime = new AtomicLong();
+	private final AtomicLong lastDirtyTime = new AtomicLong();
 
-	private AtomicLong lastValueTime = new AtomicLong();
+	private final AtomicLong lastValueTime = new AtomicLong();
 
-	private AtomicLong lastStoreTime = new AtomicLong();
+	private final AtomicLong lastStoreTime = new AtomicLong();
 
 	private final Object scheduleLock = new Object();
 
@@ -68,7 +67,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private StoredSettings( StoredSettings root, String path, Path folder, Map<String, String> values, ExecutorService executor ) {
-		if( folder.getFileName().equals( SETTINGS_FILE_NAME ) ) throw new RuntimeException( "Folder ends with " + SETTINGS_FILE_NAME );
+		if( folder.getFileName().toString().equals( SETTINGS_FILE_NAME ) ) throw new RuntimeException( "Folder ends with " + SETTINGS_FILE_NAME );
 		if( root == null ) {
 			this.settings = new ConcurrentHashMap<>();
 			this.root = this;
@@ -101,10 +100,8 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	/**
-	 * This checks if the node folder exists for the specified settings path. It
-	 * is possible, for new nodes or recently removed nodes, that this this method
-	 * return a different value than {@link #nodeExists} if the changes have not yet
-	 * been flushed.
+	 * This checks if the node folder exists for the specified settings path. It is possible, for new nodes or recently removed nodes, that this this method return a different value than {@link #nodeExists} if the changes have not yet been
+	 * flushed.
 	 *
 	 * @param path The child node settings path
 	 * @return True if the node folder exists, false otherwise
@@ -122,28 +119,38 @@ public class StoredSettings extends AbstractSettings {
 
 	@Override
 	public Settings getNode( String path, Map<String, String> values ) {
-		String nodePath = getNodePath( this.path, path );
-
 		// Get or create settings node
-		Settings child = root.settings.get( nodePath );
-		// The substring(1) removes the leading slash
-		if( child == null ) child = new StoredSettings( root, nodePath, root.folder.resolve( nodePath.substring( 1 ) ), values, executor );
+		String nodePath = getNodePath( this.path, path );
+		Settings node = root.settings.get( nodePath );
+		Path folder = root.folder.resolve( nodePath.substring( 1 ) );
+		if( node == null ) {
+			log.log( Log.TRACE, "node=" + nodePath );
+			node = new StoredSettings( root, nodePath, folder, values, executor );
+		}
 
-		return child;
+		// Create missing parents
+		String parentPath = PathUtil.getParent( nodePath );
+		folder = folder.getParent();
+		while( parentPath != null && root.settings.get( parentPath ) == null ) {
+			log.log( Log.TRACE, "node=" + parentPath );
+			new StoredSettings( root, parentPath, folder, null, executor );
+			parentPath = PathUtil.getParent( parentPath );
+			folder = folder.getParent();
+		}
+
+		return node;
 	}
 
 	@Override
 	public List<String> getNodes() {
-		List<String> names = new CopyOnWriteArrayList<>();
-
-		if( !Files.exists( folder ) ) return names;
-		try( Stream<Path> list = Files.list( folder ) ) {
-			list.parallel().forEach( path -> names.add( path.getFileName().toString() ) );
-		} catch( IOException exception ) {
-			log.log( Log.WARN, "Unable to list paths: " + folder, exception );
-		}
-
-		return names;
+		String nodePath = this.path;
+		int length = PathUtil.ROOT.equals( nodePath ) ? 1 : nodePath.length() + 1;
+		return root.settings.keySet().stream().filter( k -> !k.equals( nodePath ) ).filter( k -> k.startsWith( nodePath ) ).map( n -> {
+			// Parse out the child node name
+			int index = n.indexOf( "/", length + 1 );
+			if( index < 0 ) return n.substring( length );
+			return n.substring( length, index );
+		} ).distinct().collect( Collectors.toList() );
 	}
 
 	@Override
@@ -188,9 +195,10 @@ public class StoredSettings extends AbstractSettings {
 		synchronized( scheduleLock ) {
 			setDeleted();
 			if( task != null ) task.cancel();
+			getNodes().forEach( System.out::println );
+			getNodes().stream().map( this::getNode ).forEach( Settings::delete );
 		}
 
-		root.settings.remove( getPath() );
 		try {
 			// Delete the file
 			Path file = getFile();
@@ -202,6 +210,8 @@ public class StoredSettings extends AbstractSettings {
 			if( getNodes().size() == 0 ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
 			log.log( Log.ERROR, "Unable to delete settings folder: " + folder, exception );
+		} finally {
+			root.settings.remove( getPath() );
 		}
 
 		return this;
@@ -224,16 +234,16 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private synchronized void save() {
+		if( isDeleted() ) return;
+
 		Path file = getFile();
 		try {
 			Files.createDirectories( file.getParent() );
-		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error saving settings file: " + file, exception );
-		}
-		try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
-			values.store( output, null );
-			lastStoreTime.set( System.currentTimeMillis() );
-			getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
+			try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
+				values.store( output, null );
+				lastStoreTime.set( System.currentTimeMillis() );
+				getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
+			}
 		} catch( IOException exception ) {
 			log.log( Log.ERROR, "Error saving settings file: " + file, exception );
 		}
@@ -269,7 +279,7 @@ public class StoredSettings extends AbstractSettings {
 		}
 	}
 
-	private Path getFile() {
+	Path getFile() {
 		return folder.resolve( SETTINGS_FILE_NAME );
 	}
 
@@ -277,8 +287,6 @@ public class StoredSettings extends AbstractSettings {
 
 		@Override
 		public void run() {
-			if( isDeleted() ) return;
-			
 			// If there is an executor, use it to run the task, otherwise run the task on the timer thread
 			if( executor != null && !executor.isShutdown() ) {
 				executor.submit( StoredSettings.this::save );

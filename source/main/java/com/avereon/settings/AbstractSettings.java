@@ -155,7 +155,6 @@ public abstract class AbstractSettings implements Settings {
 		}
 
 		// Settings change event should only be fired if the values are different
-		//if( !Objects.equals( oldValue, newValue ) ) new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ).fire( getListeners() );
 		if( !Objects.equals( oldValue, newValue ) ) getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
 
 		return this;
@@ -278,13 +277,12 @@ public abstract class AbstractSettings implements Settings {
 		}
 	}
 
-	@SuppressWarnings( "unchecked" )
 	protected <T> T unmarshallValue( String value, TypeReference<T> type, String defaultValue ) {
 		if( value == null ) value = defaultValue;
 		if( value == null ) return null;
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return (T)mapper.readerFor( mapper.constructType( type.getType() ) ).readValue( value );
+			return mapper.readerFor( mapper.constructType( type.getType() ) ).readValue( value );
 		} catch( IOException exception ) {
 			log.log( Log.WARN, "Error unmarshalling value", exception );
 			return null;
