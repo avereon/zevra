@@ -5,9 +5,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,8 +30,19 @@ class StoredSettingsTest extends BaseSettingsTest {
 	void cleanup() throws Exception {
 		settings.delete();
 		if( Files.exists( path ) ) throw new IllegalStateException( "File still exists: " + path );
-		Thread.sleep(100);
+		Thread.sleep( 100 );
 		if( Files.exists( path ) ) throw new IllegalStateException( "File came back after delete: " + path );
+	}
+
+	@Test
+	void testGetNodesFromFolder() throws IOException {
+		assertThat( settings.getNodes().size(), is( 0 ) );
+		Path childFolder = path.resolve( "children" );
+		Path childSettings = childFolder.resolve( "settings.properties" );
+		Files.createDirectory( childFolder );
+		Files.createFile( childSettings );
+		assertTrue( Files.exists( childSettings ) );
+		assertThat( settings.getNodes().size(), is( 1 ) );
 	}
 
 	@Test

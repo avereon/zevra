@@ -11,9 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StoredSettings extends AbstractSettings {
 
@@ -100,7 +102,8 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	/**
-	 * This checks if the node folder exists for the specified settings path. It is possible, for new nodes or recently removed nodes, that this this method return a different value than {@link #nodeExists} if the changes have not yet been
+	 * This checks if the node folder exists for the specified settings path. It is possible, for new nodes or recently removed nodes, that this this method
+	 * return a different value than {@link #nodeExists} if the changes have not yet been
 	 * flushed.
 	 *
 	 * @param path The child node settings path
@@ -143,14 +146,25 @@ public class StoredSettings extends AbstractSettings {
 
 	@Override
 	public List<String> getNodes() {
+		List<String> externalNames = new CopyOnWriteArrayList<>();
+		if( Files.exists( folder ) ) {
+			try( Stream<Path> list = Files.list( folder ) ) {
+				list.parallel().filter( Files::isDirectory ).forEach( path -> externalNames.add( path.getFileName().toString() ) );
+			} catch( IOException exception ) {
+				log.log( Log.WARN, "Unable to list paths: " + folder, exception );
+			}
+		}
+
 		String nodePath = this.path;
 		int length = PathUtil.ROOT.equals( nodePath ) ? 1 : nodePath.length() + 1;
-		return root.settings.keySet().stream().filter( k -> !k.equals( nodePath ) ).filter( k -> k.startsWith( nodePath ) ).map( n -> {
+		List<String> internalNames = root.settings.keySet().stream().filter( k -> !k.equals( nodePath ) ).filter( k -> k.startsWith( nodePath ) ).map( n -> {
 			// Parse out the child node name
 			int index = n.indexOf( "/", length + 1 );
 			if( index < 0 ) return n.substring( length );
 			return n.substring( length, index );
 		} ).distinct().collect( Collectors.toList() );
+
+		return Stream.concat( externalNames.stream(), internalNames.stream() ).distinct().collect( Collectors.toList());
 	}
 
 	@Override
