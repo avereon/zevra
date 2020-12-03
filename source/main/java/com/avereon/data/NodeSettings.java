@@ -8,7 +8,6 @@ import com.avereon.settings.Settings;
 import com.avereon.settings.SettingsEvent;
 import com.avereon.util.TypeReference;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -72,39 +71,6 @@ public class NodeSettings implements Settings {
 	}
 
 	@Override
-	public String get( String key ) {
-		Object value = node.getValue( key );
-		return value == null ? null : String.valueOf( value );
-	}
-
-	@Override
-	public String get( String key, String defaultValue ) {
-		Object value = node.getValue( key );
-		return value == null ? defaultValue : String.valueOf( value );
-	}
-
-	@Override
-	public String get( String key, Object defaultValue ) {
-		return get( key, String.valueOf( defaultValue ) );
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type ) {
-		return node.getValue( key );
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type, T defaultValue ) {
-		T value = node.getValue( key );
-		return value == null ? defaultValue : value;
-	}
-
-	@Override
-	public <T> T get( String key, TypeReference<T> type ) {
-		return node.getValue( key );
-	}
-
-	@Override
 	public <T> T get( String key, TypeReference<T> type, T defaultValue ) {
 		T value = node.getValue( key );
 		return value == null ? defaultValue : value;
@@ -148,7 +114,7 @@ public class NodeSettings implements Settings {
 	}
 
 	@Override
-	public void loadDefaultValues( Object source, String path ) throws IOException {
+	public void loadDefaultValues( Object source, String path ) {
 		throw new UnsupportedOperationException( "Default values not supported" );
 	}
 

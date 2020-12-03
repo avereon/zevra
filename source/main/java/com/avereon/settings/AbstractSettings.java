@@ -75,36 +75,6 @@ public abstract class AbstractSettings implements Settings {
 		return getValue( path ) != null;
 	}
 
-	@Override
-	public String get( String key ) {
-		return get( key, String.class );
-	}
-
-	@Override
-	public String get( String key, String defaultValue ) {
-		return get( key, String.class, defaultValue );
-	}
-
-	@Override
-	public String get( String key, Object defaultValue ) {
-		return get( key, String.class, String.valueOf( defaultValue ) );
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type ) {
-		return get( key, new TypeReference<>( type ) {} );
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type, T defaultValue ) {
-		return get( key, new TypeReference<>( type ) {}, defaultValue );
-	}
-
-	@Override
-	public <T> T get( String key, TypeReference<T> type ) {
-		return get( key, type, null );
-	}
-
 	@SuppressWarnings( "unchecked" )
 	public <T> T get( String key, TypeReference<T> type, T defaultValue ) {
 		Object value;

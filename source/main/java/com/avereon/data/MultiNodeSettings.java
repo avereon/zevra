@@ -93,36 +93,6 @@ public class MultiNodeSettings implements Settings {
 	}
 
 	@Override
-	public String get( String key ) {
-		return get( key, String.class, null );
-	}
-
-	@Override
-	public String get( String key, String defaultValue ) {
-		return get( key, String.class, defaultValue );
-	}
-
-	@Override
-	public String get( String key, Object defaultValue ) {
-		return get( key, String.class, String.valueOf( defaultValue ) );
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type ) {
-		return get( key, type, null);
-	}
-
-	@Override
-	public <T> T get( String key, Class<T> type, T defaultValue ) {
-		return get( key, new TypeReference<>( type ) {}, defaultValue );
-	}
-
-	@Override
-	public <T> T get( String key, TypeReference<T> type ) {
-		return get( key, type, null);
-	}
-
-	@Override
 	public <T> T get( String key, TypeReference<T> type, T defaultValue ) {
 		T value = null;
 		if( !nodes.isEmpty() ) value = nodes.iterator().next().getValue( key );

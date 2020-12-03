@@ -71,21 +71,26 @@ public class NodeSettingsTest {
 	}
 
 	@Test
-	public void testRemove() {
-		settings.set( "value", Double.MAX_VALUE );
-		assertNotNull( settings.get( "value" ) );
-
-		settings.remove( "value" );
-		assertNull( settings.get( "value" ) );
+	public void testSet() {
+		assertNull( node.getValue( "value" ) );
+		settings.set( "value", Double.MIN_VALUE );
+		assertThat( node.getValue( "value" ), is( Double.MIN_VALUE ) );
 	}
 
 	@Test
-	public void testSetAndGet() {
-		assertNull( settings.get( "value" ) );
-
-		settings.set( "value", Double.MAX_VALUE );
+	public void testGet() {
+		assertNull( node.getValue( "value" ) );
+		node.setValue( "value", Double.MAX_VALUE );
 		assertThat( settings.get( "value", Double.class ), is( Double.MAX_VALUE ) );
-		assertThat( settings.get( "value" ), is( String.valueOf( Double.MAX_VALUE ) ) );
+	}
+
+	@Test
+	public void testRemove() {
+		settings.set( "value", Double.MAX_VALUE );
+		assertThat( node.getValue( "value" ), is( Double.MAX_VALUE ) );
+
+		settings.remove( "value" );
+		assertNull( node.getValue( "value" ) );
 	}
 
 }
