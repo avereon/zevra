@@ -8,35 +8,36 @@ import com.avereon.settings.Settings;
 import com.avereon.settings.SettingsEvent;
 import com.avereon.util.TypeReference;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
-public class NodeSettingsWrapper implements Settings {
+/**
+ * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the keys common to all nodes, if any.
+ */
+public class MultiNodeSettings implements Settings {
 
-	private final Node node;
+	public static final Object MULTIPLE = "MULTIPLE";
+
+	private Set<Node> nodes;
 
 	private final EventHub eventHub;
 
-	public NodeSettingsWrapper( Node node ) {
-		this.node = node;
-		this.eventHub = new EventHub();
-		this.eventHub.register( SettingsEvent.CHANGED, this::dispatch );
+	public MultiNodeSettings( Node... nodes ) {
+		this( Arrays.asList( nodes ) );
+	}
 
-		node.register( NodeEvent.VALUE_CHANGED, e -> eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, this.getPath(), e.getKey(), e.getOldValue(), e.getNewValue() ) ) );
+	public MultiNodeSettings( Collection<Node> nodes ) {
+		this.nodes = new HashSet<>( nodes );
+		this.eventHub = new EventHub();
 	}
 
 	@Override
 	public String getName() {
-		return node.getCollectionId();
+		return null;
 	}
 
 	@Override
 	public String getPath() {
-		return getName();
+		return null;
 	}
 
 	@Override
@@ -64,58 +65,82 @@ public class NodeSettingsWrapper implements Settings {
 		throw new UnsupportedOperationException( "Child settings not supported" );
 	}
 
+	/**
+	 * Returns the keys common to all nodes.
+	 *
+	 * @return The set of common keys
+	 */
 	@Override
 	public Set<String> getKeys() {
-		throw new UnsupportedOperationException( "Not implemented yet" );
+		// Create an initial set of keys
+		Set<String> keys = new HashSet<>();
+		if( !nodes.isEmpty() ) keys.addAll( nodes.iterator().next().getValueKeys() );
+
+		// Remove any keys that are not in every node
+		for( Node node : nodes ) {
+			Set<String> valueKeys = node.getValueKeys();
+			for( String key : new HashSet<>( keys ) ) {
+				if( valueKeys.contains( key ) ) continue;
+				keys.remove( key );
+			}
+			if( keys.isEmpty() ) break;
+		}
+
+		return keys;
 	}
 
 	@Override
 	public boolean exists( String key ) {
-		return node.hasKey( key );
+		return getKeys().contains( key );
 	}
 
 	@Override
 	public String get( String key ) {
-		Object value = node.getValue( key );
-		return value == null ? null : String.valueOf( value );
+		return get( key, String.class, null );
 	}
 
 	@Override
 	public String get( String key, String defaultValue ) {
-		Object value = node.getValue( key );
-		return value == null ? defaultValue : String.valueOf( value );
+		return get( key, String.class, defaultValue );
 	}
 
 	@Override
 	public String get( String key, Object defaultValue ) {
-		return get( key, String.valueOf( defaultValue ) );
+		return get( key, String.class, String.valueOf( defaultValue ) );
 	}
 
 	@Override
 	public <T> T get( String key, Class<T> type ) {
-		return node.getValue( key );
+		return get( key, type, null);
 	}
 
 	@Override
 	public <T> T get( String key, Class<T> type, T defaultValue ) {
-		T value = node.getValue( key );
-		return value == null ? defaultValue : value;
+		return get( key, new TypeReference<>( type ) {}, defaultValue );
 	}
 
 	@Override
 	public <T> T get( String key, TypeReference<T> type ) {
-		return node.getValue( key );
+		return get( key, type, null);
 	}
 
 	@Override
 	public <T> T get( String key, TypeReference<T> type, T defaultValue ) {
-		T value = node.getValue( key );
+		T value = null;
+		if( !nodes.isEmpty() ) value = nodes.iterator().next().getValue( key );
+
+		for( Node node : nodes ) {
+			if( !Objects.equals( node.getValue( key ), value ) ) return defaultValue;
+		}
+
 		return value == null ? defaultValue : value;
 	}
 
 	@Override
 	public Settings set( String key, Object value ) {
-		node.setValue( key, value );
+		for( Node node : nodes ) {
+			node.setValue( key, value );
+		}
 		return this;
 	}
 
@@ -126,7 +151,9 @@ public class NodeSettingsWrapper implements Settings {
 
 	@Override
 	public Settings remove( String key ) {
-		node.setValue( key, null );
+		for( Node node : nodes ) {
+			node.setValue( key, null );
+		}
 		return this;
 	}
 
@@ -151,11 +178,9 @@ public class NodeSettingsWrapper implements Settings {
 	}
 
 	@Override
-	public void loadDefaultValues( Object source, String path ) throws IOException {
+	public void loadDefaultValues( Object source, String path ) {
 		throw new UnsupportedOperationException( "Default values not supported" );
 	}
-
-	private Map<EventHandler<? extends SettingsEvent>, EventHandler<? extends NodeEvent>> settingsHandlers = new ConcurrentHashMap<>();
 
 	@Override
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
@@ -165,7 +190,6 @@ public class NodeSettingsWrapper implements Settings {
 
 	@Override
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
-//		throw new UnsupportedOperationException( "Use Node.unregister() instead" );
 		eventHub.unregister( type, handler );
 		return eventHub;
 	}
@@ -182,11 +206,7 @@ public class NodeSettingsWrapper implements Settings {
 
 	@Override
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
-		return node.getEventHandlers();
-	}
-
-	private void dispatch( SettingsEvent event ) {
-		//valueChangeHandlers.getOrDefault( event.getKey(), Set.of() ).forEach( h -> h.handle( event ) );
+		return eventHub.getEventHandlers();
 	}
 
 }

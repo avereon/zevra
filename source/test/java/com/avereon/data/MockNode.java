@@ -4,7 +4,7 @@ import java.util.Set;
 
 class MockNode extends Node {
 
-	public static final String MID = "mid";
+	public static final String MOCK_ID = "mock-id";
 
 	public static final String ITEMS = "items";
 
@@ -15,18 +15,18 @@ class MockNode extends Node {
 	}
 
 	MockNode( String id ) {
-		definePrimaryKey( MID );
+		definePrimaryKey( MOCK_ID );
 		if( id != null ) setMockId( id );
 		addModifyingKeys( ITEMS, "key", "child", "a", "b", "c", "x", "y", "z" );
 		register( NodeEvent.ANY, watcher = new NodeWatcher() );
 	}
 
 	public String getMockId() {
-		return getValue( MID );
+		return getValue( MOCK_ID );
 	}
 
 	public MockNode setMockId( String id ) {
-		setValue( MID, id );
+		setValue( MOCK_ID, id );
 		return this;
 	}
 

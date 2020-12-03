@@ -1627,7 +1627,7 @@ class NodeTest {
 		assertThat( data.hashCode(), is( System.identityHashCode( data ) ) );
 
 		// Test the primary key
-		data.setValue( MockNode.MID, key );
+		data.setValue( MockNode.MOCK_ID, key );
 		assertThat( data.hashCode(), is( key.hashCode() ) );
 
 		// Test the natural key
@@ -1647,10 +1647,10 @@ class NodeTest {
 		assertThat( data1.equals( data2 ), is( true ) );
 
 		// Test the primary key
-		data1.setValue( MockNode.MID, key );
+		data1.setValue( MockNode.MOCK_ID, key );
 		assertThat( data1.equals( data2 ), is( false ) );
 
-		data2.setValue( MockNode.MID, key );
+		data2.setValue( MockNode.MOCK_ID, key );
 		assertThat( data1.equals( data2 ), is( true ) );
 
 		// Test the natural key

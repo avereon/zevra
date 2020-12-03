@@ -8,18 +8,19 @@ import org.junit.jupiter.api.Test;
 import static com.avereon.settings.SettingsMatchers.eventHas;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NodeSettingsWrapperTest {
+public class NodeSettingsTest {
 
 	private MockNode node;
 
-	private NodeSettingsWrapper settings;
+	private NodeSettings settings;
 
 	@BeforeEach
 	public void setup() {
 		node = new MockNode();
-		settings = new NodeSettingsWrapper( node );
+		settings = new NodeSettings( node );
 	}
 
 	@Test
@@ -59,6 +60,14 @@ public class NodeSettingsWrapperTest {
 	@Test
 	public void testGetPath() {
 		assertThat( settings.getPath(), is( node.getCollectionId() ) );
+	}
+
+	@Test
+	public void testGetKeys() {
+		node.setValue( "b", "B" );
+		node.setValue( "a", "A" );
+		node.setValue( "c", "C" );
+		assertThat( settings.getKeys(), containsInAnyOrder( "a", "b", "c" ) );
 	}
 
 	@Test
