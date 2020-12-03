@@ -15,9 +15,7 @@ import java.util.*;
  */
 public class MultiNodeSettings implements Settings {
 
-	public static final Object MULTIPLE = "MULTIPLE";
-
-	private Set<Node> nodes;
+	private final Set<? extends Node> nodes;
 
 	private final EventHub eventHub;
 
@@ -25,7 +23,7 @@ public class MultiNodeSettings implements Settings {
 		this( Arrays.asList( nodes ) );
 	}
 
-	public MultiNodeSettings( Collection<Node> nodes ) {
+	public MultiNodeSettings( Collection<? extends Node> nodes ) {
 		this.nodes = new HashSet<>( nodes );
 		this.eventHub = new EventHub();
 	}
