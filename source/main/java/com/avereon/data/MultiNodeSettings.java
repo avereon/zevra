@@ -6,6 +6,9 @@ import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.settings.Settings;
 import com.avereon.settings.SettingsEvent;
+import com.avereon.transaction.Txn;
+import com.avereon.transaction.TxnException;
+import com.avereon.util.Log;
 import com.avereon.util.TypeReference;
 
 import java.util.*;
@@ -14,6 +17,8 @@ import java.util.*;
  * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the keys common to all nodes, if any.
  */
 public class MultiNodeSettings implements Settings {
+
+	private static final System.Logger log = Log.get();
 
 	private final Set<? extends Node> nodes;
 
@@ -106,8 +111,14 @@ public class MultiNodeSettings implements Settings {
 
 	@Override
 	public Settings set( String key, Object value ) {
-		for( Node node : nodes ) {
-			node.setValue( key, value );
+		try {
+			Txn.create();
+			for( Node node : nodes ) {
+				node.setValue( key, value );
+			}
+			Txn.commit();
+		} catch( TxnException exception ) {
+			log.log( Log.ERROR, "Error setting value on multiple nodes", exception );
 		}
 		return this;
 	}
@@ -119,8 +130,14 @@ public class MultiNodeSettings implements Settings {
 
 	@Override
 	public Settings remove( String key ) {
-		for( Node node : nodes ) {
-			node.setValue( key, null );
+		try {
+			Txn.create();
+			for( Node node : nodes ) {
+				node.setValue( key, null );
+			}
+			Txn.commit();
+		} catch( TxnException exception ) {
+			log.log( Log.ERROR, "Error removing keys from multiple nodes", exception );
 		}
 		return this;
 	}
