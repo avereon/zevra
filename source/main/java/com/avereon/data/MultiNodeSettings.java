@@ -119,6 +119,8 @@ public class MultiNodeSettings implements Settings {
 			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value on multiple nodes", exception );
+		} finally {
+			Txn.reset();
 		}
 		return this;
 	}
@@ -138,6 +140,8 @@ public class MultiNodeSettings implements Settings {
 			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error removing keys from multiple nodes", exception );
+		} finally {
+			Txn.reset();
 		}
 		return this;
 	}
