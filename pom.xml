@@ -77,7 +77,6 @@
 					<argLine>
 						--add-opens=com.avereon.zevra/com.avereon.data=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.event=ALL-UNNAMED
-						--add-opens=com.avereon.zevra/com.avereon.math=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.product=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.settings=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.transaction=ALL-UNNAMED
