@@ -111,16 +111,12 @@ public class MultiNodeSettings implements Settings {
 
 	@Override
 	public Settings set( String key, Object value ) {
-		try {
-			Txn.create();
+		try( Txn ignored = Txn.create() ) {
 			for( Node node : nodes ) {
 				node.setValue( key, value );
 			}
-			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value on multiple nodes", exception );
-		} finally {
-			Txn.reset();
 		}
 		return this;
 	}

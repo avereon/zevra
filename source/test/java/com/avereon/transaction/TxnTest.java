@@ -32,6 +32,18 @@ class TxnTest {
 	}
 
 	@Test
+	void testAutoCloseable() throws Exception {
+		MockTransactionOperation step = new MockTransactionOperation();
+
+		try(Txn ignored = Txn.create() ) {
+			Txn.submit( step );
+		}
+
+		assertThat( step.getCommitCallCount(), is( 1 ) );
+		assertThat( step.getRollbackCallCount(), is( 0 ) );
+	}
+
+	@Test
 	void testRollback() throws Exception {
 		MockTransactionOperation step1 = new MockTransactionOperation();
 		MockTransactionOperation step2 = new MockTransactionOperation();

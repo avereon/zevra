@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *   ...
  * </pre>
  */
-public class Txn {
+public class Txn implements AutoCloseable {
 
 	private static final System.Logger log = Log.get();
 
@@ -87,6 +87,11 @@ public class Txn {
 
 		transaction.doCommit();
 		pullTransaction();
+	}
+
+	@Override
+	public void close() throws TxnException {
+		commit();
 	}
 
 	public static void reset() {
