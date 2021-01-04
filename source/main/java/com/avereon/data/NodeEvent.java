@@ -7,7 +7,9 @@ import java.util.Objects;
 
 public class NodeEvent extends TxnEvent {
 
-	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( "VALUE_CHANGED" );
+	public static final EventType<NodeEvent> MODIFIED = new EventType<>( "MODIFIED" );
+
+	public static final EventType<NodeEvent> UNMODIFIED = new EventType<>( "UNMODIFIED" );
 
 	public static final EventType<NodeEvent> ADDED = new EventType<>( "ADDED" );
 
@@ -17,11 +19,11 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> CHILD_REMOVED = new EventType<>( "CHILD_REMOVED" );
 
-	public static final EventType<NodeEvent> MODIFIED = new EventType<>( "MODIFIED" );
-
-	public static final EventType<NodeEvent> UNMODIFIED = new EventType<>( "UNMODIFIED" );
-
 	public static final EventType<NodeEvent> NODE_CHANGED = new EventType<>( "NODE_CHANGED" );
+
+	public static final EventType<NodeEvent> PARENT_CHANGED = new EventType<>( "PARENT_CHANGED" );
+
+	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( "VALUE_CHANGED" );
 
 	private final String key;
 

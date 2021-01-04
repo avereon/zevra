@@ -882,7 +882,17 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	void setParent( Node parent ) {
 		checkForCircularReference( parent );
+
+		if( this.parent != null ) {
+			// Disconnect
+		}
+
+		// Set the parent
 		this.parent = parent;
+
+		if( this.parent != null ) {
+			// Connect
+		}
 	}
 
 	List<Node> getNodePath() {
@@ -1019,12 +1029,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		/**
-		 * Fire a cascading event. A cascading event is where the same event is sent
+		 * Fire a sliding event. A sliding event is where the same event is sent
 		 * to the node and all parents.
 		 *
 		 * @param event The event
 		 */
-		protected final void fireCascadingEvent( NodeEvent event ) {
+		protected final void fireSlidingEvent( NodeEvent event ) {
 			Node node = event.getNode();
 			while( node != null ) {
 				fireTargetedEvent( node, event );
@@ -1033,16 +1043,48 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		/**
-		 * Fire a sliding event. A sliding event is where a new event of the same
-		 * type is generated for the node and each parent.
+		 * Fire a cascading event. A cascading event is where a new event of the
+		 * same type is generated for the node and each parent.
 		 *
 		 * @param type The event type
 		 */
-		final void fireSlidingEvent( EventType<NodeEvent> type ) {
+		final void fireCascadingEvent( EventType<NodeEvent> type ) {
 			Node node = getNode();
 			while( node != null ) {
 				fireTargetedEvent( node, new NodeEvent( node, type ) );
 				node = node.getParent();
+			}
+		}
+
+		final void fireDroppingEvent( EventType<NodeEvent> type ) {
+			Node source = getNode();
+			Node target = getNode();
+
+			if( source instanceof NodeSet ) source = source.getParent();
+			if( source == null ) return;
+
+			fireDroppingEvent( target, new NodeEvent( source, type ) );
+		}
+
+		final void fireDroppingEvent( Node target, NodeEvent event ) {
+			if( target == null || target.values == null ) return;
+
+			NodeEvent newEvent = new NodeEvent( event.getNode(), event.getEventType() );
+
+			for( Object value : target.values.values() ) {
+				if( value instanceof Node ) {
+					Node child = (Node)value;
+					if( child instanceof NodeSet ) {
+						for( Object setValue : (NodeSet<?>)value ) {
+							child = (Node)setValue;
+							fireTargetedEvent( child, newEvent );
+							fireDroppingEvent( child, newEvent );
+						}
+					} else {
+						fireTargetedEvent( child, newEvent );
+						fireDroppingEvent( child, newEvent );
+					}
+				}
 			}
 		}
 
@@ -1150,18 +1192,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				boolean childRemove = newValue == null && oldValue instanceof Node;
 				if( childAdd ) {
 					fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
-					fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
+					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
 				}
 				if( childRemove ) {
 					fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
-					fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
 				}
+				if( !childAdd && !childRemove ) fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 				Txn.submit( updateModified );
 			}
 
-			fireCascadingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
-
-			fireSlidingEvent( NodeEvent.NODE_CHANGED );
+			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
+			fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -1185,7 +1227,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		@Override
 		protected void commit() {
-			fireSlidingEvent( NodeEvent.NODE_CHANGED );
+			fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -1224,7 +1266,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				parent = parent.getParent();
 			}
 
-			fireSlidingEvent( NodeEvent.NODE_CHANGED );
+			fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
