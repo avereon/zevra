@@ -6,6 +6,7 @@ import com.avereon.util.Log;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 /**
  * Txn is a transaction utility. Transactions are thread local for convenience
@@ -79,6 +80,29 @@ public class Txn implements AutoCloseable {
 
 	public static void submit( TxnOperation operation ) throws TxnException {
 		verifyActiveTransaction().operations.offer( operation );
+	}
+
+	public static void submit( TxnEventTarget target, Consumer<TxnEventTarget>consumer ) throws TxnException {
+		submit( new ConsumerTxnOperation( target, consumer ) );
+	}
+
+	private static class ConsumerTxnOperation extends TxnOperation {
+
+		private Consumer<TxnEventTarget> consumer;
+
+		public ConsumerTxnOperation( TxnEventTarget target, Consumer<TxnEventTarget> consumer ) {
+			super( target );
+			this.consumer = consumer;
+		}
+
+		@Override
+		protected void commit() throws TxnException {
+			consumer.accept( getTarget() );
+		}
+
+		@Override
+		protected void revert() throws TxnException {}
+
 	}
 
 	public static void commit() throws TxnException {

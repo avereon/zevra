@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,7 +36,7 @@ class TxnTest {
 	void testAutoCloseable() throws Exception {
 		MockTransactionOperation step = new MockTransactionOperation();
 
-		try(Txn ignored = Txn.create() ) {
+		try( Txn ignored = Txn.create() ) {
 			Txn.submit( step );
 		}
 
@@ -211,6 +212,21 @@ class TxnTest {
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().size(), is( index ) );
+	}
+
+	@Test
+	void testTxnWithConsumerOperation() throws Exception {
+		MockTxnEventTarget target = new MockTxnEventTarget();
+		AtomicInteger count = new AtomicInteger();
+		assertThat( count.get(), is( 0 ) );
+
+		Txn.create();
+		Txn.submit( target, t -> count.incrementAndGet() );
+		// The value should not have changed until after commit
+		assertThat( count.get(), is( 0 ) );
+		Txn.commit();
+
+		assertThat( count.get(), is( 1 ) );
 	}
 
 	private static class MockTxnEventTarget implements TxnEventTarget {
