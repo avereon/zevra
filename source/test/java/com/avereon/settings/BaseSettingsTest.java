@@ -18,7 +18,6 @@ public abstract class BaseSettingsTest {
 
 	@Test
 	void testNodeExists() {
-		if( settings instanceof StoredSettings ) System.out.println( ((StoredSettings)settings).getFile() );
 		assertTrue( settings.nodeExists( "/" ) );
 
 		Settings deep = settings.getNode( "deep" );

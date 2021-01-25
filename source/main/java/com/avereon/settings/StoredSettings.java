@@ -209,7 +209,6 @@ public class StoredSettings extends AbstractSettings {
 		synchronized( scheduleLock ) {
 			setDeleted();
 			if( task != null ) task.cancel();
-			getNodes().forEach( System.out::println );
 			getNodes().stream().map( this::getNode ).forEach( Settings::delete );
 		}
 
