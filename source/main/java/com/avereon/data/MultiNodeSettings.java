@@ -112,9 +112,7 @@ public class MultiNodeSettings implements Settings {
 	@Override
 	public Settings set( String key, Object value ) {
 		try( Txn ignored = Txn.create() ) {
-			for( Node node : nodes ) {
-				node.setValue( key, value );
-			}
+			nodes.forEach( n -> n.setValue( key, value ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value on multiple nodes", exception );
 		}
@@ -128,12 +126,8 @@ public class MultiNodeSettings implements Settings {
 
 	@Override
 	public Settings remove( String key ) {
-		try {
-			Txn.create();
-			for( Node node : nodes ) {
-				node.setValue( key, null );
-			}
-			Txn.commit();
+		try( Txn ignored = Txn.create() ) {
+			nodes.forEach( n -> n.setValue( key, null ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error removing keys from multiple nodes", exception );
 		} finally {
