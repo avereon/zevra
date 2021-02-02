@@ -7,8 +7,12 @@ public abstract class IdNode extends Node {
 	public static final String ID = "id";
 
 	public IdNode() {
-		setId( UUID.randomUUID().toString() );
 		definePrimaryKey( ID );
+		//try( Txn ignore = Txn.create() ) {
+			setId( UUID.randomUUID().toString() );
+//		} catch( TxnException exception ) {
+//			exception.printStackTrace( System.err );
+//		}
 	}
 
 	public String getId() {

@@ -732,12 +732,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( readOnlySet != null && readOnlySet.contains( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
-		try {
-			Txn.create();
+		try( Txn ignored = Txn.create() ) {
 			Object oldValue = getValue( key );
 			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
-			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting key: " + key, exception );
 		}

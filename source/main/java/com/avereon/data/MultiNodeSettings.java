@@ -32,9 +32,12 @@ public class MultiNodeSettings implements Settings {
 		this.nodes = new HashSet<>( nodes );
 		this.eventHub = new EventHub();
 
-//		nodes.forEach( n -> {
-//			n.getEventHub().addParent( eventHub );
-//		} );
+		// NodeEvent.VALUE_CHANGED events need to be mapped to SettingsEvent.CHANGED events
+		nodes.forEach( n -> {
+			n.register( NodeEvent.VALUE_CHANGED, e -> {
+				eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, ".", e.getKey(), e.getNewValue() ) );
+			} );
+		} );
 	}
 
 	@Override

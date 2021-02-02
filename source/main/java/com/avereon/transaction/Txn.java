@@ -73,7 +73,7 @@ public class Txn implements AutoCloseable {
 	public static Txn create( boolean nest ) {
 		Txn transaction = peekTransaction();
 		if( transaction == null || nest ) transaction = pushTransaction();
-		transaction.depth++;
+		transaction.incrementDepth();
 
 		return transaction;
 	}
@@ -82,13 +82,13 @@ public class Txn implements AutoCloseable {
 		verifyActiveTransaction().operations.offer( operation );
 	}
 
-	public static void submit( TxnEventTarget target, Consumer<TxnEventTarget>consumer ) throws TxnException {
+	public static void submit( TxnEventTarget target, Consumer<TxnEventTarget> consumer ) throws TxnException {
 		submit( new ConsumerTxnOperation( target, consumer ) );
 	}
 
 	private static class ConsumerTxnOperation extends TxnOperation {
 
-		private Consumer<TxnEventTarget> consumer;
+		private final Consumer<TxnEventTarget> consumer;
 
 		public ConsumerTxnOperation( TxnEventTarget target, Consumer<TxnEventTarget> consumer ) {
 			super( target );
@@ -107,10 +107,13 @@ public class Txn implements AutoCloseable {
 
 	public static void commit() throws TxnException {
 		Txn transaction = verifyActiveTransaction();
-		if( --transaction.depth > 0 ) return;
-
-		transaction.doCommit();
-		pullTransaction();
+		transaction.decrementDepth();
+		if( transaction.isActive() ) return;
+		try {
+			transaction.doCommit();
+		} finally {
+			pullTransaction();
+		}
 	}
 
 	@Override
@@ -131,6 +134,18 @@ public class Txn implements AutoCloseable {
 
 	public static Txn getActiveTransaction() {
 		return peekTransaction();
+	}
+
+	boolean isActive() {
+		return depth > 0;
+	}
+
+	void incrementDepth() {
+		depth++;
+	}
+
+	void decrementDepth() {
+		depth--;
 	}
 
 	private static Txn verifyActiveTransaction() throws TxnException {
