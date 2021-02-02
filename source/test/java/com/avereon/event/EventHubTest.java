@@ -23,7 +23,7 @@ class EventHubTest {
 
 		try {
 			bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
-		} catch( ConcurrentModificationException exception  ) {
+		} catch( ConcurrentModificationException exception ) {
 			fail( "EventBus.dispatch() not implemented in a way that prevents ConcurrentModificationException" );
 		}
 	}
@@ -69,6 +69,22 @@ class EventHubTest {
 		TestEvent b = new TestEvent( this, TestEvent.B );
 		bus.dispatch( b );
 		assertThat( bus.getPriorEvent( TestEvent.class ), is( b ) );
+	}
+
+	@Test
+	void testDispatchWithPeer() {
+		List<Event> testEvents = new ArrayList<>();
+		List<Event> peerEvents = new ArrayList<>();
+
+		EventHub bus = new EventHub();
+		EventHub peer = new EventHub();
+		bus.register( peer );
+		bus.register( TestEvent.ANY, testEvents::add );
+		peer.register( TestEvent.ANY, peerEvents::add );
+
+		bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
+		assertThat( peerEvents.size(), is( 1 ) );
+		assertThat( testEvents.size(), is( 1 ) );
 	}
 
 	private static class TestEvent extends Event {

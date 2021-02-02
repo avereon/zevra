@@ -31,6 +31,10 @@ public class MultiNodeSettings implements Settings {
 	public MultiNodeSettings( Collection<? extends Node> nodes ) {
 		this.nodes = new HashSet<>( nodes );
 		this.eventHub = new EventHub();
+
+//		nodes.forEach( n -> {
+//			n.getEventHub().addParent( eventHub );
+//		} );
 	}
 
 	@Override

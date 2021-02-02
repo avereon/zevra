@@ -2,19 +2,23 @@ package com.avereon.event;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 public class EventHub {
 
 	private static final EventHub ROOT = new EventHub();
 
+	private final Set<EventHub> peers;
+
 	private final Map<EventType<? extends Event>, Map<EventHandler<Event>, EventHandler<Event>>> handlers;
+
+	private final Map<Class<? extends Event>, Event> priorEvent;
 
 	private EventHub parent = ROOT;
 
-	private Map<Class<? extends Event>, Event > priorEvent;
-
 	public EventHub() {
+		this.peers = new CopyOnWriteArraySet<>();
 		this.handlers = new ConcurrentHashMap<>();
 		this.priorEvent = new ConcurrentHashMap<>();
 	}
@@ -45,6 +49,9 @@ public class EventHub {
 			} while( exception != null );
 		}
 
+		// Dispatch the event to the peer hubs
+		peers.forEach( p -> p.dispatch( event ) );
+
 		// Dispatch the event to the parent hub
 		if( this != ROOT ) parent.dispatch( event );
 
@@ -54,6 +61,14 @@ public class EventHub {
 	public EventHub parent( EventHub parent ) {
 		this.parent = parent == null ? ROOT : parent;
 		return this;
+	}
+
+	public void register( EventHub peer ) {
+		this.peers.add( peer );
+	}
+
+	public void unregister( EventHub peer ) {
+		this.peers.remove( peer );
 	}
 
 	@SuppressWarnings( "unchecked" )
