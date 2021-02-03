@@ -1,5 +1,6 @@
 package com.avereon.data;
 
+import com.avereon.transaction.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -82,6 +83,32 @@ public class MultiNodeSettingsTest {
 		assertThat( node2.getValue( "count" ), is( 42 ) );
 		assertThat( node3.getValue( "count" ), is( nullValue() ) );
 		settings.set( "count", 37 );
+		assertThat( node1.getValue( "count" ), is( 37 ) );
+		assertThat( node2.getValue( "count" ), is( 37 ) );
+		assertThat( node3.getValue( "count" ), is( 37 ) );
+	}
+
+	@Test
+	void testSetWithNestedTxn() throws Exception {
+		assertThat( node1.getValue( "count" ), is( nullValue() ) );
+		assertThat( node2.getValue( "count" ), is( 42 ) );
+		assertThat( node3.getValue( "count" ), is( nullValue() ) );
+		try( Txn ignored = Txn.create( true ) ) {
+			settings.set( "temp", "temp-value" );
+			settings.set( "count", 37 );
+			Txn.submit( new TxnOperation( e -> { } ) {
+
+				@Override
+				protected void commit() throws TxnException {
+
+				}
+
+				@Override
+				protected void revert() throws TxnException {
+
+				}
+			} );
+		}
 		assertThat( node1.getValue( "count" ), is( 37 ) );
 		assertThat( node2.getValue( "count" ), is( 37 ) );
 		assertThat( node3.getValue( "count" ), is( 37 ) );

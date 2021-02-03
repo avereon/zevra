@@ -86,25 +86,6 @@ public class Txn implements AutoCloseable {
 		submit( new ConsumerTxnOperation( target, consumer ) );
 	}
 
-	private static class ConsumerTxnOperation extends TxnOperation {
-
-		private final Consumer<TxnEventTarget> consumer;
-
-		public ConsumerTxnOperation( TxnEventTarget target, Consumer<TxnEventTarget> consumer ) {
-			super( target );
-			this.consumer = consumer;
-		}
-
-		@Override
-		protected void commit() throws TxnException {
-			consumer.accept( getTarget() );
-		}
-
-		@Override
-		protected void revert() throws TxnException {}
-
-	}
-
 	public static void commit() throws TxnException {
 		Txn transaction = verifyActiveTransaction();
 		transaction.decrementDepth();
@@ -171,7 +152,7 @@ public class Txn implements AutoCloseable {
 		Deque<Txn> deque = transactions.get();
 		if( deque == null ) return null;
 		Txn transaction = deque.pollFirst();
-		if( deque.size() == 0 ) transactions.set( null );
+		if( deque.isEmpty() ) transactions.set( null );
 		return transaction;
 	}
 
@@ -255,6 +236,25 @@ public class Txn implements AutoCloseable {
 
 	private void doReset() {
 		operations.clear();
+	}
+
+	private static class ConsumerTxnOperation extends TxnOperation {
+
+		private final Consumer<TxnEventTarget> consumer;
+
+		public ConsumerTxnOperation( TxnEventTarget target, Consumer<TxnEventTarget> consumer ) {
+			super( target );
+			this.consumer = consumer;
+		}
+
+		@Override
+		protected void commit() throws TxnException {
+			consumer.accept( getTarget() );
+		}
+
+		@Override
+		protected void revert() throws TxnException {}
+
 	}
 
 }
