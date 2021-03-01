@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class TestUtil {
 
-	private static Set<String> runners;
+	private static final Set<String> runners;
 
 	private static Boolean test;
 
@@ -17,6 +17,7 @@ public class TestUtil {
 		runners.add( "org.junit.runner.JUnitCore" );
 		runners.add( "junit.framework.TestSuite" );
 		runners.add( "org.apache.maven.surefire.junit4.JUnit4Provider" );
+		runners.add( "org.gradle.api.internal.tasks.testing.worker.TestWorker" );
 	}
 
 	/**
@@ -44,7 +45,7 @@ public class TestUtil {
 			}
 		}
 
-		//if( !result ) printClasses();
+		if( !result ) printClasses();
 
 		return test = result;
 	}
