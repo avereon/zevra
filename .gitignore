@@ -1,4 +1,7 @@
+.gradle/
 .idea/*
 !.idea/runConfigurations
 target/
+build/
+gradle/
 *.iml
