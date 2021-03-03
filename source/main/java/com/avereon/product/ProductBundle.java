@@ -16,33 +16,45 @@ public class ProductBundle {
 
 	private static final String DEFAULT_PATH = "/bundles";
 
-	private Class<? extends Product> product;
+	private final Module module;
 
-	private Module module;
+	private final String rbPackage;
 
-	private String rbPackage;
+	private final Product parent;
 
 	public ProductBundle( Product product ) {
-		this( product.getClass(), DEFAULT_PATH );
+		this( null, product.getClass(), DEFAULT_PATH );
 	}
 
 	public ProductBundle( Product product, String path ) {
-		this( product.getClass(), path );
+		this( null, product.getClass(), path );
+	}
+
+	public ProductBundle( Product parent, Product product ) {
+		this( parent, product, DEFAULT_PATH );
+	}
+
+	public ProductBundle( Product parent, Product product, String path ) {
+		this( parent, product.getClass(), path );
 	}
 
 	/**
-	 * This constructor will determine the ProductBundle path by using the product
-	 * package as the first part of the path and add the path argument. For
-	 * example, if the product is com.example.Product and the path is
+	 * This constructor will determine the ProductBundle path by using the
+	 * product package as the first part of the path and add the path argument.
+	 * For example, if the product is com.example.Product and the path is
 	 * &quot;/bundles&quot; the full lookup path is com/example/bundles.
+	 * <p>
+	 * NOTE Be sure to open the bundles in the module definition
+	 * <p>
+	 * Example: opens com.avereon.xenon.bundles;
 	 *
 	 * @param product The product for this bundle
-	 * @param path Extra path information to append to package path
+	 * @param path    Extra path information to append to package path
 	 */
-	private ProductBundle( Class<? extends Product> product, String path ) {
-		this.product = product;
+	private ProductBundle( Product parent, Class<? extends Product> product, String path ) {
+		this.parent = parent;
 		this.module = product.getModule();
-		this.rbPackage = product.getPackageName().replace( ".", "/" ) + path + "/";
+		this.rbPackage = path.startsWith( "/" ) ? path : product.getPackageName().replace( ".", "/" ) + path;
 	}
 
 	public String text( String bundleKey, String valueKey, Object... values ) {
@@ -57,10 +69,10 @@ public class ProductBundle {
 	}
 
 	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
-		// NOTE Be sure to open the bundles in the module definition
-		// Example: opens com.avereon.xenon.bundles;
-		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + bundleKey, Locale.getDefault(), module );
-		return (valueKey != null && bundle.containsKey( valueKey ) ) ? MessageFormat.format( bundle.getString( valueKey ), values ) : other;
+		if( valueKey == null ) return other;
+		ResourceBundle bundle = ResourceBundle.getBundle( rbPackage + "/" + bundleKey, Locale.getDefault(), module );
+		if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
+		return parent != null ? parent.rb().textOr( bundleKey, valueKey, other, values ) : other;
 	}
 
 }
