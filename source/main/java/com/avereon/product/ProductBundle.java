@@ -74,7 +74,6 @@ public class ProductBundle {
 
 	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
 		if( valueKey == null ) return other;
-		System.out.println( "bundle=" + path + "/" + bundleKey);
 		ResourceBundle bundle = ResourceBundle.getBundle( path + "/" + bundleKey, Locale.getDefault(), module );
 		if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
 		return parent != null ? parent.rb().textOr( bundleKey, valueKey, other, values ) : other;
