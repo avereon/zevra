@@ -9,6 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class ProductBundleTest {
 
 	@Test
+	void testGetPathRelative() {
+		Product product = new MockProduct();
+		ProductBundle bundle = new ProductBundle( product, "action" );
+		assertThat( bundle.getPath(), is( getClass().getPackageName().replace( ".", "/" ) + "/action" ) );
+	}
+
+	@Test
+	void testGetPathAbsolute() {
+		Product product = new MockProduct();
+		ProductBundle bundle = new ProductBundle( product, "/action" );
+		assertThat( bundle.getPath(), is( "/action" ) );
+	}
+
+	@Test
 	void testText() {
 		Product product = new MockProduct( "/com/avereon/producta/bundles" );
 		assertThat( product.rb().text( "test", null ), is( "test > null" ) );
