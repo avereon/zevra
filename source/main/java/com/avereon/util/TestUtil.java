@@ -45,7 +45,7 @@ public class TestUtil {
 			}
 		}
 
-		if( !result ) printClasses();
+		//if( !result ) printClasses();
 
 		return test = result;
 	}
