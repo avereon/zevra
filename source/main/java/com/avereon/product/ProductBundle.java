@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 /**
  * This class is to simplify the interface and use of resource bundles.
  */
+@Deprecated
 public class ProductBundle {
 
 	private static final System.Logger log = Log.get();
