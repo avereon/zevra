@@ -18,13 +18,10 @@ public class Rb {
 
 	private static final Map<Module, Product> products;
 
-	private static final Map<Module, String> modulePaths;
-
 	private static final Map<Product, String> productPaths;
 
 	static {
 		products = new ConcurrentHashMap<>();
-		modulePaths = new ConcurrentHashMap<>();
 		productPaths = new ConcurrentHashMap<>();
 	}
 
@@ -32,7 +29,6 @@ public class Rb {
 		Module module = product.getClass().getModule();
 		String path = product.getClass().getPackageName().replace( ".", "/" );
 		products.put( module, product );
-		modulePaths.put( module, path );
 		productPaths.put( product, path );
 	}
 
@@ -75,12 +71,8 @@ public class Rb {
 	}
 
 	private static Product getProduct() {
-		return products.get( JavaUtil.getCallingClass( 3 ) );
+		return products.get( JavaUtil.getCallingClass( 3 ).getModule() );
 	}
-
-	//	private static Product getProduct( Class<?> caller ) {
-	//		return products.get( caller.getModule() );
-	//	}
 
 	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {
 		String string = getTextOr( product, path, bundleKey, valueKey, null, values );

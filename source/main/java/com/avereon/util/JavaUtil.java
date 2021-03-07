@@ -40,7 +40,7 @@ public final class JavaUtil {
 		try {
 			return Class.forName( getCallingClassName( level ) );
 		}catch( Exception exception ) {
-			//
+			log.log( Log.WARN, exception.getMessage() );
 		}
 		return null;
 	}
