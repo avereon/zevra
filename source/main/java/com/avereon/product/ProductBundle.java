@@ -49,7 +49,7 @@ public class ProductBundle {
 	 * Example: opens com.avereon.xenon.bundles;
 	 *
 	 * @param product The product for this bundle
-	 * @param path    Extra path information to append to package path
+	 * @param path Extra path information to append to package path
 	 */
 	private ProductBundle( Product parent, Class<? extends Product> product, String path ) {
 		this.parent = parent;
@@ -66,7 +66,11 @@ public class ProductBundle {
 
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
-			log.log( Log.WARN, "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
+			if( log.isLoggable( Log.TRACE ) ) {
+				log.log( Log.WARN, "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
+			} else {
+				log.log( Log.WARN, "Unable to find resource: " + string );
+			}
 		}
 
 		return string;
@@ -74,8 +78,12 @@ public class ProductBundle {
 
 	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
 		if( valueKey == null ) return other;
-		ResourceBundle bundle = ResourceBundle.getBundle( path + "/" + bundleKey, Locale.getDefault(), module );
-		if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
+		try {
+			ResourceBundle bundle = ResourceBundle.getBundle( path + "/" + bundleKey, Locale.getDefault(), module );
+			if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
+		} catch( MissingResourceException exception ) {
+			// Intentionally ignore exception
+		}
 		return parent != null ? parent.rb().textOr( bundleKey, valueKey, other, values ) : other;
 	}
 

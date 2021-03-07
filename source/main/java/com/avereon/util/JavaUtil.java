@@ -32,6 +32,19 @@ public final class JavaUtil {
 		return false;
 	}
 
+	public static Class<?> getCallingClass() {
+		return getCallingClass( 1 );
+	}
+
+	public static Class<?> getCallingClass( int level ) {
+		try {
+			return Class.forName( getCallingClassName( level ) );
+		}catch( Exception exception ) {
+			//
+		}
+		return null;
+	}
+
 	public static String getCallingClassName() {
 		return getCallingClassName( 1 );
 	}

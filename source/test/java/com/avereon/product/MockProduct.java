@@ -29,11 +29,6 @@ public class MockProduct implements Product {
 	}
 
 	@Override
-	public ClassLoader getClassLoader() {
-		return getClassLoader();
-	}
-
-	@Override
 	public ProductBundle rb() {
 		return new ProductBundle( parent, this, rbPath );
 	}

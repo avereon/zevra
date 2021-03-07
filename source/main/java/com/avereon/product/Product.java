@@ -8,8 +8,9 @@ public interface Product {
 
 	ProductCard getCard();
 
-	ClassLoader getClassLoader();
+	default Product getParent() {return null;}
 
+	@Deprecated
 	ProductBundle rb();
 
 	/**
