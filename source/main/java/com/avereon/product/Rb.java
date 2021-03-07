@@ -16,47 +16,75 @@ public class Rb {
 
 	private static final String DEFAULT_PATH = "bundles";
 
-	private static String path = DEFAULT_PATH;
-
 	private static final Map<Module, Product> products;
 
-	private static final Map<Module, String> paths;
+	private static final Map<Module, String> modulePaths;
+
+	private static final Map<Product, String> productPaths;
 
 	static {
 		products = new ConcurrentHashMap<>();
-		paths = new ConcurrentHashMap<>();
+		modulePaths = new ConcurrentHashMap<>();
+		productPaths = new ConcurrentHashMap<>();
 	}
 
 	public static void init( Product product ) {
 		Module module = product.getClass().getModule();
 		String path = product.getClass().getPackageName().replace( ".", "/" );
 		products.put( module, product );
-		paths.put( module, path );
-		System.out.println( "module=" + module.getName() + " path=" + path );
+		modulePaths.put( module, path );
+		productPaths.put( product, path );
+	}
+
+	public static String getPath() {
+		Class<?> caller = JavaUtil.getCallingClass( 2 );
+		return getPath( getProduct( caller ) );
+	}
+
+	public static String getPath( Product product ) {
+		return getPath( product, DEFAULT_PATH );
+	}
+
+	public static String getPath( Product product, String path ) {
+		String bundlePath = productPaths.get( product );
+		if( bundlePath == null ) log.log( Log.WARN, "Path missing for product: " + product.getClass().getName() );
+		return path.startsWith( "/" ) ? path : bundlePath + "/" + path;
+	}
+
+	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
+		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
 	public static String text( String bundleKey, String valueKey, Object... values ) {
 		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getText( caller.getModule(), DEFAULT_PATH, bundleKey, valueKey, values );
+		return getText( getProduct( caller ), DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
 	public static String text( String path, String bundleKey, String valueKey, Object... values ) {
 		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getText( caller.getModule(), path, bundleKey, valueKey, values );
+		return getText( getProduct( caller ), path, bundleKey, valueKey, values );
 	}
 
 	public static String textOr( String bundleKey, String valueKey, String other, Object... values ) {
 		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getTextOr( caller.getModule(), DEFAULT_PATH, bundleKey, valueKey, other, values );
+		return getTextOr( getProduct( caller ), DEFAULT_PATH, bundleKey, valueKey, other, values );
 	}
 
 	public static String textOr( String path, String bundleKey, String valueKey, String other, Object... values ) {
 		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getTextOr( caller.getModule(), path, bundleKey, valueKey, other, values );
+		return getTextOr( getProduct( caller ), path, bundleKey, valueKey, other, values );
 	}
 
-	private static String getText( Module module, String path, String bundleKey, String valueKey, Object... values) {
-		String string = getTextOr( module, path, bundleKey, valueKey, null, values );
+	public static String textOr( Product product, String bundleKey, String valueKey, String other, Object... values ) {
+		return getTextOr( product, DEFAULT_PATH, bundleKey, valueKey, other, values );
+	}
+
+	private static Product getProduct( Class<?> caller ) {
+		return products.get( caller.getModule() );
+	}
+
+	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {
+		String string = getTextOr( product, path, bundleKey, valueKey, null, values );
 
 		if( string == null ) {
 			string = bundleKey + " > " + valueKey;
@@ -67,36 +95,27 @@ public class Rb {
 			}
 		}
 
-		System.out.println( "text=" + string );
-
 		return string;
 	}
 
-	private static String getTextOr( Module module, String path, String bundleKey, String valueKey, String other, Object... values ) {
-		if( valueKey == null || module == null ) return other;
+	private static String getTextOr( Product product, String path, String bundleKey, String valueKey, String other, Object... values ) {
+		if( valueKey == null || product == null ) return other;
 
-		String rbPath = getPath( module ) + "/" + path + "/" + bundleKey;
+		String rbPath = getPath( product, path ) + "/" + bundleKey;
 
 		try {
-			ResourceBundle bundle = getResourceBundle( module, rbPath );
+			ResourceBundle bundle = getResourceBundle( product, rbPath );
 			if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
 		} catch( MissingResourceException exception ) {
 			log.log( Log.WARN, exception.getMessage() );
 		}
 
-		Product product = products.get( module );
 		if( product.getParent() == null ) return other;
-		return getTextOr( product.getParent().getClass().getModule(), path, bundleKey, valueKey, other, values );
+		return getTextOr( product.getParent(), path, bundleKey, valueKey, other, values );
 	}
 
-	private static String getPath( Module module ) {
-		String path = paths.get( module );
-		if( path == null ) log.log( Log.WARN, "Path missing for loader: " + module.getName() );
-		return path;
-	}
-
-	private static ResourceBundle getResourceBundle( Module module, String path ) {
-		return ResourceBundle.getBundle( path, Locale.getDefault(), module );
+	private static ResourceBundle getResourceBundle( Product product, String path ) {
+		return ResourceBundle.getBundle( path, Locale.getDefault(), product.getClass().getModule() );
 	}
 
 }

@@ -21,6 +21,7 @@ public class MockProduct implements Product {
 	public MockProduct( Product parent, String rbPath ) {
 		this.parent = parent;
 		this.rbPath = rbPath;
+		Rb.init( this );
 	}
 
 	@Override
@@ -42,4 +43,9 @@ public class MockProduct implements Product {
 	public Path getDataFolder() {
 		return null;
 	}
+
+	public String getRbText( String bundleKey, String valueKey ) {
+		return Rb.textOr( this, bundleKey, valueKey, null );
+	}
+
 }
