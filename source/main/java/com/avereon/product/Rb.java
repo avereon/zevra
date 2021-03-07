@@ -37,8 +37,7 @@ public class Rb {
 	}
 
 	public static String getPath() {
-		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getPath( getProduct( caller ) );
+		return getPath( getProduct() );
 	}
 
 	public static String getPath( Product product ) {
@@ -51,37 +50,37 @@ public class Rb {
 		return path.startsWith( "/" ) ? path : bundlePath + "/" + path;
 	}
 
-	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
-		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
-	}
-
 	public static String text( String bundleKey, String valueKey, Object... values ) {
-		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getText( getProduct( caller ), DEFAULT_PATH, bundleKey, valueKey, values );
+		return getText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
 	public static String text( String path, String bundleKey, String valueKey, Object... values ) {
-		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getText( getProduct( caller ), path, bundleKey, valueKey, values );
+		return getText( getProduct(), path, bundleKey, valueKey, values );
 	}
 
 	public static String textOr( String bundleKey, String valueKey, String other, Object... values ) {
-		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getTextOr( getProduct( caller ), DEFAULT_PATH, bundleKey, valueKey, other, values );
+		return getTextOr( getProduct(), DEFAULT_PATH, bundleKey, valueKey, other, values );
 	}
 
 	public static String textOr( String path, String bundleKey, String valueKey, String other, Object... values ) {
-		Class<?> caller = JavaUtil.getCallingClass( 2 );
-		return getTextOr( getProduct( caller ), path, bundleKey, valueKey, other, values );
+		return getTextOr( getProduct(), path, bundleKey, valueKey, other, values );
+	}
+
+	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
+		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
 	public static String textOr( Product product, String bundleKey, String valueKey, String other, Object... values ) {
 		return getTextOr( product, DEFAULT_PATH, bundleKey, valueKey, other, values );
 	}
 
-	private static Product getProduct( Class<?> caller ) {
-		return products.get( caller.getModule() );
+	private static Product getProduct() {
+		return products.get( JavaUtil.getCallingClass( 3 ) );
 	}
+
+	//	private static Product getProduct( Class<?> caller ) {
+	//		return products.get( caller.getModule() );
+	//	}
 
 	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {
 		String string = getTextOr( product, path, bundleKey, valueKey, null, values );
