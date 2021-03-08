@@ -16,7 +16,8 @@ public class Rb {
 
 	private static final String DEFAULT_PATH = "bundles";
 
-	private static final Map<Module, Product> products;
+	// Map of module name to products
+	private static final Map<String, Product> products;
 
 	private static final Map<Product, String> productPaths;
 
@@ -26,10 +27,8 @@ public class Rb {
 	}
 
 	public static void init( Product product ) {
-		Module module = product.getClass().getModule();
-		String path = product.getClass().getPackageName().replace( ".", "/" );
-		products.put( module, product );
-		productPaths.put( product, path );
+		products.put( product.getClass().getModule().getName(), product );
+		productPaths.put( product, product.getClass().getPackageName().replace( ".", "/" ) );
 	}
 
 	public static String getPath() {
@@ -71,11 +70,7 @@ public class Rb {
 	}
 
 	private static Product getProduct() {
-		Class<?> callingClass = JavaUtil.getCallingClass();
-		log.log( Log.INFO, "products=" + products );
-		log.log( Log.INFO, "callingClass=" + callingClass );
-		if( callingClass != null ) log.log( Log.INFO, "module=" + callingClass.getModule() );
-		return products.get( JavaUtil.getCallingClass().getModule() );
+		return products.get( JavaUtil.getCallingModuleName() );
 	}
 
 	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {

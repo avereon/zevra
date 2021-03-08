@@ -16,38 +16,13 @@ import static org.hamcrest.Matchers.nullValue;
 class JavaUtilTest {
 
 	@Test
-	void testGetCallingClass() {
-		assertThat( JavaUtil.getCallingClass().getName(), is( "jdk.internal.reflect.NativeMethodAccessorImpl" ) );
-	}
-
-	@Test
 	void testGetCallingClassName() {
 		assertThat( JavaUtil.getCallingClassName(), is( "jdk.internal.reflect.NativeMethodAccessorImpl" ) );
 	}
 
 	@Test
-	void testGetCallingClassNameWithLevel() {
-		assertThat( JavaUtil.getCallingClassName( 0 ), is( JavaUtilTest.class.getName() ) );
-	}
-
-	@Test
 	void testGetCallingMethodName() {
-		assertThat( JavaUtil.getCallingMethodName(), is( "testGetCallingMethodName" ) );
-	}
-
-	@Test
-	void testGetCallingMethodNameWithLevel() {
-		assertThat( JavaUtil.getCallingMethodName( 0 ), is( "testGetCallingMethodNameWithLevel" ) );
-	}
-
-	@Test
-	void testGetCaller() {
-		assertThat( JavaUtil.getCaller(), is( JavaUtilTest.class.getName() + ".testGetCaller" ) );
-	}
-
-	@Test
-	void testGetCallerWithLevel() {
-		assertThat( JavaUtil.getCaller( 0 ), is( JavaUtilTest.class.getName() + ".testGetCallerWithLevel" ) );
+		assertThat( JavaUtil.getCallingMethodName(), is( "invoke0" ) );
 	}
 
 	@Test

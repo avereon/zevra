@@ -31,7 +31,7 @@ public class Log {
 	public static final System.Logger.Level ALL = System.Logger.Level.ALL;
 
 	public static System.Logger get() {
-		return new SystemLoggerWrapper( System.getLogger( JavaUtil.getCallingClassName( 1 ) ) );
+		return new SystemLoggerWrapper( System.getLogger( JavaUtil.getCallingClassName() ) );
 	}
 
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters ) {

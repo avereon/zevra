@@ -23,83 +23,56 @@ public final class JavaUtil {
 	}
 
 	public static boolean isClassInStackTrace( Class<?> clazz ) {
+		String className = clazz.getName();
 		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 
 		for( StackTraceElement element : stack ) {
-			if( Objects.equals( element.getClassName(), clazz.getName() ) ) return true;
+			if( Objects.equals( element.getClassName(), className ) ) return true;
 		}
 
 		return false;
-	}
-
-	public static Class<?> getCallingClass() {
-		try {
-			return Class.forName( getCallerElement().getClassName() );
-		} catch( Exception exception ) {
-			log.log( Log.WARN, exception.getMessage() );
-		}
-		return null;
-	}
-
-	public static Class<?> getCallingClass( int level ) {
-		try {
-			return Class.forName( getCallingClassName( level ) );
-		} catch( Exception exception ) {
-			log.log( Log.WARN, exception.getMessage() );
-		}
-		return null;
 	}
 
 	public static String getCallingClassName() {
 		return getCallerElement().getClassName();
 	}
 
-	public static String getCallingClassName( int level ) {
-		return getElement( level ).getClassName();
+	public static String getCallingModuleName() {
+		return getCallerElement().getModuleName();
 	}
 
 	public static String getCallingMethodName() {
-		return getCallingMethodName( 1 );
-	}
-
-	public static String getCallingMethodName( int level ) {
-		return getElement( level ).getMethodName();
-	}
-
-	public static String getCaller() {
-		return getCaller( 1 );
-	}
-
-	public static String getCaller( int level ) {
-		StackTraceElement element = getElement( level );
-		return element.getClassName() + "." + element.getMethodName();
-	}
-
-	@SuppressWarnings( "OptionalGetWithoutIsPresent" )
-	private static StackTraceElement getElement( int level ) {
-		return StackWalker.getInstance().walk( s -> s.skip( level + 2 ).findFirst() ).get().toStackTraceElement();
+		return  getCallerElement().getMethodName();
 	}
 
 	private static StackTraceElement getCallerElement() {
 		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		return elements[ getCallerIndex( elements ) ];
+	}
 
-		// This start index is to skip the first few elements, which are:
-		// elements[0]=java.lang.Thread
-		// elements[1]=com.avereon.util.JavaUtil
-		// elements[2]=com.avereon.util.JavaUtil
-		int start = 3;
+	private static int getCallerIndex( StackTraceElement[] elements ) {
+		int index = 0;
 
-		// This element is the caller of this class, but not the caller that class
-		// is asking for. We need to skip these elements also.
-		String preCaller = elements[ start ].getClassName();
-
-		int count = elements.length;
-		for( int index = start + 1; index < count; index++ ) {
-			StackTraceElement element = elements[ index ];
-			if( !Objects.equals( element.getClassName(), preCaller ) ) return element;
+		// Skip the initial elements of Thread class
+		String skipClass = elements[ index ].getClassName();
+		while( Objects.equals( elements[ index ].getClassName(), skipClass ) ) {
+			index++;
 		}
 
-		return null;
+		// Skip the next elements of JavaUtil class
+		skipClass = elements[ index ].getClassName();
+		while( Objects.equals( elements[ index ].getClassName(), skipClass ) ) {
+			index++;
+		}
+
+		// Skip the next elements of the asking class
+		skipClass = elements[ index ].getClassName();
+		while( Objects.equals( elements[ index ].getClassName(), skipClass ) ) {
+			index++;
+		}
+
+		// Return the element with the class calling the asking class
+		return index;
 	}
 
 	/**
