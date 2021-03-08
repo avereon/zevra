@@ -17,12 +17,12 @@ class JavaUtilTest {
 
 	@Test
 	void testGetCallingClass() {
-		assertThat( JavaUtil.getCallingClass(), is( JavaUtilTest.class ) );
+		assertThat( JavaUtil.getCallingClass().getName(), is( "jdk.internal.reflect.NativeMethodAccessorImpl" ) );
 	}
 
 	@Test
 	void testGetCallingClassName() {
-		assertThat( JavaUtil.getCallingClassName(), is( JavaUtilTest.class.getName() ) );
+		assertThat( JavaUtil.getCallingClassName(), is( "jdk.internal.reflect.NativeMethodAccessorImpl" ) );
 	}
 
 	@Test
