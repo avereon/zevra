@@ -83,10 +83,20 @@ public final class JavaUtil {
 	private static StackTraceElement getCallerElement() {
 		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
-		String preCaller = elements[ 2 ].getClassName();
+		// This start index is to skip the first few elements, which are:
+		// elements[0]=java.lang.Thread
+		// elements[1]=com.avereon.util.JavaUtil
+		// elements[2]=com.avereon.util.JavaUtil
+		int start = 3;
+
+		// This element is the caller of this class, but not the caller that class
+		// is asking for. We need to skip these elements also.
+		String preCaller = elements[ start ].getClassName();
+
 		int count = elements.length;
-		for( int index = 3; index < count; index++ ) {
-			if( !Objects.equals( elements[ index ].getClassName(), preCaller ) ) return elements[ index ];
+		for( int index = start + 1; index < count; index++ ) {
+			StackTraceElement element = elements[ index ];
+			if( !Objects.equals( element.getClassName(), preCaller ) ) return element;
 		}
 
 		return null;
