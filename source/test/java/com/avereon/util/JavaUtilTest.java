@@ -16,6 +16,11 @@ import static org.hamcrest.Matchers.nullValue;
 class JavaUtilTest {
 
 	@Test
+	void testGetCallingClass() {
+		assertThat( JavaUtil.getCallingClass(), is( JavaUtilTest.class ) );
+	}
+
+	@Test
 	void testGetCallingClassName() {
 		assertThat( JavaUtil.getCallingClassName(), is( JavaUtilTest.class.getName() ) );
 	}

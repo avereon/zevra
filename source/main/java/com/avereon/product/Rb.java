@@ -71,7 +71,7 @@ public class Rb {
 	}
 
 	private static Product getProduct() {
-		return products.get( JavaUtil.getCallingClass( 3 ).getModule() );
+		return products.get( JavaUtil.getCallingClass().getModule() );
 	}
 
 	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {

@@ -33,20 +33,25 @@ public final class JavaUtil {
 	}
 
 	public static Class<?> getCallingClass() {
-		return getCallingClass( 1 );
+		try {
+			return Class.forName( getCallerElement().getClassName() );
+		} catch( Exception exception ) {
+			log.log( Log.WARN, exception.getMessage() );
+		}
+		return null;
 	}
 
 	public static Class<?> getCallingClass( int level ) {
 		try {
 			return Class.forName( getCallingClassName( level ) );
-		}catch( Exception exception ) {
+		} catch( Exception exception ) {
 			log.log( Log.WARN, exception.getMessage() );
 		}
 		return null;
 	}
 
 	public static String getCallingClassName() {
-		return getCallingClassName( 1 );
+		return getCallerElement().getClassName();
 	}
 
 	public static String getCallingClassName( int level ) {
@@ -73,6 +78,18 @@ public final class JavaUtil {
 	@SuppressWarnings( "OptionalGetWithoutIsPresent" )
 	private static StackTraceElement getElement( int level ) {
 		return StackWalker.getInstance().walk( s -> s.skip( level + 2 ).findFirst() ).get().toStackTraceElement();
+	}
+
+	private static StackTraceElement getCallerElement() {
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+
+		String preCaller = elements[ 2 ].getClassName();
+		int count = elements.length;
+		for( int index = 3; index < count; index++ ) {
+			if( !Objects.equals( elements[ index ].getClassName(), preCaller ) ) return elements[ index ];
+		}
+
+		return null;
 	}
 
 	/**
