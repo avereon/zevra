@@ -49,28 +49,16 @@ public class Rb {
 		return getText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
-	public static String text( String path, String bundleKey, String valueKey, Object... values ) {
-		return getText( getProduct(), path, bundleKey, valueKey, values );
+	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
+		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
 	}
 
 	public static String textOr( String bundleKey, String valueKey, String other, Object... values ) {
 		return getTextOr( getProduct(), DEFAULT_PATH, bundleKey, valueKey, other, values );
 	}
 
-	public static String textOr( String path, String bundleKey, String valueKey, String other, Object... values ) {
-		return getTextOr( getProduct(), path, bundleKey, valueKey, other, values );
-	}
-
-	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
-		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
-	}
-
 	public static String textOr( Product product, String bundleKey, String valueKey, String other, Object... values ) {
 		return getTextOr( product, DEFAULT_PATH, bundleKey, valueKey, other, values );
-	}
-
-	private static Product getProduct() {
-		return products.get( JavaUtil.getCallingModuleName() );
 	}
 
 	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {
@@ -102,6 +90,10 @@ public class Rb {
 
 		if( product.getParent() == null ) return other;
 		return getTextOr( product.getParent(), path, bundleKey, valueKey, other, values );
+	}
+
+	private static Product getProduct() {
+		return products.get( JavaUtil.getCallingModuleName() );
 	}
 
 	private static ResourceBundle getResourceBundle( Product product, String path ) {
