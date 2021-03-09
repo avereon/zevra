@@ -1,7 +1,6 @@
 package com.avereon.productb;
 
 import com.avereon.product.Product;
-import com.avereon.product.ProductBundle;
 import com.avereon.product.ProductCard;
 import com.avereon.product.Rb;
 import com.avereon.settings.Settings;
@@ -10,7 +9,7 @@ import java.nio.file.Path;
 
 public class MockProductB implements Product {
 
-	private Product parent;
+	private final Product parent;
 
 	public MockProductB( Product parent ) {
 		this.parent = parent;
@@ -25,11 +24,6 @@ public class MockProductB implements Product {
 	@Override
 	public Product getParent() {
 		return parent;
-	}
-
-	@Override
-	public ProductBundle rb() {
-		return null;
 	}
 
 	@Override

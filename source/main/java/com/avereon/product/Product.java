@@ -10,9 +10,6 @@ public interface Product {
 
 	default Product getParent() {return null;}
 
-	@Deprecated
-	default ProductBundle rb() {return null;}
-
 	/**
 	 * Get the product settings.
 	 *

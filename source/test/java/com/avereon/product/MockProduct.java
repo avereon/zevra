@@ -30,11 +30,6 @@ public class MockProduct implements Product {
 	}
 
 	@Override
-	public ProductBundle rb() {
-		return new ProductBundle( parent, this, rbPath );
-	}
-
-	@Override
 	public Settings getSettings() {
 		return null;
 	}
