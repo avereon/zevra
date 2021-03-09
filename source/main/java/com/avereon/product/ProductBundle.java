@@ -62,7 +62,7 @@ public class ProductBundle {
 		return path;
 	}
 
-	public String text( String bundleKey, String valueKey, Object... values ) {
+	private String text( String bundleKey, String valueKey, Object... values ) {
 		String string = textOr( bundleKey, valueKey, null, values );
 
 		if( string == null ) {
@@ -77,7 +77,7 @@ public class ProductBundle {
 		return string;
 	}
 
-	public String textOr( String bundleKey, String valueKey, String other, Object... values ) {
+	private String textOr( String bundleKey, String valueKey, String other, Object... values ) {
 		if( valueKey == null ) return other;
 		try {
 			ResourceBundle bundle = ResourceBundle.getBundle( path + "/" + bundleKey, Locale.getDefault(), module );
