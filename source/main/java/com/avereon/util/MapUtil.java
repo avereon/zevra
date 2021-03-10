@@ -18,19 +18,19 @@ public class MapUtil {
 	}
 
 	@SuppressWarnings( { "unchecked" } )
-	public static <K, V> Stream<V> flatten( Map<K, ?> map, K valueKey, K treeKey ) {
+	public static <K, V> Stream<V> flatten( Map<K, ?> map, K treeKey, K valueKey ) {
 		return MapUtil.flatTreeMap( map, m -> {
-			V value = (V)m.get( valueKey );
-			return value == null ? Stream.of() : Stream.of( value );
-		}, m -> {
 			Map<K, ?> children = (Map<K, ?>)m.get( treeKey );
 			return children == null ? Map.of() : children;
+		}, m -> {
+			V value = (V)m.get( valueKey );
+			return value == null ? Stream.of() : Stream.of( value );
 		} );
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public static <K, V> Stream<V> flatTreeMap( Map<K, ?> map, Function<Map<K, ?>, Stream<V>> extractor, Function<Map<K, ?>, Map<K, ?>> flattener ) {
-		return Stream.concat( extractor.apply( map ), flattener.apply( map ).values().stream().flatMap( v -> flatTreeMap( (Map<K, ?>)v, extractor, flattener ) ) );
+	public static <K, V> Stream<V> flatTreeMap( Map<K, ?> map, Function<Map<K, ?>, Map<K, ?>> flattener, Function<Map<K, ?>, Stream<V>> extractor ) {
+		return Stream.concat( extractor.apply( map ), flattener.apply( map ).values().stream().flatMap( v -> flatTreeMap( (Map<K, ?>)v, flattener, extractor ) ) );
 	}
 
 }

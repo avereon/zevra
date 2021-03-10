@@ -29,7 +29,7 @@ public class MapUtilTest {
 		a.put( "children", Map.of( "b", b, "c", c ) );
 		c.put( "children", Map.of( "d", d, "e", e ) );
 
-		Set<Object> values = MapUtil.flatten( a, "value", "children" ).collect( Collectors.toSet() );
+		Set<Object> values = MapUtil.flatten( a, "children", "value" ).collect( Collectors.toSet() );
 		MatcherAssert.assertThat( values, containsInAnyOrder( "a", "b", "c", "d", "e" ) );
 	}
 
