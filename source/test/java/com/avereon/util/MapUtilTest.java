@@ -30,7 +30,6 @@ public class MapUtilTest {
 		c.put( "children", Map.of( "d", d, "e", e ) );
 
 		Set<Object> values = MapUtil.flatten( a, "value", "children" ).collect( Collectors.toSet() );
-
 		MatcherAssert.assertThat( values, containsInAnyOrder( "a", "b", "c", "d", "e" ) );
 	}
 

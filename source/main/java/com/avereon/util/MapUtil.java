@@ -17,20 +17,20 @@ public class MapUtil {
 		return mirror;
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public static <T> Stream<T> flatten( Map<String, ?> map, String valueKey, String treeKey ) {
-		return MapUtil.flatten( map, m -> {
-			T value = (T)m.get( valueKey );
-			return value == null ? Stream.of() : 	Stream.of( value );
+	@SuppressWarnings( { "unchecked" } )
+	public static <K, V> Stream<V> flatten( Map<K, ?> map, K valueKey, K treeKey ) {
+		return MapUtil.flatTreeMap( map, m -> {
+			V value = (V)m.get( valueKey );
+			return value == null ? Stream.of() : Stream.of( value );
 		}, m -> {
-			Map<String, ?> children = (Map<String, ?>)m.get( treeKey );
+			Map<K, ?> children = (Map<K, ?>)m.get( treeKey );
 			return children == null ? Map.of() : children;
 		} );
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public static <T> Stream<T> flatten( Map<String, ?> map, Function<Map<String, ?>, Stream<T>> extractor, Function<Map<String, ?>, Map<String, ?>> flattener ) {
-		return Stream.concat( extractor.apply( map ), flattener.apply( map ).values().stream().flatMap( v -> flatten( (Map<String, ?>)v, extractor, flattener ) ) );
+	public static <K, V> Stream<V> flatTreeMap( Map<K, ?> map, Function<Map<K, ?>, Stream<V>> extractor, Function<Map<K, ?>, Map<K, ?>> flattener ) {
+		return Stream.concat( extractor.apply( map ), flattener.apply( map ).values().stream().flatMap( v -> flatTreeMap( (Map<K, ?>)v, extractor, flattener ) ) );
 	}
 
 }
