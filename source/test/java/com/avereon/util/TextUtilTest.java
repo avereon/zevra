@@ -619,4 +619,10 @@ class TextUtilTest {
 		assertThat( TextUtil.split( string ), contains( "copy", "C:\\some\\path", "C:\\some\\other\\path" ) );
 	}
 
+	@Test
+	void testToStringOrNull() {
+		assertNull( TextUtil.toStringOrNull( null ) );
+		assertThat( TextUtil.toStringOrNull( new Double(1.234)), is( "1.234"));
+	}
+
 }

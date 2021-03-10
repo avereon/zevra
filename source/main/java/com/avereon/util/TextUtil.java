@@ -148,6 +148,18 @@ public final class TextUtil {
 	}
 
 	/**
+	 * Returns the String.valueOf() value of the object or null. This is different
+	 * than String.valueOf() which returns the String "null" when the object is null.
+	 *
+	 * @param object Any object
+	 * @return The object string value or null
+	 */
+	public static String toStringOrNull( Object object ) {
+		if( object == null ) return null;
+		return String.valueOf( object );
+	}
+
+	/**
 	 * Returns a printable string representation of a byte by converting byte values less than 32 or greater than 126 to the integer value surrounded by brackets.
 	 * <p>
 	 * Example: An escape char (27) would be returned as: [27]
