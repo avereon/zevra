@@ -22,7 +22,7 @@ public class DelayedAction {
 	 */
 	private static final long DEFAULT_MAX_TRIGGER_LIMIT = 500;
 
-	private static final Timer timer = new Timer( DelayedAction.class.getSimpleName(), true );
+	private static final Timer timer = new Timer( DelayedAction.class.getSimpleName() + "-Timer", true );
 
 	private final AtomicLong lastChangeTime = new AtomicLong();
 
@@ -106,9 +106,9 @@ public class DelayedAction {
 		doSchedule( true );
 	}
 
-//	public void reset() {
-//		lastActionTime.set( System.currentTimeMillis() );
-//	}
+	public void reset() {
+		lastActionTime.set( System.currentTimeMillis() );
+	}
 
 	public void cancel() {
 		synchronized( scheduleLock ) {
@@ -147,7 +147,7 @@ public class DelayedAction {
 	}
 
 	private void fire() {
-		lastActionTime.set( System.currentTimeMillis() );
+		reset();
 		if( action != null ) action.run();
 	}
 
