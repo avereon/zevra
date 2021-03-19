@@ -40,6 +40,7 @@ public class StoredSettings extends AbstractSettings {
 	// Settings map store in root node
 	private Map<String, StoredSettings> settings;
 
+	@Deprecated
 	private final ExecutorService executor;
 
 	private final StoredSettings root;
@@ -50,12 +51,16 @@ public class StoredSettings extends AbstractSettings {
 
 	private final Properties values;
 
+	@Deprecated
 	private final AtomicLong lastDirtyTime = new AtomicLong();
 
+	@Deprecated
 	private final AtomicLong lastValueTime = new AtomicLong();
 
+	@Deprecated
 	private final AtomicLong lastStoreTime = new AtomicLong();
 
+	@Deprecated
 	private final Object scheduleLock = new Object();
 
 	private SaveTask task;
