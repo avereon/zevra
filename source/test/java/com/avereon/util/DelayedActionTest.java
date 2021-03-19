@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class DelayedActionSupportTest {
+public class DelayedActionTest {
 
 	private final AtomicLong actionTimestamp = new AtomicLong();
 
@@ -15,12 +15,12 @@ public class DelayedActionSupportTest {
 
 	@Test
 	void testAction() throws Exception {
-		DelayedActionSupport das = new DelayedActionSupport();
-		das.setAction( this::doAction );
+		DelayedAction action = new DelayedAction();
+		action.setAction( this::doAction );
 		assertThat( actionTimestamp.get(), is( 0L ) );
 
 		long before = System.currentTimeMillis();
-		das.trigger();
+		action.trigger();
 		waitForAction();
 		long after = System.currentTimeMillis();
 
@@ -36,25 +36,25 @@ public class DelayedActionSupportTest {
 		long minTriggerLimit = 50;
 		long maxTriggerLimit = minTriggerLimit * 2;
 
-		DelayedActionSupport das = new DelayedActionSupport();
-		das.setMinTriggerLimit( minTriggerLimit );
-		das.setMaxTriggerLimit( maxTriggerLimit );
-		das.setAction( this::doAction );
+		DelayedAction action = new DelayedAction();
+		action.setMinTriggerLimit( minTriggerLimit );
+		action.setMaxTriggerLimit( maxTriggerLimit );
+		action.setAction( this::doAction );
 		assertThat( actionTimestamp.get(), is( 0L ) );
 
 		long before = System.currentTimeMillis();
-		das.trigger();
+		action.trigger();
 
 		// Wait just a moment so the internal timestamps will not be the same
 		ThreadUtil.pause( 1 );
 
 		// Update() can be called as many times before the minTriggerLimit but the
 		// action should not occur unit the minTriggerLimit time has been reached
-		das.update();
-		das.update();
-		das.update();
-		das.update();
-		das.update();
+		action.update();
+		action.update();
+		action.update();
+		action.update();
+		action.update();
 		waitForAction();
 		long after = System.currentTimeMillis();
 
@@ -70,23 +70,23 @@ public class DelayedActionSupportTest {
 		long minTriggerLimit = 50;
 		long maxTriggerLimit = minTriggerLimit * 2;
 
-		DelayedActionSupport das = new DelayedActionSupport();
-		das.setMinTriggerLimit( minTriggerLimit );
-		das.setMaxTriggerLimit( maxTriggerLimit );
-		das.setAction( this::doAction );
+		DelayedAction action = new DelayedAction();
+		action.setMinTriggerLimit( minTriggerLimit );
+		action.setMaxTriggerLimit( maxTriggerLimit );
+		action.setAction( this::doAction );
 		assertThat( actionTimestamp.get(), is( 0L ) );
 
-		das.trigger();
+		action.trigger();
 		long before = System.currentTimeMillis();
 
 		// Wait at least minTriggerLimit before calling update
 		ThreadUtil.pause( minTriggerLimit + 1 );
 
-		das.update();
-		das.update();
-		das.update();
-		das.update();
-		das.update();
+		action.update();
+		action.update();
+		action.update();
+		action.update();
+		action.update();
 		waitForAction();
 		long after = System.currentTimeMillis();
 

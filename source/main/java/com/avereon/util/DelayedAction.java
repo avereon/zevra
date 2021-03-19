@@ -10,19 +10,19 @@ import java.util.concurrent.atomic.AtomicLong;
  * after some amount of "idle" time has occurred. This class also supports
  * minimum and maximum action requirements.
  */
-public class DelayedActionSupport {
+public class DelayedAction {
 
 	/**
 	 * Action will be triggered at most this often.
 	 */
-	private static final long DEFAULT_MIN_TRIGGER_LIMIT = 1000;
+	private static final long DEFAULT_MIN_TRIGGER_LIMIT = 100;
 
 	/**
 	 * Action will be triggered at least this often.
 	 */
-	private static final long DEFAULT_MAX_TRIGGER_LIMIT = 5000;
+	private static final long DEFAULT_MAX_TRIGGER_LIMIT = 500;
 
-	private static final Timer timer = new Timer( DelayedActionSupport.class.getSimpleName(), true );
+	private static final Timer timer = new Timer( DelayedAction.class.getSimpleName(), true );
 
 	private final AtomicLong lastChangeTime = new AtomicLong();
 
@@ -42,7 +42,22 @@ public class DelayedActionSupport {
 
 	private Runnable action;
 
-	public DelayedActionSupport() {}
+	public DelayedAction() {
+		this( null, null );
+	}
+
+	public DelayedAction( ExecutorService executor ) {
+		this( executor, null );
+	}
+
+	public DelayedAction( Runnable action ) {
+		this( null, action );
+	}
+
+	public DelayedAction( ExecutorService executor, Runnable action ) {
+		this.executor = executor;
+		this.action = action;
+	}
 
 	public long getMinTriggerLimit() {
 		return minTriggerLimit;
@@ -83,12 +98,22 @@ public class DelayedActionSupport {
 		schedule();
 	}
 
+	public void schedule() {
+		doSchedule( false );
+	}
+
 	public void trigger() {
 		doSchedule( true );
 	}
 
-	public void schedule() {
-		doSchedule( false );
+//	public void reset() {
+//		lastActionTime.set( System.currentTimeMillis() );
+//	}
+
+	public void cancel() {
+		synchronized( scheduleLock ) {
+			if( task != null ) task.cancel();
+		}
 	}
 
 	private void doSchedule( boolean immediate ) {
@@ -132,7 +157,7 @@ public class DelayedActionSupport {
 		public void run() {
 			// If there is an executor, use it to run the task, otherwise run the task on the timer thread
 			if( executor != null && !executor.isShutdown() ) {
-				executor.submit( DelayedActionSupport.this::fire );
+				executor.submit( DelayedAction.this::fire );
 			} else {
 				fire();
 			}

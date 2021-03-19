@@ -1,5 +1,6 @@
 package com.avereon.settings;
 
+import com.avereon.util.DelayedAction;
 import com.avereon.util.FileUtil;
 import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
@@ -13,7 +14,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +22,9 @@ public class StoredSettings extends AbstractSettings {
 	private static final System.Logger log = Log.get();
 
 	/**
-	 * Data will be persisted at most this fast.
+	 * Data will be persisted at most this often.
 	 */
-	private static final long MIN_PERSIST_LIMIT = 100;
+	private static final long MIN_PERSIST_LIMIT = 1000;
 
 	/**
 	 * Data will be persisted at least this often.
@@ -35,13 +35,10 @@ public class StoredSettings extends AbstractSettings {
 
 	private static final String SETTINGS_FILE_NAME = "settings" + SETTINGS_EXTENSION;
 
-	private static final Timer timer = new Timer( StoredSettings.class.getSimpleName(), true );
+	private final DelayedAction action;
 
 	// Settings map store in root node
 	private Map<String, StoredSettings> settings;
-
-	@Deprecated
-	private final ExecutorService executor;
 
 	private final StoredSettings root;
 
@@ -50,20 +47,6 @@ public class StoredSettings extends AbstractSettings {
 	private final Path folder;
 
 	private final Properties values;
-
-	@Deprecated
-	private final AtomicLong lastDirtyTime = new AtomicLong();
-
-	@Deprecated
-	private final AtomicLong lastValueTime = new AtomicLong();
-
-	@Deprecated
-	private final AtomicLong lastStoreTime = new AtomicLong();
-
-	@Deprecated
-	private final Object scheduleLock = new Object();
-
-	private SaveTask task;
 
 	public StoredSettings( Path folder ) {
 		this( folder, null );
@@ -86,7 +69,11 @@ public class StoredSettings extends AbstractSettings {
 		this.values = new Properties();
 		if( values != null ) this.values.putAll( values );
 		this.root.settings.put( path, this );
-		this.executor = executor;
+
+		this.action = new DelayedAction( executor, this::save );
+		this.action.setMinTriggerLimit( MIN_PERSIST_LIMIT );
+		this.action.setMaxTriggerLimit( MAX_PERSIST_LIMIT );
+
 		load();
 	}
 
@@ -133,7 +120,7 @@ public class StoredSettings extends AbstractSettings {
 		Path folder = root.folder.resolve( nodePath.substring( 1 ) );
 		if( node == null ) {
 			log.log( Log.TRACE, "node=" + nodePath );
-			node = new StoredSettings( root, nodePath, folder, values, executor );
+			node = new StoredSettings( root, nodePath, folder, values, action.getExecutor() );
 		}
 
 		// Create missing parents
@@ -141,7 +128,7 @@ public class StoredSettings extends AbstractSettings {
 		folder = folder.getParent();
 		while( parentPath != null && root.settings.get( parentPath ) == null ) {
 			log.log( Log.TRACE, "node=" + parentPath );
-			new StoredSettings( root, parentPath, folder, null, executor );
+			new StoredSettings( root, parentPath, folder, null, action.getExecutor() );
 			parentPath = PathUtil.getParent( parentPath );
 			folder = folder.getParent();
 		}
@@ -169,7 +156,7 @@ public class StoredSettings extends AbstractSettings {
 			return n.substring( length, index );
 		} ).distinct().collect( Collectors.toList() );
 
-		return Stream.concat( externalNames.stream(), internalNames.stream() ).distinct().collect( Collectors.toList());
+		return Stream.concat( externalNames.stream(), internalNames.stream() ).distinct().collect( Collectors.toList() );
 	}
 
 	@Override
@@ -188,10 +175,7 @@ public class StoredSettings extends AbstractSettings {
 		} else {
 			values.setProperty( key, value );
 		}
-
-		lastValueTime.set( System.currentTimeMillis() );
-		if( lastDirtyTime.get() <= lastStoreTime.get() ) lastDirtyTime.set( lastValueTime.get() );
-		scheduleSave( false );
+		action.update();
 	}
 
 	@Override
@@ -205,17 +189,15 @@ public class StoredSettings extends AbstractSettings {
 
 	@Override
 	public Settings flush() {
-		scheduleSave( true );
+		action.trigger();
 		return this;
 	}
 
 	@Override
 	public synchronized Settings delete() {
-		synchronized( scheduleLock ) {
-			setDeleted();
-			if( task != null ) task.cancel();
-			getNodes().stream().map( this::getNode ).forEach( Settings::delete );
-		}
+		action.cancel();
+		setDeleted();
+		getNodes().stream().map( this::getNode ).forEach( Settings::delete );
 
 		try {
 			// Delete the file
@@ -259,7 +241,6 @@ public class StoredSettings extends AbstractSettings {
 			Files.createDirectories( file.getParent() );
 			try( FileOutputStream output = new FileOutputStream( file.toFile() ) ) {
 				values.store( output, null );
-				lastStoreTime.set( System.currentTimeMillis() );
 				getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
 			}
 		} catch( IOException exception ) {
@@ -267,52 +248,8 @@ public class StoredSettings extends AbstractSettings {
 		}
 	}
 
-	private void scheduleSave( boolean immediate ) {
-		synchronized( scheduleLock ) {
-			if( isDeleted() ) return;
-
-			long storeTime = lastStoreTime.get();
-			long dirtyTime = lastDirtyTime.get();
-
-			// If there are no changes since the last store time just return
-			if( !immediate && (dirtyTime < storeTime) ) return;
-
-			long valueTime = lastValueTime.get();
-			long softNext = valueTime + MIN_PERSIST_LIMIT;
-			long hardNext = Math.max( dirtyTime, storeTime ) + MAX_PERSIST_LIMIT;
-			long nextTime = Math.min( softNext, hardNext );
-			long taskTime = task == null ? 0 : task.scheduledExecutionTime();
-
-			// If the existing task time is already set to the next time just return
-			if( !immediate && (taskTime == nextTime) ) return;
-
-			// Cancel the existing task and schedule a new one
-			if( task != null ) task.cancel();
-			task = new SaveTask();
-			if( immediate ) {
-				task.run();
-			} else {
-				timer.schedule( task, new Date( nextTime ) );
-			}
-		}
-	}
-
-	Path getFile() {
+	private Path getFile() {
 		return folder.resolve( SETTINGS_FILE_NAME );
-	}
-
-	private class SaveTask extends TimerTask {
-
-		@Override
-		public void run() {
-			// If there is an executor, use it to run the task, otherwise run the task on the timer thread
-			if( executor != null && !executor.isShutdown() ) {
-				executor.submit( StoredSettings.this::save );
-			} else {
-				save();
-			}
-		}
-
 	}
 
 }
