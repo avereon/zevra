@@ -1,10 +1,9 @@
 package com.avereon.data;
 
-import com.avereon.util.Log;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 /**
  * This class is the internal implementation of a {@link Node} {@link Set}. In
@@ -37,18 +36,17 @@ import java.util.function.IntFunction;
  *     ...
  *   }
  * </pre>
- * If a {@link List} is desired then a {@link Comparator<T>} must be supplied
+ * If a {@link List} is desired then a {@link Comparator< E >} must be supplied
  * to sort the elements by some attribute in the {@link Node}s. The
  * {@link NodeComparator} class is helpful to easily create a comparator based
  * on know value keys.
  *
- * @param <T> The type of {@link Node}s in the {@link NodeSet}
+ * @param <E> The type of {@link Node}s in the {@link NodeSet}
  */
-class NodeSet<T extends Node> extends Node implements Set<T> {
+@SuppressWarnings( { "NullableProblems", "SuspiciousToArrayCall" } )
+class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	static final String PREFIX = "node-set-key-";
-
-	private static final System.Logger log = Log.get();
 
 	NodeSet() {
 		setAllKeysModify();
@@ -70,12 +68,12 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
+	public Iterator<E> iterator() {
 		return getSetValues().iterator();
 	}
 
 	@Override
-	public void forEach( Consumer<? super T> action ) {
+	public void forEach( Consumer<? super E> action ) {
 		getSetValues().forEach( action );
 	}
 
@@ -85,32 +83,23 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 	}
 
 	@Override
-	public <T1> T1[] toArray( T1[] array ) {
+	public <T> T[] toArray( T[] array ) {
 		return getSetValues().toArray( array );
 	}
 
 	@Override
-	public <T1> T1[] toArray( IntFunction<T1[]> generator ) {
+	public <T> T[] toArray( IntFunction<T[]> generator ) {
 		return getSetValues().toArray( generator );
 	}
 
 	@Override
-	public boolean add( T node ) {
-		String key = node.getCollectionId();
-		Objects.requireNonNull( key );
-		if( super.hasKey( key ) ) return false;
-		setValue( key, node );
-		return true;
+	public boolean add( E node ) {
+		return super.addNodes( Set.of( node ) );
 	}
 
 	@Override
 	public boolean remove( Object object ) {
-		if( !(object instanceof Node) ) return false;
-		Node node = (Node)object;
-		String key = node.getCollectionId();
-		if( !super.hasKey( key ) ) return false;
-		setValue( key, null );
-		return true;
+		return super.removeNodes( Set.of( object ) );
 	}
 
 	@Override
@@ -119,17 +108,13 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 	}
 
 	@Override
-	public boolean addAll( Collection<? extends T> collection ) {
+	public boolean addAll( Collection<? extends E> collection ) {
 		return super.addNodes( collection );
 	}
 
 	@Override
-	@SuppressWarnings( { "SuspiciousMethodCalls", "NullableProblems" } )
 	public boolean retainAll( Collection<?> c ) {
-		Collection<T> remaining = getSetValues();
-		remaining.removeAll( c );
-		removeAll( remaining );
-		return remaining.size() > 0;
+		return super.retainNodes( c );
 	}
 
 	@Override
@@ -142,24 +127,24 @@ class NodeSet<T extends Node> extends Node implements Set<T> {
 		super.clear();
 	}
 
-	//	@Override
-	//	public Spliterator<T> spliterator() {
-	//		return getSetValues().spliterator();
-	//	}
-	//
-	//	@Override
-	//	public Stream<T> stream() {
-	//		return getSetValues().stream();
-	//	}
-	//
-	//	@Override
-	//	public Stream<T> parallelStream() {
-	//		return getSetValues().parallelStream();
-	//	}
+	@Override
+	public Spliterator<E> spliterator() {
+		return getSetValues().spliterator();
+	}
+
+	@Override
+	public Stream<E> stream() {
+		return getSetValues().stream();
+	}
+
+	@Override
+	public Stream<E> parallelStream() {
+		return getSetValues().parallelStream();
+	}
 
 	@SuppressWarnings( "unchecked" )
-	private Collection<T> getSetValues() {
-		return (Collection<T>)getValues();
+	private Collection<E> getSetValues() {
+		return (Collection<E>)getValues();
 	}
 
 	public static <T> Set<T> of() {

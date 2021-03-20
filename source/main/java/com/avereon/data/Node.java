@@ -270,7 +270,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) doDispatch( (NodeEvent)event );
+		if( event instanceof NodeEvent ) dispatch( (NodeEvent)event );
+	}
+
+	public void dispatch( NodeEvent event ) {
+		doDispatch( event );
 	}
 
 	/**
@@ -787,6 +791,16 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return changed;
 	}
 
+	@SuppressWarnings( { "SuspiciousMethodCalls" } )
+	protected boolean retainNodes( Collection<?> c ) {
+		if( c.size() == 0 ) return false;
+		Collection<?> remaining = getValues();
+		int originalSize = remaining.size();
+		remaining.removeAll( c );
+		removeNodes( remaining );
+		return remaining.size() != originalSize;
+	}
+
 	/**
 	 * Remove all values from this node.
 	 */
@@ -912,7 +926,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			modifiedChildren = null;
 		}
 
-		updateModified();
+		updateInternalModified();
 	}
 
 	private <S, T> T doSetValue( String key, S oldValue, T newValue ) {
@@ -927,27 +941,28 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( newValue instanceof Node ) ((Node)newValue).setParent( this );
 		}
 
-		updateModified();
+		updateInternalModified();
 
 		return newValue;
+	}
+
+	protected boolean setChildModified( Node child, boolean modified ) {
+		return doSetChildModified( child, modified );
 	}
 
 	private boolean doSetChildModified( Node child, boolean modified ) {
 		boolean previousModified = isModified();
 
-		// Search the value map for the modified child
-		for( String key : values.keySet() ) {
-			Object value = values.get( key );
-			if( value != child ) continue;
-			modifiedChildren = updateSet( modifiedChildren, child, modified );
-		}
+		// Update the modified children set
+		values.values().stream().filter( v -> v == child ).forEach( v -> modifiedChildren = updateSet( modifiedChildren, child, modified ) );
 
-		updateModified();
+		// Update the internal modified flag
+		updateInternalModified();
 
 		return isModified() != previousModified;
 	}
 
-	private void updateModified() {
+	private void updateInternalModified() {
 		modified = selfModified || isModifiedByValue() || isModifiedByChild();
 	}
 
@@ -1258,7 +1273,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			Node parent = node.getParent();
 			while( parent != null ) {
 				boolean priorModified = parent.isModified();
-				boolean parentChanged = parent.doSetChildModified( node, newValue );
+				boolean parentChanged = parent.setChildModified( node, newValue );
 				if( parentChanged ) fireTargetedEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
 				parent = parent.getParent();

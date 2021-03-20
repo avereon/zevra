@@ -43,7 +43,7 @@ public class NodeEvent extends TxnEvent {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public <T> T getNode() {
+	public <T extends Node> T getNode() {
 		return (T)getSource();
 	}
 
