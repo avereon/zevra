@@ -25,8 +25,8 @@ public class RbTest {
 	@Test
 	void testText() {
 		Product product = new MockProductA();
-		assertThat( Rb.text( product, "test", null ), is( "test > null" ) );
-		assertThat( Rb.text( product, "test", "invalid" ), is( "test > invalid" ) );
+		assertThat( Rb.text( product, "test", null ), is( "mock > test > null" ) );
+		assertThat( Rb.text( product, "test", "invalid" ), is( "mock > test > invalid" ) );
 		assertThat( Rb.text( product, "test", "name" ), is( "Product A" ) );
 	}
 

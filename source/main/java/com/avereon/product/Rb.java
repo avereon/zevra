@@ -65,7 +65,7 @@ public class Rb {
 		String string = getTextOr( product, path, bundleKey, valueKey, null, values );
 
 		if( string == null ) {
-			string = bundleKey + " > " + valueKey;
+			string = product.getCard().getArtifact() + " > " + bundleKey + " > " + valueKey;
 			if( log.isLoggable( Log.TRACE ) ) {
 				log.log( Log.WARN, "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
 			} else {

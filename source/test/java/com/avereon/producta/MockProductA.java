@@ -9,6 +9,8 @@ import java.nio.file.Path;
 
 public class MockProductA implements Product {
 
+	private ProductCard card;
+
 	private Product parent;
 
 	public MockProductA() {
@@ -17,7 +19,8 @@ public class MockProductA implements Product {
 
 	@Override
 	public ProductCard getCard() {
-		return null;
+		if( card == null ) card = new ProductCard().setArtifact( "mock" );
+		return card;
 	}
 
 	@Override
