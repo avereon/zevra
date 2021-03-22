@@ -85,12 +85,14 @@ class NodeTest {
 		int index = 0;
 		assertThat( data.isModifiedByValue(), is( false ) );
 		assertThat( data.isModifiedByChild(), is( false ) );
+		assertThat( data.isModifiedBySelf(), is( false ) );
 		assertThat( data.isModified(), is( false ) );
 		assertThat( data.getEventCount(), is( index ) );
 
 		data.setModified( true );
 		assertThat( data.isModifiedByValue(), is( false ) );
 		assertThat( data.isModifiedByChild(), is( false ) );
+		assertThat( data.isModifiedBySelf(), is( true ) );
 		assertThat( data.isModified(), is( true ) );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
@@ -99,6 +101,7 @@ class NodeTest {
 		data.setModified( false );
 		assertThat( data.isModifiedByValue(), is( false ) );
 		assertThat( data.isModifiedByChild(), is( false ) );
+		assertThat( data.isModifiedBySelf(), is( false ) );
 		assertThat( data.isModified(), is( false ) );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
@@ -747,6 +750,38 @@ class NodeTest {
 	}
 
 	@Test
+	void testNodeSetIterator() {
+		MockNode item0 = new MockNode( "0" );
+		data.addItem( item0 );
+		MockNode item1 = new MockNode( "1" );
+		data.addItem( item1 );
+		MockNode item2 = new MockNode( "2" );
+		data.addItem( item2 );
+		MockNode item3 = new MockNode( "3" );
+		data.addItem( item3 );
+
+		assertThat( data.getItems(), containsInAnyOrder( item0, item1, item2, item3 ) );
+		assertThat( data.getItems().size(), is( 4 ) );
+	}
+
+	@Test
+	void testNodeSetIteratorWithModifyFilter() {
+		MockNode item0 = new MockNode( "0" );
+		data.addItem( item0 );
+		MockNode item1 = new MockNode( "1" );
+		data.addItem( item1 );
+		MockNode item2 = new MockNode( "2" );
+		data.addItem( item2 );
+		MockNode item3 = new MockNode( "3" );
+		data.addItem( item3 );
+
+		data.setSetModifyFilter( MockNode.ITEMS, n -> true );
+
+		assertThat( data.getItems(), containsInAnyOrder( item0, item1, item2, item3 ) );
+		assertThat( data.getItems().size(), is( 4 ) );
+	}
+
+	@Test
 	void testResourceChangesOnChildCausesParentNodeChangedEvent() {
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );
@@ -925,6 +960,24 @@ class NodeTest {
 		assertThat( path.size(), is( 2 ) );
 		assertThat( path.get( 0 ), is( parent ) );
 		assertThat( path.get( 1 ), is( child ) );
+	}
+
+	@Test
+	void testParentGetsModifiedAndModifiedWithChildModifyFlag() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+
+		child.setModified( true );
+		assertTrue( parent.isModified() );
+		assertTrue( child.isModified() );
+
+		parent.setModified( false );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
 	}
 
 	@Test
@@ -1506,6 +1559,37 @@ class NodeTest {
 		assertThat( child.getEventCount(), is( childIndex ) );
 		assertEventState( grandChild, grandChildIndex++, parent, NodeEvent.PARENT_CHANGED );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
+	}
+
+	@Test
+	void testParentNodeNotModifiedByNodeSetWithModifyFilter() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+
+		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
+		assertFalse( child.isModified() );
+
+		MockNode item0 = new MockNode( "0" );
+		child.addItem( item0 );
+		assertFalse( item0.isModified() );
+		assertTrue( child.isModified() );
+		assertTrue( parent.isModified() );
+		child.setModified( false );
+
+		assertFalse( item0.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModifiedByValue() );
+		assertFalse( parent.isModifiedByChild() );
+		assertFalse( parent.isModified() );
+
+		//		item0.setValue( "dont-modify", true );
+		//		assertFalse( child.isModified() );
+		//		assertFalse( parent.isModified() );
+		//		item0.setValue( "other-value", "hello" );
+		//		assertFalse( child.isModified() );
+		//		assertFalse( parent.isModified() );
 	}
 
 	@Test

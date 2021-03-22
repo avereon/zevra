@@ -36,7 +36,7 @@ class MockNode extends Node {
 	 * @return The set of items
 	 */
 	public Set<MockNode> getItems() {
-		return getValue( ITEMS );
+		return getValues( ITEMS );
 	}
 
 	/**

@@ -72,10 +72,10 @@ public class NodeEvent extends TxnEvent {
 
 		builder.append( getClass().getSimpleName() );
 		builder.append( "[ " );
-		builder.append( "node=" );
-		builder.append( (Node)getNode() );
-		builder.append( ", type=" );
+		builder.append( "type=" );
 		builder.append( getEventType() );
+		builder.append( ", node=" );
+		builder.append( (Node)getNode() );
 		if( key != null ) {
 			builder.append( ", key=" );
 			builder.append( key );

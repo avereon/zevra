@@ -2,7 +2,9 @@ package com.avereon.data;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -48,18 +50,26 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	static final String PREFIX = "node-set-key-";
 
+	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
+
+	private Set<E> itemCache;
+
+	private boolean dirtyCache;
+
 	NodeSet() {
 		setAllKeysModify();
+		itemCache = Set.of();
+		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 	}
 
 	@Override
 	public int size() {
-		return super.size();
+		return getSetValues().size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return super.isEmpty();
+		return getSetValues().isEmpty();
 	}
 
 	@Override
@@ -94,11 +104,13 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@Override
 	public boolean add( E node ) {
+		dirtyCache = true;
 		return super.addNodes( Set.of( node ) );
 	}
 
 	@Override
 	public boolean remove( Object object ) {
+		dirtyCache = true;
 		return super.removeNodes( Set.of( object ) );
 	}
 
@@ -109,21 +121,25 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@Override
 	public boolean addAll( Collection<? extends E> collection ) {
+		dirtyCache = true;
 		return super.addNodes( collection );
 	}
 
 	@Override
 	public boolean retainAll( Collection<?> c ) {
+		dirtyCache = true;
 		return super.retainNodes( c );
 	}
 
 	@Override
 	public boolean removeAll( Collection<?> collection ) {
+		dirtyCache = true;
 		return super.removeNodes( collection );
 	}
 
 	@Override
 	public void clear() {
+		dirtyCache = true;
 		super.clear();
 	}
 
@@ -142,13 +158,30 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		return getSetValues().parallelStream();
 	}
 
-	@SuppressWarnings( "unchecked" )
-	private Collection<E> getSetValues() {
-		return (Collection<E>)getValues();
+	public boolean modifyAllowed( Object value ) {
+		if( !(value instanceof Node ) ) return true;
+		Function<Node, Boolean> filter = getSetModifyFilter();
+		boolean result = filter == null || filter.apply( (Node)value );
+		System.err.println( "modify allowed=" + result );
+		return result;
 	}
 
-	public static <T> Set<T> of() {
-		return Set.of();
+	void setSetModifyFilter( Function<Node, Boolean> filter ) {
+		setValue( "node-set-modify-filter", filter );
+	}
+
+	private Function<Node, Boolean> getSetModifyFilter() {
+		return getValue( "node-set-modify-filter" );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	private Collection<E> getSetValues() {
+		if( dirtyCache ) {
+			Class<E> type = (Class<E>)getClass().getGenericSuperclass();
+			itemCache = getValues().parallelStream().filter( type::isInstance ).map( e -> (E)e ).collect( Collectors.toSet() );
+			dirtyCache = false;
+		}
+		return itemCache;
 	}
 
 }

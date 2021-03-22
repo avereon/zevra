@@ -14,7 +14,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A generic data node supporting getting and setting values, a modified (or
@@ -127,7 +126,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * A special object to represent previously null values in the modifiedValues
 	 * map.
 	 */
-	private static final Object NULL = new Object();
+	private static final Object WAS_PREVIOUSLY_NULL = new Object();
 
 	/**
 	 * The node event hub.
@@ -165,9 +164,14 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	private List<String> naturalKeyList;
 
 	/**
-	 * The set of value keys that can modify the node.
+	 * The set of value keys intentionally allowed to modify the node.
 	 */
-	private Set<String> modifyingKeySet;
+	private Set<String> includedModifyingKeySet;
+
+	/**
+	 * The set of value keys intentionally not allowed to modify the node.
+	 */
+	private Set<String> excludedModifyingKeySet;
 
 	private boolean allKeysModify;
 
@@ -243,6 +247,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	void setAllKeysModify() {
 		this.allKeysModify = true;
+	}
+
+	/**
+	 * Subclasses may implement extra rules regarding the modification of this
+	 * node. For example, if a particular value in a field would not allow the
+	 * node to be modified then that can be implemented here.
+	 *
+	 * @param value
+	 * @return True if the node can be modified, false otherwise
+	 */
+	public boolean modifyAllowed( Object value ) {
+		return true;
 	}
 
 	/**
@@ -565,8 +581,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys
 	 */
 	public void addModifyingKeys( String... keys ) {
-		if( modifyingKeySet == null ) modifyingKeySet = new CopyOnWriteArraySet<>();
-		modifyingKeySet.addAll( Set.of( keys ) );
+		if( includedModifyingKeySet == null ) includedModifyingKeySet = new CopyOnWriteArraySet<>();
+		includedModifyingKeySet.addAll( Set.of( keys ) );
 	}
 
 	/**
@@ -575,9 +591,26 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys
 	 */
 	public void removeModifyingKeys( String... keys ) {
-		if( modifyingKeySet == null ) return;
-		modifyingKeySet.removeAll( Set.of( keys ) );
-		if( modifyingKeySet.isEmpty() ) modifyingKeySet = null;
+		if( includedModifyingKeySet == null ) return;
+		includedModifyingKeySet.removeAll( Set.of( keys ) );
+		if( includedModifyingKeySet.isEmpty() ) includedModifyingKeySet = null;
+	}
+
+	public void addExcludedModifyingKeys( String... keys ) {
+		if( excludedModifyingKeySet == null ) excludedModifyingKeySet = new CopyOnWriteArraySet<>();
+		excludedModifyingKeySet.addAll( Set.of( keys ) );
+	}
+
+	/**
+	 * Remove value keys not allowed to change the modified flag if the value is
+	 * changed.
+	 *
+	 * @param keys The value keys
+	 */
+	public void removeExcludedModifyingKeys( String... keys ) {
+		if( excludedModifyingKeySet == null ) return;
+		excludedModifyingKeySet.removeAll( Set.of( keys ) );
+		if( excludedModifyingKeySet.isEmpty() ) excludedModifyingKeySet = null;
 	}
 
 	/**
@@ -587,7 +620,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @return True if the value key is a modifying value key, false otherwise
 	 */
 	public boolean isModifyingKey( String key ) {
-		return allKeysModify || Optional.ofNullable( modifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
+		return (allKeysModify || keyIncludedInModify( key )) && !keyExcludedFromModify( key );
+	}
+
+	private boolean keyIncludedInModify( String key ) {
+		return Optional.ofNullable( includedModifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
+	}
+
+	private boolean keyExcludedFromModify( String key ) {
+		return Optional.ofNullable( excludedModifyingKeySet ).map( s -> s.contains( key ) ).orElse( false );
 	}
 
 	/**
@@ -631,6 +672,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	protected <T extends Node> Set<T> getValues( String key ) {
+		if( !exists( key ) ) return Set.of();
+		//
 		return exists( key ) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
 	}
 
@@ -650,6 +693,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( set == null ) return;
 		set.remove( value );
 		if( set.isEmpty() ) doSetValue( key, set, null );
+	}
+
+	protected void setSetModifyFilter( String key, Function<Node, Boolean> filter ) {
+		getValue( key, () -> doSetValue( key, null, new NodeSet<>() ) ).setSetModifyFilter( filter );
 	}
 
 	/**
@@ -741,7 +788,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting key: " + key, exception );
+			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
 		}
 		return newValue;
 	}
@@ -750,10 +797,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return Arrays.stream( keys ).filter( k -> values.get( k ) != null ).collect( Collectors.toMap( k -> k, k -> values.get( k ) ) );
 	}
 
+	@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 	protected boolean addNodes( Collection<? extends Node> collection ) {
 		boolean changed = false;
-		try {
-			Txn.create();
+
+		try( Txn ignored = Txn.create() ) {
 			for( Node node : collection ) {
 				String key = node.getCollectionId();
 				if( hasKey( key ) ) continue;
@@ -762,7 +810,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				Txn.submit( new SetValueOperation( this, key, oldValue, node ) );
 				changed = true;
 			}
-			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error adding collection", exception );
 			return false;
@@ -772,8 +819,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	protected boolean removeNodes( Collection<?> collection ) {
 		boolean changed = false;
-		try {
-			Txn.create();
+		try( Txn ignored = Txn.create() ) {
 			for( Object object : collection ) {
 				if( !(object instanceof Node) ) continue;
 				Node node = (Node)object;
@@ -783,7 +829,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				Txn.submit( new SetValueOperation( this, key, oldValue, null ) );
 				changed = true;
 			}
-			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error removing collection", exception );
 			return false;
@@ -814,11 +859,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 	}
 
-	@SuppressWarnings( "unchecked" )
-	protected <T> Stream<T> streamNodes() {
-		return (Stream<T>)(values == null ? Set.of() : values.values()).stream();
-	}
-
 	protected boolean isEmpty() {
 		return values == null || values.isEmpty();
 	}
@@ -838,6 +878,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	Node setCollectionId( String id ) {
 		this.id = Objects.requireNonNull( id );
 		return this;
+	}
+
+	boolean isModifiedBySelf() {
+		return selfModified;
 	}
 
 	boolean isModifiedByValue() {
@@ -946,20 +990,14 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return newValue;
 	}
 
-	protected boolean setChildModified( Node child, boolean modified ) {
-		return doSetChildModified( child, modified );
-	}
-
-	private boolean doSetChildModified( Node child, boolean modified ) {
-		boolean previousModified = isModified();
+	private void doSetChildModified( Node child, boolean modified ) {
+		//if( !modifyAllowed( child ) ) return;
 
 		// Update the modified children set
 		values.values().stream().filter( v -> v == child ).forEach( v -> modifiedChildren = updateSet( modifiedChildren, child, modified ) );
+		new Throwable( "modified=" + modified + " child modified=" + child.isModified() + " modifiedByChild=" + isModifiedByChild() ).printStackTrace();
 
-		// Update the internal modified flag
 		updateInternalModified();
-
-		return isModified() != previousModified;
 	}
 
 	private void updateInternalModified() {
@@ -970,11 +1008,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( newValue ) {
 			if( set == null ) set = new CopyOnWriteArraySet<>();
 			set.add( child );
-		} else {
-			if( set != null ) {
-				set.remove( child );
-				if( set.size() == 0 ) set = null;
-			}
+		} else if( set != null ) {
+			set.remove( child );
+			if( set.size() == 0 ) set = null;
 		}
 
 		return set;
@@ -1126,7 +1162,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			// This operation must be created before any changes are made
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( Node.this );
 
-			// Even if the flag value does not change, doSetModified should be called
+			// Even if the flag value does not change, doSetSelfModified should be called
 			doSetSelfModified( newValue );
 
 			// Propagate the flag value to children
@@ -1187,18 +1223,23 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 			doSetValue( key, oldValue, newValue );
 
+			boolean oldCanModify = modifyAllowed( oldValue );
+			boolean newCanModify = modifyAllowed( newValue );
+
 			if( isModifyingKey( key ) ) {
-				// Update the modified value map
+				// If the preValue is null that means the value for this key has not been modified since the last transaction
 				Object preValue = modifiedValues == null ? null : modifiedValues.get( key );
-				if( preValue == null ) {
-					// Only add the value if there is not an existing previous value
+
+				boolean previouslyUnmodified = preValue == null;
+				boolean modifiedToPriorValue = Objects.equals( preValue == WAS_PREVIOUSLY_NULL ? null : preValue, newValue );
+
+				// Update the modified value map
+				if( previouslyUnmodified ) {
 					if( modifiedValues == null ) modifiedValues = new ConcurrentHashMap<>();
-					modifiedValues.put( key, oldValue == null ? NULL : oldValue );
-				} else if( Objects.equals( preValue == NULL ? null : preValue, newValue ) ) {
-					if( modifiedValues != null ) {
-						modifiedValues.remove( key );
-						if( modifiedValues.size() == 0 ) modifiedValues = null;
-					}
+					modifiedValues.putIfAbsent( key, oldValue == null ? WAS_PREVIOUSLY_NULL : oldValue );
+				} else if( modifiedToPriorValue && modifiedValues != null ) {
+					modifiedValues.remove( key );
+					if( modifiedValues.size() == 0 ) modifiedValues = null;
 				}
 
 				boolean childAdd = oldValue == null && newValue instanceof Node;
@@ -1206,13 +1247,13 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				if( childAdd ) {
 					fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
 					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
-				}
-				if( childRemove ) {
+				} else if( childRemove ) {
 					fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
 					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+				} else {
+					fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 				}
-				if( !childAdd && !childRemove ) fireDroppingEvent( NodeEvent.PARENT_CHANGED );
-				Txn.submit( updateModified );
+				if( oldCanModify && newCanModify ) Txn.submit( updateModified );
 			}
 
 			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
@@ -1264,28 +1305,30 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 			// Check if the modified values should change the modified flag
 			if( newValue != oldValue ) {
-				doSetSelfModified( newValue );
+				updateInternalModified();
+				updateParentsModified( newValue );
 				fireEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				fireCascadingEvent( NodeEvent.NODE_CHANGED );
 			}
 
-			// Check all the parents for modification
+		}
+
+		protected void updateParentsModified( boolean newModified ) {
 			Node node = getNode();
 			Node parent = node.getParent();
 			while( parent != null ) {
 				boolean priorModified = parent.isModified();
-				boolean parentChanged = parent.setChildModified( node, newValue );
+				parent.doSetChildModified( node, newModified );
+				boolean parentModified = parent.isModified();
+				boolean parentChanged = priorModified != parentModified;
 				if( parentChanged ) fireTargetedEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
 				parent = parent.getParent();
 			}
-
-			fireCascadingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
-		protected void revert() {
-			doSetSelfModified( oldValue );
-		}
+		protected void revert() {}
 
 		@Override
 		public String toString() {
