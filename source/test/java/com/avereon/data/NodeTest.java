@@ -1609,6 +1609,22 @@ class NodeTest {
 	}
 
 	@Test
+	void testParentModifiedByAddingModifiedChild() {
+		MockNode child = new MockNode( "child" );
+		child.setModified( true );
+		assertFalse( data.isModified() );
+		assertTrue( child.isModified() );
+
+		data.addItem( new MockNode().addItem( new MockNode().addItem( child ) ) );
+		assertTrue( data.isModified() );
+		assertTrue( child.isModified() );
+
+		data.setModified( false );
+		assertFalse( data.isModified() );
+		assertFalse( child.isModified() );
+	}
+
+	@Test
 	void testAddDataListener() {
 		// Remove the default watcher
 		data.unregister( NodeEvent.ANY, data.getWatcher() );

@@ -236,10 +236,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	public void setModified( boolean newValue ) {
 		boolean oldValue = selfModified;
 
-		try {
-			Txn.create();
+		try( Txn ignored = Txn.create() ) {
 			Txn.submit( new SetSelfModifiedOperation( this, oldValue, newValue ) );
-			Txn.commit();
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting flag: modified", exception );
 		}
@@ -1175,25 +1173,19 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			// Even if the flag value does not change, doSetSelfModified should be called
 			doSetSelfModified( newValue );
 
+			Txn.submit( updateModified );
+
 			// Propagate the flag value to children
-			if( values != null && !newValue ) {
+			if( !newValue && values != null ) {
 				// Clear the modified flag of any child nodes
 				for( Object value : values.values() ) {
 					if( value instanceof Node ) {
 						Node child = (Node)value;
 						if( child.isModified() ) {
-							child.doSetSelfModified( false );
-							fireTargetedEvent( child, new NodeEvent( child, NodeEvent.UNMODIFIED ) );
-							fireTargetedEvent( child, new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
+							child.setModified( false );
 						}
 					}
 				}
-			}
-
-			if( newValue != currentValue ) {
-				fireEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
-				fireEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
-				Txn.submit( updateModified );
 			}
 		}
 
