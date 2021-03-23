@@ -50,7 +50,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	static final String PREFIX = "node-set-key-";
 
-	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
+	public static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
 
 	private Set<E> itemCache;
 
@@ -70,6 +70,10 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	@Override
 	public boolean isEmpty() {
 		return getSetValues().isEmpty();
+	}
+
+	boolean isNodeSetEmpty() {
+		return super.isEmpty();
 	}
 
 	@Override
@@ -104,14 +108,33 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@Override
 	public boolean add( E node ) {
-		dirtyCache = true;
-		return super.addNodes( Set.of( node ) );
+		return addAll( Set.of( node ) );
 	}
 
 	@Override
 	public boolean remove( Object object ) {
-		dirtyCache = true;
-		return super.removeNodes( Set.of( object ) );
+		return removeAll( Set.of( object ) );
+	}
+
+	@Override
+	public boolean addAll( Collection<? extends E> collection ) {
+		boolean modified = addNodes( collection );
+		if( modified ) dirtyCache = true;
+		return modified;
+	}
+
+	@Override
+	public boolean removeAll( Collection<?> collection ) {
+		boolean modified = removeNodes( collection );
+		if( modified ) dirtyCache = true;
+		return modified;
+	}
+
+	@Override
+	public boolean retainAll( Collection<?> c ) {
+		boolean modified = retainNodes( c );
+		if( modified ) dirtyCache = true;
+		return modified;
 	}
 
 	@Override
@@ -120,26 +143,8 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public boolean addAll( Collection<? extends E> collection ) {
-		dirtyCache = true;
-		return super.addNodes( collection );
-	}
-
-	@Override
-	public boolean retainAll( Collection<?> c ) {
-		dirtyCache = true;
-		return super.retainNodes( c );
-	}
-
-	@Override
-	public boolean removeAll( Collection<?> collection ) {
-		dirtyCache = true;
-		return super.removeNodes( collection );
-	}
-
-	@Override
 	public void clear() {
-		dirtyCache = true;
+		if( !super.isEmpty() ) dirtyCache = true;
 		super.clear();
 	}
 
@@ -159,17 +164,17 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	public boolean modifyAllowed( Object value ) {
-		if( !(value instanceof Node ) ) return true;
+		if( !(value instanceof Node) ) return true;
 		Function<Node, Boolean> filter = getSetModifyFilter();
 		return filter == null || filter.apply( (Node)value );
 	}
 
 	void setSetModifyFilter( Function<Node, Boolean> filter ) {
-		setValue( "node-set-modify-filter", filter );
+		setValue( NODE_SET_MODIFY_FILTER, filter );
 	}
 
 	private Function<Node, Boolean> getSetModifyFilter() {
-		return getValue( "node-set-modify-filter" );
+		return getValue( NODE_SET_MODIFY_FILTER );
 	}
 
 	@SuppressWarnings( "unchecked" )

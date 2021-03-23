@@ -1578,6 +1578,123 @@ class NodeTest {
 	}
 
 	@Test
+	void testNodeNotModifiedByChildAddUntilNodeFilterValueChange() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+
+		MockNode item0 = new MockNode( "A" );
+
+		// Make sure the modified flag is working as expected before using the dont-modify value
+		child.addItem( item0 );
+		assertTrue( parent.isModified() );
+		assertTrue( child.isModified() );
+		assertFalse( item0.isModified() );
+		child.removeItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+
+		// The dont-modify is not a modifying key
+		item0.setValue( "dont-modify", true );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+
+		// Adding the child should not cause any node to be modified
+		child.addItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+
+		// Some extra checking
+		child.removeItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+		child.addItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+	}
+
+	@Test
+	void testNodeNotModifiedByChildRemoveUntilNodeFilterValueChange() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+
+		MockNode item0 = new MockNode( "A" );
+
+		// Make sure the modified flag is working as expected before using the dont-modify value
+		child.addItem( item0 );
+		assertTrue( parent.isModified() );
+		assertTrue( child.isModified() );
+		assertFalse( item0.isModified() );
+		child.removeItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+
+		item0.setValue( "dont-modify", true );
+		child.addItem( item0 );
+		assertFalse( parent.isModified() );
+		assertFalse( child.isModified() );
+		assertFalse( item0.isModified() );
+
+		// This does not modify the node because dont-modify is not a modifying key
+		item0.setValue( "dont-modify", null );
+		child.removeItem( item0 );
+		assertTrue( parent.isModified() );
+		assertTrue( child.isModified() );
+		assertFalse( item0.isModified() );
+	}
+
+	@Test
+	void testParentNodeNotModifiedByNodeAddedAndSetWithModifyFilter() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+
+		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
+		assertFalse( child.isModified() );
+
+		MockNode item0 = new MockNode( "0" );
+		item0.setValue( "dont-modify", true );
+		assertFalse( item0.isModified() );
+
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+
+		child.addItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.addItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+	}
+
+	@Test
 	void testParentNodeNotModifiedByNodeSetWithModifyFilter() {
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );
@@ -1601,11 +1718,33 @@ class NodeTest {
 		assertFalse( parent.isModified() );
 
 		item0.setValue( "dont-modify", true );
+		assertFalse( item0.isModified() );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
-		item0.setValue( "other-value", "hello" );
+
+		System.out.println( "--- HERE ---" );
+		item0.setValue( "a", "A" );
+
+
+		assertTrue( item0.isModified() );
+		assertFalse( ((Node)child.getValue( MockNode.ITEMS )).isModified() );
+		assertFalse( child.isModified() );
+
+		// NEXT Why is the parent modified...it shouldn't be
+		assertFalse( parent.isModifiedBySelf() );
+		assertFalse( parent.isModifiedByValue() );
+		// Modified by child??? but the child is not modified
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModifiedByChild() );
+		assertFalse( parent.isModified() );
+
+		item0.setValue( "dont-modify", null );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		child.removeItem( item0 );
+		assertTrue( child.isModified() );
+		assertTrue( parent.isModified() );
+		child.setModified( false );
 	}
 
 	@Test
