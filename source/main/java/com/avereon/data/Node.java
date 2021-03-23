@@ -1165,27 +1165,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		@Override
 		protected void commit() throws TxnException {
-			boolean currentValue = modified;
-
 			// This operation must be created before any changes are made
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( Node.this );
-
-			// Even if the flag value does not change, doSetSelfModified should be called
 			doSetSelfModified( newValue );
-
 			Txn.submit( updateModified );
 
 			// Propagate the flag value to children
 			if( !newValue && values != null ) {
 				// Clear the modified flag of any child nodes
-				for( Object value : values.values() ) {
-					if( value instanceof Node ) {
-						Node child = (Node)value;
-						if( child.isModified() ) {
-							child.setModified( false );
-						}
-					}
-				}
+				values.values().parallelStream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
 			}
 		}
 
@@ -1222,11 +1210,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 			// This operation must be created before any changes are made
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( Node.this );
-
 			doSetValue( key, oldValue, newValue );
-
-			boolean oldCanModify = modifyAllowed( oldValue );
-			boolean newCanModify = modifyAllowed( newValue );
+			Txn.submit( updateModified );
 
 			if( isModifyingKey( key ) ) {
 				// If the preValue is null that means the value for this key has not been modified since the last transaction
@@ -1255,7 +1240,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				} else {
 					fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 				}
-				if( oldCanModify && newCanModify ) Txn.submit( updateModified );
 			}
 
 			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
