@@ -991,12 +991,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	private void doSetChildModified( Node child, boolean modified ) {
-		if( !modifyAllowed( child ) ) return;
-		// NEXT Fix parent not modified by child modified flag
+		//if( !modifyAllowed( child ) ) return;
 
 		// Update the modified children set
 		values.values().stream().filter( v -> v == child ).forEach( v -> modifiedChildren = updateSet( modifiedChildren, child, modified ) );
-		//new Throwable( "modified=" + modified + " child modified=" + child.isModified() + " modifiedByChild=" + isModifiedByChild() ).printStackTrace();
 
 		updateInternalModified();
 	}

@@ -964,24 +964,34 @@ class NodeTest {
 
 	@Test
 	void testParentGetsModifiedAndUnmodifiedWithChildModifyFlag() {
+		MockNode grandparent = new MockNode( "grandparent" );
 		MockNode parent = new MockNode( "parent" );
+		grandparent.setValue( "child", parent );
+		grandparent.setModified( false );
 		MockNode child = new MockNode( "child" );
 		parent.setValue( "child", child );
 		parent.setModified( false );
+
+		assertFalse( grandparent.isModified() );
 		assertFalse( parent.isModified() );
 		assertFalse( child.isModified() );
+		assertThat( grandparent, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 
 		child.setModified( true );
+		assertTrue( grandparent.isModified() );
 		assertTrue( parent.isModified() );
 		assertTrue( child.isModified() );
+		assertThat( grandparent, hasStates( true, false, 0, 1 ) );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
 		assertThat( child, hasStates( true, true, 0, 0 ) );
 
 		parent.setModified( false );
+		assertFalse( grandparent.isModified() );
 		assertFalse( parent.isModified() );
 		assertFalse( child.isModified() );
+		assertThat( grandparent, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 	}
