@@ -963,7 +963,7 @@ class NodeTest {
 	}
 
 	@Test
-	void testParentGetsModifiedAndModifiedWithChildModifyFlag() {
+	void testParentGetsModifiedAndUnmodifiedWithChildModifyFlag() {
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );
 		parent.setValue( "child", child );
