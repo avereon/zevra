@@ -1170,10 +1170,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			doSetSelfModified( newValue );
 			Txn.submit( updateModified );
 
-			// Propagate the flag value to children
+			// Propagate the modified false flag value to children
 			if( !newValue && values != null ) {
-				// Clear the modified flag of any child nodes
-				values.values().parallelStream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
+				// NOTE Cannot use parallelStream here because it causes out-of-order events
+				values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
 			}
 		}
 
@@ -1297,7 +1297,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				fireEvent( new NodeEvent( getNode(), newValue ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				fireCascadingEvent( NodeEvent.NODE_CHANGED );
 			}
-
 		}
 
 		protected void updateParentsModified( boolean newModified ) {
