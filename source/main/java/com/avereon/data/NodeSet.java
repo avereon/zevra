@@ -161,9 +161,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	public boolean modifyAllowed( Object value ) {
 		if( !(value instanceof Node ) ) return true;
 		Function<Node, Boolean> filter = getSetModifyFilter();
-		boolean result = filter == null || filter.apply( (Node)value );
-		System.err.println( "modify allowed=" + result );
-		return result;
+		return filter == null || filter.apply( (Node)value );
 	}
 
 	void setSetModifyFilter( Function<Node, Boolean> filter ) {

@@ -991,17 +991,29 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	private void doSetChildModified( Node child, boolean modified ) {
-		//if( !modifyAllowed( child ) ) return;
+		if( !modifyAllowed( child ) ) return;
+		// NEXT Fix parent not modified by child modified flag
 
 		// Update the modified children set
 		values.values().stream().filter( v -> v == child ).forEach( v -> modifiedChildren = updateSet( modifiedChildren, child, modified ) );
-		new Throwable( "modified=" + modified + " child modified=" + child.isModified() + " modifiedByChild=" + isModifiedByChild() ).printStackTrace();
+		//new Throwable( "modified=" + modified + " child modified=" + child.isModified() + " modifiedByChild=" + isModifiedByChild() ).printStackTrace();
 
 		updateInternalModified();
 	}
 
 	private void updateInternalModified() {
-		modified = selfModified || isModifiedByValue() || isModifiedByChild();
+		modified = isInternalModified();
+	}
+
+	/**
+	 * This implementation is different than calling isModified() because this
+	 * implementation uses the internal flags for the value, not just the
+	 * computed modified flag.
+	 *
+	 * @return If the node is modified
+	 */
+	private boolean isInternalModified() {
+		return isModifiedBySelf() | isModifiedByValue() | isModifiedByChild();
 	}
 
 	private <T> Set<T> updateSet( Set<T> set, T child, boolean newValue ) {
@@ -1294,14 +1306,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		UpdateModifiedOperation( Node node ) {
 			super( node );
+
 			// Check only the modified values
-			oldValue = isModifiedByValue();
+			oldValue = isInternalModified();
 		}
 
 		@Override
 		protected void commit() {
 			// Check only the modified values
-			boolean newValue = isModifiedByValue();
+			boolean newValue = isInternalModified();
 
 			// Check if the modified values should change the modified flag
 			if( newValue != oldValue ) {
