@@ -1734,7 +1734,6 @@ class NodeTest {
 		assertFalse( parent.isModifiedBySelf() );
 		assertFalse( parent.isModifiedByValue() );
 		// Modified by child??? but the child is not modified
-		assertFalse( child.isModified() );
 		assertFalse( parent.isModifiedByChild() );
 		assertFalse( parent.isModified() );
 
