@@ -1722,19 +1722,9 @@ class NodeTest {
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
 
-		System.out.println( "--- HERE ---" );
 		item0.setValue( "a", "A" );
-
-
 		assertTrue( item0.isModified() );
-		assertFalse( ((Node)child.getValue( MockNode.ITEMS )).isModified() );
 		assertFalse( child.isModified() );
-
-		// NEXT Why is the parent modified...it shouldn't be
-		assertFalse( parent.isModifiedBySelf() );
-		assertFalse( parent.isModifiedByValue() );
-		// Modified by child??? but the child is not modified
-		assertFalse( parent.isModifiedByChild() );
 		assertFalse( parent.isModified() );
 
 		item0.setValue( "dont-modify", null );

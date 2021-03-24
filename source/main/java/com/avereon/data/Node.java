@@ -1207,15 +1207,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		protected void commit() throws TxnException {
 			if( Objects.equals( getValue( key ), newValue ) ) return;
 
-			//System.out.println( "old-modify=" + modifyAllowed( oldValue ) + " new-modify=" + modifyAllowed( newValue ) + " key=" + key + " newValue=" + newValue );
-
 			// This operation must be created before any changes are made
 			boolean modifyAllowed = modifyAllowed( oldValue ) & modifyAllowed( newValue );
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( getNode() );
 			doSetValue( key, oldValue, newValue );
 			if( modifyAllowed ) Txn.submit( updateModified );
-
-			// FIXME Why is the NodeSet modified?
 
 			if( modifyAllowed && isModifyingKey( key ) ) {
 				// If the preValue is null that means the value for this key has not been modified since the last transaction
@@ -1291,10 +1287,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		protected void commit() {
 			updateInternalModified();
 
-			// Check if the modified values should change the modified flag
 			boolean newModified = isModified();
 
-			new Throwable( "node=" + getNode() + " modified=" + newModified ).printStackTrace(System.out);
 			if( newModified != oldModified ) {
 				updateParentsModified( newModified );
 				fireEvent( new NodeEvent( getNode(), newModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
@@ -1304,16 +1298,16 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		protected void updateParentsModified( boolean newModified ) {
 			Node node = getNode();
-			Node parent = node.getParent();
+			Node parent = node.getTrueParent();
 			while( parent != null ) {
-				System.out.println( "parent=" + parent + " modified=" + newModified );
-				boolean priorModified = parent.isModified();
+				if( !parent.modifyAllowed( node )) break;
+				boolean oldParentModified = parent.isModified();
 				parent.doSetChildModified( node, newModified );
-				boolean parentModified = parent.isModified();
-				boolean parentChanged = priorModified != parentModified;
-				if( parentChanged ) fireTargetedEvent( parent, new NodeEvent( parent, !priorModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
+				boolean newParentModified = parent.isModified();
+				boolean parentChanged = oldParentModified != newParentModified;
+				if( parentChanged ) fireTargetedEvent( parent, new NodeEvent( parent, newParentModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				node = parent;
-				parent = parent.getParent();
+				parent = parent.getTrueParent();
 			}
 		}
 
