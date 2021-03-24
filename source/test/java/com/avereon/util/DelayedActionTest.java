@@ -2,6 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,6 +21,7 @@ public class DelayedActionTest {
 		assertThat( actionTimestamp.get(), is( 0L ) );
 
 		long before = System.currentTimeMillis();
+		readyAction();
 		action.trigger();
 		waitForAction();
 		long after = System.currentTimeMillis();
@@ -50,6 +52,7 @@ public class DelayedActionTest {
 
 		// Update() can be called as many times before the minTriggerLimit but the
 		// action should not occur unit the minTriggerLimit time has been reached
+		readyAction();
 		action.update();
 		action.update();
 		action.update();
@@ -82,6 +85,7 @@ public class DelayedActionTest {
 		// Wait at least minTriggerLimit before calling update
 		ThreadUtil.pause( minTriggerLimit + 1 );
 
+		readyAction();
 		action.update();
 		action.update();
 		action.update();
@@ -101,9 +105,19 @@ public class DelayedActionTest {
 		}
 	}
 
-	private void waitForAction() throws InterruptedException {
+	private void readyAction() {
+		actionTimestamp.set(0);
+	}
+
+	private void waitForAction() throws InterruptedException, TimeoutException {
+		long timeout = 1000;
 		synchronized( actionLock ) {
-			actionLock.wait( 1000 );
+			while( actionTimestamp.get() == 0 ) {
+				long start = System.currentTimeMillis();
+				actionLock.wait( timeout );
+				long end = System.currentTimeMillis();
+				if( end - start >= timeout ) throw new TimeoutException( "Timeout waiting for action" );
+			}
 		}
 	}
 
