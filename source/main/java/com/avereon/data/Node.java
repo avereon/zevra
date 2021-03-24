@@ -1228,18 +1228,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 					modifiedValues.remove( key );
 					if( modifiedValues.size() == 0 ) modifiedValues = null;
 				}
+			}
 
-				boolean childAdd = oldValue == null && newValue instanceof Node;
-				boolean childRemove = newValue == null && oldValue instanceof Node;
-				if( childAdd ) {
-					fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
-					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
-				} else if( childRemove ) {
-					fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
-					fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
-				} else {
-					fireDroppingEvent( NodeEvent.PARENT_CHANGED );
-				}
+			boolean childAdd = oldValue == null && newValue instanceof Node;
+			boolean childRemove = newValue == null && oldValue instanceof Node;
+			if( childAdd ) {
+				fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
+				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
+			} else if( childRemove ) {
+				fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
+				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+			} else {
+				fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 			}
 
 			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );

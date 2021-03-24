@@ -1579,17 +1579,31 @@ class NodeTest {
 
 	@Test
 	void testParentNodeNotModifiedByNodeAddedWithSetWithModifyFilter() {
+		int parentIndex = 6;
+		int childIndex = 1;
+
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );
 		parent.setValue( "child", child );
 		parent.setModified( false );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
 
 		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
 		assertFalse( child.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( child.getEventCount(), is( childIndex ) );
 
 		MockNode item0 = new MockNode( "0" );
 		item0.setValue( "dont-modify", true );
 		assertFalse( item0.isModified() );
+		// No new events should have occurred
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
 
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
@@ -1597,20 +1611,47 @@ class NodeTest {
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		// No new events should have occurred
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
+
+//		System.out.println( parent.getWatcher().getEvents().get( parentIndex++ ) );
+//		System.out.println( parent.getWatcher().getEvents().get( parentIndex++ ) );
+//		System.out.println( parent.getWatcher().getEvents().get( parentIndex++ ) );
 
 		child.addItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_ADDED );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_ADDED );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( child.getEventCount(), is( childIndex ) );
 		child.addItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
 
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_REMOVED );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_REMOVED );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
+		assertEventState(child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertThat( child.getEventCount(), is( childIndex ) );
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
 	}
 
 	@Test
