@@ -38,28 +38,29 @@ import java.util.stream.Stream;
  *     ...
  *   }
  * </pre>
- * If a {@link List} is desired then a {@link Comparator< E >} must be supplied
+ * If a {@link List} is desired then a {@link Comparator<E>} must be supplied
  * to sort the elements by some attribute in the {@link Node}s. The
  * {@link NodeComparator} class is helpful to easily create a comparator based
  * on know value keys.
  *
  * @param <E> The type of {@link Node}s in the {@link NodeSet}
  */
-@SuppressWarnings( { "NullableProblems", "SuspiciousToArrayCall" } )
+@SuppressWarnings( { "SuspiciousToArrayCall" } )
 class NodeSet<E extends Node> extends Node implements Set<E> {
 
-	static final String PREFIX = "node-set-key-";
+	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
 
-	public static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
+	private final String name;
 
 	private Set<E> itemCache;
 
 	private boolean dirtyCache;
 
-	NodeSet() {
+	NodeSet( String key ) {
+		this.name = key;
+		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 		setAllKeysModify();
 		itemCache = Set.of();
-		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 	}
 
 	@Override
@@ -167,6 +168,11 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		if( !(value instanceof Node) ) return true;
 		Function<Node, Boolean> filter = getSetModifyFilter();
 		return filter == null || filter.apply( (Node)value );
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[" + this.name + "]";
 	}
 
 	void setSetModifyFilter( Function<Node, Boolean> filter ) {

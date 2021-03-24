@@ -16,7 +16,7 @@ public class NodeSetTest {
 
 	@BeforeEach
 	void setup() {
-		set = new NodeSet<>();
+		set = new NodeSet<>( "test" );
 	}
 
 	@Test

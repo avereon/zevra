@@ -209,9 +209,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * restriction creating "generic" nodes.
 	 */
 	public Node() {
+		this.id = UUID.randomUUID().toString();
 		this.hub = new EventHub();
 		this.valueChangeHandlers = new ConcurrentHashMap<>();
-		this.id = NodeSet.PREFIX + UUID.randomUUID().toString();
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * node. For example, if a particular value in a field would not allow the
 	 * node to be modified then that can be implemented here.
 	 *
-	 * @param value
+	 * @param value The node value to use for checking if modify is allowed
 	 * @return True if the node can be modified, false otherwise
 	 */
 	public boolean modifyAllowed( Object value ) {
@@ -687,7 +687,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	protected <T extends Node> void addToSet( String key, T value ) {
 		if( value == null ) return;
-		getValue( key, () -> doSetValue( key, null, new NodeSet<>() ) ).add( value );
+		getValue( key, () -> doSetValue( key, null, new NodeSet<>( key ) ) ).add( value );
 	}
 
 	protected <T extends Node> void removeFromSet( String key, T value ) {
@@ -697,7 +697,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	protected void setSetModifyFilter( String key, Function<Node, Boolean> filter ) {
-		getValue( key, () -> doSetValue( key, null, new NodeSet<>() ) ).setSetModifyFilter( filter );
+		getValue( key, () -> doSetValue( key, null, new NodeSet<>( key ) ) ).setSetModifyFilter( filter );
 	}
 
 	/**
