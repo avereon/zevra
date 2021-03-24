@@ -1578,6 +1578,42 @@ class NodeTest {
 	}
 
 	@Test
+	void testParentNodeNotModifiedByNodeAddedWithSetWithModifyFilter() {
+		MockNode parent = new MockNode( "parent" );
+		MockNode child = new MockNode( "child" );
+		parent.setValue( "child", child );
+		parent.setModified( false );
+
+		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
+		assertFalse( child.isModified() );
+
+		MockNode item0 = new MockNode( "0" );
+		item0.setValue( "dont-modify", true );
+		assertFalse( item0.isModified() );
+
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+
+		child.addItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.addItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+		child.removeItem( item0 );
+		assertFalse( child.isModified() );
+		assertFalse( parent.isModified() );
+	}
+
+	@Test
 	void testNodeNotModifiedByChildAddUntilNodeFilterValueChange() {
 		MockNode parent = new MockNode( "parent" );
 		MockNode child = new MockNode( "child" );
@@ -1656,42 +1692,6 @@ class NodeTest {
 		assertTrue( parent.isModified() );
 		assertTrue( child.isModified() );
 		assertFalse( item0.isModified() );
-	}
-
-	@Test
-	void testParentNodeNotModifiedByNodeAddedAndSetWithModifyFilter() {
-		MockNode parent = new MockNode( "parent" );
-		MockNode child = new MockNode( "child" );
-		parent.setValue( "child", child );
-		parent.setModified( false );
-
-		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
-		assertFalse( child.isModified() );
-
-		MockNode item0 = new MockNode( "0" );
-		item0.setValue( "dont-modify", true );
-		assertFalse( item0.isModified() );
-
-		child.removeItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
-		child.removeItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
-
-		child.addItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
-		child.addItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
-
-		child.removeItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
-		child.removeItem( item0 );
-		assertFalse( child.isModified() );
-		assertFalse( parent.isModified() );
 	}
 
 	@Test
