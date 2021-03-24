@@ -141,7 +141,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	/**
 	 * The node id.
 	 */
-	private String id;
+	private String collectionId;
 
 	/**
 	 * The parent of the node.
@@ -209,7 +209,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * restriction creating "generic" nodes.
 	 */
 	public Node() {
-		this.id = UUID.randomUUID().toString();
+		this.collectionId = UUID.randomUUID().toString();
 		this.hub = new EventHub();
 		this.valueChangeHandlers = new ConcurrentHashMap<>();
 	}
@@ -786,7 +786,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		try( Txn ignored = Txn.create() ) {
 			Object oldValue = getValue( key );
-			if( newValue instanceof Node ) doRemoveFromParent( (Node)newValue );
+			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
 			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
@@ -870,31 +870,31 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	String getCollectionId() {
-		return id;
+		return collectionId;
 	}
 
 	Node setCollectionId( String id ) {
-		this.id = Objects.requireNonNull( id );
+		this.collectionId = Objects.requireNonNull( id );
 		return this;
 	}
 
-	boolean isModifiedBySelf() {
+	protected boolean isModifiedBySelf() {
 		return selfModified;
 	}
 
-	boolean isModifiedByValue() {
+	protected boolean isModifiedByValue() {
 		return getModifiedValueCount() > 0;
 	}
 
-	boolean isModifiedByChild() {
+	protected boolean isModifiedByChild() {
 		return getModifiedChildCount() > 0;
 	}
 
-	int getModifiedValueCount() {
+	protected int getModifiedValueCount() {
 		return modifiedValues == null ? 0 : modifiedValues.size();
 	}
 
-	int getModifiedChildCount() {
+	protected int getModifiedChildCount() {
 		return modifiedChildren == null ? 0 : modifiedChildren.size();
 	}
 
@@ -988,9 +988,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return newValue;
 	}
 
-	private void doSetChildModified( Node child, boolean modified ) {
+	private void doSetChildModified( Node child, boolean newModified ) {
 		// Update the modified children set
-		if( values.containsValue( child ) ) modifiedChildren = updateSet( modifiedChildren, child, modified );
+		if( values.containsValue( child ) ) this.modifiedChildren = updateSet( modifiedChildren, child, newModified );
 		updateInternalModified();
 	}
 
@@ -1021,11 +1021,23 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return set;
 	}
 
+	private void removeFromParent( Node child ) {
+		doRemoveFromParent( child, false );
+	}
+
 	private void doRemoveFromParent( Node child ) {
+		doRemoveFromParent( child, true );
+	}
+
+	private void doRemoveFromParent( Node child, boolean quiet ) {
 		Node parent = child.getParent();
 		if( parent != null ) {
-			parent.getValueKeys().forEach( k -> {
-				if( parent.getValue( k ).equals( child ) ) parent.setValue( k, null );
+			parent.getValueKeys().stream().filter( k -> parent.getValue( k ).equals( child ) ).forEach( k -> {
+				if( quiet ) {
+					parent.doSetValue( k, child, null );
+				} else {
+					parent.setValue( k, null );
+				}
 			} );
 			child.setParent( null );
 		}
@@ -1300,7 +1312,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			Node node = getNode();
 			Node parent = node.getTrueParent();
 			while( parent != null ) {
-				if( !parent.modifyAllowed( node )) break;
+				if( !parent.modifyAllowed( node ) ) break;
 				boolean oldParentModified = parent.isModified();
 				parent.doSetChildModified( node, newModified );
 				boolean newParentModified = parent.isModified();

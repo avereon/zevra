@@ -58,8 +58,8 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	NodeSet( String key ) {
 		this.name = key;
-		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 		setAllKeysModify();
+		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 		itemCache = Set.of();
 	}
 
