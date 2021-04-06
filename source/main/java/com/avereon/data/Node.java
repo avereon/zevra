@@ -781,13 +781,23 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param newValue The value
 	 */
 	public <T> T setValue( String key, T newValue ) {
+		return setValue( key, newValue, true );
+	}
+
+	/**
+	 * Set the value at the specific key.
+	 *
+	 * @param key The value key
+	 * @param newValue The value
+	 */
+	public <T> T setValue( String key, T newValue, boolean undoable ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( isReadOnlyKey( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
 		try( Txn ignored = Txn.create() ) {
 			Object oldValue = getValue( key );
 			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
-			Txn.submit( new SetValueOperation( this, key, oldValue, newValue ) );
+			Txn.submit( new SetValueOperation( this, key, oldValue, newValue, undoable ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
 		}
@@ -1115,7 +1125,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		 *
 		 * @param type The event type
 		 */
-		final void fireCascadingEvent( EventType<NodeEvent> type ) {
+		final void fireHoppingEvent( EventType<NodeEvent> type ) {
 			Node node = getNode();
 			while( node != null ) {
 				fireTargetedEvent( node, new NodeEvent( node, type ) );
@@ -1208,11 +1218,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		private final Object newValue;
 
+		private final boolean undoable;
+
 		private SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
+			this( node, key, oldValue, newValue, true );
+		}
+
+		private SetValueOperation( Node node, String key, Object oldValue, Object newValue, boolean undoable ) {
 			super( node );
 			this.key = key;
 			this.oldValue = oldValue;
 			this.newValue = newValue;
+			this.undoable = undoable;
 		}
 
 		@Override
@@ -1254,8 +1271,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 			}
 
-			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
-			fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue, undoable ) );
+			fireHoppingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -1279,7 +1296,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		@Override
 		protected void commit() {
-			fireCascadingEvent( NodeEvent.NODE_CHANGED );
+			fireHoppingEvent( NodeEvent.NODE_CHANGED );
 		}
 
 		@Override
@@ -1304,7 +1321,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( newModified != oldModified ) {
 				updateParentsModified( newModified );
 				fireEvent( new NodeEvent( getNode(), newModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
-				fireCascadingEvent( NodeEvent.NODE_CHANGED );
+				fireHoppingEvent( NodeEvent.NODE_CHANGED );
 			}
 		}
 
