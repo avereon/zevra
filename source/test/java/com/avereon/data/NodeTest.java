@@ -2012,7 +2012,7 @@ class NodeTest {
 
 	@SuppressWarnings( "unused" )
 	private void listEvents( NodeWatcher watcher ) {
-		for( NodeEvent event : watcher.getEvents() ) {
+		for( Event event : watcher.getEvents() ) {
 			System.out.println( "Event: " + event );
 		}
 	}
@@ -2070,23 +2070,23 @@ class NodeTest {
 	}
 
 	private static void assertEventState( MockNode target, int index, EventType<? extends NodeEvent> type ) {
-		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( target, type ) );
+		assertThat( (NodeEvent)target.getWatcher().getEvents().get( index ), hasEventState( target, type ) );
 	}
 
 	private static void assertEventState( MockNode target, int index, Node item, EventType<? extends NodeEvent> type ) {
-		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( item, type ) );
+		assertThat( (NodeEvent)target.getWatcher().getEvents().get( index ), hasEventState( item, type ) );
 	}
 
 	private static void assertEventState(
 		MockNode target, int index, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue
 	) {
-		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( target, type, key, oldValue, newValue ) );
+		assertThat( (NodeEvent)target.getWatcher().getEvents().get( index ), hasEventState( target, type, key, oldValue, newValue ) );
 	}
 
 	private static void assertEventState(
 		MockNode parent, int index, EventType<? extends NodeEvent> type, Node node, String key, Object oldValue, Object newValue
 	) {
-		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
+		assertThat( (NodeEvent)parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
 	}
 
 	private static Matcher<NodeEvent> hasEventState( Node node, EventType<? extends NodeEvent> type ) {

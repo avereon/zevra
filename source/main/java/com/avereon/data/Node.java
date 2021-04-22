@@ -284,11 +284,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) dispatch( (NodeEvent)event );
-	}
+		if( event instanceof NodeEvent ) doDispatchToNode( (NodeEvent)event );
 
-	public void dispatch( NodeEvent event ) {
-		doDispatch( event );
+		// FIXME Accepting only NodeEvent filters out TxnEvents
+		if( event instanceof NodeEvent ) hub.dispatch( event );
 	}
 
 	/**
@@ -1055,11 +1054,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	/**
 	 * Dispatch a {@link NodeEvent} to the data node. This method should not be
-	 * called by other classes other than the {@link Node data} classes.
+	 * called by other classes other than the {@link Node data} class.
 	 *
 	 * @param event The data node event
 	 */
-	private void doDispatch( NodeEvent event ) {
+	private void doDispatchToNode( NodeEvent event ) {
 		// Dispatch to value change handlers only when the event is on itself
 		boolean self = event.getNode() == this;
 		boolean valueChanged = event.getEventType() == NodeEvent.VALUE_CHANGED;
@@ -1075,8 +1074,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				}
 			} while( exception != null );
 		}
-
-		hub.dispatch( event );
 	}
 
 	private void checkForCircularReference( Node parent ) {
