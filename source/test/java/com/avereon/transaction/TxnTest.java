@@ -1,5 +1,6 @@
 package com.avereon.transaction;
 
+import com.avereon.event.EventType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,20 @@ class TxnTest {
 	@BeforeEach
 	void setup() {
 		Txn.reset();
+	}
+
+	@Test
+	void testRun() {
+		final AtomicInteger count = new AtomicInteger();
+		Txn.run( count::incrementAndGet );
+		assertThat( count.get(), is( 1 ) );
+	}
+
+	@Test
+	void testCall() throws Exception {
+		final AtomicInteger count = new AtomicInteger();
+		Txn.call( count::incrementAndGet );
+		assertThat( count.get(), is( 1 ) );
 	}
 
 	@Test
@@ -182,6 +197,9 @@ class TxnTest {
 
 		int index = 0;
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().size(), is( index ) );
@@ -203,12 +221,15 @@ class TxnTest {
 
 		int index = 0;
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
+		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
 		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
 		assertThat( target.getEvents().size(), is( index ) );
@@ -271,6 +292,7 @@ class TxnTest {
 		@Override
 		protected void commit() throws TxnException {
 			commitCallCount++;
+			getResult().addEvent( getTarget(), new MockTxnEvent( getTarget(), MockTxnEvent.MODIFIED ) );
 			if( throwable != null ) throw new TxnException( throwable );
 		}
 
@@ -290,6 +312,24 @@ class TxnTest {
 		void setThrowException( Throwable throwable ) {
 			this.throwable = throwable;
 		}
+	}
+
+	private static class MockTxnEvent extends TxnEvent {
+
+		public static final EventType<com.avereon.data.NodeEvent> MODIFIED = new EventType<>( "MODIFIED" );
+
+		/**
+		 * Create a TxnEvent where the source and target are the same object. This is
+		 * a common pattern where the eventual target of the event is the same object
+		 * that is creating it.
+		 *
+		 * @param source The event source/target
+		 * @param type
+		 */
+		public MockTxnEvent( TxnEventTarget source, EventType<? extends TxnEvent> type ) {
+			super( source, type );
+		}
+
 	}
 
 }

@@ -1,9 +1,11 @@
 package com.avereon.transaction;
 
 import com.avereon.event.EventType;
+import com.avereon.util.Actable;
 import com.avereon.util.Log;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -43,6 +45,30 @@ public class Txn implements AutoCloseable {
 
 	private Txn() {
 		operations = new ConcurrentLinkedQueue<>();
+	}
+
+	/**
+	 * Execute the given actable in a transaction.
+	 *
+	 * @param step The actable to execute
+	 */
+	public static void run( Actable step ) {
+		try( Txn ignored = Txn.create() ) {
+			step.act();
+		} catch( Exception exception ) {
+			log.log( Log.ERROR, "Transaction failure", exception );
+		}
+	}
+
+	/**
+	 * Execute the given Callable wrapped in a Txn.
+	 *
+	 * @param runnable The Callable to execute
+	 */
+	public static <T> T call( Callable<T> runnable ) throws Exception {
+		try( Txn ignored = Txn.create() ) {
+			return runnable.call();
+		}
 	}
 
 	/**
@@ -182,8 +208,6 @@ public class Txn implements AutoCloseable {
 				}
 			}
 
-			sendEvent( TxnEvent.COMMIT_SUCCESS, operations );
-
 			// Dispatch the events to the targets
 			txnEvents.forEach( ( target, events ) -> events.forEach( event -> {
 				try {
@@ -192,6 +216,8 @@ public class Txn implements AutoCloseable {
 					log.log( Log.ERROR, "Error dispatching transaction event", throwable );
 				}
 			} ) );
+
+			sendEvent( TxnEvent.COMMIT_SUCCESS, operations );
 		} catch( TxnException throwable ) {
 			sendEvent( TxnEvent.COMMIT_FAIL, operations );
 			throw throwable;
