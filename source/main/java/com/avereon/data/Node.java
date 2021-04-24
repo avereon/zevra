@@ -284,10 +284,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	@Override
 	public void dispatch( TxnEvent event ) {
-		if( event instanceof NodeEvent ) doDispatchToNode( (NodeEvent)event );
+		boolean isNodeEvent = event instanceof NodeEvent;
 
-		// FIXME Accepting only NodeEvent filters out TxnEvents
-		if( event instanceof NodeEvent ) hub.dispatch( event );
+		if( isNodeEvent ) doDispatchToNode( (NodeEvent)event );
+		hub.dispatch( event );
+		if( !isNodeEvent && getParent() != null ) getParent().dispatch( event );
 	}
 
 	/**
