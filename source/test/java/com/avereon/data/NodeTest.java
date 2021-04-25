@@ -1065,21 +1065,30 @@ class NodeTest {
 		// Change a value
 		data.setValue( "key", "value0" );
 		assertThat( data, hasStates( true, false, 1, 0 ) );
+		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "key", null, "value0" );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( data, index++, TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the modified flag to false
 		data.setModified( false );
 		assertThat( data, hasStates( false, false, 0, 0 ) );
+		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( data, index++, TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount(), is( index ) );
 
 		// Set the modified flag to false again
 		data.setModified( false );
 		assertThat( data, hasStates( false, false, 0, 0 ) );
+		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
+		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( data, index++, TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount(), is( index ) );
 	}
 
