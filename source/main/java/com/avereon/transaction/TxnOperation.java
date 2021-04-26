@@ -36,7 +36,7 @@ public abstract class TxnOperation {
 		return target;
 	}
 
-	protected TxnOperationResult getResult() {
+	public TxnOperationResult getResult() {
 		return result;
 	}
 

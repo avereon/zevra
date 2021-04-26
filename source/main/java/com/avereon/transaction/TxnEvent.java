@@ -24,4 +24,8 @@ public class TxnEvent extends Event {
 		super( source, type );
 	}
 
+	public boolean collapseUp() {
+		return false;
+	}
+
 }

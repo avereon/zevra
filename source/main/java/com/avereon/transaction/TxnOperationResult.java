@@ -26,6 +26,10 @@ public class TxnOperationResult {
 		events.add( new TxnEventWrapper( target, event ) );
 	}
 
+	public void addEvents( TxnOperation operation ) {
+		this.events.addAll( operation.getResult().getEvents() );
+	}
+
 	List<TxnEventWrapper> getEvents() {
 		return events;
 	}

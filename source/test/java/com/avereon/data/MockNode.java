@@ -1,5 +1,7 @@
 package com.avereon.data;
 
+import com.avereon.event.Event;
+
 import java.util.Set;
 
 class MockNode extends Node {
@@ -18,7 +20,7 @@ class MockNode extends Node {
 		definePrimaryKey( MOCK_ID );
 		if( id != null ) setMockId( id );
 		addModifyingKeys( ITEMS, "key", "child", "a", "b", "c", "x", "y", "z" );
-		register( NodeEvent.ANY, watcher = new NodeWatcher() );
+		register( Event.ANY, watcher = new NodeWatcher() );
 	}
 
 	public String getMockId() {

@@ -68,6 +68,10 @@ public class NodeEvent extends TxnEvent {
 		return (T)newValue;
 	}
 
+	public boolean collapseUp() {
+		return getEventType() == NodeEvent.VALUE_CHANGED;
+	}
+
 	public boolean isUndoable() {
 		return undoable;
 	}
@@ -116,9 +120,7 @@ public class NodeEvent extends TxnEvent {
 		if( !(object instanceof NodeEvent) ) return false;
 
 		NodeEvent that = (NodeEvent)object;
-		if( !Objects.equals( this.getNode(), that.getNode() ) ) return false;
-		if( !Objects.equals( this.getEventType(), that.getEventType() ) ) return false;
-		return Objects.equals( this.key, that.key );
+		return Objects.equals( this.getNode(), that.getNode() ) && Objects.equals( this.getEventType(), that.getEventType() ) && Objects.equals( this.key, that.key );
 	}
 
 }

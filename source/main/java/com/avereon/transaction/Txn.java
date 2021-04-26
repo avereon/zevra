@@ -203,8 +203,20 @@ public class Txn implements AutoCloseable {
 					TxnEventTarget target = wrapper.getTarget();
 					TxnEvent event = wrapper.getEvent();
 					List<TxnEvent> events = txnEvents.computeIfAbsent( target, k -> new ArrayList<>() );
-					events.remove( event );
-					events.add( event );
+					if( event.collapseUp() ) {
+						// Collapse equal events to the first instance of the event
+						int index = events.indexOf( event );
+						if( index < 0 ) {
+							events.add( event );
+						} else {
+							events.remove( index );
+							events.add( index, event );
+						}
+					} else {
+						// Collapse equal events to the last instance of the event
+						events.remove( event );
+						events.add( event );
+					}
 				}
 			}
 

@@ -565,12 +565,13 @@ class NodeTest {
 		assertThat( data, hasStates( false, false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
+		// FIXME Should a refresh be wrapped in a Txn?
 		data.refresh();
 		assertThat( data, hasStates( false, false, 0, 0 ) );
-//		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
+		//		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
-//		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
-//		assertEventState( data, index++, TxnEvent.COMMIT_END );
+		//		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
+		//		assertEventState( data, index++, TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount(), is( index ) );
 	}
 
@@ -847,7 +848,7 @@ class NodeTest {
 		MockNode item = new MockNode();
 
 		data.addItem( item );
-		NodeSet<?> items = data.getValue("items");
+		NodeSet<?> items = data.getValue( "items" );
 		assertEventState( item, itemIndex++, NodeEvent.ADDED );
 		assertThat( item.getEventCount(), is( itemIndex ) );
 		assertEventState( data, index++, items, TxnEvent.COMMIT_BEGIN );
@@ -1328,11 +1329,8 @@ class NodeTest {
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		int index = 0;
 
-		// Set an attribute on the child to a non-null value and clear the modified flags
+		// Set an attribute on the child to a non-null value
 		child.setValue( "key", "value0" );
-		parent.setModified( false );
-		assertThat( child, hasStates( false, false, 0, 0 ) );
-		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", null, "value0" );
 		assertEventState( parent, index++, NodeEvent.MODIFIED );
@@ -1340,39 +1338,60 @@ class NodeTest {
 		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
 
-		// FIXME NEXT Race condition and extra events
-		// Not only is there a race condition here but there are too many BEGIN events
-		assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
+		// Clear the modified flags
+		parent.setModified( false );
+		assertThat( child, hasStates( false, false, 0, 0 ) );
+		assertThat( parent, hasStates( false, false, 0, 0 ) );
+		try {
+			assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
+
+			// FIXME Should the child events be wrapped in a Txn
+			assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+			assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+			assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+			assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+
+			assertEventState( parent, index++, NodeEvent.UNMODIFIED );
+			assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+			assertEventState( parent, index++, TxnEvent.COMMIT_SUCCESS );
+			assertEventState( parent, index++, TxnEvent.COMMIT_END );
+		} catch( AssertionError error ) {
+			parent.getWatcher().getTrace( parent.getWatcher().getEvents().get( index ) ).printStackTrace();
+			throw error;
+		}
+
+		// Change the attribute value on the child
+		child.setValue( "key", "value1" );
+		assertThat( child, hasStates( true, false, 1, 0 ) );
+		assertThat( parent, hasStates( true, false, 0, 1 ) );
 		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
-		assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
-		//		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
-//		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-//		assertEventState( parent, index++, TxnEvent.COMMIT_SUCCESS );
-//		assertEventState( parent, index++, TxnEvent.COMMIT_END );
-//
-//		// Change the attribute value on the child
-//		child.setValue( "key", "value1" );
-//		assertThat( child, hasStates( true, false, 1, 0 ) );
-//		assertThat( parent, hasStates( true, false, 0, 1 ) );
-//		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value0", "value1" );
-//		assertEventState( parent, index++, NodeEvent.MODIFIED );
-//		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-//		assertThat( parent.getEventCount(), is( index ) );
-//
-//		// Set the child attribute to the same value, should do nothing
-//		child.setValue( "key", "value1" );
-//		assertThat( child, hasStates( true, false, 1, 0 ) );
-//		assertThat( parent, hasStates( true, false, 0, 1 ) );
-//		assertThat( parent.getEventCount(), is( index ) );
-//
-//		// Set the child attribute back to value0
-//		child.setValue( "key", "value0" );
-//		assertThat( child, hasStates( false, false, 0, 0 ) );
-//		assertThat( parent, hasStates( false, false, 0, 0 ) );
-//		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value1", "value0" );
-//		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
-//		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-//		assertThat( parent.getEventCount(), is( index ) );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value0", "value1" );
+		assertEventState( parent, index++, NodeEvent.MODIFIED );
+		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		assertThat( parent.getEventCount(), is( index ) );
+
+		// Set the child attribute to the same value, should do nothing
+		child.setValue( "key", "value1" );
+		assertThat( child, hasStates( true, false, 1, 0 ) );
+		assertThat( parent, hasStates( true, false, 0, 1 ) );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		assertThat( parent.getEventCount(), is( index ) );
+
+		// Set the child attribute back to value0
+		child.setValue( "key", "value0" );
+		assertThat( child, hasStates( false, false, 0, 0 ) );
+		assertThat( parent, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+		assertEventState( parent, index++, NodeEvent.VALUE_CHANGED, child, "key", "value1", "value0" );
+		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
+		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		assertThat( parent.getEventCount(), is( index ) );
 	}
 
 	@Test
@@ -2300,15 +2319,15 @@ class NodeTest {
 	}
 
 	private static void assertEventState(
-		MockNode target, int index, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue
+		MockNode target, int index, EventType<? extends Event> type, String key, Object oldValue, Object newValue
 	) {
-		assertThat( (NodeEvent)target.getWatcher().getEvents().get( index ), hasEventState( target, type, key, oldValue, newValue ) );
+		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( target, type, key, oldValue, newValue ) );
 	}
 
 	private static void assertEventState(
 		MockNode parent, int index, EventType<? extends NodeEvent> type, Node node, String key, Object oldValue, Object newValue
 	) {
-		assertThat( (NodeEvent)parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
+		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
 	}
 
 	private static Matcher<Event> hasEventState( Node node, EventType<? extends Event> type ) {
@@ -2317,12 +2336,12 @@ class NodeTest {
 		return allOf( eventNode, eventType );
 	}
 
-	private static Matcher<NodeEvent> hasEventState( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
-		Matcher<NodeEvent> eventNode = eventNode( is( node ) );
-		Matcher<NodeEvent> eventType = eventType( is( type ) );
-		Matcher<NodeEvent> eventKey = eventKey( is( key ) );
-		Matcher<NodeEvent> eventOldValue = eventOldValue( is( oldValue ) );
-		Matcher<NodeEvent> eventNewValue = eventNewValue( is( newValue ) );
+	private static Matcher<Event> hasEventState( Node node, EventType<? extends Event> type, String key, Object oldValue, Object newValue ) {
+		Matcher<Event> eventNode = eventNode( is( node ) );
+		Matcher<Event> eventType = eventType( is( type ) );
+		Matcher<Event> eventKey = eventKey( is( key ) );
+		Matcher<Event> eventOldValue = eventOldValue( is( oldValue ) );
+		Matcher<Event> eventNewValue = eventNewValue( is( newValue ) );
 		return allOf( eventNode, eventType, eventKey, eventOldValue, eventNewValue );
 	}
 
@@ -2349,34 +2368,34 @@ class NodeTest {
 		};
 	}
 
-	private static Matcher<NodeEvent> eventKey( Matcher<? super String> matcher ) {
-		return new FeatureMatcher<NodeEvent, String>( matcher, "key", "key" ) {
+	private static <T extends Event> Matcher<T> eventKey( Matcher<? super String> matcher ) {
+		return new FeatureMatcher<T, String>( matcher, "key", "key" ) {
 
 			@Override
-			protected String featureValueOf( NodeEvent event ) {
-				return event.getKey();
+			protected String featureValueOf( T event ) {
+				return event instanceof NodeEvent ? ((NodeEvent)event).getKey() : null;
 			}
 
 		};
 	}
 
-	private static Matcher<NodeEvent> eventOldValue( Matcher<? super Object> matcher ) {
-		return new FeatureMatcher<NodeEvent, Object>( matcher, "oldValue", "oldValue" ) {
+	private static <T extends Event> Matcher<T> eventOldValue( Matcher<? super Object> matcher ) {
+		return new FeatureMatcher<T, Object>( matcher, "oldValue", "oldValue" ) {
 
 			@Override
-			protected Object featureValueOf( NodeEvent event ) {
-				return event.getOldValue();
+			protected Object featureValueOf( T event ) {
+				return event instanceof NodeEvent ? ((NodeEvent)event).getOldValue() : null;
 			}
 
 		};
 	}
 
-	private static Matcher<NodeEvent> eventNewValue( Matcher<? super Object> matcher ) {
-		return new FeatureMatcher<NodeEvent, Object>( matcher, "newValue", "newValue" ) {
+	private static <T extends Event> Matcher<T> eventNewValue( Matcher<? super Object> matcher ) {
+		return new FeatureMatcher<T, Object>( matcher, "newValue", "newValue" ) {
 
 			@Override
-			protected Object featureValueOf( NodeEvent event ) {
-				return event.getNewValue();
+			protected Object featureValueOf( T event ) {
+				return event instanceof NodeEvent ? ((NodeEvent)event).getNewValue() : null;
 			}
 
 		};
