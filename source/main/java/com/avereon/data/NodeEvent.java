@@ -49,6 +49,14 @@ public class NodeEvent extends TxnEvent {
 		this.undoable = undoable;
 	}
 
+	public NodeEvent( Node node, NodeEvent event ) {
+		super( node, event.getEventType() );
+		this.key = event.getKey();
+		this.oldValue = event.getOldValue();
+		this.newValue = event.getNewValue();
+		this.undoable = event.isUndoable();
+	}
+
 	@SuppressWarnings( "unchecked" )
 	public <T extends Node> T getNode() {
 		return (T)getSource();

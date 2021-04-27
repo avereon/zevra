@@ -267,13 +267,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * called.
 	 */
 	public void refresh() {
-		try {
-			Txn.create();
-			Txn.submit( new RefreshOperation( this ) );
-			Txn.commit();
-		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error refreshing: " + this, exception );
-		}
+		fireHoppingEvent( new NodeEvent( this, NodeEvent.NODE_CHANGED) );
 	}
 
 	/**
@@ -1089,6 +1083,24 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 	}
 
+	/**
+	 * Fire a hopping event. A hopping event is where a new event of the
+	 * same type is generated for the node and each parent.
+	 *
+	 * @param event The event
+	 */
+	private void fireHoppingEvent( NodeEvent event ) {
+		Node node = this;
+		while( node != null ) {
+			fireTargetedEvent( node, new NodeEvent( node, event.getEventType() ) );
+			node = node.getParent();
+		}
+	}
+
+	private void fireTargetedEvent( Node target, NodeEvent event ) {
+		target.getEventHub().dispatch( event );
+	}
+
 	private static abstract class NodeTxnOperation extends TxnOperation {
 
 		NodeTxnOperation( Node node ) {
@@ -1118,15 +1130,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		/**
-		 * Fire a cascading event. A cascading event is where a new event of the
+		 * Fire a hopping event. A hopping event is where a new event of the
 		 * same type is generated for the node and each parent.
 		 *
-		 * @param type The event type
+		 * @param event The event
 		 */
-		final void fireHoppingEvent( EventType<NodeEvent> type ) {
+		final void fireHoppingEvent( NodeEvent event ) {
 			Node node = getNode();
 			while( node != null ) {
-				fireTargetedEvent( node, new NodeEvent( node, type ) );
+				fireTargetedEvent( node, new NodeEvent( node, event.getEventType() ) );
 				node = node.getParent();
 			}
 		}
@@ -1282,7 +1294,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue, undoable ) );
 			getResult().addEvents( updateModified );
-			fireHoppingEvent( NodeEvent.NODE_CHANGED );
+			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 		}
 
 		@Override
@@ -1305,7 +1317,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		@Override
 		protected void commit() {
-			fireHoppingEvent( NodeEvent.NODE_CHANGED );
+			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 		}
 
 		@Override
@@ -1330,7 +1342,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( newModified != oldModified ) {
 				updateParentsModified( newModified );
 				fireEvent( new NodeEvent( getNode(), newModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
-				fireHoppingEvent( NodeEvent.NODE_CHANGED );
+				fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 			}
 		}
 

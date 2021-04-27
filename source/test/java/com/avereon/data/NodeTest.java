@@ -568,10 +568,10 @@ class NodeTest {
 		// FIXME Should a refresh be wrapped in a Txn?
 		data.refresh();
 		assertThat( data, hasStates( false, false, 0, 0 ) );
-		//		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
-		//		assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
-		//		assertEventState( data, index++, TxnEvent.COMMIT_END );
+		//assertEventState( data, index++, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( data, index++, TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount(), is( index ) );
 	}
 
@@ -615,14 +615,14 @@ class NodeTest {
 		child.refresh();
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 	}
