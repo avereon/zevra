@@ -565,7 +565,6 @@ class NodeTest {
 		assertThat( data, hasStates( false, false, 0, 0 ) );
 		assertThat( data.getEventCount(), is( index ) );
 
-		// FIXME Should a refresh be wrapped in a Txn?
 		data.refresh();
 		assertThat( data, hasStates( false, false, 0, 0 ) );
 		//assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
@@ -1364,23 +1363,16 @@ class NodeTest {
 		parent.setModified( false );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
-		try {
-			assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
-
-			// FIXME Should the child events be wrapped in a Txn
-			assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
-			assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-			assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
-			assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
-
-			assertEventState( parent, index++, NodeEvent.UNMODIFIED );
-			assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-			assertEventState( parent, index++, TxnEvent.COMMIT_SUCCESS );
-			assertEventState( parent, index++, TxnEvent.COMMIT_END );
-		} catch( AssertionError error ) {
-			parent.getWatcher().getTrace( parent.getWatcher().getEvents().get( index ) ).printStackTrace();
-			throw error;
-		}
+		assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
+		// FIXME Should the child events be wrapped in a Txn
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
+		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, index++, TxnEvent.COMMIT_END );
 
 		// Change the attribute value on the child
 		child.setValue( "key", "value1" );
@@ -1436,8 +1428,7 @@ class NodeTest {
 		assertThat( parent, hasStates( true, false, 1, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, false, 0, 0 ) );
-		assertEventState( child, childIndex++, NodeEvent.ADDED );
-		//assertEventState( child, childIndex++, parent, NodeEvent.PARENT_CHANGED );
+
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
@@ -1445,6 +1436,9 @@ class NodeTest {
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
+		//assertEventState( child, childIndex++, parent, NodeEvent.PARENT_CHANGED );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
@@ -1454,15 +1448,13 @@ class NodeTest {
 		assertThat( parent, hasStates( true, false, 1, 1 ) );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
 		assertThat( grandChild, hasStates( false, false, 0, 0 ) );
+
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "child", null, grandChild );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
-
-		assertEventState( grandChild, grandChildIndex++, NodeEvent.ADDED );
-		//assertEventState( grandChild, grandChildIndex++, parent, NodeEvent.PARENT_CHANGED );
 
 		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.CHILD_ADDED, "child", null, grandChild );
@@ -1471,6 +1463,10 @@ class NodeTest {
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
+		assertEventState( grandChild, grandChildIndex++, NodeEvent.ADDED );
+		//assertEventState( grandChild, grandChildIndex++, parent, NodeEvent.PARENT_CHANGED );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
@@ -1479,18 +1475,19 @@ class NodeTest {
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, false, 0, 0 ) );
-		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
+		// FIXME Should the child events be wrapped in a Txn
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
-
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 
+		// FIXME Should the child events be wrapped in a Txn
 		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
@@ -1507,20 +1504,26 @@ class NodeTest {
 		assertThat( child, hasStates( true, false, 0, 1 ) );
 		assertThat( grandChild, hasStates( true, false, 1, 0 ) );
 
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", null, "value" );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED, parent, null, null, null );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_END );
 
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", null, "value" );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED, child, null, null, null );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_END );
 
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "key", null, "value" );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.MODIFIED );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
@@ -1530,15 +1533,27 @@ class NodeTest {
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( grandChild, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", "value", null );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, grandChild, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, grandChild, "key", "value", null );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, grandChild, TxnEvent.COMMIT_END );
+
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.VALUE_CHANGED, "key", "value", null );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( grandChild, grandChildIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( grandChild, grandChildIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex ) );
@@ -1560,18 +1575,24 @@ class NodeTest {
 		assertThat( parent, hasStates( true, false, 1, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertEventState( child, childIndex++, NodeEvent.ADDED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
 		parent.setModified( false );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1579,12 +1600,21 @@ class NodeTest {
 		child.setValue( "a", "1" );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
+
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "a", null, "1" );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "a", null, "1" );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1592,10 +1622,18 @@ class NodeTest {
 		child.setValue( "b", "1" );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
 		assertThat( child, hasStates( true, false, 2, 0 ) );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "b", null, "1" );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "b", null, "1" );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1603,10 +1641,19 @@ class NodeTest {
 		child.setModified( false );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
+
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 	}
@@ -1626,20 +1673,29 @@ class NodeTest {
 		assertThat( child.getParent(), is( parent ) );
 		assertThat( parent, hasStates( true, false, 1, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
-		assertEventState( child, childIndex++, NodeEvent.ADDED );
-		//assertEventState( child, childIndex++, parent, NodeEvent.PARENT_CHANGED );
-		assertThat( child.getEventCount(), is( childIndex ) );
+
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, NodeEvent.ADDED );
+		//assertEventState( child, childIndex++, parent, NodeEvent.PARENT_CHANGED );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertThat( child.getEventCount(), is( childIndex ) );
 
 		parent.setModified( false );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1647,12 +1703,21 @@ class NodeTest {
 		child.setValue( "a", "2" );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
+
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "a", null, "2" );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "a", null, "2" );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1660,10 +1725,17 @@ class NodeTest {
 		child.setValue( "b", "2" );
 		assertThat( child, hasStates( true, false, 2, 0 ) );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "b", null, "2" );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "b", null, "2" );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1671,10 +1743,17 @@ class NodeTest {
 		child.setValue( "a", null );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "a", "2", null );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "a", "2", null );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1682,12 +1761,21 @@ class NodeTest {
 		child.setValue( "b", null );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
+
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "b", "2", null );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "b", "2", null );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 	}
@@ -1708,18 +1796,24 @@ class NodeTest {
 		assertThat( parent, hasStates( true, false, 1, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertEventState( child, childIndex++, NodeEvent.ADDED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
 		parent.setModified( false );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
@@ -1727,22 +1821,42 @@ class NodeTest {
 		child.setValue( "x", "2" );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
 		assertThat( parent, hasStates( true, false, 0, 1 ) );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.VALUE_CHANGED, child, "x", null, "2" );
 		assertEventState( parent, parentIndex++, NodeEvent.MODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.VALUE_CHANGED, "x", null, "2" );
 		assertEventState( child, childIndex++, NodeEvent.MODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
 		parent.setModified( false );
 		assertFalse( parent.isModified() );
 		assertFalse( child.isModified() );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
+		// FIXME Should the child events be wrapped in a Txn
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
+		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
+
+		// FIXME Should the child events be wrapped in a Txn
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 	}
@@ -1770,10 +1884,13 @@ class NodeTest {
 		assertEventState( child, childIndex++, NodeEvent.ADDED );
 		//assertEventState( child, childIndex++, parent0, NodeEvent.PARENT_CHANGED );
 		assertThat( child.getEventCount(), is( childIndex ) );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent0, parent0Index++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent0, parent0Index++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent0, parent0Index++, NodeEvent.MODIFIED );
 		assertEventState( parent0, parent0Index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_END );
 		assertThat( parent0.getEventCount(), is( parent0Index ) );
 		assertThat( parent1.getEventCount(), is( parent1Index ) );
 
@@ -1783,8 +1900,11 @@ class NodeTest {
 		assertThat( parent0, hasStates( false, false, 0, 0 ) );
 		assertThat( parent1, hasStates( false, false, 0, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent0, parent0Index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent0, parent0Index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_END );
 		assertThat( parent0.getEventCount(), is( parent0Index ) );
 		assertThat( parent1.getEventCount(), is( parent1Index ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
@@ -1798,15 +1918,21 @@ class NodeTest {
 		assertThat( parent1, hasStates( true, false, 1, 0 ) );
 		assertThat( child, hasStates( false, false, 0, 0 ) );
 		assertEventState( child, childIndex++, NodeEvent.REMOVED );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent0, parent0Index++, NodeEvent.CHILD_REMOVED, "child", child, null );
 		assertEventState( parent0, parent0Index++, NodeEvent.VALUE_CHANGED, "child", child, null );
 		assertEventState( parent0, parent0Index++, NodeEvent.MODIFIED );
 		assertEventState( parent0, parent0Index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent0, parent0Index++, TxnEvent.COMMIT_END );
 		assertEventState( child, childIndex++, NodeEvent.ADDED );
+		assertEventState( parent1, parent1Index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent1, parent1Index++, NodeEvent.CHILD_ADDED, "child", null, child );
 		assertEventState( parent1, parent1Index++, NodeEvent.VALUE_CHANGED, "child", null, child );
 		assertEventState( parent1, parent1Index++, NodeEvent.MODIFIED );
 		assertEventState( parent1, parent1Index++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent1, parent1Index++, TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent1, parent1Index++, TxnEvent.COMMIT_END );
 		//assertEventState( child, childIndex++, parent1, NodeEvent.PARENT_CHANGED );
 		assertThat( parent0.getEventCount(), is( parent0Index ) );
 		assertThat( parent1.getEventCount(), is( parent1Index ) );
@@ -1864,7 +1990,7 @@ class NodeTest {
 		assertThat( parent, hasStates( true, false, 1, 1 ) );
 		assertThat( child, hasStates( true, false, 1, 0 ) );
 		assertThat( grandChild, hasStates( false, false, 0, 0 ) );
-		assertThat( child.getEventCount(), is( childIndex += 4 ) );
+		assertThat( child.getEventCount(), is( childIndex += 7 ) );
 		assertThat( grandChild.getEventCount(), is( grandChildIndex += 1 ) );
 
 		parent.addModifyingKeys( "x" );
@@ -1877,7 +2003,7 @@ class NodeTest {
 
 	@Test
 	void testParentNodeNotModifiedByNodeAddedWithSetWithModifyFilter() {
-		int parentIndex = 6;
+		int parentIndex = 12;
 		int childIndex = 1;
 
 		MockNode parent = new MockNode( "parent" );
@@ -1889,11 +2015,18 @@ class NodeTest {
 
 		child.setSetModifyFilter( MockNode.ITEMS, n -> n.getValue( "dont-modify" ) == null );
 		assertFalse( child.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
+
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( child.getEventCount(), is( childIndex ) );
 
 		MockNode item0 = new MockNode( "0" );
@@ -1916,13 +2049,19 @@ class NodeTest {
 		child.addItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_ADDED );
 		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_ADDED );
 		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		child.addItem( item0 );
 		assertFalse( child.isModified() );
@@ -1933,13 +2072,19 @@ class NodeTest {
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
 		assertFalse( parent.isModified() );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_REMOVED );
 		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( parent, parentIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.CHILD_REMOVED );
 		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), NodeEvent.VALUE_CHANGED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_SUCCESS );
+		assertEventState( child, childIndex++, child.getValue( MockNode.ITEMS ), TxnEvent.COMMIT_END );
 		assertThat( child.getEventCount(), is( childIndex ) );
 		child.removeItem( item0 );
 		assertFalse( child.isModified() );
