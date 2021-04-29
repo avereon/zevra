@@ -7,23 +7,25 @@ import java.util.Objects;
 
 public class NodeEvent extends TxnEvent {
 
-	public static final EventType<NodeEvent> MODIFIED = new EventType<>( "MODIFIED" );
+	public static final EventType<NodeEvent> ANY = new EventType<>( TxnEvent.ANY, "NODE" );
 
-	public static final EventType<NodeEvent> UNMODIFIED = new EventType<>( "UNMODIFIED" );
+	public static final EventType<NodeEvent> MODIFIED = new EventType<>( ANY, "MODIFIED" );
 
-	public static final EventType<NodeEvent> ADDED = new EventType<>( "ADDED" );
+	public static final EventType<NodeEvent> UNMODIFIED = new EventType<>( ANY, "UNMODIFIED" );
 
-	public static final EventType<NodeEvent> REMOVED = new EventType<>( "REMOVED" );
+	public static final EventType<NodeEvent> ADDED = new EventType<>( ANY, "ADDED" );
 
-	public static final EventType<NodeEvent> CHILD_ADDED = new EventType<>( "CHILD_ADDED" );
+	public static final EventType<NodeEvent> REMOVED = new EventType<>( ANY, "REMOVED" );
 
-	public static final EventType<NodeEvent> CHILD_REMOVED = new EventType<>( "CHILD_REMOVED" );
+	public static final EventType<NodeEvent> CHILD_ADDED = new EventType<>( ANY, "CHILD_ADDED" );
 
-	public static final EventType<NodeEvent> NODE_CHANGED = new EventType<>( "NODE_CHANGED" );
+	public static final EventType<NodeEvent> CHILD_REMOVED = new EventType<>( ANY, "CHILD_REMOVED" );
 
-	public static final EventType<NodeEvent> PARENT_CHANGED = new EventType<>( "PARENT_CHANGED" );
+	public static final EventType<NodeEvent> NODE_CHANGED = new EventType<>( ANY, "NODE_CHANGED" );
 
-	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( "VALUE_CHANGED" );
+	public static final EventType<NodeEvent> PARENT_CHANGED = new EventType<>( ANY, "PARENT_CHANGED" );
+
+	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( ANY, "VALUE_CHANGED" );
 
 	private final String key;
 

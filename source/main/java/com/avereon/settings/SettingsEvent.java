@@ -5,15 +5,15 @@ import com.avereon.event.EventType;
 
 public class SettingsEvent extends Event {
 
-	public static final EventType<SettingsEvent> SETTINGS = new EventType<>( EventType.ROOT, "SETTINGS" );
+	public static final EventType<SettingsEvent> SETTINGS = new EventType<>( Event.ANY, "SETTINGS" );
 
 	public static final EventType<SettingsEvent> ANY = SETTINGS;
 
-	public static final EventType<SettingsEvent> SAVED = new EventType<>( ANY, "SAVED" );
+	public static final EventType<SettingsEvent> SAVED = new EventType<>( SETTINGS, "SAVED" );
 
-	public static final EventType<SettingsEvent> CHANGED = new EventType<>( ANY, "CHANGED" );
+	public static final EventType<SettingsEvent> CHANGED = new EventType<>( SETTINGS, "CHANGED" );
 
-	public static final EventType<SettingsEvent> LOADED = new EventType<>( ANY, "LOADED" );
+	public static final EventType<SettingsEvent> LOADED = new EventType<>( SETTINGS, "LOADED" );
 
 	private final String path;
 

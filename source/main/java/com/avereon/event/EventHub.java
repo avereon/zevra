@@ -40,8 +40,16 @@ public class EventHub {
 			do {
 				try {
 					exception = null;
+
 					var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
-					typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
+					try {
+						typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
+					} catch( RuntimeException re ) {
+						System.err.println( "event type=" + type.getClass() );
+
+
+						throw re;
+					}
 					type = type.getParentEventType();
 				} catch( ConcurrentModificationException cme ) {
 					exception = cme;

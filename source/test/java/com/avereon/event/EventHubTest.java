@@ -46,8 +46,9 @@ class EventHubTest {
 		bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
 		bus.dispatch( new TestEvent( this, TestEvent.A ) );
 		bus.dispatch( new TestEvent( this, TestEvent.B ) );
+		bus.dispatch( new Event( this, Event.ANY ) );
 
-		assertThat( rootEvents.size(), is( 3 ) );
+		assertThat( rootEvents.size(), is( 4 ) );
 		assertThat( testEvents1.size(), is( 3 ) );
 		assertThat( testEvents2.size(), is( 3 ) );
 		assertThat( aEvents.size(), is( 1 ) );

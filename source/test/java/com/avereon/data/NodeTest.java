@@ -2235,7 +2235,7 @@ class NodeTest {
 	@Test
 	void testAddDataListener() {
 		// Remove the default watcher
-		data.unregister( NodeEvent.ANY, data.getWatcher() );
+		data.unregister( Event.ANY, data.getWatcher() );
 
 		EventHandler<NodeEvent> listener = e -> {};
 		data.register( NodeEvent.ANY, listener );
@@ -2250,7 +2250,7 @@ class NodeTest {
 	@Test
 	void testRemoveDataListener() {
 		// Remove the default watcher
-		data.unregister( NodeEvent.ANY, data.getWatcher() );
+		data.unregister( Event.ANY, data.getWatcher() );
 
 		Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> handlers;
 		EventHandler<NodeEvent> listener = e -> {};

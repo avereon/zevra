@@ -316,7 +316,9 @@ class TxnTest {
 
 	private static class MockTxnEvent extends TxnEvent {
 
-		public static final EventType<com.avereon.data.NodeEvent> MODIFIED = new EventType<>( "MODIFIED" );
+		public static final EventType<MockTxnEvent> ANY = new EventType<>( EventType.ROOT.getName() );
+
+		public static final EventType<MockTxnEvent> MODIFIED = new EventType<>( "MODIFIED" );
 
 		/**
 		 * Create a TxnEvent where the source and target are the same object. This is

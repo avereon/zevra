@@ -13,7 +13,7 @@ public final class EventType<T extends Event> {
 	}
 
 	public EventType( final EventType<? super T> parent ) {
-		this( parent, null );
+		this( parent, parent.getName() );
 	}
 
 	public EventType( final EventType<? super T> parent, final String name ) {

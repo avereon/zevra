@@ -5,13 +5,15 @@ import com.avereon.event.EventType;
 
 public class TxnEvent extends Event {
 
-	public static final EventType<TxnEvent> COMMIT_BEGIN = new EventType<>( "COMMIT_BEGIN" );
+	public static final EventType<TxnEvent> ANY = new EventType<>( EventType.ROOT, "TXN" );
 
-	public static final EventType<TxnEvent> COMMIT_SUCCESS = new EventType<>( "COMMIT_SUCCESS" );
+	public static final EventType<TxnEvent> COMMIT_BEGIN = new EventType<>( ANY, "COMMIT_BEGIN" );
 
-	public static final EventType<TxnEvent> COMMIT_FAIL = new EventType<>( "COMMIT_FAIL" );
+	public static final EventType<TxnEvent> COMMIT_SUCCESS = new EventType<>( ANY, "COMMIT_SUCCESS" );
 
-	public static final EventType<TxnEvent> COMMIT_END = new EventType<>( "COMMIT_END" );
+	public static final EventType<TxnEvent> COMMIT_FAIL = new EventType<>( ANY, "COMMIT_FAIL" );
+
+	public static final EventType<TxnEvent> COMMIT_END = new EventType<>( ANY, "COMMIT_END" );
 
 	/**
 	 * Create a TxnEvent where the source and target are the same object. This is
