@@ -146,9 +146,7 @@ public class OperatingSystem {
 	public static boolean isAdminUser() {
 		if( isWindows() ) {
 			try {
-				String authority = "HKU\\S-1-5-19";
-				String command = "reg query \"" + authority + "\"";
-				Process process = Runtime.getRuntime().exec( command );
+				Process process = Runtime.getRuntime().exec( "reg query \"HKU\\S-1-5-19\"" );
 				process.waitFor();
 				return (process.exitValue() == 0);
 			} catch( Exception exception ) {
@@ -156,8 +154,7 @@ public class OperatingSystem {
 			}
 		}
 		try {
-			String command = "id -u";
-			Process process = Runtime.getRuntime().exec( command );
+			Process process = Runtime.getRuntime().exec( "id -u" );
 			process.waitFor();
 
 			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
