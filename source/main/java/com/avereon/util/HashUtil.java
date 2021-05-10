@@ -15,41 +15,39 @@ public class HashUtil {
 
 	public static final HashStrategy SHA1 = new DigestStrategy( new MessageDigestWrapper( "SHA-1" ) );
 
-	public static final HashStrategy MD5 = new DigestStrategy( new MessageDigestWrapper( "MD5" ) );
-
 	public static final HashStrategy DEFAULT_STRATEGY = SHA1;
 
-	public static final String hash( String text ) {
+	public static String hash( String text ) {
 		if( text == null ) return null;
 		return hash( text, DEFAULT_STRATEGY );
 	}
 
-	public static final String hash( String text, HashStrategy strategy ) {
+	public static String hash( String text, HashStrategy strategy ) {
 		return hash( text.getBytes( TextUtil.CHARSET ), strategy );
 	}
 
-	public static final String hash( byte[] bytes ) {
+	public static String hash( byte[] bytes ) {
 		if( bytes == null ) return null;
 		return hash( new ByteArrayInputStream( bytes ), DEFAULT_STRATEGY );
 	}
 
-	public static final String hash( byte[] bytes, HashStrategy strategy ) {
+	public static String hash( byte[] bytes, HashStrategy strategy ) {
 		return hash( new ByteArrayInputStream( bytes ), strategy );
 	}
 
-	public static final String hash( Path path ) {
+	public static String hash( Path path ) {
 		return hash( path.toFile(), DEFAULT_STRATEGY );
 	}
 
-	public static final String hash( Path path, HashStrategy strategy ) {
+	public static String hash( Path path, HashStrategy strategy ) {
 		return hash( path.toFile(), strategy );
 	}
 
-	public static final String hash( File file ) {
+	public static String hash( File file ) {
 		return hash( file, DEFAULT_STRATEGY );
 	}
 
-	public static final String hash( File file, HashStrategy strategy ) {
+	public static String hash( File file, HashStrategy strategy ) {
 		if( file == null || !file.exists() || !file.isFile() ) return null;
 
 		try( FileInputStream input = new FileInputStream( file ) ) {
@@ -60,16 +58,16 @@ public class HashUtil {
 		}
 	}
 
-	public static final String hash( InputStream input ) {
+	public static String hash( InputStream input ) {
 		return hash( input, DEFAULT_STRATEGY );
 	}
 
-	public static final String hash( InputStream input, HashStrategy strategy ) {
+	public static String hash( InputStream input, HashStrategy strategy ) {
 		if( input == null ) return null;
 		return strategy.hash( input );
 	}
 
-	private static interface DigestWrapper {
+	private interface DigestWrapper {
 
 		void reset();
 
@@ -98,7 +96,7 @@ public class HashUtil {
 			byte[] buffer = new byte[ 4096 ];
 			digest.reset();
 
-			int count = 0;
+			int count;
 			try {
 				while( (count = input.read( buffer )) > -1 ) {
 					digest.update( buffer, 0, count );
@@ -115,7 +113,7 @@ public class HashUtil {
 
 	private static final class MessageDigestWrapper implements DigestWrapper {
 
-		private MessageDigest digest;
+		private final MessageDigest digest;
 
 		public MessageDigestWrapper( String algorithm ) {
 			MessageDigest digest = null;
