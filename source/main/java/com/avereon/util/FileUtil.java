@@ -351,8 +351,8 @@ public class FileUtil {
 		ZipEntry entry;
 		try( ZipInputStream zip = new ZipInputStream( new FileInputStream( source.toFile() ) ) ) {
 			while( (entry = zip.getNextEntry()) != null ) {
-				String path = entry.getName();
-				if( path.contains( "../" ) ) throw new IOException( "Unsafe zip path: " + path );
+				String path = sanitize( entry.getName() );
+				if( TextUtil.isEmpty( path ) ) continue;
 
 				Path file = target.resolve( path );
 
@@ -577,6 +577,21 @@ public class FileUtil {
 		while( Files.notExists( path ) || !Files.isDirectory( path ) ) {
 			path = path.getParent();
 		}
+		return path;
+	}
+
+	private static String sanitize( String path ) {
+		boolean found;
+		do {
+			found = false;
+			if( path.startsWith( "/" ) ) {
+				path = path.substring( 1 );
+				found = true;
+			} else if( path.startsWith( "../" ) ) {
+				path = path.substring( 3 );
+				found = true;
+			}
+		} while( found );
 		return path;
 	}
 
