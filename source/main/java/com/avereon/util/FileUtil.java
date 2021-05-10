@@ -37,7 +37,7 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
 	 *
-	 * @param size    The size to convert to human readable
+	 * @param size The size to convert to human readable
 	 * @param compact If the unit should use compact notation
 	 * @return The human readable size string
 	 */
@@ -48,8 +48,8 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-10.
 	 *
-	 * @param size     The size to convert to human readable
-	 * @param compact  If the unit should use compact notation
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
 	 * @return The human readable size string
 	 */
@@ -99,7 +99,7 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-2.
 	 *
-	 * @param size    The size to convert to human readable
+	 * @param size The size to convert to human readable
 	 * @param compact If the unit should use compact notation
 	 * @return The human readable size string
 	 */
@@ -110,8 +110,8 @@ public class FileUtil {
 	/**
 	 * Get a human readable string using orders of magnitude in base-2.
 	 *
-	 * @param size     The size to convert to human readable
-	 * @param compact  If the unit should use compact notation
+	 * @param size The size to convert to human readable
+	 * @param compact If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
 	 * @return The human readable size string
 	 */
@@ -352,6 +352,8 @@ public class FileUtil {
 		try( ZipInputStream zip = new ZipInputStream( new FileInputStream( source.toFile() ) ) ) {
 			while( (entry = zip.getNextEntry()) != null ) {
 				String path = entry.getName();
+				if( path.contains( "../" ) ) throw new IOException( "Unsafe zip path: " + path );
+
 				Path file = target.resolve( path );
 
 				if( path.endsWith( "/" ) ) {
@@ -477,7 +479,7 @@ public class FileUtil {
 	/**
 	 * Create a temporary folder.
 	 *
-	 * @param path   The temp folder path
+	 * @param path The temp folder path
 	 * @param prefix The temp folder prefix
 	 * @return The temp folder Path object
 	 * @throws IOException If an I/O error occurs
