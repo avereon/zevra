@@ -267,7 +267,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * called.
 	 */
 	public void refresh() {
-		fireHoppingEvent( new NodeEvent( this, NodeEvent.NODE_CHANGED) );
+		fireHoppingEvent( new NodeEvent( this, NodeEvent.NODE_CHANGED ) );
 	}
 
 	/**
@@ -668,8 +668,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	protected <T extends Node> Set<T> getValues( String key ) {
-		if( !exists( key ) ) return Set.of();
-		//
 		return exists( key ) ? Collections.unmodifiableSet( getValue( key ) ) : Set.of();
 	}
 
@@ -775,21 +773,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param newValue The value
 	 */
 	public <T> T setValue( String key, T newValue ) {
-		return setValue( key, newValue, true );
-	}
-
-	/**
-	 * Set the value at the specific key.
-	 *
-	 * @param key The value key
-	 * @param newValue The value
-	 */
-	public <T> T setValue( String key, T newValue, boolean undoable ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( isReadOnlyKey( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
 		try( Txn ignored = Txn.create() ) {
-			Txn.submit( new SetValueOperation( this, key, getValue( key ), newValue, undoable ) );
+			Txn.submit( new SetValueOperation( this, key, getValue( key ), newValue ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
 		}
@@ -935,7 +923,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return (T)parent;
 	}
 
-	void setParent( Node parent ) {
+	void doSetParent( Node parent ) {
 		checkForCircularReference( parent );
 
 		if( this.parent != null ) {
@@ -972,7 +960,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		updateInternalModified();
 	}
 
-	private <S, T> T doSetValue( String key, S oldValue, T newValue ) {
+	<S, T> T doSetValue( String key, S oldValue, T newValue ) {
 		if( newValue == null ) {
 			if( values == null ) return null;
 			values.remove( key );
@@ -980,11 +968,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( oldValue instanceof Node ) doRemoveFromParent( (Node)oldValue, true );
 		} else {
 			if( values == null ) values = new ConcurrentHashMap<>();
+			if( newValue instanceof Node ) doRemoveFromParent( (Node)newValue, false );
 			values.put( key, newValue );
-			if( newValue instanceof Node ) {
-				doRemoveFromParent( (Node)newValue, false );
-				((Node)newValue).setParent( this );
-			}
+			if( newValue instanceof Node ) ((Node)newValue).doSetParent( this );
 		}
 
 		updateInternalModified();
@@ -1002,7 +988,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 					parent.setValue( k, null );
 				}
 			} );
-			child.setParent( null );
+			child.doSetParent( null );
 		}
 	}
 
@@ -1195,19 +1181,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			// Propagate the modified false flag value to children
 			if( !newValue && getNode().values != null ) {
 				// NOTE Cannot use parallelStream here because it causes out-of-order events
-				getNode().values.values().stream()
-					.filter( v -> v instanceof Node )
-					.map( v -> (Node)v )
-					.filter( Node::isModified )
-					.forEach( v -> v.setModified( false ));
-//					.forEach( v -> {
-//						v.doSetSelfModified( false );
-//						fireHoppingEvent( NodeEvent.NODE_CHANGED );
-//					} );
+				getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
 			}
 
 			if( modifyAllowed ) updateModified.commit();
-			getResult().addEvents( updateModified );
+			getResult().addEventsFrom( updateModified );
 		}
 
 		@Override
@@ -1230,18 +1208,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		private final Object newValue;
 
-		private final boolean undoable;
-
 		private SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
-			this( node, key, oldValue, newValue, true );
-		}
-
-		private SetValueOperation( Node node, String key, Object oldValue, Object newValue, boolean undoable ) {
 			super( node );
 			this.key = key;
 			this.oldValue = oldValue;
 			this.newValue = newValue;
-			this.undoable = undoable;
 		}
 
 		@Override
@@ -1252,6 +1223,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			boolean modifyAllowed = getNode().modifyAllowed( oldValue ) & getNode().modifyAllowed( newValue );
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( getNode() );
 			getNode().doSetValue( key, oldValue, newValue );
+			if( newValue instanceof Node && ((Node)newValue).getTrueParent() == null ) throw new RuntimeException( "Node parent not set correctly" );
 
 			if( modifyAllowed && getNode().isModifyingKey( key ) ) {
 				// If the preValue is null that means the value for this key has not been modified since the last transaction
@@ -1284,8 +1256,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 			}
 
-			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue, undoable ) );
-			getResult().addEvents( updateModified );
+			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
+			getResult().addEventsFrom( updateModified );
 			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 		}
 

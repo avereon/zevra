@@ -33,22 +33,15 @@ public class NodeEvent extends TxnEvent {
 
 	private final Object newValue;
 
-	private final boolean undoable;
-
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type ) {
 		this( node, type, null, null, null );
 	}
 
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
-		this( node, type, key, oldValue, newValue, true );
-	}
-
-	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue, boolean undoable ) {
 		super( node, type );
 		this.key = key;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
-		this.undoable = undoable;
 	}
 
 	public NodeEvent( Node node, NodeEvent event ) {
@@ -56,7 +49,6 @@ public class NodeEvent extends TxnEvent {
 		this.key = event.getKey();
 		this.oldValue = event.getOldValue();
 		this.newValue = event.getNewValue();
-		this.undoable = event.isUndoable();
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -80,10 +72,6 @@ public class NodeEvent extends TxnEvent {
 
 	public boolean collapseUp() {
 		return getEventType() == NodeEvent.VALUE_CHANGED;
-	}
-
-	public boolean isUndoable() {
-		return undoable;
 	}
 
 	@SuppressWarnings( "unchecked" )

@@ -1,5 +1,7 @@
 package com.avereon.data;
 
+import com.avereon.util.Log;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -50,32 +52,39 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
 
-	private final String name;
+	private static final boolean USE_CACHE = true;
+
+	private static final System.Logger log = Log.get();
+
+	private final String key;
 
 	private Set<E> itemCache;
 
 	private boolean dirtyCache;
 
+	private Node priorParent;
+
 	NodeSet( String key ) {
-		this.name = key;
+		this.key = key;
 		setAllKeysModify();
 		addExcludedModifyingKeys( NODE_SET_MODIFY_FILTER );
 		itemCache = Set.of();
 	}
 
-	// NEXT This did not solve the undo/redo problem
-	//	@Override
-	//	public <T> T setValue( String key, T newValue, boolean undoable ) {
-	//		System.out.println( "NodeSet.setValue()" );
-	//		if( newValue instanceof Node ) {
-	//			System.out.println( "NodeSet adding node to set" );
-	//			if( super.addNodes( Set.of( (Node)newValue ) ) ) dirtyCache = true;
-	//			return newValue;
-	//		} else {
-	//			return super.setValue( key, newValue, undoable );
-	//		}
-	//		//return newValue;
-	//	}
+	@Override
+	@SuppressWarnings( "unchecked" )
+	public <T> T setValue( String key, T newValue ) {
+		if( newValue instanceof Node && getParent() == null ) {
+			priorParent.getValue( this.key, () -> priorParent.doSetValue( this.key, null, this ) ).add( (E)newValue );
+		} else {
+			super.setValue( key, newValue );
+		}
+
+		if( getParent() == null ) log.log( Log.WARN, "Setting value on detached node set" );
+
+		dirtyCache = true;
+		return newValue;
+	}
 
 	@Override
 	public int size() {
@@ -186,7 +195,13 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[" + this.name + "]";
+		return getClass().getSimpleName() + "[" + this.key + "]";
+	}
+
+	@Override
+	void doSetParent( Node parent ) {
+		if( parent != null ) this.priorParent = parent;
+		super.doSetParent( parent );
 	}
 
 	void setSetModifyFilter( Function<Node, Boolean> filter ) {
@@ -199,12 +214,17 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@SuppressWarnings( "unchecked" )
 	private Collection<E> getSetValues() {
-		if( dirtyCache ) {
+		if( USE_CACHE ) {
+			if( dirtyCache ) {
+				Class<E> type = (Class<E>)getClass().getGenericSuperclass();
+				itemCache = getValues().parallelStream().filter( type::isInstance ).map( e -> (E)e ).collect( Collectors.toSet() );
+				dirtyCache = false;
+			}
+			return itemCache;
+		} else {
 			Class<E> type = (Class<E>)getClass().getGenericSuperclass();
-			itemCache = getValues().parallelStream().filter( type::isInstance ).map( e -> (E)e ).collect( Collectors.toSet() );
-			dirtyCache = false;
+			return getValues().parallelStream().filter( type::isInstance ).map( e -> (E)e ).collect( Collectors.toSet() );
 		}
-		return itemCache;
 	}
 
 }
