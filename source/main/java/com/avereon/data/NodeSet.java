@@ -63,6 +63,20 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		itemCache = Set.of();
 	}
 
+	// NEXT This did not solve the undo/redo problem
+	//	@Override
+	//	public <T> T setValue( String key, T newValue, boolean undoable ) {
+	//		System.out.println( "NodeSet.setValue()" );
+	//		if( newValue instanceof Node ) {
+	//			System.out.println( "NodeSet adding node to set" );
+	//			if( super.addNodes( Set.of( (Node)newValue ) ) ) dirtyCache = true;
+	//			return newValue;
+	//		} else {
+	//			return super.setValue( key, newValue, undoable );
+	//		}
+	//		//return newValue;
+	//	}
+
 	@Override
 	public int size() {
 		return getSetValues().size();

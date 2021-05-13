@@ -789,9 +789,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( isReadOnlyKey( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
 		try( Txn ignored = Txn.create() ) {
-			Object oldValue = getValue( key );
-			if( newValue instanceof Node ) removeFromParent( (Node)newValue );
-			Txn.submit( new SetValueOperation( this, key, oldValue, newValue, undoable ) );
+			Txn.submit( new SetValueOperation( this, key, getValue( key ), newValue, undoable ) );
 		} catch( TxnException exception ) {
 			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
 		}
@@ -809,7 +807,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			for( Node node : collection ) {
 				String key = node.getCollectionId();
 				if( hasKey( key ) ) continue;
-				doRemoveFromParent( node );
 				Txn.submit( new SetValueOperation( this, key, null, node ) );
 				changed = true;
 			}
@@ -980,16 +977,33 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( values == null ) return null;
 			values.remove( key );
 			if( values.size() == 0 ) values = null;
-			if( oldValue instanceof Node ) doRemoveFromParent( (Node)oldValue );
+			if( oldValue instanceof Node ) doRemoveFromParent( (Node)oldValue, true );
 		} else {
 			if( values == null ) values = new ConcurrentHashMap<>();
 			values.put( key, newValue );
-			if( newValue instanceof Node ) ((Node)newValue).setParent( this );
+			if( newValue instanceof Node ) {
+				doRemoveFromParent( (Node)newValue, false );
+				((Node)newValue).setParent( this );
+			}
 		}
 
 		updateInternalModified();
 
 		return newValue;
+	}
+
+	private void doRemoveFromParent( Node child, boolean quiet ) {
+		Node parent = child.getParent();
+		if( parent != null ) {
+			parent.getValueKeys().stream().filter( k -> parent.getValue( k ).equals( child ) ).forEach( k -> {
+				if( quiet ) {
+					parent.doSetValue( k, child, null );
+				} else {
+					parent.setValue( k, null );
+				}
+			} );
+			child.setParent( null );
+		}
 	}
 
 	private void doSetChildModified( Node child, boolean newModified ) {
@@ -1023,28 +1037,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		return set;
-	}
-
-	private void removeFromParent( Node child ) {
-		doRemoveFromParent( child, false );
-	}
-
-	private void doRemoveFromParent( Node child ) {
-		doRemoveFromParent( child, true );
-	}
-
-	private void doRemoveFromParent( Node child, boolean quiet ) {
-		Node parent = child.getParent();
-		if( parent != null ) {
-			parent.getValueKeys().stream().filter( k -> parent.getValue( k ).equals( child ) ).forEach( k -> {
-				if( quiet ) {
-					parent.doSetValue( k, child, null );
-				} else {
-					parent.setValue( k, null );
-				}
-			} );
-			child.setParent( null );
-		}
 	}
 
 	/**
