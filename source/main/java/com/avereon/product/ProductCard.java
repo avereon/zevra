@@ -94,21 +94,17 @@ public class ProductCard extends BaseCard {
 		}
 	}
 
-	public static ProductCard card( Product product ) {
-		return card( product.getClass() );
+	public static ProductCard info( Product product ) {
+		return info( product.getClass() );
 	}
 
-	public static ProductCard card( Class<?> source ) {
+	public static ProductCard info( Class<?> source ) {
 		try {
 			return new ProductCard().fromInfo( source );
 		} catch( IOException exception ) {
 			throw new RuntimeException( "Error loading product card", exception );
 		}
 	}
-
-	//	public ProductCard fromCard( Product product ) throws IOException {
-	//		return fromCard( product.getClass() );
-	//	}
 
 	private ProductCard fromInfo( Class<?> source ) throws IOException {
 		/*
@@ -152,20 +148,16 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	public ProductCard jsonCard( Product product ) {
-		return jsonCard( product.getClass() );
+	public static ProductCard card( Product product ) {
+		return card( product.getClass() );
 	}
 
-	public ProductCard jsonCard( Class<?> source ) {
+	public static ProductCard card( Class<?> source ) {
 		try {
 			return new ProductCard().fromJson( source );
 		} catch( IOException exception ) {
-			throw new RuntimeException( "Error loading product card: " + getClass().getName(), exception );
+			throw new RuntimeException( "Error loading product card: " + source.getName(), exception );
 		}
-	}
-
-	private ProductCard fromJson( Product product ) throws IOException {
-		return fromJson( product.getClass() );
 	}
 
 	private ProductCard fromJson( Class<?> clazz ) throws IOException {
