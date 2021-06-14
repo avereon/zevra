@@ -94,13 +94,13 @@ public class ProductCard extends BaseCard {
 		}
 	}
 
-	public ProductCard card( Product product ) {
+	public static ProductCard card( Product product ) {
 		return card( product.getClass() );
 	}
 
-	public ProductCard card( Class<?> source ) {
+	public static ProductCard card( Class<?> source ) {
 		try {
-			return fromInfo( source );
+			return new ProductCard().fromInfo( source );
 		} catch( IOException exception ) {
 			throw new RuntimeException( "Error loading product card", exception );
 		}

@@ -23,7 +23,7 @@ class ProductCardTest {
 
 	@Test
 	void testCard() {
-		ProductCard card = new ProductCard().card( getClass() );
+		ProductCard card = ProductCard.card( getClass() );
 
 		assertThat( card.getGroup(), is( "com.avereon" ) );
 		assertThat( card.getArtifact(), is( "zevra" ) );
