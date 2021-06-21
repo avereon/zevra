@@ -173,6 +173,10 @@ public class Log {
 		} );
 	}
 
+	public static void reset() {
+		LogManager.getLogManager().reset();
+	}
+
 	static String reduceFilePattern( String path ) {
 		if( path.startsWith( "%h/" ) ) path = path.substring( 3 );
 		Path userHome = Paths.get( System.getProperty( "user.home" ) );
