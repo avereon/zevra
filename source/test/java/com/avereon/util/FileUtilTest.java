@@ -257,19 +257,19 @@ class FileUtilTest {
 			Path leaf2 = FileUtil.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf2" );
 			Path leaf3 = FileUtil.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf3" );
 
-			try( Stream list = Files.list( source0 ) ) {
+			try( Stream<Path> list = Files.list( source0 ) ) {
 				assertThat( list.count(), is( 3L ) );
 			}
-			try( Stream list = Files.list( source1 ) ) {
+			try( Stream<Path> list = Files.list( source1 ) ) {
 				assertThat( list.count(), is( 2L ) );
 			}
 
 			assertThat( FileUtil.copy( source0, target0, false ), is( true ) );
 
-			try( Stream list = Files.list( target0 ) ) {
+			try( Stream<Path> list = Files.list( target0 ) ) {
 				assertThat( list.count(), is( 3L ) );
 			}
-			try( Stream list = Files.list( target1 ) ) {
+			try( Stream<Path> list = Files.list( target1 ) ) {
 				assertThat( list.count(), is( 2L ) );
 			}
 
@@ -298,18 +298,18 @@ class FileUtilTest {
 			Path leaf2 = Files.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf2" );
 			Path leaf3 = Files.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf3" );
 
-			try( Stream list = Files.list( source0 ) ) {
+			try( Stream<Path> list = Files.list( source0 ) ) {
 				assertThat( list.count(), is( 3L ) );
 			}
-			try( Stream list = Files.list( source1 ) ) {
+			try( Stream<Path> list = Files.list( source1 ) ) {
 				assertThat( list.count(), is( 2L ) );
 			}
 			assertThat( FileUtil.copy( source0, target, true ), is( true ) );
 
-			try( Stream list = Files.list( target0 ) ) {
+			try( Stream<Path> list = Files.list( target0 ) ) {
 				assertThat( list.count(), is( 3L ) );
 			}
-			try( Stream list = Files.list( target1 ) ) {
+			try( Stream<Path> list = Files.list( target1 ) ) {
 				assertThat( list.count(), is( 2L ) );
 			}
 
@@ -444,6 +444,13 @@ class FileUtilTest {
 		Path valid = FileUtil.findValidFolder( path );
 		assertTrue( Files.exists( valid ) );
 		assertTrue( Files.isDirectory( valid ) );
+	}
+
+	@Test
+	void testDeleteWithMissingPath() throws IOException {
+		Path path = Paths.get( System.getProperty( "java.io.tmpdir" ), "not-a-valid-path" );
+		assertFalse( Files.exists( path ) );
+		assertTrue( FileUtil.delete( path ) );
 	}
 
 	private void assertFileCopy( long time, Path source, Path target ) throws IOException {
