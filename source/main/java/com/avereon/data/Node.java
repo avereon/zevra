@@ -5,7 +5,7 @@ import com.avereon.event.EventHandler;
 import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
-import com.avereon.util.Log;
+import lombok.extern.flogger.Flogger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,9 +118,8 @@ import java.util.stream.Collectors;
  * node. Particularly, {@link NodeEvent#VALUE_CHANGED} events are propagated to
  * parent nodes.
  */
+@Flogger
 public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
-
-	private static final System.Logger log = Log.get();
 
 	/**
 	 * A special object to represent previously null values in the modifiedValues
@@ -239,7 +238,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		try( Txn ignored = Txn.create() ) {
 			Txn.submit( new SetSelfModifiedOperation( this, oldValue, newValue ) );
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting flag: modified", exception );
+			log.atSevere().withCause( exception ).log( "Error setting flag: modified" );
 		}
 	}
 
@@ -779,7 +778,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		try( Txn ignored = Txn.create() ) {
 			Txn.submit( new SetValueOperation( this, key, getValue( key ), newValue ) );
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting value, key=" + key, exception );
+			log.atSevere().withCause( exception ).log( "Error setting value, key=%s", key );
 		}
 		return newValue;
 	}
@@ -799,7 +798,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				changed = true;
 			}
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error adding collection", exception );
+			log.atSevere().withCause( exception ).log( "Error adding collection" );
 			return false;
 		}
 		return changed;
@@ -817,7 +816,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				changed = true;
 			}
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error removing collection", exception );
+			log.atSevere().withCause( exception ).log( "Error removing collection" );
 			return false;
 		}
 		return changed;
@@ -842,7 +841,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			getValueKeys().stream().sorted().forEach( k -> setValue( k, null ) );
 			Txn.commit();
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error clearing values", exception );
+			log.atSevere().withCause( exception ).log( "Error clearing values" );
 		}
 	}
 
