@@ -1,4 +1,4 @@
-package com.avereon.util;
+package com.avereon.skill;
 
 import com.avereon.settings.Settings;
 

@@ -1,4 +1,4 @@
-package com.avereon.util;
+package com.avereon.skill;
 
 /**
  * The Controllable interface provides an API for classes that are "controlled"

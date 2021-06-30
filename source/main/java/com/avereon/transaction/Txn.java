@@ -1,7 +1,7 @@
 package com.avereon.transaction;
 
 import com.avereon.event.EventType;
-import com.avereon.util.Actionable;
+import com.avereon.skill.Actionable;
 import lombok.extern.flogger.Flogger;
 
 import java.util.*;
