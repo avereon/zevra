@@ -1,8 +1,8 @@
 package com.avereon.transaction;
 
 import com.avereon.event.EventType;
-import com.avereon.util.Actable;
-import com.avereon.util.Log;
+import com.avereon.util.Actionable;
+import lombok.extern.flogger.Flogger;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -27,9 +27,8 @@ import java.util.function.Consumer;
  *   ...
  * </pre>
  */
+@Flogger
 public class Txn implements AutoCloseable {
-
-	private static final System.Logger log = Log.get();
 
 	private static final ThreadLocal<Deque<Txn>> transactions = new ThreadLocal<>();
 
@@ -48,15 +47,15 @@ public class Txn implements AutoCloseable {
 	}
 
 	/**
-	 * Execute the given actable in a transaction.
+	 * Execute the given actionable in a transaction.
 	 *
-	 * @param step The actable to execute
+	 * @param step The actionable to run
 	 */
-	public static void run( Actable step ) {
+	public static void run( Actionable step ) {
 		try( Txn ignored = Txn.create() ) {
 			step.act();
 		} catch( Exception exception ) {
-			log.log( Log.ERROR, "Transaction failure", exception );
+			log.atSevere().withCause( exception ).log( "Transaction failure" );
 		}
 	}
 
@@ -187,7 +186,7 @@ public class Txn implements AutoCloseable {
 
 		try {
 			commitLock.lock();
-			log.log( Log.TRACE, System.identityHashCode( this ) + " locked by: " + Thread.currentThread() );
+			log.atFiner().log( "Object %s locked by: %s", System.identityHashCode( this ), Thread.currentThread() );
 
 			// Send a commit begin event to all unique targets
 			sendEvent( TxnEvent.COMMIT_BEGIN, operations );
@@ -225,7 +224,7 @@ public class Txn implements AutoCloseable {
 				try {
 					target.dispatch( event );
 				} catch( Throwable throwable ) {
-					log.log( Log.ERROR, "Error dispatching transaction event", throwable );
+					log.atSevere().withCause( throwable ).log( "Error dispatching transaction event" );
 				}
 			} ) );
 
@@ -237,7 +236,7 @@ public class Txn implements AutoCloseable {
 			sendEvent( TxnEvent.COMMIT_END, operations );
 			doReset();
 			commitLock.unlock();
-			log.log( Log.TRACE, "Transaction[" + System.identityHashCode( this ) + "] committed!" );
+			log.atFiner().log( "Transaction[%s] committed!", System.identityHashCode( this ) );
 		}
 	}
 

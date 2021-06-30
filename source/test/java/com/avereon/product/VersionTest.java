@@ -1,6 +1,5 @@
 package com.avereon.product;
 
-import com.avereon.product.Version;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -203,28 +202,28 @@ class VersionTest {
 
 	@Test
 	void testCompareVersions() {
-		assertEquals( 0, Version.compareVersions( version, version ), "Compare equal versions" );
+		assertEquals( 0, Version.compare( version, version ), "Compare equal versions" );
 
-		assertEquals( -1, Version.compareVersions( version, majorGreater ), "Compare greater major" );
-		assertEquals( 1, Version.compareVersions( version, majorLesser ), "Compare lesser major" );
+		assertEquals( -1, Version.compare( version, majorGreater ), "Compare greater major" );
+		assertEquals( 1, Version.compare( version, majorLesser ), "Compare lesser major" );
 
-		assertEquals( -1, Version.compareVersions( version, minorGreater ), "Compare greater minor" );
-		assertEquals( 1, Version.compareVersions( version, minorLesser ), "Compare lesser minor" );
+		assertEquals( -1, Version.compare( version, minorGreater ), "Compare greater minor" );
+		assertEquals( 1, Version.compare( version, minorLesser ), "Compare lesser minor" );
 
-		assertEquals( -1, Version.compareVersions( version, microGreater ), "Compare greater micro" );
-		assertEquals( 1, Version.compareVersions( version, microLesser ), "Compare lesser micro" );
+		assertEquals( -1, Version.compare( version, microGreater ), "Compare greater micro" );
+		assertEquals( 1, Version.compare( version, microLesser ), "Compare lesser micro" );
 
-		assertEquals( -1, Version.compareVersions( version, revisionGreater ), "Compare greater revision" );
-		assertEquals( 1, Version.compareVersions( version, revisionLesser ), "Compare lesser revision" );
+		assertEquals( -1, Version.compare( version, revisionGreater ), "Compare greater revision" );
+		assertEquals( 1, Version.compare( version, revisionLesser ), "Compare lesser revision" );
 
-		assertEquals( -1, Version.compareVersions( version, buildGreater ), "Compare greater build" );
-		assertEquals( 1, Version.compareVersions( version, buildLesser ), "Compare lesser build" );
+		assertEquals( -1, Version.compare( version, buildGreater ), "Compare greater build" );
+		assertEquals( 1, Version.compare( version, buildLesser ), "Compare lesser build" );
 	}
 
 	@Test
 	void testCompareVersionWithSnapshot() {
-		assertEquals( 1, Version.compareVersions( version, snapshot ), "Compare snapshot versions" );
-		assertEquals( -1, Version.compareVersions( snapshot, version ), "Compare snapshot versions" );
+		assertEquals( 1, Version.compare( version, snapshot ), "Compare snapshot versions" );
+		assertEquals( -1, Version.compare( snapshot, version ), "Compare snapshot versions" );
 	}
 
 	@Test

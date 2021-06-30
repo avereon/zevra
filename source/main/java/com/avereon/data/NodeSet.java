@@ -1,6 +1,6 @@
 package com.avereon.data;
 
-import com.avereon.util.Log;
+import lombok.extern.flogger.Flogger;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -47,14 +47,13 @@ import java.util.stream.Stream;
  *
  * @param <E> The type of {@link Node}s in the {@link NodeSet}
  */
+@Flogger
 @SuppressWarnings( { "SuspiciousToArrayCall" } )
 class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
 
 	private static final boolean USE_CACHE = true;
-
-	private static final System.Logger log = Log.get();
 
 	private final String key;
 
@@ -80,7 +79,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 			super.setValue( key, newValue );
 		}
 
-		if( getParent() == null ) log.log( Log.WARN, "Setting value on detached node set" );
+		if( getParent() == null ) log.atWarning().log( "Setting value on detached node set" );
 
 		dirtyCache = true;
 		return newValue;

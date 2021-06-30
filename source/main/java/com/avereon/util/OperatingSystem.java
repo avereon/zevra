@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Path;
@@ -8,9 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Flogger
 public class OperatingSystem {
-
-	private static final System.Logger log = Log.get();
 
 	public enum Family {
 		UNKNOWN,
@@ -194,9 +195,9 @@ public class OperatingSystem {
 	 * after this call to avoid problems even though this cannot be enforced.
 	 *
 	 * @param title The name of the program requesting elevated privileges
-	 * @param builder
-	 * @return
-	 * @throws IOException
+	 * @param builder The process builder
+	 * @return The process builder with elevate privilege commands
+	 * @throws IOException if an error occurs
 	 */
 	public static ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
 		List<String> command = getElevateCommands( title );
@@ -210,9 +211,9 @@ public class OperatingSystem {
 	 * Modify the process builder to reduce the process privileges when the process is started. The returned ProcessBuilder should not be modified after this call
 	 * to avoid problems even though this cannot be enforced.
 	 *
-	 * @param builder
-	 * @return
-	 * @throws IOException
+	 * @param builder The process builder
+	 * @return The process builder with reduce privilege commands
+	 * @throws IOException if an error occurs
 	 */
 	public static ProcessBuilder reduceProcessBuilder( ProcessBuilder builder ) throws IOException {
 		List<String> command = getReduceCommands();

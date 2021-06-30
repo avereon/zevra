@@ -1,13 +1,15 @@
 package com.avereon.product;
 
-import com.avereon.util.Log;
 import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.flogger.Flogger;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
@@ -15,10 +17,9 @@ import java.util.*;
 /**
  * This class must load the product "info" very quickly. The full product "card" can load more slowly.
  */
+@Flogger
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard extends BaseCard {
-
-	private static final System.Logger log = Log.get();
 
 	private static final String CARD = "META-INF/product.card";
 

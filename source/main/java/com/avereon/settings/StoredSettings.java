@@ -2,8 +2,8 @@ package com.avereon.settings;
 
 import com.avereon.util.DelayedAction;
 import com.avereon.util.FileUtil;
-import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
+import lombok.extern.flogger.Flogger;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,9 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Flogger
 public class StoredSettings extends AbstractSettings {
-
-	private static final System.Logger log = Log.get();
 
 	/**
 	 * Data will be persisted at most this often.
@@ -119,7 +118,7 @@ public class StoredSettings extends AbstractSettings {
 		Settings node = root.settings.get( nodePath );
 		Path folder = root.folder.resolve( nodePath.substring( 1 ) );
 		if( node == null ) {
-			log.log( Log.TRACE, "node=" + nodePath );
+			log.atFiner().log( "node=%s", nodePath );
 			node = new StoredSettings( root, nodePath, folder, values, action.getExecutor() );
 		}
 
@@ -127,7 +126,7 @@ public class StoredSettings extends AbstractSettings {
 		String parentPath = PathUtil.getParent( nodePath );
 		folder = folder.getParent();
 		while( parentPath != null && root.settings.get( parentPath ) == null ) {
-			log.log( Log.TRACE, "node=" + parentPath );
+			log.atFiner().log( "parent=%s", parentPath );
 			new StoredSettings( root, parentPath, folder, null, action.getExecutor() );
 			parentPath = PathUtil.getParent( parentPath );
 			folder = folder.getParent();
@@ -143,7 +142,7 @@ public class StoredSettings extends AbstractSettings {
 			try( Stream<Path> list = Files.list( folder ) ) {
 				list.parallel().filter( Files::isDirectory ).forEach( path -> externalNames.add( path.getFileName().toString() ) );
 			} catch( IOException exception ) {
-				log.log( Log.WARN, "Unable to list paths: " + folder, exception );
+				log.atWarning().withCause( exception ).log( "Unable to list paths: %s", folder );
 			}
 		}
 
@@ -183,9 +182,9 @@ public class StoredSettings extends AbstractSettings {
 		return values.getProperty( key );
 	}
 
-	// NEXT Override setArray and/or setCollection to store state in individual files
+	// TODO Override setArray and/or setCollection to store state in individual files
 
-	// NEXT Override getArray and/or getCollection to retrieve state from individual files
+	// TODO Override getArray and/or getCollection to retrieve state from individual files
 
 	@Override
 	public Settings flush() {
@@ -203,13 +202,13 @@ public class StoredSettings extends AbstractSettings {
 			// Delete the file
 			Path file = getFile();
 			if( !FileUtil.delete( file ) ) {
-				log.log( Log.WARN, "Unable to delete file=" + file );
+				log.atWarning().log( "Unable to delete file=%s", file );
 			}
 
 			// Delete the folder if empty
 			if( getNodes().size() == 0 ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Unable to delete settings folder: " + folder, exception );
+			log.atSevere().withCause( exception ).log( "Unable to delete settings folder=%s", folder );
 		} finally {
 			root.settings.remove( getPath() );
 		}
@@ -229,7 +228,7 @@ public class StoredSettings extends AbstractSettings {
 			values.load( input );
 			getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.LOADED, getPath() ) );
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error loading settings file: " + file, exception );
+			log.atSevere().withCause( exception ).log( "Error loading settings file=%s", file );
 		}
 	}
 
@@ -244,7 +243,7 @@ public class StoredSettings extends AbstractSettings {
 				getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.SAVED, getPath() ) );
 			}
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error saving settings file: " + file, exception );
+			log.atSevere().withCause( exception ).log( "Error saving settings file=%s", file );
 		}
 	}
 

@@ -8,17 +8,19 @@ import com.avereon.settings.Settings;
 import com.avereon.settings.SettingsEvent;
 import com.avereon.transaction.Txn;
 import com.avereon.transaction.TxnException;
-import com.avereon.util.Log;
 import com.avereon.util.TypeReference;
+import lombok.extern.flogger.Flogger;
 
 import java.util.*;
 
 /**
- * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the keys common to all nodes, if any.
+ * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the
+ * keys common to all nodes, if any.
  */
+@Flogger
 public class MultiNodeSettings implements Settings {
 
-	private static final System.Logger log = Log.get();
+	//private static final System.Logger log = Log.get();
 
 	private final Set<? extends Node> nodes;
 
@@ -121,7 +123,7 @@ public class MultiNodeSettings implements Settings {
 		try( Txn ignored = Txn.create() ) {
 			nodes.forEach( n -> n.setValue( key, value ) );
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error setting value on multiple nodes", exception );
+			log.atSevere().withCause( exception ).log( "Error setting value on multiple nodes" );
 		}
 		return this;
 	}
@@ -136,7 +138,7 @@ public class MultiNodeSettings implements Settings {
 		try( Txn ignored = Txn.create() ) {
 			nodes.forEach( n -> n.setValue( key, null ) );
 		} catch( TxnException exception ) {
-			log.log( Log.ERROR, "Error removing keys from multiple nodes", exception );
+			log.atSevere().withCause( exception ).log( "Error removing keys from multiple nodes" );
 		} finally {
 			Txn.reset();
 		}

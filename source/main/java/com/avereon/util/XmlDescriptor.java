@@ -1,5 +1,6 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -34,15 +35,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Other methods are provided for creating descriptors, getting attribute
  * values and getting other information from the descriptor.
  */
+@Flogger
 public class XmlDescriptor {
-
-	private static final System.Logger log = Log.get();
 
 	private Node node;
 
-	private Map<String, List<String>> attrNames = new ConcurrentHashMap<>();
+	private final Map<String, List<String>> attrNames = new ConcurrentHashMap<>();
 
-	private Map<String, List<String>> names = new ConcurrentHashMap<>();
+	private final Map<String, List<String>> names = new ConcurrentHashMap<>();
 
 	private List<String> paths;
 
@@ -302,7 +302,7 @@ public class XmlDescriptor {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 		}
 
 		return value;
@@ -324,7 +324,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 		}
 		if( nodes == null ) return null;
 
@@ -334,7 +334,7 @@ public class XmlDescriptor {
 			values.add( nodes.item( index ) );
 		}
 
-		return values.toArray( new Node[ values.size() ] );
+		return values.toArray( new Node[ 0 ] );
 	}
 
 	/**
@@ -392,7 +392,7 @@ public class XmlDescriptor {
 		try {
 			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
 		} catch( XPathExpressionException exception ) {
-			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 		}
 		if( nodes == null ) return null;
 
@@ -402,7 +402,7 @@ public class XmlDescriptor {
 			try {
 				values.add( (String)xpath.evaluate( "normalize-space()", nodes.item( index ), XPathConstants.STRING ) );
 			} catch( XPathExpressionException exception ) {
-				log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+				log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 			}
 		}
 

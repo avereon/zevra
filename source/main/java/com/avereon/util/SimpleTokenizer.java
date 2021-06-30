@@ -5,13 +5,11 @@ import java.util.List;
 
 public class SimpleTokenizer {
 
-	private String string;
+	private final String string;
 
-	private int start;
+	private final int count;
 
 	private int index;
-
-	private int count;
 
 	private boolean quoted;
 
@@ -32,7 +30,7 @@ public class SimpleTokenizer {
 	}
 
 	public String nextToken() {
-		start = seekTokenStart();
+		int start = seekTokenStart();
 		if( start == count ) return null;
 		int end = seekTokenEnd();
 

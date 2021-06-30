@@ -1,7 +1,7 @@
 package com.avereon.product;
 
 import com.avereon.util.JavaUtil;
-import com.avereon.util.Log;
+import lombok.extern.flogger.Flogger;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -10,9 +10,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Flogger
 public class Rb {
-
-	private static final System.Logger log = Log.get();
 
 	private static final String DEFAULT_PATH = "bundles";
 
@@ -41,7 +40,7 @@ public class Rb {
 
 	public static String getPath( Product product, String path ) {
 		String bundlePath = productPaths.get( product );
-		if( bundlePath == null ) log.log( Log.WARN, "Path missing for product: " + product.getClass().getName() );
+		if( bundlePath == null ) log.atWarning().log( "Path missing for product: %s", product.getClass().getName() );
 		return path.startsWith( "/" ) ? path : bundlePath + "/" + path;
 	}
 
@@ -66,10 +65,10 @@ public class Rb {
 
 		if( string == null ) {
 			string = product.getCard().getArtifact() + " > " + bundleKey + " > " + valueKey;
-			if( log.isLoggable( Log.TRACE ) ) {
-				log.log( Log.WARN, "Unable to find resource: " + string, new MissingResourceException( string, bundleKey, string ) );
+			if( log.atFiner().isEnabled() ) {
+				log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( "Unable to find resource: %s", string );
 			} else {
-				log.log( Log.WARN, "Unable to find resource: " + string );
+				log.atWarning().log( "Unable to find resource: %s", string );
 			}
 		}
 
@@ -85,7 +84,11 @@ public class Rb {
 			ResourceBundle bundle = getResourceBundle( product, rbPath );
 			if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
 		} catch( MissingResourceException exception ) {
-			log.log( Log.WARN, exception.getMessage() );
+			if( log.atFiner().isEnabled() ) {
+				log.atWarning().withCause( exception ).log( "Unable to find resource" );
+			} else {
+				log.atWarning().log( "Unable to find resource: %s", exception.getMessage() );
+			}
 		}
 
 		if( product.getParent() == null ) return other;

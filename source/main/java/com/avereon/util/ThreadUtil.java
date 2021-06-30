@@ -14,7 +14,7 @@ public class ThreadUtil {
 	 *
 	 * @param duration
 	 */
-	public static final void pause( long duration ) {
+	public static void pause( long duration ) {
 		pause( duration, TimeUnit.MILLISECONDS );
 	}
 
@@ -24,7 +24,7 @@ public class ThreadUtil {
 	 *
 	 * @param duration
 	 */
-	public static final void pause( long duration, TimeUnit unit ) {
+	public static void pause( long duration, TimeUnit unit ) {
 		try {
 			unit.sleep( unit.convert( duration, TimeUnit.MILLISECONDS ) );
 		} catch( InterruptedException exception ) {
@@ -32,13 +32,13 @@ public class ThreadUtil {
 		}
 	}
 
-	public static final Thread asDaemon( Runnable runnable ) {
+	public static Thread asDaemon( Runnable runnable ) {
 		Thread thread = new Thread( runnable );
 		thread.setDaemon( true );
 		return thread;
 	}
 
-	public static final ThreadFactory createDaemonThreadFactory() {
+	public static ThreadFactory createDaemonThreadFactory() {
 		return new DaemonThreadFactory();
 	}
 
@@ -55,7 +55,7 @@ public class ThreadUtil {
 	 * @param methodName
 	 * @return
 	 */
-	public static final boolean calledFrom( String className, String methodName ) {
+	public static boolean calledFrom( String className, String methodName ) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 
 		for( StackTraceElement element : trace ) {
@@ -73,7 +73,7 @@ public class ThreadUtil {
 	 * @param target
 	 * @return
 	 */
-	public static final Throwable appendStackTrace( Throwable source, Throwable target ) {
+	public static Throwable appendStackTrace( Throwable source, Throwable target ) {
 		if( source == null ) return target;
 		if( target == null ) return source;
 		return appendStackTrace( source.getStackTrace(), target );
@@ -86,7 +86,7 @@ public class ThreadUtil {
 	 * @param trace
 	 * @return
 	 */
-	public static final Throwable appendStackTrace( StackTraceElement[] trace, Throwable target ) {
+	public static Throwable appendStackTrace( StackTraceElement[] trace, Throwable target ) {
 		if( target == null ) return null;
 		if( trace != null ) {
 			StackTraceElement[] originalStack = target.getStackTrace();
@@ -110,7 +110,7 @@ public class ThreadUtil {
 	 *
 	 * @return A class array of the execution stack before this method was called.
 	 */
-	public static final Class<?>[] getStackClasses() {
+	public static Class<?>[] getStackClasses() {
 		Class<?>[] frame = new StackClassResolver().getClassContext();
 		return Arrays.copyOfRange( frame, 2, frame.length );
 	}

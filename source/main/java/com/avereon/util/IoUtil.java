@@ -7,7 +7,7 @@ import java.util.function.LongConsumer;
 
 public class IoUtil {
 
-	private static final int DEFUALT_BUFFER_SIZE = 8192;
+	private static final int DEFAULT_BUFFER_SIZE = 8192;
 
 	public static String toString( InputStream input ) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -16,7 +16,7 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, OutputStream output ) throws IOException {
-		return copy( input, output, DEFUALT_BUFFER_SIZE );
+		return copy( input, output, DEFAULT_BUFFER_SIZE );
 	}
 
 	public static long copy( InputStream input, OutputStream output, int bufferSize ) throws IOException {
@@ -28,7 +28,7 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, OutputStream output, LongConsumer progressCallback ) throws IOException {
-		return copy( input, output, DEFUALT_BUFFER_SIZE, progressCallback );
+		return copy( input, output, DEFAULT_BUFFER_SIZE, progressCallback );
 	}
 
 	public static long copy( InputStream input, OutputStream output, int bufferSize, LongConsumer progressCallback ) throws IOException {
@@ -49,7 +49,7 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, Writer writer, String encoding ) throws IOException {
-		return copy( new InputStreamReader( input, Charset.forName( encoding )), writer, DEFUALT_BUFFER_SIZE );
+		return copy( new InputStreamReader( input, Charset.forName( encoding )), writer, DEFAULT_BUFFER_SIZE );
 	}
 
 	public static long copy( Reader reader, Writer writer, int bufferSize ) throws IOException {

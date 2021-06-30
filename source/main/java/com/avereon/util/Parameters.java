@@ -65,15 +65,15 @@ public class Parameters {
 
 	private static final String EQUALS = "=";
 
-	private List<String> originalCommands;
+	private final List<String> originalCommands;
 
-	private List<String> resolvedCommands;
+	private final List<String> resolvedCommands;
 
-	private Set<String> flags;
+	private final Set<String> flags;
 
-	private Map<String, List<String>> values;
+	private final Map<String, List<String>> values;
 
-	private List<String> uris;
+	private final List<String> uris;
 
 	private Parameters( List<String> originalCommands, List<String> resolvedCommands, Set<String> flags, Map<String, List<String>> values, List<String> uris ) {
 		this.originalCommands = new ArrayList<>( originalCommands );

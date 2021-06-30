@@ -2,9 +2,9 @@ package com.avereon.util;
 
 public class LineParser {
 
-	private String content;
+	private final String content;
 
-	private int length;
+	private final int length;
 
 	private int next;
 
@@ -65,7 +65,7 @@ public class LineParser {
 		}
 
 		line = content.substring( start, index );
-		term = content.substring( index, next < length ? next : length );
+		term = content.substring( index, Math.min( next, length ) );
 	}
 
 }

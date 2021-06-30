@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -10,10 +12,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+@Flogger
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
-
-	private static final System.Logger log = Log.get();
 
 	public static final String EMPTY = "";
 
@@ -537,7 +538,7 @@ public final class TextUtil {
 				lines.add( line );
 			}
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error parsing text", exception );
+			log.atSevere().withCause( exception ).log( "Error parsing text" );
 		}
 
 		return lines;
@@ -553,7 +554,7 @@ public final class TextUtil {
 				count++;
 			}
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error parsing text", exception );
+			log.atSevere().withCause( exception ).log( "Error parsing text" );
 		}
 
 		return count;

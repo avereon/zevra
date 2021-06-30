@@ -4,12 +4,12 @@ import com.avereon.event.Event;
 import com.avereon.event.EventHandler;
 import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
-import com.avereon.util.Log;
 import com.avereon.util.PathUtil;
 import com.avereon.util.TextUtil;
 import com.avereon.util.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.flogger.Flogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+@Flogger
 public abstract class AbstractSettings implements Settings {
-
-	private static final System.Logger log = Log.get();
 
 	private static final Map<Class<?>, OutboundConverter> outboundConverters;
 
@@ -242,7 +241,7 @@ public abstract class AbstractSettings implements Settings {
 		try {
 			return new ObjectMapper().writeValueAsString( value );
 		} catch( JsonProcessingException exception ) {
-			log.log( Log.WARN, "Error marshalling value", exception );
+			log.atWarning().withCause( exception ).log( "Error marshalling value" );
 			return null;
 		}
 	}
@@ -254,7 +253,7 @@ public abstract class AbstractSettings implements Settings {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readerFor( mapper.constructType( type.getType() ) ).readValue( value );
 		} catch( IOException exception ) {
-			log.log( Log.WARN, "Error unmarshalling value", exception );
+			log.atWarning().withCause( exception ).log( "Error unmarshalling value" );
 			return null;
 		}
 	}
@@ -283,7 +282,7 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public void loadDefaultValues( Object source, String path) throws IOException {
+	public void loadDefaultValues( Object source, String path ) throws IOException {
 		Properties properties = new Properties();
 		InputStream defaultSettingsInput = source.getClass().getResourceAsStream( path );
 		if( defaultSettingsInput != null ) properties.load( new InputStreamReader( defaultSettingsInput, TextUtil.CHARSET ) );

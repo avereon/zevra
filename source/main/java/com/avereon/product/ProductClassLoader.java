@@ -9,9 +9,9 @@ import java.net.URLClassLoader;
 
 public class ProductClassLoader extends URLClassLoader {
 
-	private ClassLoader parent;
+	private final ClassLoader parent;
 
-	private URI codebase;
+	private final URI codebase;
 
 	public ProductClassLoader( URL[] urls, ClassLoader parent, URI codebase ) {
 		super( urls, null );
@@ -27,15 +27,12 @@ public class ProductClassLoader extends URLClassLoader {
 	@Override
 	public Class<?> loadClass( final String name ) throws ClassNotFoundException {
 		Class<?> type = null;
-
 		ClassNotFoundException exception = null;
 
-		if( type == null ) {
-			try {
-				type = super.loadClass( name );
-			} catch( ClassNotFoundException cnf ) {
-				exception = cnf;
-			}
+		try {
+			type = super.loadClass( name );
+		} catch( ClassNotFoundException cnf ) {
+			exception = cnf;
 		}
 
 		if( type == null ) {
@@ -56,8 +53,7 @@ public class ProductClassLoader extends URLClassLoader {
 	}
 
 	public URL getResource( String name ) {
-		URL url = null;
-		if( url == null ) url = super.findResource( name );
+		URL url = super.findResource( name );
 		if( url == null ) url = parent.getResource( name );
 		return url;
 	}
@@ -67,9 +63,9 @@ public class ProductClassLoader extends URLClassLoader {
 	 * to package needed native libraries in the module and be loaded at runtime.
 	 */
 	@Override
-	protected String findLibrary( String libname ) {
-		File file = new File( codebase.resolve( "lib/" + OperatingSystem.resolveNativeLibPath( libname ) ) );
-		return file.exists() ? file.toString() : super.findLibrary( libname );
+	protected String findLibrary( String name ) {
+		File file = new File( codebase.resolve( "lib/" + OperatingSystem.resolveNativeLibPath( name ) ) );
+		return file.exists() ? file.toString() : super.findLibrary( name );
 	}
 
 }

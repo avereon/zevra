@@ -14,9 +14,9 @@ public class Release implements Comparable<Release> {
 
 	private static final String ENCODE_DELIMITER = "  ";
 
-	private Version version;
+	private final Version version;
 
-	private Date timestamp;
+	private final Date timestamp;
 
 	public Release( String version ) {
 		this( new Version( version ), null );

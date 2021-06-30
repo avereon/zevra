@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
@@ -16,11 +18,10 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+@Flogger
 public class FileUtil {
 
 	public static final Path TEMP_FOLDER = Paths.get( System.getProperty( "java.io.tmpdir" ) );
-
-	private static final System.Logger log = Log.get();
 
 	private static final long FILE_COPY_BUFFER_SIZE = SizeUnitBase2.MiB.getSize() * 25;
 
@@ -454,14 +455,14 @@ public class FileUtil {
 	}
 
 	public static Path getTempFolder() {
-		return Paths.get( System.getProperty( "java.io.tmpdir" ) );
+		return TEMP_FOLDER;
 	}
 
-	public static Path createTempFile( String prefix, String suffix, FileAttribute... attributes ) throws IOException {
+	public static Path createTempFile( String prefix, String suffix, FileAttribute<?>... attributes ) throws IOException {
 		return Files.createTempFile( prefix, suffix, attributes );
 	}
 
-	public static Path createTempFile( Path parent, String prefix, String suffix, FileAttribute... attributes ) throws IOException {
+	public static Path createTempFile( Path parent, String prefix, String suffix, FileAttribute<?>... attributes ) throws IOException {
 		return Files.createTempFile( parent, prefix, suffix, attributes );
 	}
 

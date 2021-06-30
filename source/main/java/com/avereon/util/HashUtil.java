@@ -1,13 +1,14 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.*;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Flogger
 public class HashUtil {
-
-	private static final System.Logger log = Log.get();
 
 	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );
 
@@ -53,7 +54,7 @@ public class HashUtil {
 		try( FileInputStream input = new FileInputStream( file ) ) {
 			return hash( input, strategy );
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error reading file " + file, exception );
+			log.atSevere().withCause( exception ).log( "Error reading file %s", file );
 			return null;
 		}
 	}
@@ -102,7 +103,7 @@ public class HashUtil {
 					digest.update( buffer, 0, count );
 				}
 			} catch( IOException exception ) {
-				log.log( Log.ERROR, "Error reading stream", exception );
+				log.atSevere().withCause( exception ).log( "Error reading stream" );
 				return null;
 			}
 
@@ -121,7 +122,7 @@ public class HashUtil {
 				digest = MessageDigest.getInstance( algorithm );
 			} catch( NoSuchAlgorithmException exception ) {
 				exception.printStackTrace( System.err );
-				log.log( Log.ERROR, "Error creating digest", exception );
+				log.atSevere().withCause( exception ).log( "Error creating digest" );
 			}
 			this.digest = digest;
 		}

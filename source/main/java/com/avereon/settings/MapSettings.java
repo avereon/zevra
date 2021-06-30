@@ -11,12 +11,12 @@ public class MapSettings extends AbstractSettings {
 	// The map of settings. Should only be stored in the root node
 	private Map<String, Settings> settings;
 
-	private MapSettings root;
+	private final MapSettings root;
 
-	private String path;
+	private final String path;
 
 	// The settings node values
-	private Map<String, String> values;
+	private final Map<String, String> values;
 
 	// The settings defaults.
 	private Map<String, Object> defaultValues;

@@ -19,8 +19,6 @@ public class RepoCard extends BaseCard {
 
 	private String name;
 
-	//private String icon;
-
 	private List<String> icons;
 
 	private String url;
@@ -31,7 +29,7 @@ public class RepoCard extends BaseCard {
 
 	public RepoCard( String url ) {
 		this.url = url;
-		this.icons = Collections.unmodifiableList( List.of() );
+		this.icons = List.of();
 	}
 
 	public RepoCard fromJson( InputStream input ) throws IOException {
@@ -57,15 +55,6 @@ public class RepoCard extends BaseCard {
 		this.name = name;
 		return this;
 	}
-
-//	public String getIcon() {
-//		return icon;
-//	}
-//
-//	public RepoCard setIcon( String icon ) {
-//		this.icon = icon;
-//		return this;
-//	}
 
 	public List<String> getIcons() {
 		return icons;

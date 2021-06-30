@@ -12,7 +12,7 @@ public class NonBlockingReader {
 
 	private Thread readerThread;
 
-	private BufferedReader source;
+	private final BufferedReader source;
 
 	private IOException ioexception;
 

@@ -1,5 +1,6 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -22,10 +23,9 @@ import java.nio.charset.StandardCharsets;
  * A convenience class for loading, saving, formatting, and querying XML
  * documents.
  */
+@Flogger
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
-
-	private static final System.Logger log = Log.get();
 
 	private static final int DEFAULT_INDENT = 2;
 
@@ -97,7 +97,7 @@ public class XmlUtil {
 		try {
 			value = (Node)xpath.evaluate( path, node, XPathConstants.NODE );
 		} catch( XPathExpressionException exception ) {
-			log.log( Log.ERROR, "Error evaluating xpath: " + path, new Exception( path, exception ) );
+			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 		}
 
 		return value;
@@ -195,7 +195,7 @@ public class XmlUtil {
 		try {
 			save( node, output );
 		} catch( IOException exception ) {
-			log.log( Log.ERROR, "Error converting node to string", exception );
+			log.atSevere().withCause(  exception ).log( "Error converting node to string" );
 		}
 		return output.toString();
 	}

@@ -1,12 +1,13 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 
+@Flogger
 public class IdGenerator {
-
-	private static final System.Logger log = Log.get();
 
 	private static final Random RANDOM = new Random();
 
@@ -41,7 +42,7 @@ public class IdGenerator {
 				id ^= value;
 			}
 		} catch( Exception exception ) {
-			log.log( Log.ERROR, "Error computing id for: " + string, exception );
+			log.atSevere().withCause( exception ).log( "Error computing id for: %s", string );
 		}
 
 		return getId( id );

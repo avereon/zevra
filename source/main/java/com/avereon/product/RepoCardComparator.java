@@ -9,7 +9,7 @@ public class RepoCardComparator implements Comparator<RepoCard> {
 		REPO
 	}
 
-	private Field field;
+	private final Field field;
 
 	public RepoCardComparator( Field field ) {
 		this.field = field;
@@ -17,14 +17,8 @@ public class RepoCardComparator implements Comparator<RepoCard> {
 
 	@Override
 	public int compare( RepoCard card1, RepoCard card2 ) {
-		switch( field ) {
-			case REPO: {
-				return card1.getUrl().compareTo( card2.getUrl() );
-			}
-			default: {
-				return card1.getName().compareTo( card2.getName() );
-			}
-		}
+		if( field == Field.REPO ) return card1.getUrl().compareTo( card2.getUrl() );
+		return card1.getName().compareTo( card2.getName() );
 	}
 
 }

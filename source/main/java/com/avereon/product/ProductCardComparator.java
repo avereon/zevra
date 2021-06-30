@@ -13,7 +13,7 @@ public class ProductCardComparator implements Comparator<ProductCard> {
 		VERSION
 	}
 
-	private Field field;
+	private final Field field;
 
 	public ProductCardComparator( Field field ) {
 		this.field = field;

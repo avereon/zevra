@@ -9,15 +9,15 @@ public class Indenter {
 
 	public static final String DEFAULT_INDENT_STRING = "\t";
 
-	public static final String createIndent() {
+	public static String createIndent() {
 		return DEFAULT_INDENT_STRING;
 	}
 
-	public static final String createIndent( int count ) {
+	public static String createIndent( int count ) {
 		return createIndent( count, DEFAULT_INDENT_STRING );
 	}
 
-	public static final String createIndent( int count, String indent ) {
+	public static String createIndent( int count, String indent ) {
 		if( count == 1 ) return indent;
 
 		int size = count * indent.length();
@@ -33,43 +33,43 @@ public class Indenter {
 		return new String( buffer );
 	}
 
-	public static final void writeIndent( Writer writer ) throws IOException {
+	public static void writeIndent( Writer writer ) throws IOException {
 		writer.write( DEFAULT_INDENT_STRING );
 	}
 
-	public static final void writeIndent( Writer writer, int count ) throws IOException {
+	public static void writeIndent( Writer writer, int count ) throws IOException {
 		writeIndent( writer, count, DEFAULT_INDENT_STRING );
 	}
 
-	public static final void writeIndent( Writer writer, String indent ) throws IOException {
+	public static void writeIndent( Writer writer, String indent ) throws IOException {
 		writeIndent( writer, 1, indent );
 	}
 
-	public static final void writeIndent( Writer writer, int count, String indent ) throws IOException {
+	public static void writeIndent( Writer writer, int count, String indent ) throws IOException {
 		if( count < 1 ) return;
 		writer.write( createIndent( count, indent ) );
 	}
 
-	public static final String indent( String content ) {
+	public static String indent( String content ) {
 		return indent( content, 1 );
 	}
 
-	public static final String indent( String content, int size ) {
+	public static String indent( String content, int size ) {
 		return indent( content, size, DEFAULT_INDENT_STRING );
 	}
 
-	public static final String indent( String content, String indent ) {
+	public static String indent( String content, String indent ) {
 		return indent( content, 1, indent );
 	}
 
-	public static final String indent( String content, int size, String indent ) {
+	public static String indent( String content, int size, String indent ) {
 		if( content == null ) return null;
 
-		String line = null;
 		LineParser parser = new LineParser( content );
 		StringBuilder builder = new StringBuilder();
 		String text = createIndent( size, indent );
 
+		String line;
 		while( ( line = parser.next() ) != null ) {
 			builder.append( text );
 			builder.append( line );
@@ -79,23 +79,23 @@ public class Indenter {
 		return builder.toString();
 	}
 
-	public static final boolean canUnindent( String content ) {
+	public static boolean canUnindent( String content ) {
 		return canUnindent( content, 1 );
 	}
 
-	public static final boolean canUnindent( String content, boolean ignoreBlanks ) {
+	public static boolean canUnindent( String content, boolean ignoreBlanks ) {
 		return canUnindent( content, 1, ignoreBlanks );
 	}
 
-	public static final boolean canUnindent( String content, int size ) {
+	public static boolean canUnindent( String content, int size ) {
 		return canUnindent( content, size, DEFAULT_INDENT_STRING );
 	}
 
-	public static final boolean canUnindent( String content, int size, boolean ignoreBlanks ) {
+	public static boolean canUnindent( String content, int size, boolean ignoreBlanks ) {
 		return canUnindent( content, size, DEFAULT_INDENT_STRING, ignoreBlanks );
 	}
 
-	public static final boolean canUnindent( String content, int size, String indent ) {
+	public static boolean canUnindent( String content, int size, String indent ) {
 		return canUnindent( content, size, indent, false );
 	}
 
@@ -104,18 +104,18 @@ public class Indenter {
 	 * is empty (no spaces, tabs or other characters before the line termination)
 	 * or it starts with the indent string.
 	 *
-	 * @param content
-	 * @param size
-	 * @param indent
+	 * @param content The content to check
+	 * @param size The size of the indent
+	 * @param indent The indent string
 	 * @return True if all line in the content can be unindented, false otherwise.
 	 */
-	public static final boolean canUnindent( String content, int size, String indent, boolean ignoreBlanks ) {
+	public static boolean canUnindent( String content, int size, String indent, boolean ignoreBlanks ) {
 		if( content == null ) return false;
 
-		String line = null;
 		LineParser parser = new LineParser( content );
 		String text = createIndent( size, indent );
 
+		String line;
 		while( ( line = parser.next() ) != null ) {
 			if( ignoreBlanks && "".equals( line ) ) continue;
 			if( !line.startsWith( text ) ) return false;
@@ -124,22 +124,22 @@ public class Indenter {
 		return true;
 	}
 
-	public static final String unindent( String content ) {
+	public static String unindent( String content ) {
 		return unindent( content, 1 );
 	}
 
-	public static final String unindent( String content, int size ) {
+	public static String unindent( String content, int size ) {
 		return unindent( content, size, DEFAULT_INDENT_STRING );
 	}
 
-	public static final String unindent( String content, int size, String indent ) {
+	public static String unindent( String content, int size, String indent ) {
 		if( content == null ) return null;
 
-		String line = null;
 		LineParser parser = new LineParser( content );
 		StringBuilder builder = new StringBuilder();
 		String text = createIndent( size, indent );
 
+		String line;
 		while( ( line = parser.next() ) != null ) {
 			if( line.startsWith( text ) ) builder.append( line.substring( text.length() ) );
 			builder.append( parser.getTerminator() );
@@ -148,37 +148,42 @@ public class Indenter {
 		return builder.toString();
 	}
 
-	public static final String trim( String content, String trimChars ) {
+	public static String trim( String content, String trimChars ) {
 		if( content == null || content.length() == 0 ) return content;
 
 		int length = content.length();
 		int start = 0;
 		int end = length - 1;
+		char c;
 		char[] value = new char[length];
 		char[] trims = new char[trimChars.length()];
 
 		content.getChars( 0, value.length, value, 0 );
 		trimChars.getChars( 0, trims.length, trims, 0 );
 
-		char c = 0;
 		boolean left = true;
 		while( left & start <= end ) {
 			c = value[start];
 			boolean found = false;
-			for( int charIndex = 0; charIndex < trims.length; charIndex++ ) {
-				if( c == trims[charIndex] ) found = true;
+			for( char trim : trims ) {
+				if( c == trim ) {
+					found = true;
+					break;
+				}
 			}
 			left = found;
 			if( found ) start++;
 		}
 
-		c = 0;
 		boolean right = true;
 		while( right & end >= start ) {
 			c = value[end];
 			boolean found = false;
-			for( int charIndex = 0; charIndex < trims.length; charIndex++ ) {
-				if( c == trims[charIndex] ) found = true;
+			for( char trim : trims ) {
+				if( c == trim ) {
+					found = true;
+					break;
+				}
 			}
 			right = found;
 			if( found ) end--;
@@ -192,15 +197,15 @@ public class Indenter {
 		return result;
 	}
 
-	public static final String trimLines( String content, String trimChars ) {
+	public static String trimLines( String content, String trimChars ) {
 		if( content == null || content.length() == 0 ) return content;
 
-		StringBuilder lineBuilder = null;
 		StringBuilder builder = new StringBuilder();
 		StringReader stringReader = new StringReader( content );
 		BufferedReader bufferedReader = new BufferedReader( stringReader );
 
 		int lineNumber = 0;
+		StringBuilder lineBuilder;
 		try {
 			lineNumber++;
 			String line = bufferedReader.readLine();

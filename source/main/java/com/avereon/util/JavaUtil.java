@@ -1,17 +1,18 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Flogger
 public final class JavaUtil {
-
-	private static final System.Logger log = Log.get();
 
 	public static boolean isTest() {
 		try {
@@ -42,7 +43,7 @@ public final class JavaUtil {
 	}
 
 	public static String getCallingMethodName() {
-		return  getCallerElement().getMethodName();
+		return getCallerElement().getMethodName();
 	}
 
 	private static StackTraceElement getCallerElement() {
@@ -179,13 +180,11 @@ public final class JavaUtil {
 			token = tokenizer.nextToken();
 
 			try {
-				uri = new URI( URLDecoder.decode( token, "UTF-8" ) );
+				uri = new URI( URLDecoder.decode( token, StandardCharsets.UTF_8 ) );
 			} catch( URISyntaxException exception ) {
 				uri = new File( token ).toURI();
-			} catch( UnsupportedEncodingException exception ) {
-				// Intentionally ignore exception because UTF-8 is always supported.
 			}
-			if( uri != null && uri.getScheme() == null ) uri = new File( token ).toURI();
+			if( uri.getScheme() == null ) uri = new File( token ).toURI();
 
 			list.add( uri );
 		}
@@ -230,9 +229,9 @@ public final class JavaUtil {
 
 	public static void printClassLoader( Object object ) {
 		if( object instanceof Class ) {
-			log.log( Log.TRACE, "Class loader for " + getClassName( (Class<?>)object ) + ": " + ((Class<?>)object).getClassLoader() );
+			log.atFiner().log( "Class loader for %s:%s", getClassName( (Class<?>)object ), ((Class<?>)object).getClassLoader() );
 		} else {
-			log.log( Log.TRACE, "Class loader for " + getClassName( object.getClass() ) + ": " + getClassLoader( object ) );
+			log.atFiner().log( "Class loader for %s:%s", getClassName( object.getClass() ), getClassLoader( object ) );
 		}
 	}
 

@@ -159,7 +159,7 @@ public class Version implements Comparable<Version> {
 	 * @param version2 The second version
 	 * @return -1, 0 or 1
 	 */
-	public static int compareVersions( String version1, String version2 ) {
+	public static int compare( String version1, String version2 ) {
 		return new Version( version1 ).compareTo( new Version( version2 ) );
 	}
 
@@ -171,7 +171,7 @@ public class Version implements Comparable<Version> {
 	 * @param version2 The second version
 	 * @return -1, 0 or 1
 	 */
-	public static int compareVersions( Version version1, Version version2 ) {
+	public static int compare( Version version1, Version version2 ) {
 		return version1.compareTo( version2 );
 	}
 
@@ -559,7 +559,7 @@ public class Version implements Comparable<Version> {
 
 	private static abstract class Part {
 
-		private String value;
+		private final String value;
 
 		Part( String value ) {
 			this.value = value;

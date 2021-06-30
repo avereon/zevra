@@ -8,7 +8,7 @@ import java.io.InputStream;
  */
 public class LimitedInputStream extends InputStream {
 
-	private static int EOF = -1;
+	private static final int EOF = -1;
 
 	private final InputStream input;
 

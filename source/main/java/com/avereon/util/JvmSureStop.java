@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.util.Arrays;
 import java.util.Map;
 
@@ -14,9 +16,8 @@ import java.util.Map;
  *
  * @author soderquistmv
  */
+@Flogger
 public class JvmSureStop extends Thread {
-
-	private static final System.Logger log = Log.get();
 
 	/**
 	 * The amount of time to give the JVM to exit cleanly. After this amount of
@@ -47,19 +48,19 @@ public class JvmSureStop extends Thread {
 				return;
 			}
 
-			log.log( Log.ERROR, "JVM did not exit cleanly. Here are the running non-daemon threads:" );
+			log.atSevere().log( "JVM did not exit cleanly. Here are the running non-daemon threads:" );
 			Map<Thread, StackTraceElement[]> threadStacks = Thread.getAllStackTraces();
 			threadStacks.keySet().stream().filter( t -> !t.isDaemon() ).forEach( thread -> {
-				log.log( Log.WARN, "Thread: " + thread.getId() + " " + thread.getName() + "[g=" + thread.getThreadGroup() + "]" );
-				Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.log( Log.INFO, "  " + e ) );
+				log.atWarning().log( "Thread: %s %s[g=%s]", thread.getId(), thread.getName(), thread.getThreadGroup() );
+				Arrays.stream( threadStacks.get( thread ) ).forEach( e -> log.atInfo().log( "  %s", e ) );
 			} );
 
-			log.log( Log.ERROR, "Halting now!" );
+			log.atSevere().log( "Halting now!" );
 			ThreadUtil.pause( 200 );
 
 			Runtime.getRuntime().halt( -1 );
 		} catch( Throwable throwable ) {
-			log.log( Log.ERROR, throwable );
+			log.atSevere().withCause( throwable ).log( "Error running %s", getClass().getSimpleName() );
 		}
 	}
 

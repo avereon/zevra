@@ -14,6 +14,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+@Deprecated
 public class Log {
 
 	public static final System.Logger.Level OFF = System.Logger.Level.OFF;

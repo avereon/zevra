@@ -1,14 +1,15 @@
 package com.avereon.util;
 
+import lombok.extern.flogger.Flogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+@Flogger
 public final class UriUtil {
-
-	private static final System.Logger log = Log.get();
 
 	public static URI addToPath( URI uri, String path ) {
 		String newPath = uri.getPath() + "/" + path;
@@ -37,8 +38,7 @@ public final class UriUtil {
 				return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), null, null );
 			}
 		} catch( URISyntaxException exception ) {
-			// Intentionally ignore exception - should never happen
-			log.log( Log.ERROR, "Error resolving asset URI: " + uri, exception );
+			log.atSevere().withCause( exception ).log( "Error resolving asset URI: %s", uri );
 		}
 
 		return null;
@@ -77,8 +77,7 @@ public final class UriUtil {
 			try {
 				uri = new File( uri ).getCanonicalFile().toURI();
 			} catch( IOException exception ) {
-				// Intentionally ignore exception.
-				log.log( Log.ERROR, "Error resolving file URI: " + uri, exception );
+				log.atSevere().withCause( exception ).log( "Error resolving file URI: %s", uri );
 			}
 		}
 
