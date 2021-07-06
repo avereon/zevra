@@ -35,6 +35,10 @@ public class JavaLoggingLoggerWrapper implements LoggerWrapper {
 	public void log( LogData data ) {
 		LogRecord record = new LogRecord( data.getLevel(), null );
 
+		// FIXME These need to be set correctly
+		record.setSourceClassName( getLoggerName() );
+		record.setSourceMethodName( "greet" );
+
 		record.setInstant( Instant.ofEpochSecond( data.getTimestampNanos() / ONE_BILLION, data.getTimestampNanos() % ONE_BILLION ) );
 		record.setMessage( data.getMessage() );
 		record.setParameters( data.getMessageParameters() );

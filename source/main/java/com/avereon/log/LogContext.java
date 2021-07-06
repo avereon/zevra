@@ -1,6 +1,7 @@
 package com.avereon.log;
 
 import com.avereon.log.provider.LoggingProvider;
+import com.avereon.util.JavaUtil;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -685,8 +686,16 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 			}
 		}
 
-
 		if( !isLiteral() ) this.message = String.format( message, args );
+
+		try {
+			// TODO Add extra metadata
+			//addMetadata( MODULE_NAME, JavaUtil.getCallingModuleName() );
+			addMetadata( CLASS_NAME, JavaUtil.getCallingClassName() );
+			//addMetadata( METHOD_NAME, JavaUtil.getCallingMethodName() );
+		} catch( Throwable throwable ) {
+			throwable.printStackTrace(System.err);
+		}
 
 		getLogger().write( this );
 	}

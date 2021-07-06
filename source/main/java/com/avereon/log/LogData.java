@@ -11,6 +11,15 @@ public interface LogData {
 	@SuppressWarnings( "StringOperationCanBeSimplified" )
 	String FORCED = new String();
 
+	@SuppressWarnings( "StringOperationCanBeSimplified" )
+	String MODULE_NAME = new String();
+
+	@SuppressWarnings( "StringOperationCanBeSimplified" )
+	String CLASS_NAME = new String();
+
+	@SuppressWarnings( "StringOperationCanBeSimplified" )
+	String METHOD_NAME = new String();
+
 	Level getLevel();
 
 	/** Returns a nanosecond timestamp for the current log statement. */
