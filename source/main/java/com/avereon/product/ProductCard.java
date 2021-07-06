@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * This class must load the product "info" very quickly. The full product "card" can load more slowly.
  */
-@Flogger
+@CustomLog
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class ProductCard extends BaseCard {
 

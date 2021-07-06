@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Other methods are provided for creating descriptors, getting attribute
  * values and getting other information from the descriptor.
  */
-@Flogger
+@CustomLog
 public class XmlDescriptor {
 
 	private Node node;

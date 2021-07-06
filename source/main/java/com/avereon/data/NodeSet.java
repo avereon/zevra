@@ -1,6 +1,6 @@
 package com.avereon.data;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -47,7 +47,7 @@ import java.util.stream.Stream;
  *
  * @param <E> The type of {@link Node}s in the {@link NodeSet}
  */
-@Flogger
+@CustomLog
 @SuppressWarnings( { "SuspiciousToArrayCall" } )
 class NodeSet<E extends Node> extends Node implements Set<E> {
 

@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-@Flogger
+@CustomLog
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {
 

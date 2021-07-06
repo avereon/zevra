@@ -1,13 +1,13 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Flogger
+@CustomLog
 public class HashUtil {
 
 	public static final HashStrategy SHA3 = new DigestStrategy( new MessageDigestWrapper( "SHA3-256" ) );

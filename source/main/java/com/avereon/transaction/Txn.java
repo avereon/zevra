@@ -2,7 +2,7 @@ package com.avereon.transaction;
 
 import com.avereon.event.EventType;
 import com.avereon.skill.Actionable;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  *   ...
  * </pre>
  */
-@Flogger
+@CustomLog
 public class Txn implements AutoCloseable {
 
 	private static final ThreadLocal<Deque<Txn>> transactions = new ThreadLocal<>();

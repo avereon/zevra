@@ -673,29 +673,23 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 		return getLogger().isLoggable( level );
 	}
 
-	private void doLog( String message, Object... args ) {
+	private void doLog( String message, Object... parameters ) {
 		this.message = message;
-		this.messageParameters = args;
+		this.messageParameters = parameters;
 
-		// Evaluate any (rare) LazyEval instances early. This may throw exceptions from user code, but
-		// it seems reasonable to propagate them in this case (they would have been thrown if the
-		// argument was evaluated at the call site anyway).
-		for( int n = 0; n < args.length; n++ ) {
-			if( args[ n ] instanceof LazyEval ) {
-				args[ n ] = ((LazyEval<?>)args[ n ]).evaluate();
+		// Evaluate the LazeEval values
+		for( int n = 0; n < parameters.length; n++ ) {
+			if( parameters[ n ] instanceof LazyEval ) {
+				parameters[ n ] = ((LazyEval<?>)parameters[ n ]).evaluate();
 			}
 		}
 
-		if( !isLiteral() ) this.message = String.format( message, args );
+		if( !isLiteral() ) this.message = String.format( message, parameters );
 
-		try {
-			// TODO Add extra metadata
-			//addMetadata( MODULE_NAME, JavaUtil.getCallingModuleName() );
-			addMetadata( CLASS_NAME, JavaUtil.getCallingClassName() );
-			//addMetadata( METHOD_NAME, JavaUtil.getCallingMethodName() );
-		} catch( Throwable throwable ) {
-			throwable.printStackTrace(System.err);
-		}
+		// Add extra metadata
+		addMetadata( MODULE_NAME, JavaUtil.getCallingModuleName() );
+		addMetadata( CLASS_NAME, JavaUtil.getCallingClassName() );
+		addMetadata( METHOD_NAME, JavaUtil.getCallingMethodName() );
 
 		getLogger().write( this );
 	}

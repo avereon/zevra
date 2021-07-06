@@ -9,7 +9,7 @@ import com.avereon.util.TextUtil;
 import com.avereon.util.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@Flogger
+@CustomLog
 public abstract class AbstractSettings implements Settings {
 
 	private static final Map<Class<?>, OutboundConverter> outboundConverters;

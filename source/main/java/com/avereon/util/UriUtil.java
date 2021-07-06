@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-@Flogger
+@CustomLog
 public final class UriUtil {
 
 	public static URI addToPath( URI uri, String path ) {

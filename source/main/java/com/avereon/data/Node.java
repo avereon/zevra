@@ -5,7 +5,7 @@ import com.avereon.event.EventHandler;
 import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,7 +118,7 @@ import java.util.stream.Collectors;
  * node. Particularly, {@link NodeEvent#VALUE_CHANGED} events are propagated to
  * parent nodes.
  */
-@Flogger
+@CustomLog
 public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	/**

@@ -11,7 +11,6 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
-	requires flogger;
 
 	exports com.avereon.data;
 	exports com.avereon.event;

@@ -3,7 +3,7 @@ package com.avereon.settings;
 import com.avereon.util.DelayedAction;
 import com.avereon.util.FileUtil;
 import com.avereon.util.PathUtil;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Flogger
+@CustomLog
 public class StoredSettings extends AbstractSettings {
 
 	/**

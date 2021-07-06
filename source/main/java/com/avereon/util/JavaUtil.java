@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-@Flogger
+@CustomLog
 public final class JavaUtil {
 
 	public static boolean isTest() {

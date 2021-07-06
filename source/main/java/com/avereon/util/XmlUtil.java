@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
  * A convenience class for loading, saving, formatting, and querying XML
  * documents.
  */
-@Flogger
+@CustomLog
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
 

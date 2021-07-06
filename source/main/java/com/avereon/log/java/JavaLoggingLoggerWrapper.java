@@ -35,10 +35,8 @@ public class JavaLoggingLoggerWrapper implements LoggerWrapper {
 	public void log( LogData data ) {
 		LogRecord record = new LogRecord( data.getLevel(), null );
 
-		// FIXME These need to be set correctly
-		record.setSourceClassName( getLoggerName() );
-		record.setSourceMethodName( "greet" );
-
+		record.setSourceClassName( (String)data.getMetadata().get( LogData.CLASS_NAME ) );
+		record.setSourceMethodName( (String)data.getMetadata().get( LogData.METHOD_NAME ) );
 		record.setInstant( Instant.ofEpochSecond( data.getTimestampNanos() / ONE_BILLION, data.getTimestampNanos() % ONE_BILLION ) );
 		record.setMessage( data.getMessage() );
 		record.setParameters( data.getMessageParameters() );
@@ -49,7 +47,7 @@ public class JavaLoggingLoggerWrapper implements LoggerWrapper {
 
 	@Override
 	public void handleError( LogData data, RuntimeException error ) {
-		// This Java logging wrapper does not currently support this feature
+		error.printStackTrace();
 	}
 
 }

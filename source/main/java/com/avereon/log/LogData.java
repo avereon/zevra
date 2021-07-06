@@ -5,20 +5,15 @@ import java.util.logging.Level;
 
 public interface LogData {
 
-	@SuppressWarnings( "StringOperationCanBeSimplified" )
-	String CAUSE = new String();
+	String CAUSE = "cause";
 
-	@SuppressWarnings( "StringOperationCanBeSimplified" )
-	String FORCED = new String();
+	String FORCED = "forced";
 
-	@SuppressWarnings( "StringOperationCanBeSimplified" )
-	String MODULE_NAME = new String();
+	String MODULE_NAME = "module-name";
 
-	@SuppressWarnings( "StringOperationCanBeSimplified" )
-	String CLASS_NAME = new String();
+	String CLASS_NAME = "class-name";
 
-	@SuppressWarnings( "StringOperationCanBeSimplified" )
-	String METHOD_NAME = new String();
+	String METHOD_NAME = "method-name";
 
 	Level getLevel();
 
@@ -81,13 +76,5 @@ public interface LogData {
 	 * the immutable empty metadata instance is returned.
 	 */
 	Map<Object, Object> getMetadata();
-
-	//	/**
-	//	 * Returns the single argument to be logged directly when no arguments were provided.
-	//	 *
-	//	 * @throws IllegalStateException if no single literal argument is available (ie, when a template
-	//	 *     context exists).
-	//	 */
-	//	Object getLiteralArgument();
 
 }

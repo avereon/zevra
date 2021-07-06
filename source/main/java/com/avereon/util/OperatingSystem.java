@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Flogger
+@CustomLog
 public class OperatingSystem {
 
 	public enum Family {

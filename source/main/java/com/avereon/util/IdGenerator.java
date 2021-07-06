@@ -1,12 +1,12 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 
-@Flogger
+@CustomLog
 public class IdGenerator {
 
 	private static final Random RANDOM = new Random();

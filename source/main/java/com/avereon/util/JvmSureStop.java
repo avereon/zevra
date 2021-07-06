@@ -1,6 +1,6 @@
 package com.avereon.util;
 
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author soderquistmv
  */
-@Flogger
+@CustomLog
 public class JvmSureStop extends Thread {
 
 	/**
@@ -25,7 +25,7 @@ public class JvmSureStop extends Thread {
 	 */
 	public static final int DEFAULT_WAIT_DELAY = 10000;
 
-	private int delay;
+	private final int delay;
 
 	public JvmSureStop() {
 		this( DEFAULT_WAIT_DELAY );

@@ -9,7 +9,7 @@ import com.avereon.settings.SettingsEvent;
 import com.avereon.transaction.Txn;
 import com.avereon.transaction.TxnException;
 import com.avereon.util.TypeReference;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.util.*;
 
@@ -17,10 +17,8 @@ import java.util.*;
  * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the
  * keys common to all nodes, if any.
  */
-@Flogger
+@CustomLog
 public class MultiNodeSettings implements Settings {
-
-	//private static final System.Logger log = Log.get();
 
 	private final Set<? extends Node> nodes;
 
@@ -35,11 +33,7 @@ public class MultiNodeSettings implements Settings {
 		this.eventHub = new EventHub();
 
 		// NodeEvent.VALUE_CHANGED events need to be mapped to SettingsEvent.CHANGED events
-		nodes.forEach( n -> {
-			n.register( NodeEvent.VALUE_CHANGED, e -> {
-				eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, ".", e.getKey(), e.getNewValue() ) );
-			} );
-		} );
+		nodes.forEach( n -> n.register( NodeEvent.VALUE_CHANGED, e -> eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, ".", e.getKey(), e.getNewValue() ) ) ) );
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.avereon.log;
 
 import com.avereon.log.provider.LoggerWrapper;
-import com.google.common.flogger.backend.Platform;
 
 import java.util.logging.Level;
 
@@ -25,7 +24,7 @@ public final class Logger extends AbstractLogger<Logger.Api> {
 	@Override
 	public Api at( Level level ) {
 		boolean isLoggable = isLoggable( level );
-		boolean isForced = Platform.shouldForceLogging( getName(), level, isLoggable );
+		boolean isForced = false;
 		return (isLoggable || isForced) ? new Context( level, isForced ) : NO_OP;
 	}
 

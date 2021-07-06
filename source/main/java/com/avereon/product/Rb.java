@@ -1,7 +1,7 @@
 package com.avereon.product;
 
 import com.avereon.util.JavaUtil;
-import lombok.extern.flogger.Flogger;
+import lombok.CustomLog;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -10,7 +10,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Flogger
+@CustomLog
 public class Rb {
 
 	private static final String DEFAULT_PATH = "bundles";
