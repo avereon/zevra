@@ -1,15 +1,15 @@
 package com.avereon.log;
 
-import com.avereon.log.provider.LoggerProvider;
+import com.avereon.log.provider.LoggerWrapper;
 
 import java.util.Objects;
 import java.util.logging.Level;
 
 public abstract class AbstractLogger<API extends LogApi<API>> {
 
-	private final LoggerProvider provider;
+	private final LoggerWrapper provider;
 
-	protected AbstractLogger( LoggerProvider provider ) {
+	protected AbstractLogger( LoggerWrapper provider ) {
 		this.provider = Objects.requireNonNull( provider );
 	}
 
@@ -67,7 +67,7 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 		return provider.isLoggable( level );
 	}
 
-	final LoggerProvider getProvider() {
+	final LoggerWrapper getProvider() {
 		return provider;
 	}
 

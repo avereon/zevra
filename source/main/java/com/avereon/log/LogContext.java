@@ -1,6 +1,6 @@
 package com.avereon.log;
 
-import com.avereon.log.provider.SystemProvider;
+import com.avereon.log.provider.LoggingProvider;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -22,13 +22,13 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 
 	/**
 	 * Creates a logging context with the specified level, and with a timestamp
-	 * obtained from the configured logging {@link SystemProvider}.
+	 * obtained from the configured logging {@link LoggingProvider}.
 	 *
 	 * @param level the log level for this log statement.
 	 * @param isForced whether to force this log statement (see {@link #wasForced()} for details).
 	 */
 	protected LogContext( Level level, boolean isForced ) {
-		this( level, isForced, SystemProvider.getCurrentTimeNanos() );
+		this( level, isForced, LoggingProvider.getCurrentTimeNanos() );
 	}
 
 	/**
@@ -111,7 +111,7 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 	}
 
 	public final boolean isLiteral() {
-		return messageParameters == null;
+		return messageParameters == null || messageParameters.length == 0;
 	}
 
 	@Override
@@ -134,78 +134,78 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 
 	@Override
 	public final void log() {
-		if( shouldLog() ) logImpl( "" );
+		if( shouldLog() ) doLog( "" );
 	}
 
 	@Override
 	public final void log( String msg ) {
-		if( shouldLog() ) logImpl( msg );
+		if( shouldLog() ) doLog( msg );
 	}
 
 	@Override
 	public final void log( String message, Object p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log(
 		String message, Object p1, Object p2, Object p3
 	) {
-		if( shouldLog() ) logImpl( message, p1, p2, p3 );
+		if( shouldLog() ) doLog( message, p1, p2, p3 );
 	}
 
 	@Override
 	public final void log(
 		String message, Object p1, Object p2, Object p3, Object p4
 	) {
-		if( shouldLog() ) logImpl( message, p1, p2, p3, p4 );
+		if( shouldLog() ) doLog( message, p1, p2, p3, p4 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5, p6 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5, p6 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5, p6, p7 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5, p6, p7 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5, p6, p7, p8 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5, p6, p7, p8 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5, p6, p7, p8, p9 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5, p6, p7, p8, p9 );
 	}
 
 	@Override
 	public final void log(
 		String msg, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9, Object p10
 	) {
-		if( shouldLog() ) logImpl( msg, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 );
+		if( shouldLog() ) doLog( msg, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 );
 	}
 
 	@Override
@@ -226,440 +226,440 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 			params[ 8 ] = p9;
 			params[ 9 ] = p10;
 			System.arraycopy( rest, 0, params, 10, rest.length );
-			logImpl( msg, params );
+			doLog( msg, params );
 		}
 	}
 
 	@Override
 	public final void log( String message, char p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, byte p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, short p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, int p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, long p1 ) {
-		if( shouldLog() ) logImpl( message, p1 );
+		if( shouldLog() ) doLog( message, p1 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, Object p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, Object p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, boolean p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, char p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, byte p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, short p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, int p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, long p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, float p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, boolean p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, char p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, byte p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, short p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, int p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, long p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, float p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void log( String message, double p1, double p2 ) {
-		if( shouldLog() ) logImpl( message, p1, p2 );
+		if( shouldLog() ) doLog( message, p1, p2 );
 	}
 
 	@Override
 	public final void logVarargs( String message, Object[] params ) {
 		if( shouldLog() ) {
 			// Copy the varargs array (because we didn't create it and this is quite a rare case).
-			logImpl( message, Arrays.copyOf( params, params.length ) );
+			doLog( message, Arrays.copyOf( params, params.length ) );
 		}
 	}
 
@@ -672,26 +672,21 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 		return getLogger().isLoggable( level );
 	}
 
-	private void logImpl( String message, Object... args ) {
+	private void doLog( String message, Object... args ) {
 		this.message = message;
 		this.messageParameters = args;
 
-		// Evaluate any (rare) LazyArg instances early. This may throw exceptions from user code, but
+		// Evaluate any (rare) LazyEval instances early. This may throw exceptions from user code, but
 		// it seems reasonable to propagate them in this case (they would have been thrown if the
 		// argument was evaluated at the call site anyway).
-		//		for (int n = 0; n < args.length; n++) {
-		//			if (args[n] instanceof LazyArg ) {
-		//				args[n] = ((LazyArg<?>) args[n]).evaluate();
-		//			}
-		//		}
+		for( int n = 0; n < args.length; n++ ) {
+			if( args[ n ] instanceof LazyEval ) {
+				args[ n ] = ((LazyEval<?>)args[ n ]).evaluate();
+			}
+		}
 
-		// Using "!=" is fast and sufficient here because the only real case this should be skipping
-		// is when we called log(String) or log(), which should not result in a template being created.
-		// DO NOT replace this with a string instance which can be interned, or use equals() here,
-		// since that could mistakenly treat other calls to log(String, Object...) incorrectly.
-		//		if (message != LITERAL_VALUE_MESSAGE) {
-		//			this.templateContext = new TemplateContext(getMessageParser(), message);
-		//		}
+
+		if( !isLiteral() ) this.message = String.format( message, args );
 
 		getLogger().write( this );
 	}

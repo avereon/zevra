@@ -5,7 +5,7 @@ import com.avereon.log.LoggingException;
 
 import java.util.logging.Level;
 
-public interface LoggerProvider {
+public interface LoggerWrapper {
 
 	/**
 	 * Get the logger name or {@code null} if not given.

@@ -1,14 +1,14 @@
 package com.avereon.log.java;
 
 import com.avereon.log.LogData;
-import com.avereon.log.provider.LoggerProvider;
+import com.avereon.log.provider.LoggerWrapper;
 
 import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class JavaLoggingLoggerWrapper implements LoggerProvider {
+public class JavaLoggingLoggerWrapper implements LoggerWrapper {
 
 	private static final long ONE_BILLION = 1000000000;
 

@@ -1,3 +1,6 @@
+import com.avereon.log.java.JavaLoggingLoggingProvider;
+import com.avereon.log.provider.LoggingProvider;
+
 module com.avereon.zevra {
 
 	requires static java.logging;
@@ -18,4 +21,7 @@ module com.avereon.zevra {
 	exports com.avereon.transaction;
 	exports com.avereon.util;
 
+	uses LoggingProvider;
+
+	provides LoggingProvider with JavaLoggingLoggingProvider;
 }

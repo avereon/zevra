@@ -1,10 +1,7 @@
 package com.avereon.log;
 
-import com.avereon.log.provider.LoggerProvider;
-import com.google.common.flogger.FluentLogger;
+import com.avereon.log.provider.LoggerWrapper;
 import com.google.common.flogger.backend.Platform;
-import com.google.common.flogger.parser.DefaultPrintfMessageParser;
-import com.google.common.flogger.parser.MessageParser;
 
 import java.util.logging.Level;
 
@@ -21,7 +18,7 @@ public final class Logger extends AbstractLogger<Logger.Api> {
 	static final NoOp NO_OP = new NoOp();
 
 	// VisibleForTesting
-	Logger( LoggerProvider provider ) {
+	Logger( LoggerWrapper provider ) {
 		super( provider );
 	}
 

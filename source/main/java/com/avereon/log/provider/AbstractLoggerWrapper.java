@@ -2,7 +2,7 @@ package com.avereon.log.provider;
 
 import java.util.logging.Level;
 
-public abstract class AbstractLoggerWrapper implements LoggerProvider{
+public abstract class AbstractLoggerWrapper implements LoggerWrapper {
 
 	@Override
 	public String getLoggerName() {
