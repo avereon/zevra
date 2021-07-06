@@ -18,9 +18,7 @@ public interface LogApi<API extends LogApi<API>> {
 
 	//API withStackTrace( StackSize size);
 
-	//<T> API with(MetadataKey<T> key, T value);
-
-	//<T> API with(MetadataKey<Boolean> key);
+	<T> API with( Object key, T value );
 
 	//API withInjectedLogSite(LogSite logSite);
 
@@ -28,7 +26,7 @@ public interface LogApi<API extends LogApi<API>> {
 
 	boolean isEnabled();
 
-	//void logVarargs( String message, Object... args );
+	boolean isLiteral();
 
 	void log();
 
@@ -332,6 +330,8 @@ public interface LogApi<API extends LogApi<API>> {
 	/** Logs a message with formatted arguments (see {@link #log(String, Object)} for details). */
 	void log( String message, double p1, double p2 );
 
+	void logVarargs( String message, Object... args );
+
 	public static class NoOp<API extends LogApi<API>> implements LogApi<API> {
 
 		@SuppressWarnings( "unchecked" )
@@ -339,50 +339,25 @@ public interface LogApi<API extends LogApi<API>> {
 			return (API)this;
 		}
 
-		//		@Override
-		//		public API withInjectedLogSite( LogSite logSite ) {
-		//			return noOp();
-		//		}
-
-		//		@Override
-		//		public API withInjectedLogSite(			String internalClassName, String methodName, int encodedLineNumber, String sourceFileName		) {
-		//			return noOp();
-		//		}
-
 		@Override
 		public final boolean isEnabled() {
 			return false;
 		}
 
-		//		@Override
-		//		public final <T> API with( MetadataKey<T> key, T value ) {
-		//			// Identical to the check in LogContext for consistency.
-		//			checkNotNull( key, "metadata key" );
-		//			return noOp();
-		//		}
+		@Override
+		public boolean isLiteral() {
+			return true;
+		}
 
-		//		@Override
-		//		public final <T> API with( MetadataKey<Boolean> key ) {
-		//			// Do this inline rather than calling with(key, true) to keep no-op minimal.
-		//			checkNotNull( key, "metadata key" );
-		//			return noOp();
-		//		}
+		@Override
+		public final <T> API with( Object key, T value ) {
+			return noOp();
+		}
 
 		@Override
 		public final API withCause( Throwable cause ) {
 			return noOp();
 		}
-
-		//		@Override
-		//		public final API every( int n ) {
-		//			return noOp();
-		//		}
-
-		//		@Override
-		//		public final API atMostEvery( int n, TimeUnit unit ) {
-		//			checkNotNull( unit, "time unit" );
-		//			return noOp();
-		//		}
 
 		//		@Override
 		//		public API withStackTrace( StackSize size ) {
@@ -391,8 +366,8 @@ public interface LogApi<API extends LogApi<API>> {
 		//			return noOp();
 		//		}
 
-		//		@Override
-		//		public final void logVarargs( String message, Object[] params ) {}
+				@Override
+				public final void logVarargs( String message, Object[] params ) {}
 
 		@Override
 		public final void log() {}

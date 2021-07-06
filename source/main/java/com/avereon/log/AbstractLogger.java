@@ -1,18 +1,23 @@
 package com.avereon.log;
 
+import com.avereon.log.provider.LoggerProvider;
+
 import java.util.Objects;
 import java.util.logging.Level;
 
 public abstract class AbstractLogger<API extends LogApi<API>> {
 
-	private final LoggerBackend backend;
+	private final LoggerProvider provider;
 
-	protected AbstractLogger( LoggerBackend backend ) {
-		this.backend = Objects.requireNonNull( backend );
+	protected AbstractLogger( LoggerProvider provider ) {
+		this.provider = Objects.requireNonNull( provider );
 	}
 
 	public abstract API at( Level level );
 
+	// Java Logging convenience methods ------------------------------------------
+
+	/** A convenience method for at({@link Level#SEVERE}). */
 	public final API atSevere() {
 		return at( Level.SEVERE );
 	}
@@ -51,7 +56,7 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 	 * Returns the name of this logger.
 	 */
 	protected String getName() {
-		return backend.getLoggerName();
+		return provider.getLoggerName();
 	}
 
 	/**
@@ -59,20 +64,20 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 	 * check for "loggability" should use {@code logger.atLevel().isEnabled()} instead.
 	 */
 	protected final boolean isLoggable( Level level ) {
-		return backend.isLoggable( level );
+		return provider.isLoggable( level );
 	}
 
-	final LoggerBackend getBackend() {
-		return backend;
+	final LoggerProvider getProvider() {
+		return provider;
 	}
 
 	final void write( LogData data ) {
 		Objects.requireNonNull( data );
 		try {
-			backend.log( data );
+			provider.log( data );
 		} catch( RuntimeException error ) {
 			try {
-				backend.handleError( error, data );
+				provider.handleError( data, error );
 			} catch( LoggingException allowed ) {
 				// Bypass the catch-all if the exception is deliberately created during error handling.
 				throw allowed;
