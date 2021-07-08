@@ -28,10 +28,7 @@ public interface LoggerWrapper {
 	 * Handles an error in a log statement. Errors passed into this method are
 	 * expected to have only three distinct causes:
 	 * <ol>
-	 *   <li>Bad format strings in log messages (e.g. {@code "foo=%Q"}. These will
-	 *   always be instances of
-	 *   {@link com.google.common.flogger.parser.ParseException ParseException}
-	 *   and contain human readable error messages describing the problem.
+	 *   <li>Bad format strings in log messages (e.g. {@code "foo=%Q"}.
 	 *   <li>A provider optionally choosing not to handle errors from user code
 	 *   during formatting. This is not recommended (see below) but may be useful
 	 *   in testing or debugging.
