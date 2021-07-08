@@ -665,8 +665,13 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 	}
 
 	private void addMetadata( Object key, Object value ) {
+		Objects.requireNonNull( key, "key" );
 		if( metadata == null ) metadata = new ConcurrentHashMap<>();
-		metadata.put( key, value );
+		if( value == null ) {
+			metadata.remove( key );
+		} else {
+			metadata.put( key, value );
+		}
 	}
 
 	private boolean shouldLog() {
