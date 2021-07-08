@@ -708,7 +708,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	/**
-	 * If the specified key is present (not {@link null}), attempts to recompute
+	 * If the specified key is present (not null), attempts to recompute
 	 * its value using the given mapping function and enters it into this map. If
 	 * the new value is {@code null} the entry is removed.
 	 *
