@@ -1,4 +1,8 @@
-package com.avereon.util;
+package com.avereon.log;
+
+import com.avereon.util.FileUtil;
+import com.avereon.util.LogFlag;
+import com.avereon.util.ProgramFormatter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,33 +12,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.ResourceBundle;
-import java.util.function.Supplier;
 import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-@Deprecated
 public class Log {
-
-	public static final System.Logger.Level OFF = System.Logger.Level.OFF;
-
-	public static final System.Logger.Level ERROR = System.Logger.Level.ERROR;
-
-	public static final System.Logger.Level WARN = System.Logger.Level.WARNING;
-
-	public static final System.Logger.Level INFO = System.Logger.Level.INFO;
-
-	public static final System.Logger.Level DEBUG = System.Logger.Level.DEBUG;
-
-	public static final System.Logger.Level TRACE = System.Logger.Level.TRACE;
-
-	public static final System.Logger.Level ALL = System.Logger.Level.ALL;
-
-	@Deprecated
-	public static System.Logger get() {
-		return new SystemLoggerWrapper( System.getLogger( JavaUtil.getCallingClassName() ) );
-	}
 
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters ) {
 		configureLogging( source, parameters, null, null );
@@ -49,10 +30,10 @@ public class Log {
 	 *   <li>Sets the source package log level to the parameter log level</li>
 	 * </ol>
 	 *
-	 * @param source
-	 * @param parameters
-	 * @param logFolder
-	 * @param defaultFile
+	 * @param source The object configuring the logging
+	 * @param parameters Command line parameters that may contain log parameters
+	 * @param logFolder The folder where to publish log files
+	 * @param defaultFile The default log file name pattern
 	 */
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String defaultFile ) {
 		// Logging level conversion
@@ -66,7 +47,7 @@ public class Log {
 		// TRACE -> FINEST
 
 		StringBuilder builder = new StringBuilder();
-		String level = convertToJavaLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO ) ).getName();
+		String level = LogFlag.toLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO ) ).getName();
 		String filePattern = parameters.get( LogFlag.LOG_FILE, defaultFile );
 
 		boolean nameOnly = filePattern != null && !filePattern.contains( File.separator );
@@ -120,7 +101,7 @@ public class Log {
 
 		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( convertToJavaLogLevel( LogFlag.WARN ).getName() ).append( "\n" );
+		builder.append( ".level=" ).append( LogFlag.toLogLevel( LogFlag.WARN ).getName() ).append( "\n" );
 
 		// NOTE Log levels can be customized with Log.setPackageLogLevel()
 
@@ -150,7 +131,7 @@ public class Log {
 	 */
 	public static void setPackageLogLevel( String packageName, String levelName ) {
 		StringBuilder builder = new StringBuilder();
-		String level = convertToJavaLogLevel( levelName ).getName();
+		String level = LogFlag.toLogLevel( levelName ).getName();
 
 		// Set the program logger level
 		builder.append( packageName ).append( ".level=" ).append( level ).append( "\n" );
@@ -187,81 +168,6 @@ public class Log {
 
 	static String expandFilePattern( String path ) {
 		return path.replace( "%h", System.getProperty( "user.home" ) );
-	}
-
-	public static Level convertToJavaLogLevel( String level ) {
-		switch( level == null ? LogFlag.NONE : level.toLowerCase() ) {
-			case LogFlag.ERROR: {
-				return Level.SEVERE;
-			}
-			case LogFlag.WARN: {
-				return Level.WARNING;
-			}
-			case LogFlag.INFO: {
-				return Level.INFO;
-			}
-			case LogFlag.DEBUG: {
-				return Level.FINE;
-			}
-			case LogFlag.TRACE: {
-				return Level.FINEST;
-			}
-			case LogFlag.ALL: {
-				return Level.ALL;
-			}
-			default: {
-				return Level.OFF;
-			}
-		}
-	}
-
-	/**
-	 * This wrapper is specifically to address the situation where the
-	 * {@link #log(Level, Object)} method receives a Throwable as the object.
-	 */
-	private static class SystemLoggerWrapper implements System.Logger {
-
-		private System.Logger logger;
-
-		public SystemLoggerWrapper( System.Logger logger ) {
-			this.logger = logger;
-		}
-
-		@Override
-		public String getName() {return logger.getName();}
-
-		@Override
-		public boolean isLoggable( Level level ) {return logger.isLoggable( level );}
-
-		@Override
-		public void log( Level level, String msg ) {logger.log( level, msg );}
-
-		@Override
-		public void log( Level level, Supplier<String> msgSupplier ) {logger.log( level, msgSupplier );}
-
-		@Override
-		public void log( Level level, Object obj ) {
-			if( obj instanceof Throwable ) {
-				logger.log( level, (String)null, (Throwable)obj );
-			} else {
-				logger.log( level, obj );
-			}
-		}
-
-		@Override
-		public void log( Level level, String msg, Throwable thrown ) {logger.log( level, msg, thrown );}
-
-		@Override
-		public void log( Level level, Supplier<String> msgSupplier, Throwable thrown ) {logger.log( level, msgSupplier, thrown );}
-
-		@Override
-		public void log( Level level, String format, Object... params ) {logger.log( level, format, params );}
-
-		@Override
-		public void log( Level level, ResourceBundle bundle, String msg, Throwable thrown ) {logger.log( level, bundle, msg, thrown );}
-
-		@Override
-		public void log( Level level, ResourceBundle bundle, String format, Object... params ) {logger.log( level, bundle, format, params );}
 	}
 
 }

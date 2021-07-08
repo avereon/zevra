@@ -1,4 +1,4 @@
-import com.avereon.log.java.JavaLoggingLoggingProvider;
+import com.avereon.log.java.JavaLoggingProvider;
 import com.avereon.log.provider.LoggingProvider;
 
 module com.avereon.zevra {
@@ -23,5 +23,5 @@ module com.avereon.zevra {
 
 	uses LoggingProvider;
 
-	provides LoggingProvider with JavaLoggingLoggingProvider;
+	provides LoggingProvider with JavaLoggingProvider;
 }

@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import java.util.logging.Level;
+
 public interface LogFlag {
 
 	/**
@@ -32,9 +34,41 @@ public interface LogFlag {
 
 	String INFO = "info";
 
+	String CONFIG = "config";
+
 	String DEBUG = "debug";
 
 	String TRACE = "trace";
 
 	String ALL = "all";
+
+	static Level toLogLevel( String level ) {
+		switch( level == null ? LogFlag.NONE : level.toLowerCase() ) {
+			case LogFlag.ERROR: {
+				return Level.SEVERE;
+			}
+			case LogFlag.WARN: {
+				return Level.WARNING;
+			}
+			case LogFlag.INFO: {
+				return Level.INFO;
+			}
+			case LogFlag.CONFIG: {
+				return Level.CONFIG;
+			}
+			case LogFlag.DEBUG: {
+				return Level.FINE;
+			}
+			case LogFlag.TRACE: {
+				return Level.FINEST;
+			}
+			case LogFlag.ALL: {
+				return Level.ALL;
+			}
+			default: {
+				return Level.OFF;
+			}
+		}
+	}
+
 }

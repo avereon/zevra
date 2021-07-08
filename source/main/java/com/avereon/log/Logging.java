@@ -1,11 +1,11 @@
 package com.avereon.log;
 
-import com.avereon.log.java.JavaLoggingLoggingProvider;
+import com.avereon.log.java.JavaLoggingProvider;
 import com.avereon.log.provider.LoggingProvider;
 
 public class Logging {
 
-	private static LoggingProvider provider = new JavaLoggingLoggingProvider();
+	private static LoggingProvider provider = new JavaLoggingProvider();
 
 	public static LoggingProvider getLoggingProvider() {
 		return provider;

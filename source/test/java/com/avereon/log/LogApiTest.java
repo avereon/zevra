@@ -1,9 +1,11 @@
 package com.avereon.log;
 
+import com.avereon.log.java.JavaLoggingProvider;
 import com.avereon.log.provider.AbstractLoggerWrapper;
 import com.avereon.log.provider.AbstractLoggingProvider;
 import com.avereon.log.provider.LoggerWrapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;
@@ -13,19 +15,23 @@ import static org.hamcrest.Matchers.is;
 
 public class LogApiTest {
 
-	private static final TestWrapper wrapper;
+	private static TestWrapper wrapper;
 
-	private static final Logger log;
+	private static Logger log;
 
 	static {
+	}
+
+	@BeforeAll
+	static void setup() {
 		Logging.setLoggingProvider( new TestProvider() );
 		wrapper = (TestWrapper)Logging.getLoggingProvider().getLoggerWrapper( "" );
 		log = new Logger( wrapper );
 	}
 
-	@BeforeEach
-	void setup() {
-		Logging.setLoggingProvider( new TestProvider() );
+	@AfterAll
+	static void teardown() {
+		Logging.setLoggingProvider( new JavaLoggingProvider() );
 	}
 
 	@Test

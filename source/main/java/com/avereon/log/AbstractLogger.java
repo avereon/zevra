@@ -22,9 +22,29 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 		return at( Level.SEVERE );
 	}
 
+	/** A convenience method for at({@link Level#SEVERE}). */
+	public final API atError() {
+		return at( Level.SEVERE );
+	}
+
+	/** A convenience method for at({@link Level#SEVERE}). */
+	public final API atError( Throwable cause ) {
+		return at( Level.SEVERE ).withCause( cause );
+	}
+
 	/** A convenience method for at({@link Level#WARNING}). */
 	public final API atWarning() {
 		return at( Level.WARNING );
+	}
+
+	/** A convenience method for at({@link Level#WARNING}). */
+	public final API atWarn() {
+		return at( Level.WARNING );
+	}
+
+	/** A convenience method for at({@link Level#WARNING}). */
+	public final API atWarn( Throwable cause ) {
+		return at( Level.WARNING ).withCause( cause );
 	}
 
 	/** A convenience method for at({@link Level#INFO}). */
@@ -42,8 +62,18 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 		return at( Level.FINE );
 	}
 
+	/** A convenience method for at({@link Level#FINE}). */
+	public final API atDebug() {
+		return at( Level.FINE );
+	}
+
 	/** A convenience method for at({@link Level#FINER}). */
 	public final API atFiner() {
+		return at( Level.FINER );
+	}
+
+	/** A convenience method for at({@link Level#FINER}). */
+	public final API atTrace() {
 		return at( Level.FINER );
 	}
 

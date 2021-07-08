@@ -1,5 +1,8 @@
-package com.avereon.util;
+package com.avereon.log;
 
+import com.avereon.util.LogFlag;
+import com.avereon.util.Parameters;
+import lombok.CustomLog;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +10,9 @@ import java.io.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@CustomLog
 public class LogTest {
 
 	private final String datePattern = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]";
@@ -23,23 +28,26 @@ public class LogTest {
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_LEVEL, LogFlag.ALL ) );
 		Log.setPackageLogLevel( getClass().getPackageName(), LogFlag.ALL );
 
+		assertTrue( log.atError().isEnabled() );
+		assertTrue( log.atWarn().isEnabled() );
+		assertTrue( log.atInfo().isEnabled() );
+		assertTrue( log.atDebug().isEnabled() );
+		assertTrue( log.atTrace().isEnabled() );
+
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream( output );
 		System.setErr( print );
 
-		System.Logger log = Log.get();
-		log.log( Log.ERROR, "ERROR" );
-		log.log( Log.WARN, "WARN" );
-		log.log( Log.INFO, "INFO" );
-		log.log( Log.DEBUG, "DEBUG" );
-		log.log( Log.TRACE, "TRACE" );
+		log.atError().log( "ERROR" );
+		log.atWarn().log( "WARN" );
+		log.atInfo().log( "INFO" );
+		log.atDebug().log( "DEBUG" );
+		log.atTrace().log( "TRACE" );
 
 		System.setErr( original );
 		assertThat( System.err, is( original ) );
 
-		String text = new String( output.toByteArray() );
-
-		BufferedReader reader = new BufferedReader( new StringReader( text ) );
+		BufferedReader reader = new BufferedReader( new StringReader( output.toString() ) );
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[E\\] .*ERROR $" ) );
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[W\\] .*WARN $" ) );
 		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[I\\] .*INFO $" ) );

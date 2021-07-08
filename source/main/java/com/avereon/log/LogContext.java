@@ -677,14 +677,15 @@ public abstract class LogContext<LOGGER extends AbstractLogger<API>, API extends
 		this.message = message;
 		this.messageParameters = parameters;
 
-		// Evaluate the LazeEval values
-		for( int n = 0; n < parameters.length; n++ ) {
-			if( parameters[ n ] instanceof LazyEval ) {
-				parameters[ n ] = ((LazyEval<?>)parameters[ n ]).evaluate();
+		if( !isLiteral() ) {
+			// Evaluate the LazeEval values
+			for( int n = 0; n < parameters.length; n++ ) {
+				if( parameters[ n ] instanceof LazyEval ) {
+					parameters[ n ] = ((LazyEval<?>)parameters[ n ]).evaluate();
+				}
 			}
+			this.message = String.format( message, parameters );
 		}
-
-		if( !isLiteral() ) this.message = String.format( message, parameters );
 
 		// Add extra metadata
 		addMetadata( MODULE_NAME, JavaUtil.getCallingModuleName() );
