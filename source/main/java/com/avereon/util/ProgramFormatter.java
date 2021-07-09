@@ -74,6 +74,10 @@ public class ProgramFormatter extends Formatter {
 				result = "[I]";
 				break;
 			}
+			case ("CONFIG"): {
+				result = "[C]";
+				break;
+			}
 			case ("FINE"): {
 				result = "[D]";
 				break;
@@ -83,7 +87,7 @@ public class ProgramFormatter extends Formatter {
 				break;
 			}
 			default: {
-				result = "[" + level.getName() + "]";
+				result = "[" + level.getName().charAt( 0 ) + "]";
 			}
 		}
 
