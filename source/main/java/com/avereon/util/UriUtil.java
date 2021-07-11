@@ -182,12 +182,13 @@ public final class UriUtil {
 		return fragment.substring( 0, index );
 	}
 
-	public static Map<String, String> parseQuery( URI uri ) {
-		if( uri == null ) return Map.of();
-		return parseQuery( uri.getQuery() );
+	public static String parseQuery( URI uri ) {
+		if( uri == null ) return null;
+		return uri.getQuery();
 	}
 
 	public static Map<String, String> parseQuery( String query ) {
+		System.err.println( "query=" + query );
 		if( query == null ) return Map.of();
 
 		Map<String, String> parameters = new HashMap<>();

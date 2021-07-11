@@ -191,15 +191,21 @@ class UriUtilTest {
 
 	@Test
 	void testParseQueryWithUri() {
-		assertThat( UriUtil.parseQuery( (URI)null ), is( Map.of() ) );
+		assertThat( UriUtil.parseQuery( (URI)null ), is( nullValue() ) );
 
 		URI uri = URI.create( "test:///path?attr1&attr2" );
-		Map<String, String> parameters = UriUtil.parseQuery( uri );
+		Map<String, String> parameters = UriUtil.parseQuery( uri.getQuery() );
 		assertThat( parameters.get( "attr1" ), is( "true" ) );
 		assertThat( parameters.get( "attr2" ), is( "true" ) );
 
 		uri = URI.create( "test:///path?attr1=value1&attr2=value2" );
-		parameters = UriUtil.parseQuery( uri );
+		parameters = UriUtil.parseQuery( uri.getQuery() );
+		assertThat( parameters.get( "attr1" ), is( "value1" ) );
+		assertThat( parameters.get( "attr2" ), is( "value2" ) );
+
+		uri = URI.create( "test:///path?attr1=value1&attr2=value2#fragment" );
+		parameters = UriUtil.parseQuery( uri.getQuery() );
+		assertThat( UriUtil.parseFragment( uri.getFragment() ), is( "fragment" ) );
 		assertThat( parameters.get( "attr1" ), is( "value1" ) );
 		assertThat( parameters.get( "attr2" ), is( "value2" ) );
 	}
