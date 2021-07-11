@@ -3,6 +3,7 @@ package com.avereon.util;
 import lombok.CustomLog;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -557,7 +558,7 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( String path ) {
-		return findValidFolder( Paths.get( path ) );
+		return findValidFolder( new File( URI.create( path ).getPath() ) );
 	}
 
 	/**

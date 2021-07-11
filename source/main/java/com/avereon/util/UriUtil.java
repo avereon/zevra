@@ -21,9 +21,10 @@ public final class UriUtil {
 	}
 
 	public static String parseName( URI uri ) {
-		String path = uri.getPath();
-		if( path.endsWith( "/" ) ) path = path.substring( 0, path.length() - 1 );
-		path = path.substring( path.lastIndexOf( "/" ) + 1 );
+		//		PathUtil.getName( uri.getPath() );
+		//		String path = uri.getPath();
+		//		if( path.endsWith( "/" ) ) path = path.substring( 0, path.length() - 1 );
+		String path = PathUtil.getName( uri.getPath() );
 		return path.isEmpty() ? "/" : path;
 	}
 
@@ -167,13 +168,27 @@ public final class UriUtil {
 		return uri;
 	}
 
-	public static Map<String, String> parseQuery( URI uri ) {
+	public static String parseFragment( URI uri ) {
 		if( uri == null ) return null;
+		return parseFragment( uri.getFragment() );
+	}
+
+	public static String parseFragment( String fragment ) {
+		if( fragment == null ) return null;
+
+		int index = fragment.indexOf( "?" );
+		if( index < 0 ) return fragment;
+
+		return fragment.substring( 0, index );
+	}
+
+	public static Map<String, String> parseQuery( URI uri ) {
+		if( uri == null ) return Map.of();
 		return parseQuery( uri.getQuery() );
 	}
 
 	public static Map<String, String> parseQuery( String query ) {
-		if( query == null ) return null;
+		if( query == null ) return Map.of();
 
 		Map<String, String> parameters = new HashMap<>();
 

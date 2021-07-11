@@ -58,10 +58,7 @@ class UriUtilTest {
 
 	@Test
 	void testAddToPath() {
-		assertThat(
-			UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ),
-			is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) )
-		);
+		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ), is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) );
 		assertThat( UriUtil.addToPath( URI.create( "/path/to" ), "resource" ), is( URI.create( "/path/to/resource" ) ) );
 		assertThat( UriUtil.addToPath( URI.create( "/path/of" ), "../to/resource" ), is( URI.create( "/path/to/resource" ) ) );
 	}
@@ -168,13 +165,33 @@ class UriUtilTest {
 
 	@Test
 	void testGetParentWithRootUri() {
-		assertThat( UriUtil.getParent( URI.create( "/") ).toString(), is( "/" ) );
-		assertThat( UriUtil.getParent( URI.create( "file:/") ).toString(), is( "file:/" ) );
+		assertThat( UriUtil.getParent( URI.create( "/" ) ).toString(), is( "/" ) );
+		assertThat( UriUtil.getParent( URI.create( "file:/" ) ).toString(), is( "file:/" ) );
+	}
+
+	@Test
+	void testParseFragmentWithUri() {
+		assertThat( UriUtil.parseFragment( (URI)null ), is( nullValue() ) );
+
+		URI uri = URI.create( "test:///path#fragment" );
+		assertThat( UriUtil.parseFragment( uri ), is( "fragment" ) );
+
+		uri = URI.create( "test:///path#fragment?attr1&attr2" );
+		assertThat( UriUtil.parseFragment( uri ), is( "fragment" ) );
+	}
+
+	@Test
+	void testParseFragmentWithString() {
+		assertThat( UriUtil.parseFragment( (String)null ), is( nullValue() ) );
+
+		assertThat( UriUtil.parseFragment( "fragment" ), is( "fragment" ) );
+
+		assertThat( UriUtil.parseFragment( "fragment?attr1&attr2" ), is( "fragment" ) );
 	}
 
 	@Test
 	void testParseQueryWithUri() {
-		assertThat( UriUtil.parseQuery( (URI)null ), is( nullValue() ) );
+		assertThat( UriUtil.parseQuery( (URI)null ), is( Map.of() ) );
 
 		URI uri = URI.create( "test:///path?attr1&attr2" );
 		Map<String, String> parameters = UriUtil.parseQuery( uri );
@@ -189,7 +206,7 @@ class UriUtilTest {
 
 	@Test
 	void testParseQueryWithString() {
-		assertThat( UriUtil.parseQuery( (String)null ), is( nullValue() ) );
+		assertThat( UriUtil.parseQuery( (String)null ), is( Map.of() ) );
 
 		Map<String, String> parameters = UriUtil.parseQuery( "attr1&attr2" );
 		assertThat( parameters.get( "attr1" ), is( "true" ) );
@@ -207,10 +224,7 @@ class UriUtilTest {
 
 	@Test
 	void testGetUriPartsWithHierarchicalUri() {
-		assertThat(
-			UriUtil.getParts( URI.create( "http://avereon.com/download/razor/product/card#latest" ) ),
-			contains( "http", "avereon.com", "", "download", "razor", "product", "card", "latest" )
-		);
+		assertThat( UriUtil.getParts( URI.create( "http://avereon.com/download/razor/product/card#latest" ) ), contains( "http", "avereon.com", "", "download", "razor", "product", "card", "latest" ) );
 		assertThat( UriUtil.getParts( URI.create( "/" ) ).size(), is( 2 ) );
 		assertThat( UriUtil.getParts( URI.create( "" ) ), contains( "" ) );
 	}

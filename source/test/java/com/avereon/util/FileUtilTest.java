@@ -441,6 +441,8 @@ class FileUtilTest {
 		Path path = FileUtil.getTempFolder();
 		assertTrue( Files.exists( path ) );
 
+		System.err.println( "path=" + path );
+
 		Path valid = FileUtil.findValidFolder( path );
 		assertTrue( Files.exists( valid ) );
 		assertTrue( Files.isDirectory( valid ) );
