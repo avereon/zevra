@@ -188,7 +188,6 @@ public final class UriUtil {
 	}
 
 	public static Map<String, String> parseQuery( String query ) {
-		System.err.println( "query=" + query );
 		if( query == null ) return Map.of();
 
 		Map<String, String> parameters = new HashMap<>();
