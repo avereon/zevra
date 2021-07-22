@@ -728,6 +728,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return values != null && values.containsKey( key );
 	}
 
+	public boolean isNotSet( String key ) {
+		return values == null || !values.containsKey( key );
+	}
+
 	/**
 	 * Get the value at the specific key.
 	 *

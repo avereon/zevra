@@ -728,6 +728,15 @@ class NodeTest {
 	}
 
 	@Test
+	void testIsNotSet() {
+		assertTrue( data.isNotSet( "key" ) );
+		data.setValue( "key", "value" );
+		assertFalse( data.isNotSet( "key" ) );
+		data.setValue( "key", null );
+		assertTrue( data.isNotSet( "key" ) );
+	}
+
+	@Test
 	void testValue() {
 		int index = 0;
 		assertThat( data, hasStates( false, false, 0, 0 ) );
