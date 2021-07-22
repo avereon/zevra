@@ -22,7 +22,9 @@ public class NodeSettings implements Settings {
 	public NodeSettings( Node node ) {
 		this.node = node;
 		this.eventHub = new EventHub();
-		node.register( NodeEvent.VALUE_CHANGED, e -> eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, this.getPath(), e.getKey(), e.getOldValue(), e.getNewValue() ) ) );
+		node.register( NodeEvent.VALUE_CHANGED, e -> {
+			if( e.getNode() == node ) eventHub.dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, this.getPath(), e.getKey(), e.getOldValue(), e.getNewValue() ) );
+		} );
 	}
 
 	@Override
