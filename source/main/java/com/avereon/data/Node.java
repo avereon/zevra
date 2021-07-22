@@ -724,6 +724,10 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return setValue( key, function.apply( key, value ) );
 	}
 
+	public boolean isSet( String key ) {
+		return values != null && values.containsKey( key );
+	}
+
 	/**
 	 * Get the value at the specific key.
 	 *
