@@ -113,12 +113,12 @@ public class ProcessCommands {
 	}
 
 	private static List<String> getParameterCommands( Parameters parameters, String... extraCommands ) {
-		Parameters extraParameters = Parameters.parse( extraCommands ).add( parameters );
+		Parameters allParameters = Parameters.create().add( parameters ).add( Parameters.parse( extraCommands ) );
 
 		// Collect program flags
 		Map<String, List<String>> flags = new HashMap<>();
-		for( String name : extraParameters.getFlags() ) {
-			flags.put( name, extraParameters.getValues( name ) );
+		for( String name : allParameters.getFlags() ) {
+			flags.put( name, allParameters.getValues( name ) );
 		}
 
 		List<String> commands = new ArrayList<>();
@@ -131,7 +131,7 @@ public class ProcessCommands {
 		}
 
 		// Add the collected URIs
-		List<String> uris = extraParameters.getUris();
+		List<String> uris = allParameters.getUris();
 		if( uris.size() > 0 ) commands.addAll( uris );
 
 		return commands;
