@@ -68,7 +68,7 @@ public class Rb {
 			if( log.atFiner().isEnabled() ) {
 				log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( "Unable to find resource: %s", string );
 			} else {
-				log.atWarning().log( "Unable to find resource: %s", string );
+				log.atConfig().log( "Unable to find resource: %s", string );
 			}
 		}
 
@@ -87,7 +87,7 @@ public class Rb {
 			if( log.atFiner().isEnabled() ) {
 				log.atWarning().withCause( exception ).log( "Unable to find resource" );
 			} else {
-				log.atWarning().log( "Unable to find resource: %s", exception.getMessage() );
+				log.atConfig().log( "Unable to find resource: %s", exception.getMessage() );
 			}
 		}
 
