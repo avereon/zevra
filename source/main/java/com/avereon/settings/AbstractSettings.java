@@ -112,7 +112,7 @@ public abstract class AbstractSettings implements Settings {
 		String newValue = null;
 
 		if( value == null ) {
-			removeValue( key );
+			setValue( key, null );
 		} else if( outboundConverters.containsKey( value.getClass() ) ) {
 			setValue( key, newValue = outboundConverters.get( value.getClass() ).convert( value ) );
 		} else if( value instanceof Collection || value instanceof Map ) {
@@ -222,19 +222,6 @@ public abstract class AbstractSettings implements Settings {
 	 */
 	protected void setCollection( String key, String value ) {
 		setValue( key, value );
-	}
-
-	/**
-	 * Override this method to optimize removing a value without knowing what
-	 * category it belongs to.
-	 *
-	 * @param key The value key
-	 */
-	protected void removeValue( String key ) {
-		setValue( key, null );
-		setCollection( key, null );
-		setArray( key, null );
-		setBean( key, null );
 	}
 
 	protected String marshallValue( Object value ) {
