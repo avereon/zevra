@@ -163,6 +163,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	private List<String> naturalKeyList;
 
 	/**
+	 * The set of value keys that are used to compute hashCode and equals.
+	 */
+	private Set<String> hashEqualsKeyList;
+
+	/**
 	 * The set of value keys intentionally allowed to modify the node.
 	 */
 	private Set<String> includedModifyingKeySet;
@@ -465,35 +470,30 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( object == null || this.getClass() != object.getClass() ) return false;
 
 		Node that = (Node)object;
-		if( primaryKeyList != null ) {
-			for( String key : primaryKeyList ) {
-				if( !Objects.equals( this.getValue( key ), that.getValue( key ) ) ) return false;
-			}
-		}
-		if( naturalKeyList != null ) {
-			for( String key : naturalKeyList ) {
-				if( !Objects.equals( this.getValue( key ), that.getValue( key ) ) ) return false;
-			}
+		if( hashEqualsKeyList == null ) {
+			hashEqualsKeyList = new HashSet<>();
+			if( primaryKeyList != null ) hashEqualsKeyList.addAll( primaryKeyList );
+			if( naturalKeyList != null ) hashEqualsKeyList.addAll( naturalKeyList );
 		}
 
-		return true;
+		Set<String> mismatchedKeys = hashEqualsKeyList.stream().filter( k -> !Objects.equals( this.getValue( k ), that.getValue( k ) ) ).collect( Collectors.toSet() );
+
+		return mismatchedKeys.isEmpty();
 	}
 
 	@Override
 	public int hashCode() {
 		int hashcode = 0;
 
-		if( primaryKeyList != null ) {
-			for( String key : primaryKeyList ) {
-				Object value = getValue( key );
-				if( value != null ) hashcode ^= value.hashCode();
-			}
+		if( hashEqualsKeyList == null ) {
+			hashEqualsKeyList = new HashSet<>();
+			if( primaryKeyList != null ) hashEqualsKeyList.addAll( primaryKeyList );
+			if( naturalKeyList != null ) hashEqualsKeyList.addAll( naturalKeyList );
 		}
-		if( naturalKeyList != null ) {
-			for( String key : naturalKeyList ) {
-				Object value = getValue( key );
-				if( value != null ) hashcode ^= value.hashCode();
-			}
+
+		for( String key : hashEqualsKeyList ) {
+			Object value = getValue( key );
+			if( value != null ) hashcode ^= value.hashCode();
 		}
 
 		return hashcode == 0 ? super.hashCode() : hashcode;
@@ -527,6 +527,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	protected void definePrimaryKey( String... keys ) {
 		primaryKeyList = List.of( keys );
+		hashEqualsKeyList = null;
 	}
 
 	protected List<String> getNaturalKey() {
@@ -541,6 +542,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	protected void defineNaturalKey( String... keys ) {
 		naturalKeyList = List.of( keys );
+		hashEqualsKeyList = null;
 	}
 
 	protected Set<String> getReadOnlyKeys() {
