@@ -465,20 +465,30 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return builder.toString();
 	}
 
+	public boolean equals( Object object, String... keys ) {
+		return equals( object, Set.of( keys ) );
+	}
+
+	public boolean equals( Object object, Set<String> keys ) {
+		if( object == null || this.getClass() != object.getClass() ) return false;
+
+		Node that = (Node)object;
+		Set<String> mismatchedKeys = keys.stream().filter( k -> !Objects.equals( this.getValue( k ), that.getValue( k ) ) ).collect( Collectors.toSet() );
+
+		return mismatchedKeys.isEmpty();
+	}
+
 	@Override
 	public boolean equals( Object object ) {
 		if( object == null || this.getClass() != object.getClass() ) return false;
 
-		Node that = (Node)object;
 		if( hashEqualsKeyList == null ) {
 			hashEqualsKeyList = new HashSet<>();
 			if( primaryKeyList != null ) hashEqualsKeyList.addAll( primaryKeyList );
 			if( naturalKeyList != null ) hashEqualsKeyList.addAll( naturalKeyList );
 		}
 
-		Set<String> mismatchedKeys = hashEqualsKeyList.stream().filter( k -> !Objects.equals( this.getValue( k ), that.getValue( k ) ) ).collect( Collectors.toSet() );
-
-		return mismatchedKeys.isEmpty();
+		return equals( object, hashEqualsKeyList );
 	}
 
 	@Override
