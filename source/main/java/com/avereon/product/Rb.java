@@ -40,59 +40,66 @@ public class Rb {
 
 	public static String getPath( Product product, String path ) {
 		String bundlePath = productPaths.get( product );
-		if( bundlePath == null ) log.atWarning().log( "Path missing for product: %s", product.getClass().getName() );
+		if( bundlePath == null ) log.atWarning().log( "Product RB not registered: %s", product.getClass().getName() );
 		return path.startsWith( "/" ) ? path : bundlePath + "/" + path;
 	}
 
 	public static String text( String bundleKey, String valueKey, Object... values ) {
-		return getText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, values );
+		return doGetText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, false, null, values );
 	}
 
 	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
-		return getText( product, DEFAULT_PATH, bundleKey, valueKey, values );
+		return doGetText( product, DEFAULT_PATH, bundleKey, valueKey, false, null, values );
 	}
 
 	public static String textOr( String bundleKey, String valueKey, String other, Object... values ) {
-		return getTextOr( getProduct(), DEFAULT_PATH, bundleKey, valueKey, other, values );
+		return doGetText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, true, other, values );
 	}
 
 	public static String textOr( Product product, String bundleKey, String valueKey, String other, Object... values ) {
-		return getTextOr( product, DEFAULT_PATH, bundleKey, valueKey, other, values );
+		return doGetText( product, DEFAULT_PATH, bundleKey, valueKey, true, other, values );
 	}
 
-	private static String getText( Product product, String path, String bundleKey, String valueKey, Object... values ) {
-		String string = getTextOr( product, path, bundleKey, valueKey, null, values );
+	private static String doGetText( Product product, String path, String bundleKey, String valueKey, boolean useOther, String other, Object... values ) {
+		return doGetText( product, product, path, bundleKey, valueKey, useOther, other, values );
+	}
+
+		private static String doGetText( final Product originalProduct, final Product product, final String path, final String bundleKey, final String valueKey, final boolean useOther, final String other, final Object... values ) {
+		if( product == null ) return other;
+
+		String string = null;
+		Product parent = product.getParent();
+		String rbPath = getPath( product, path ) + "/" + bundleKey;
+		String missingResourceMessage = originalProduct.getCard().getArtifact() + " > " + bundleKey + " > " + valueKey;
+
+		try {
+			ResourceBundle bundle = getResourceBundle( product, rbPath );
+			if( valueKey != null && bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
+		} catch( MissingResourceException exception ) {
+			if( parent == null ) {
+				log.atWarning().log( "Missing resource: %s", missingResourceMessage );
+				return null;
+			}
+		}
 
 		if( string == null ) {
-			string = product.getCard().getArtifact() + " > " + bundleKey + " > " + valueKey;
-			if( log.atFiner().isEnabled() ) {
-				log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( "Unable to find resource: %s", string );
+			if( parent != null ) {
+				string = doGetText( originalProduct, parent, path, bundleKey, valueKey, useOther, other, values );
 			} else {
-				log.atConfig().log( "Unable to find resource: %s", string );
+				if( useOther ) {
+					string = other;
+				} else {
+					string = missingResourceMessage;
+					if( log.atDebug().isEnabled() ) {
+						log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( "Missing resource: %s", string );
+					} else {
+						log.atWarning().log( "Missing resource: %s", string );
+					}
+				}
 			}
 		}
 
 		return string;
-	}
-
-	private static String getTextOr( Product product, String path, String bundleKey, String valueKey, String other, Object... values ) {
-		if( valueKey == null || product == null ) return other;
-
-		String rbPath = getPath( product, path ) + "/" + bundleKey;
-
-		try {
-			ResourceBundle bundle = getResourceBundle( product, rbPath );
-			if( bundle.containsKey( valueKey ) ) return MessageFormat.format( bundle.getString( valueKey ), values );
-		} catch( MissingResourceException exception ) {
-			if( log.atFiner().isEnabled() ) {
-				log.atWarning().withCause( exception ).log( "Unable to find resource" );
-			} else {
-				log.atConfig().log( "Unable to find resource: %s", exception.getMessage() );
-			}
-		}
-
-		if( product.getParent() == null ) return other;
-		return getTextOr( product.getParent(), path, bundleKey, valueKey, other, values );
 	}
 
 	private static Product getProduct() {

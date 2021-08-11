@@ -19,7 +19,7 @@ public class MockProductA implements Product {
 
 	@Override
 	public ProductCard getCard() {
-		if( card == null ) card = new ProductCard().setArtifact( "mock" );
+		if( card == null ) card = new ProductCard().setArtifact( "mock-product-a" ).setName( "Mock Product A" );
 		return card;
 	}
 
