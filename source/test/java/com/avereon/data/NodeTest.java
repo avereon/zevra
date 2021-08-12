@@ -373,7 +373,7 @@ class NodeTest {
 		assertThat( data.getValue( "y" ), is( nullValue() ) );
 		assertThat( data.getValue( "z" ), is( nullValue() ) );
 		assertThat( data, hasStates( true, false, 1, 0 ) );
-		assertThat( events.get( 0 ), hasEventState( data, NodeEvent.VALUE_CHANGED, "x", null, 1.0 ) );
+		//assertThat( events.get( 0 ), hasEventState( data, NodeEvent.VALUE_CHANGED, "x", null, 1.0 ) );
 		assertEventState( data, index++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, "x", null, 1.0 );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
@@ -869,8 +869,8 @@ class NodeTest {
 		assertEventState( item, itemIndex++, NodeEvent.ADDED );
 		assertThat( item.getEventCount(), is( itemIndex ) );
 		assertEventState( data, index++, items, TxnEvent.COMMIT_BEGIN );
-		assertEventState( data, index++, NodeEvent.CHILD_ADDED, item.getTrueParent(), item.getCollectionId(), null, item );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, item.getTrueParent(), item.getCollectionId(), null, item );
+		assertEventState( data, index++, NodeEvent.CHILD_ADDED, item.getTrueParent(), "items", item.getCollectionId(), null, item );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, item.getTrueParent(), "items", item.getCollectionId(), null, item );
 		assertEventState( data, index++, NodeEvent.MODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( data, index++, items, TxnEvent.COMMIT_SUCCESS );
@@ -882,8 +882,8 @@ class NodeTest {
 		assertEventState( item, itemIndex++, NodeEvent.REMOVED );
 		assertThat( item.getEventCount(), is( itemIndex ) );
 		assertEventState( data, index++, items, TxnEvent.COMMIT_BEGIN );
-		assertEventState( data, index++, NodeEvent.CHILD_REMOVED, set, item.getCollectionId(), item, null );
-		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, set, item.getCollectionId(), item, null );
+		assertEventState( data, index++, NodeEvent.CHILD_REMOVED, set, "items", item.getCollectionId(), item, null );
+		assertEventState( data, index++, NodeEvent.VALUE_CHANGED, set, "items", item.getCollectionId(), item, null );
 		assertEventState( data, index++, NodeEvent.UNMODIFIED );
 		assertEventState( data, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( data, index++, items, TxnEvent.COMMIT_SUCCESS );
@@ -2537,13 +2537,19 @@ class NodeTest {
 	private static void assertEventState(
 		MockNode target, int index, EventType<? extends Event> type, String key, Object oldValue, Object newValue
 	) {
-		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( target, type, key, oldValue, newValue ) );
+		assertThat( target.getWatcher().getEvents().get( index ), hasEventState( target, type, null, key, oldValue, newValue ) );
 	}
 
 	private static void assertEventState(
 		MockNode parent, int index, EventType<? extends NodeEvent> type, Node node, String key, Object oldValue, Object newValue
 	) {
-		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, key, oldValue, newValue ) );
+		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, null, key, oldValue, newValue ) );
+	}
+
+	private static void assertEventState(
+		MockNode parent, int index, EventType<? extends NodeEvent> type, Node node, String setKey, String key, Object oldValue, Object newValue
+	) {
+		assertThat( parent.getWatcher().getEvents().get( index ), hasEventState( node, type, setKey, key, oldValue, newValue ) );
 	}
 
 	private static Matcher<Event> hasEventState( Node node, EventType<? extends Event> type ) {
@@ -2553,12 +2559,17 @@ class NodeTest {
 	}
 
 	private static Matcher<Event> hasEventState( Node node, EventType<? extends Event> type, String key, Object oldValue, Object newValue ) {
+		return hasEventState( node, type, null, key, oldValue, newValue );
+	}
+
+	private static Matcher<Event> hasEventState( Node node, EventType<? extends Event> type, String setKey, String key, Object oldValue, Object newValue ) {
 		Matcher<Event> eventNode = eventNode( is( node ) );
 		Matcher<Event> eventType = eventType( is( type ) );
+		Matcher<Event> eventSetKey = eventSetKey( is( setKey ) );
 		Matcher<Event> eventKey = eventKey( is( key ) );
 		Matcher<Event> eventOldValue = eventOldValue( is( oldValue ) );
 		Matcher<Event> eventNewValue = eventNewValue( is( newValue ) );
-		return allOf( eventNode, eventType, eventKey, eventOldValue, eventNewValue );
+		return allOf( eventNode, eventType, eventSetKey, eventKey, eventOldValue, eventNewValue );
 	}
 
 	private static <T extends Event> Matcher<T> eventNode( Matcher<? super Node> matcher ) {
@@ -2579,6 +2590,17 @@ class NodeTest {
 			@SuppressWarnings( "unchecked" )
 			protected EventType<T> featureValueOf( T event ) {
 				return (EventType<T>)event.getEventType();
+			}
+
+		};
+	}
+
+	private static <T extends Event> Matcher<T> eventSetKey( Matcher<? super String> matcher ) {
+		return new FeatureMatcher<T, String>( matcher, "setKey", "setKey" ) {
+
+			@Override
+			protected String featureValueOf( T event ) {
+				return event instanceof NodeEvent ? ((NodeEvent)event).getSetKey() : null;
 			}
 
 		};

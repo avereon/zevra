@@ -238,13 +238,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param newValue The new modified flag value
 	 */
 	public void setModified( boolean newValue ) {
-		boolean oldValue = selfModified;
-
-		try( Txn ignored = Txn.create() ) {
-			Txn.submit( new SetSelfModifiedOperation( this, oldValue, newValue ) );
-		} catch( TxnException exception ) {
-			log.atSevere().withCause( exception ).log( "Error setting flag: modified" );
-		}
+		Txn.run( () -> Txn.submit( new SetSelfModifiedOperation( this, selfModified, newValue ) ) );
 	}
 
 	void setAllKeysModify() {
@@ -792,14 +786,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param newValue The value
 	 */
 	public <T> T setValue( String key, T newValue ) {
+		return setValue( null, key, newValue );
+	}
+
+	private <T> T setValue( String setKey, String key, T newValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( isReadOnlyKey( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
-		try( Txn ignored = Txn.create() ) {
-			Txn.submit( new SetValueOperation( this, key, getValue( key ), newValue ) );
-		} catch( TxnException exception ) {
-			log.atSevere().withCause( exception ).log( "Error setting value, key=%s", key );
-		}
+		Txn.run( () -> Txn.submit( new SetValueOperation( this, setKey, key, getValue( key ), newValue ) ) );
+
 		return newValue;
 	}
 
@@ -807,14 +802,14 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return Arrays.stream( keys ).filter( k -> values.get( k ) != null ).collect( Collectors.toMap( k -> k, k -> values.get( k ) ) );
 	}
 
-	protected boolean addNodes( Collection<? extends Node> collection ) {
+	protected boolean addNodes( String setKey, Collection<? extends Node> collection ) {
 		boolean changed = false;
 
 		try( Txn ignored = Txn.create() ) {
 			for( Node node : collection ) {
 				String key = node.getCollectionId();
 				if( hasKey( key ) ) continue;
-				Txn.submit( new SetValueOperation( this, key, null, node ) );
+				Txn.submit( new SetValueOperation( this, setKey, key, null, node ) );
 				changed = true;
 			}
 		} catch( TxnException exception ) {
@@ -824,7 +819,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return changed;
 	}
 
-	protected boolean removeNodes( Collection<?> collection ) {
+	protected boolean removeNodes( String setKey, Collection<?> collection ) {
 		boolean changed = false;
 		try( Txn ignored = Txn.create() ) {
 			for( Object object : collection ) {
@@ -832,7 +827,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				Node node = (Node)object;
 				String key = node.getCollectionId();
 				if( !hasKey( key ) ) continue;
-				Txn.submit( new SetValueOperation( this, key, node, null ) );
+				Txn.submit( new SetValueOperation( this, setKey, key, node, null ) );
 				changed = true;
 			}
 		} catch( TxnException exception ) {
@@ -843,12 +838,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	@SuppressWarnings( { "SuspiciousMethodCalls" } )
-	protected boolean retainNodes( Collection<?> c ) {
+	protected boolean retainNodes( String setKey, Collection<?> c ) {
 		if( c.size() == 0 ) return false;
 		Collection<?> remaining = getValues();
 		int originalSize = remaining.size();
 		remaining.removeAll( c );
-		removeNodes( remaining );
+		removeNodes( setKey, remaining );
 		return remaining.size() != originalSize;
 	}
 
@@ -856,13 +851,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * Remove all values from this node.
 	 */
 	protected void clear() {
-		try {
-			Txn.create();
-			getValueKeys().stream().sorted().forEach( k -> setValue( k, null ) );
-			Txn.commit();
-		} catch( TxnException exception ) {
-			log.atSevere().withCause( exception ).log( "Error clearing values" );
-		}
+		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( k, null ) ) );
+	}
+
+	protected void clearSet( String setKey ) {
+		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( setKey, k, null ) ) );
 	}
 
 	protected boolean isEmpty() {
@@ -1221,14 +1214,17 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	private static class SetValueOperation extends NodeTxnOperation {
 
+		private final String setKey;
+
 		private final String key;
 
 		private final Object oldValue;
 
 		private final Object newValue;
 
-		private SetValueOperation( Node node, String key, Object oldValue, Object newValue ) {
+		private SetValueOperation( Node node, String setKey, String key, Object oldValue, Object newValue ) {
 			super( node );
+			this.setKey = setKey;
 			this.key = key;
 			this.oldValue = oldValue;
 			this.newValue = newValue;
@@ -1267,15 +1263,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			boolean childRemove = newValue == null && oldValue instanceof Node;
 			if( childAdd ) {
 				fireTargetedEvent( (Node)newValue, new NodeEvent( (Node)newValue, NodeEvent.ADDED ) );
-				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, key, null, newValue ) );
+				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_ADDED, setKey, key, null, newValue ) );
 			} else if( childRemove ) {
 				fireTargetedEvent( (Node)oldValue, new NodeEvent( (Node)oldValue, NodeEvent.REMOVED ) );
-				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, key, oldValue, null ) );
+				fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.CHILD_REMOVED, setKey, key, oldValue, null ) );
 			} else {
 				fireDroppingEvent( NodeEvent.PARENT_CHANGED );
 			}
 
-			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, key, oldValue, newValue ) );
+			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, setKey, key, oldValue, newValue ) );
 			getResult().addEventsFrom( updateModified );
 			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 		}

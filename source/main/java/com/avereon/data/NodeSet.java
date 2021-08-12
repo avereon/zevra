@@ -141,21 +141,21 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@Override
 	public boolean addAll( Collection<? extends E> collection ) {
-		boolean modified = addNodes( collection );
+		boolean modified = addNodes( key, collection );
 		if( modified ) dirtyCache = true;
 		return modified;
 	}
 
 	@Override
 	public boolean removeAll( Collection<?> collection ) {
-		boolean modified = removeNodes( collection );
+		boolean modified = removeNodes( key, collection );
 		if( modified ) dirtyCache = true;
 		return modified;
 	}
 
 	@Override
 	public boolean retainAll( Collection<?> c ) {
-		boolean modified = retainNodes( c );
+		boolean modified = retainNodes( key, c );
 		if( modified ) dirtyCache = true;
 		return modified;
 	}
@@ -168,7 +168,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	@Override
 	public void clear() {
 		if( !super.isEmpty() ) dirtyCache = true;
-		super.clear();
+		super.clearSet( key );
 	}
 
 	@Override

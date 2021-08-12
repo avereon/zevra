@@ -27,6 +27,8 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( ANY, "VALUE_CHANGED" );
 
+	private final String setKey;
+
 	private final String key;
 
 	private final Object oldValue;
@@ -38,7 +40,12 @@ public class NodeEvent extends TxnEvent {
 	}
 
 	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String key, Object oldValue, Object newValue ) {
+		this( node, type, null, key, oldValue, newValue );
+	}
+
+	public NodeEvent( Node node, EventType<? extends NodeEvent> type, String setKey, String key, Object oldValue, Object newValue ) {
 		super( node, type );
+		this.setKey = setKey;
 		this.key = key;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
@@ -46,6 +53,7 @@ public class NodeEvent extends TxnEvent {
 
 	public NodeEvent( Node node, NodeEvent event ) {
 		super( node, event.getEventType() );
+		this.setKey = event.getSetKey();
 		this.key = event.getKey();
 		this.oldValue = event.getOldValue();
 		this.newValue = event.getNewValue();
@@ -54,6 +62,10 @@ public class NodeEvent extends TxnEvent {
 	@SuppressWarnings( "unchecked" )
 	public <T extends Node> T getNode() {
 		return (T)getSource();
+	}
+
+	public String getSetKey() {
+		return setKey;
 	}
 
 	public String getKey() {
