@@ -54,8 +54,12 @@ public class Txn implements AutoCloseable {
 	public static void run( Actionable step ) {
 		try( Txn ignored = Txn.create() ) {
 			step.act();
-		} catch( Exception exception ) {
-			log.atSevere().withCause( exception ).log( "Transaction failure" );
+		} catch( Throwable throwable ) {
+			if( throwable instanceof RuntimeException ) {
+				throw (RuntimeException)throwable;
+			} else {
+				throw new RuntimeException( "Transaction failure", throwable );
+			}
 		}
 	}
 
