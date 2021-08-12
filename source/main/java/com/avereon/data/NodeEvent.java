@@ -101,13 +101,11 @@ public class NodeEvent extends TxnEvent {
 		builder.append( getEventType() );
 		builder.append( ", node=" );
 		builder.append( (Node)getNode() );
+		if( setKey != null ) builder.append( ", setKey=" ).append( setKey );
 		if( key != null ) {
-			builder.append( ", key=" );
-			builder.append( key );
-			builder.append( ", oldValue=" );
-			builder.append( oldValue );
-			builder.append( ", newValue=" );
-			builder.append( newValue );
+			builder.append( ", key=" ).append( key );
+			builder.append( ", oldValue=" ).append( oldValue );
+			builder.append( ", newValue=" ).append( newValue );
 		}
 		builder.append( " ]" );
 
