@@ -802,7 +802,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return Arrays.stream( keys ).filter( k -> values.get( k ) != null ).collect( Collectors.toMap( k -> k, k -> values.get( k ) ) );
 	}
 
-	protected boolean addNodes( String setKey, Collection<? extends Node> collection ) {
+	boolean addNodes( String setKey, Collection<? extends Node> collection ) {
 		boolean changed = false;
 
 		try( Txn ignored = Txn.create() ) {
@@ -819,7 +819,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return changed;
 	}
 
-	protected boolean removeNodes( String setKey, Collection<?> collection ) {
+	boolean removeNodes( String setKey, Collection<?> collection ) {
 		boolean changed = false;
 		try( Txn ignored = Txn.create() ) {
 			for( Object object : collection ) {
@@ -837,12 +837,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return changed;
 	}
 
-	@SuppressWarnings( { "SuspiciousMethodCalls" } )
-	protected boolean retainNodes( String setKey, Collection<?> c ) {
-		if( c.size() == 0 ) return false;
+	@SuppressWarnings( "SuspiciousMethodCalls" )
+	boolean retainNodes( String setKey, Collection<?> collections ) {
+		if( collections.size() == 0 ) return false;
 		Collection<?> remaining = getValues();
 		int originalSize = remaining.size();
-		remaining.removeAll( c );
+		remaining.removeAll( collections );
 		removeNodes( setKey, remaining );
 		return remaining.size() != originalSize;
 	}

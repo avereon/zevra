@@ -12,4 +12,8 @@ public class NodeLink<T extends Node> extends IdNode {
 		return node;
 	}
 
+	@Override
+	public String toString() {
+		return "NodeLink@" + node;
+	}
 }
