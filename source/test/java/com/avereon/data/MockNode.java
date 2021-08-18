@@ -2,6 +2,7 @@ package com.avereon.data;
 
 import com.avereon.event.Event;
 
+import java.util.Collection;
 import java.util.Set;
 
 class MockNode extends Node {
@@ -60,6 +61,21 @@ class MockNode extends Node {
 	 */
 	public MockNode removeItem( MockNode item ) {
 		removeFromSet( ITEMS, item );
+		return this;
+	}
+
+	public MockNode addItems( Collection<MockNode> items ) {
+		addToSet( ITEMS, items );
+		return this;
+	}
+
+	public MockNode removeItems( Collection<MockNode> items ) {
+		removeFromSet( ITEMS, items );
+		return this;
+	}
+
+	public MockNode clearItems() {
+		clearSet( ITEMS );
 		return this;
 	}
 

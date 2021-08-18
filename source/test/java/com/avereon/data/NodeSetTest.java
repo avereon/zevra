@@ -71,4 +71,13 @@ public class NodeSetTest {
 		assertThat( set.size(), is( 0 ) );
 	}
 
+	@Test
+	void testClearSet() {
+		MockNode node = new MockNode();
+		node.addItems( Set.of( new MockNode( "a" ), new MockNode( "b" ) ) );
+		assertThat( node.getItems().size(), is( 2 ) );
+		node.clearItems();
+		assertThat( node.getItems().size(), is( 0 ) );
+	}
+
 }

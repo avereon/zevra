@@ -1,5 +1,7 @@
 package com.avereon.data;
 
+import com.avereon.transaction.Txn;
+import com.avereon.transaction.TxnException;
 import lombok.CustomLog;
 
 import java.util.*;
@@ -146,6 +148,23 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		return modified;
 	}
 
+	private boolean addNodes( String setKey, Collection<? extends Node> collection ) {
+		boolean changed = false;
+
+		try( Txn ignored = Txn.create() ) {
+			for( Node node : collection ) {
+				String key = node.getCollectionId();
+				if( hasKey( key ) ) continue;
+				Txn.submit( new SetValueOperation( this, setKey, key, null, node ) );
+				changed = true;
+			}
+		} catch( TxnException exception ) {
+			log.atSevere().withCause( exception ).log( "Error adding collection" );
+			return false;
+		}
+		return changed;
+	}
+
 	@Override
 	public boolean removeAll( Collection<?> collection ) {
 		boolean modified = removeNodes( key, collection );
@@ -153,11 +172,39 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		return modified;
 	}
 
+	private boolean removeNodes( String setKey, Collection<?> collection ) {
+		boolean changed = false;
+		try( Txn ignored = Txn.create() ) {
+			for( Object object : collection ) {
+				if( !(object instanceof Node) ) continue;
+				Node node = (Node)object;
+				String key = node.getCollectionId();
+				if( !hasKey( key ) ) continue;
+				Txn.submit( new SetValueOperation( this, setKey, key, node, null ) );
+				changed = true;
+			}
+		} catch( TxnException exception ) {
+			log.atSevere().withCause( exception ).log( "Error removing collection" );
+			return false;
+		}
+		return changed;
+	}
+
 	@Override
 	public boolean retainAll( Collection<?> c ) {
 		boolean modified = retainNodes( key, c );
 		if( modified ) dirtyCache = true;
 		return modified;
+	}
+
+	@SuppressWarnings( "SuspiciousMethodCalls" )
+	private boolean retainNodes( String setKey, Collection<?> collections ) {
+		if( collections.size() == 0 ) return false;
+		Collection<?> remaining = getValues();
+		int originalSize = remaining.size();
+		remaining.removeAll( collections );
+		removeNodes( setKey, remaining );
+		return remaining.size() != originalSize;
 	}
 
 	@Override
@@ -168,7 +215,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	@Override
 	public void clear() {
 		if( !super.isEmpty() ) dirtyCache = true;
-		super.clearSet( key );
+		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( key, k, null ) ) );
 	}
 
 	@Override

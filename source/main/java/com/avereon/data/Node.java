@@ -693,6 +693,24 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( set.remove( value ) && set.isNodeSetEmpty() ) doSetValue( key, set, null );
 	}
 
+	protected <T extends Node> void addToSet( String key, Collection<T> values ) {
+		if( values.isEmpty() ) return;
+		getValue( key, () -> doSetValue( key, null, new NodeSet<>( key ) ) ).addAll( values );
+	}
+
+	protected <T extends Node> void removeFromSet( String key, Collection<T> values ) {
+		NodeSet<T> set = getValue( key );
+		if( set == null ) return;
+		if( set.removeAll( values ) && set.isNodeSetEmpty() ) doSetValue( key, set, null );
+	}
+
+	protected <T extends Node> void clearSet( String key ) {
+		NodeSet<T> set = getValue( key );
+		if( set == null ) return;
+		set.clear();
+		doSetValue( key, set, null );
+	}
+
 	protected void setSetModifyFilter( String key, Function<Node, Boolean> filter ) {
 		getValue( key, () -> doSetValue( key, null, new NodeSet<>( key ) ) ).setSetModifyFilter( filter );
 	}
@@ -789,7 +807,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return setValue( null, key, newValue );
 	}
 
-	private <T> T setValue( String setKey, String key, T newValue ) {
+	<T> T setValue( String setKey, String key, T newValue ) {
 		if( key == null ) throw new NullPointerException( "Value key cannot be null" );
 		if( isReadOnlyKey( key ) ) throw new IllegalStateException( "Attempt to set read-only value: " + key );
 
@@ -802,60 +820,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return Arrays.stream( keys ).filter( k -> values.get( k ) != null ).collect( Collectors.toMap( k -> k, k -> values.get( k ) ) );
 	}
 
-	boolean addNodes( String setKey, Collection<? extends Node> collection ) {
-		boolean changed = false;
-
-		try( Txn ignored = Txn.create() ) {
-			for( Node node : collection ) {
-				String key = node.getCollectionId();
-				if( hasKey( key ) ) continue;
-				Txn.submit( new SetValueOperation( this, setKey, key, null, node ) );
-				changed = true;
-			}
-		} catch( TxnException exception ) {
-			log.atSevere().withCause( exception ).log( "Error adding collection" );
-			return false;
-		}
-		return changed;
-	}
-
-	boolean removeNodes( String setKey, Collection<?> collection ) {
-		boolean changed = false;
-		try( Txn ignored = Txn.create() ) {
-			for( Object object : collection ) {
-				if( !(object instanceof Node) ) continue;
-				Node node = (Node)object;
-				String key = node.getCollectionId();
-				if( !hasKey( key ) ) continue;
-				Txn.submit( new SetValueOperation( this, setKey, key, node, null ) );
-				changed = true;
-			}
-		} catch( TxnException exception ) {
-			log.atSevere().withCause( exception ).log( "Error removing collection" );
-			return false;
-		}
-		return changed;
-	}
-
-	@SuppressWarnings( "SuspiciousMethodCalls" )
-	boolean retainNodes( String setKey, Collection<?> collections ) {
-		if( collections.size() == 0 ) return false;
-		Collection<?> remaining = getValues();
-		int originalSize = remaining.size();
-		remaining.removeAll( collections );
-		removeNodes( setKey, remaining );
-		return remaining.size() != originalSize;
-	}
-
 	/**
 	 * Remove all values from this node.
 	 */
 	protected void clear() {
 		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( k, null ) ) );
-	}
-
-	protected void clearSet( String setKey ) {
-		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( setKey, k, null ) ) );
 	}
 
 	protected boolean isEmpty() {
@@ -1171,13 +1140,13 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	}
 
-	private static class SetSelfModifiedOperation extends NodeTxnOperation {
+	static class SetSelfModifiedOperation extends NodeTxnOperation {
 
 		private final boolean oldValue;
 
 		private final boolean newValue;
 
-		private SetSelfModifiedOperation( Node node, boolean oldValue, boolean newValue ) {
+		SetSelfModifiedOperation( Node node, boolean oldValue, boolean newValue ) {
 			super( node );
 			this.oldValue = oldValue;
 			this.newValue = newValue;
@@ -1212,7 +1181,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	}
 
-	private static class SetValueOperation extends NodeTxnOperation {
+	static class SetValueOperation extends NodeTxnOperation {
 
 		private final String setKey;
 
@@ -1222,7 +1191,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		private final Object newValue;
 
-		private SetValueOperation( Node node, String setKey, String key, Object oldValue, Object newValue ) {
+		SetValueOperation( Node node, String setKey, String key, Object oldValue, Object newValue ) {
 			super( node );
 			this.setKey = setKey;
 			this.key = key;
@@ -1288,7 +1257,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	}
 
-	private static class RefreshOperation extends NodeTxnOperation {
+	static class RefreshOperation extends NodeTxnOperation {
 
 		RefreshOperation( Node node ) {
 			super( node );
@@ -1303,7 +1272,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		protected void revert() {}
 	}
 
-	private static class UpdateModifiedOperation extends NodeTxnOperation {
+	static class UpdateModifiedOperation extends NodeTxnOperation {
 
 		private final boolean oldModified;
 
