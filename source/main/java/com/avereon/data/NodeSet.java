@@ -78,7 +78,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		if( newValue instanceof Node && getParent() == null ) {
 			priorParent.getValue( this.key, () -> priorParent.doSetValue( this.key, null, this ) ).add( (E)newValue );
 		} else {
-			super.setValue( key, newValue );
+			super.setValue( this.key, key, newValue );
 		}
 
 		if( getParent() == null ) log.atWarning().log( "Setting value on detached node set" );
