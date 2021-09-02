@@ -408,13 +408,16 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	public String toString( boolean allValues ) {
 		List<String> keys = new ArrayList<>();
-		if( primaryKeyList != null ) keys.addAll( primaryKeyList );
-		if( naturalKeyList != null ) keys.addAll( naturalKeyList );
+
 		if( allValues ) {
-			keys = new ArrayList<>();
-			if( values != null ) keys.addAll( values.keySet() );
-			Collections.sort( keys );
+			keys.addAll( getValueKeys() );
+		} else {
+			if( primaryKeyList != null ) keys.addAll( primaryKeyList );
+			if( naturalKeyList != null ) keys.addAll( naturalKeyList );
+			keys.addAll( getModifyingKeys() );
 		}
+
+		Collections.sort( keys );
 
 		return toString( keys );
 	}
@@ -570,6 +573,11 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	protected boolean isReadOnly( String key ) {
 		return readOnlySet != null && readOnlySet.contains( key );
+	}
+
+
+	public Set<String> getModifyingKeys() {
+		return getValueKeys().stream().filter( this::isModifyingKey ).collect( Collectors.toSet());
 	}
 
 	/**

@@ -2382,10 +2382,10 @@ class NodeTest {
 		Date birthDate = new Date( 0 );
 		data.setValue( "firstName", "Jane" );
 		data.setValue( "birthDate", birthDate );
-		assertThat( data.toString(), is( "MockNode{firstName=Jane,birthDate=" + birthDate.toString() + "}" ) );
+		assertThat( data.toString(), is( "MockNode{birthDate=" + birthDate + ",firstName=Jane}" ) );
 
 		data.setValue( "lastName", "Doe" );
-		assertThat( data.toString(), is( "MockNode{firstName=Jane,lastName=Doe,birthDate=" + birthDate.toString() + "}" ) );
+		assertThat( data.toString(), is( "MockNode{birthDate=" + birthDate + ",firstName=Jane,lastName=Doe}" ) );
 	}
 
 	@Test
