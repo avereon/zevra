@@ -2343,6 +2343,26 @@ class NodeTest {
 	}
 
 	@Test
+	void testCopyFromWithOverwriteAndPrimaryKey() {
+		Node node1 = new MockNode();
+		node1.setValue( MockNode.MOCK_ID, "a" );
+		node1.setValue( "key1", "value1" );
+		node1.setValue( "key2", "value2" );
+
+		Node node2 = new MockNode();
+		node2.setValue( MockNode.MOCK_ID, "b" );
+		node2.setValue( "key2", "valueB" );
+
+		node2.copyFrom( node1, true );
+		assertThat( node1.getValue( "key1" ), is( "value1" ) );
+		assertThat( node1.getValue( "key2" ), is( "value2" ) );
+		assertThat( node1.getValue( MockNode.MOCK_ID ), is( "a" ) );
+		assertThat( node2.getValue( "key1" ), is( "value1" ) );
+		assertThat( node2.getValue( "key2" ), is( "value2" ) );
+		assertThat( node2.getValue( MockNode.MOCK_ID ), is( "b" ) );
+	}
+
+	@Test
 	void testCopyFromUsingResources() {
 		Node node1 = new Node();
 		node1.setValue( "key1", "value1" );

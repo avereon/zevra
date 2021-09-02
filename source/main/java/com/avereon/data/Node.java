@@ -381,6 +381,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	public <T extends Node> T copyFrom( Node node, boolean overwrite ) {
 		// Clone values
 		for( String key : node.getValueKeys() ) {
+			// Do not overwrite primary key values
+			if( primaryKeyList != null && primaryKeyList.contains( key ) ) continue;
+			// Copy non-primary key values
 			if( overwrite || getValue( key ) == null ) setValue( key, node.getValue( key ) );
 		}
 
@@ -575,9 +578,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return readOnlySet != null && readOnlySet.contains( key );
 	}
 
-
 	public Set<String> getModifyingKeys() {
-		return getValueKeys().stream().filter( this::isModifyingKey ).collect( Collectors.toSet());
+		return getValueKeys().stream().filter( this::isModifyingKey ).collect( Collectors.toSet() );
 	}
 
 	/**
