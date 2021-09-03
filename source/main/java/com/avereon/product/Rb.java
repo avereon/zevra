@@ -64,7 +64,16 @@ public class Rb {
 		return doGetText( product, product, path, bundleKey, valueKey, useOther, other, values );
 	}
 
-		private static String doGetText( final Product originalProduct, final Product product, final String path, final String bundleKey, final String valueKey, final boolean useOther, final String other, final Object... values ) {
+	private static String doGetText(
+		final Product originalProduct,
+		final Product product,
+		final String path,
+		final String bundleKey,
+		final String valueKey,
+		final boolean useOther,
+		final String other,
+		final Object... values
+	) {
 		if( product == null ) return other;
 
 		String string = null;
@@ -77,7 +86,7 @@ public class Rb {
 			if( valueKey != null && bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
 		} catch( MissingResourceException exception ) {
 			if( parent == null ) {
-				log.atWarning().log( "Missing resource: %s", missingResourceMessage );
+				log.atWarning().log( "Missing bundle for: %s", missingResourceMessage );
 				return null;
 			}
 		}
@@ -89,11 +98,12 @@ public class Rb {
 				if( useOther ) {
 					string = other;
 				} else {
+					String prompt = "Missing value for: %s";
 					string = missingResourceMessage;
 					if( log.atDebug().isEnabled() ) {
-						log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( "Missing resource: %s", string );
+						log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( prompt, string );
 					} else {
-						log.atWarning().log( "Missing resource: %s", string );
+						log.atWarning().log( prompt, string );
 					}
 				}
 			}
