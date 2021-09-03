@@ -1,7 +1,6 @@
 package com.avereon.data;
 
 import com.avereon.transaction.Txn;
-import com.avereon.transaction.TxnException;
 
 import java.util.UUID;
 
@@ -11,11 +10,7 @@ public abstract class IdNode extends Node {
 
 	public IdNode() {
 		definePrimaryKey( ID );
-		try( Txn ignore = Txn.create() ) {
-			setId( UUID.randomUUID().toString() );
-		} catch( TxnException exception ) {
-			exception.printStackTrace( System.err );
-		}
+		setId( UUID.randomUUID().toString() );
 	}
 
 	public String getId() {
@@ -24,9 +19,12 @@ public abstract class IdNode extends Node {
 
 	@SuppressWarnings( "unchecked" )
 	public <T> T setId( String id ) {
-		setCollectionId( id );
-		setValue( ID, id );
+		Txn.run( () -> {
+			setCollectionId( id );
+			setValue( ID, id );
+		} );
 		return (T)this;
+
 	}
 
 }
