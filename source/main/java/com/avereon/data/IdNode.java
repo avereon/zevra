@@ -1,7 +1,5 @@
 package com.avereon.data;
 
-import com.avereon.transaction.Txn;
-
 import java.util.UUID;
 
 public abstract class IdNode extends Node {
@@ -19,12 +17,10 @@ public abstract class IdNode extends Node {
 
 	@SuppressWarnings( "unchecked" )
 	public <T> T setId( String id ) {
-		Txn.run( () -> {
-			setCollectionId( id );
-			setValue( ID, id );
-		} );
+		// NOTE Collection ID should not be part of a transaction
+		setCollectionId( id );
+		setValue( ID, id );
 		return (T)this;
-
 	}
 
 }
