@@ -155,12 +155,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	/**
 	 * The list of value keys that specify the primary key.
 	 */
-	private List<String> primaryKeyList;
+	private Set<String> primaryKeySet;
 
 	/**
 	 * The list of value keys that specify the natural key.
 	 */
-	private List<String> naturalKeyList;
+	private Set<String> naturalKeySet;
 
 	/**
 	 * The set of value keys that are used to compute hashCode and equals.
@@ -382,7 +382,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		// Clone values
 		for( String key : node.getValueKeys() ) {
 			// Do not overwrite primary key values
-			if( primaryKeyList != null && primaryKeyList.contains( key ) ) continue;
+			if( isPrimaryKey( key ) ) continue;
 			// Copy non-primary key values
 			if( overwrite || getValue( key ) == null ) setValue( key, node.getValue( key ) );
 		}
@@ -415,8 +415,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( allValues ) {
 			keys.addAll( getValueKeys() );
 		} else {
-			if( primaryKeyList != null ) keys.addAll( primaryKeyList );
-			if( naturalKeyList != null ) keys.addAll( naturalKeyList );
+			keys.addAll( getPrimaryKey() );
+			keys.addAll( getNaturalKey() );
 			keys.addAll( getModifyingKeys() );
 		}
 
@@ -484,8 +484,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		if( hashEqualsKeyList == null ) {
 			hashEqualsKeyList = new HashSet<>();
-			if( primaryKeyList != null ) hashEqualsKeyList.addAll( primaryKeyList );
-			if( naturalKeyList != null ) hashEqualsKeyList.addAll( naturalKeyList );
+			hashEqualsKeyList.addAll( getPrimaryKey() );
+			hashEqualsKeyList.addAll( getNaturalKey() );
 		}
 
 		return equals( object, hashEqualsKeyList );
@@ -497,8 +497,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 		if( hashEqualsKeyList == null ) {
 			hashEqualsKeyList = new HashSet<>();
-			if( primaryKeyList != null ) hashEqualsKeyList.addAll( primaryKeyList );
-			if( naturalKeyList != null ) hashEqualsKeyList.addAll( naturalKeyList );
+			hashEqualsKeyList.addAll( getPrimaryKey() );
+			hashEqualsKeyList.addAll( getNaturalKey() );
 		}
 
 		for( String key : hashEqualsKeyList ) {
@@ -522,11 +522,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @return A node comparator
 	 */
 	public <T extends Node> Comparator<T> getComparator() {
-		return new NodeComparator<>( naturalKeyList );
+		return new NodeComparator<>( getNaturalKey() );
 	}
 
-	protected List<String> getPrimaryKey() {
-		return Collections.unmodifiableList( primaryKeyList );
+	protected Set<String> getPrimaryKey() {
+		return primaryKeySet == null ? Set.of() : Collections.unmodifiableSet( primaryKeySet );
+	}
+
+	protected boolean isPrimaryKey( String key ) {
+		return getPrimaryKey().contains( key );
 	}
 
 	/**
@@ -536,12 +540,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys to use as the primary key
 	 */
 	protected void definePrimaryKey( String... keys ) {
-		primaryKeyList = List.of( keys );
+		primaryKeySet = Set.of( keys );
 		hashEqualsKeyList = null;
 	}
 
-	protected List<String> getNaturalKey() {
-		return Collections.unmodifiableList( naturalKeyList );
+	protected Set<String> getNaturalKey() {
+		return naturalKeySet == null ? Set.of() : Collections.unmodifiableSet( naturalKeySet );
 	}
 
 	/**
@@ -551,12 +555,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys to use as the natural key
 	 */
 	protected void defineNaturalKey( String... keys ) {
-		naturalKeyList = List.of( keys );
+		naturalKeySet = Set.of( keys );
 		hashEqualsKeyList = null;
 	}
 
 	protected Set<String> getReadOnlyKeys() {
-		return Collections.unmodifiableSet( readOnlySet );
+		return readOnlySet == null ? Set.of() : Collections.unmodifiableSet( readOnlySet );
 	}
 
 	/**
@@ -575,7 +579,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @return True if the value key is read-only, false otherwise
 	 */
 	protected boolean isReadOnly( String key ) {
-		return readOnlySet != null && readOnlySet.contains( key );
+		return getReadOnlyKeys().contains( key );
 	}
 
 	public Set<String> getModifyingKeys() {
@@ -639,7 +643,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	private boolean isReadOnlyKey( String key ) {
-		return readOnlySet != null && readOnlySet.contains( key );
+		return getReadOnlyKeys().contains( key );
 	}
 
 	/**
