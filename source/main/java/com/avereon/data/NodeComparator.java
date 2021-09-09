@@ -1,7 +1,7 @@
 package com.avereon.data;
 
 import java.util.Comparator;
-import java.util.Set;
+import java.util.List;
 
 /**
  * A {@link Comparator} for {@link Node nodes}. The comparator is constructed
@@ -11,13 +11,13 @@ import java.util.Set;
  */
 public class NodeComparator<T extends Node> implements Comparator<T> {
 
-	private final Set<String> keys;
+	private final List<String> keys;
 
 	public NodeComparator( String... keys ) {
-		this( Set.of( keys ) );
+		this( List.of( keys ) );
 	}
 
-	public NodeComparator( Set<String> keys ) {
+	public NodeComparator( List<String> keys ) {
 		this.keys = keys;
 	}
 

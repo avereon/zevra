@@ -155,12 +155,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	/**
 	 * The list of value keys that specify the primary key.
 	 */
-	private Set<String> primaryKeySet;
+	private List<String> primaryKeySet;
 
 	/**
 	 * The list of value keys that specify the natural key.
 	 */
-	private Set<String> naturalKeySet;
+	private List<String> naturalKeySet;
 
 	/**
 	 * The set of value keys that are used to compute hashCode and equals.
@@ -525,8 +525,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return new NodeComparator<>( getNaturalKey() );
 	}
 
-	protected Set<String> getPrimaryKey() {
-		return primaryKeySet == null ? Set.of() : Collections.unmodifiableSet( primaryKeySet );
+	protected List<String> getPrimaryKey() {
+		return primaryKeySet == null ? List.of() : Collections.unmodifiableList( primaryKeySet );
 	}
 
 	protected boolean isPrimaryKey( String key ) {
@@ -540,12 +540,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys to use as the primary key
 	 */
 	protected void definePrimaryKey( String... keys ) {
-		primaryKeySet = Set.of( keys );
+		primaryKeySet = List.of( keys );
 		hashEqualsKeyList = null;
 	}
 
-	protected Set<String> getNaturalKey() {
-		return naturalKeySet == null ? Set.of() : Collections.unmodifiableSet( naturalKeySet );
+	protected List<String> getNaturalKey() {
+		return naturalKeySet == null ? List.of() : Collections.unmodifiableList( naturalKeySet );
 	}
 
 	/**
@@ -555,7 +555,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param keys The value keys to use as the natural key
 	 */
 	protected void defineNaturalKey( String... keys ) {
-		naturalKeySet = Set.of( keys );
+		naturalKeySet = List.of( keys );
 		hashEqualsKeyList = null;
 	}
 
