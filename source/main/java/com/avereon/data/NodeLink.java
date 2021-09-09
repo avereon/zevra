@@ -16,4 +16,9 @@ public class NodeLink<T extends Node> extends IdNode {
 	public String toString() {
 		return "NodeLink@" + node;
 	}
+
+	public static <T extends Node> NodeLink<T> of( T node ) {
+		return new NodeLink<>( node );
+	}
+
 }
