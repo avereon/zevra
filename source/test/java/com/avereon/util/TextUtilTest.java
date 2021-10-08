@@ -622,7 +622,7 @@ class TextUtilTest {
 	@Test
 	void testToStringOrNull() {
 		assertNull( TextUtil.toStringOrNull( null ) );
-		assertThat( TextUtil.toStringOrNull( new Double(1.234)), is( "1.234"));
+		assertThat( TextUtil.toStringOrNull( 1.234D ), is( "1.234" ) );
 	}
 
 }
