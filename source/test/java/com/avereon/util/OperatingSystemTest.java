@@ -29,8 +29,9 @@ class OperatingSystemTest {
 	@BeforeEach
 	void setup() {
 		System.clearProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY );
-		System.clearProperty( "java.launcher.path" );
-		System.clearProperty( "java.launcher.name" );
+		System.clearProperty( OperatingSystem.CUSTOM_LAUNCHER_PATH );
+		System.clearProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME );
+		System.clearProperty( OperatingSystem.JPACKAGE_APP_PATH );
 	}
 
 	@Test
@@ -360,25 +361,35 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherName() {
-		System.clearProperty( "java.launcher.name" );
 		assertThat( OperatingSystem.getJavaLauncherName(), is( OperatingSystem.isWindows() ? "javaw" : "java" ) );
 
-		System.setProperty( "java.launcher.name", "Mock" );
+		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
 		assertThat( OperatingSystem.getJavaLauncherName(), is( "Mock" ) );
 	}
 
 	@Test
 	void testGetJavaLauncherPath() {
-		System.clearProperty( "java.launcher.path" );
-		System.clearProperty( "java.launcher.name" );
-		assertThat(
-			OperatingSystem.getJavaLauncherPath(),
-			is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() )
-		);
+		assertThat( OperatingSystem.getJavaLauncherPath(), is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() ) );
 
-		System.setProperty( "java.launcher.path", "/this/is/the/launcher/path" );
-		System.setProperty( "java.launcher.name", "Mock" );
+		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_PATH, "/this/is/the/launcher/path" );
+		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
 		assertThat( OperatingSystem.getJavaLauncherPath(), is( "/this/is/the/launcher/path" + File.separator + "Mock" ) );
+	}
+
+	@Test
+	void testGetJavaLauncherNameWithJPackageAppPath() {
+		assertThat( OperatingSystem.getJavaLauncherName(), is( OperatingSystem.isWindows() ? "javaw" : "java" ) );
+
+		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
+		assertThat( OperatingSystem.getJavaLauncherName(), is( "Mock" ) );
+	}
+
+	@Test
+	void testGetJavaLauncherPathWithJPackageAppPath() {
+		assertThat( OperatingSystem.getJavaLauncherPath(), is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() ) );
+
+		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
+		assertThat( OperatingSystem.getJavaLauncherPath(), is( "/this/is/the/launcher/path/Mock" ) );
 	}
 
 }
