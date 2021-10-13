@@ -256,6 +256,9 @@ public class OperatingSystem {
 		String launcherPath = System.getProperty( "java.launcher.path" );
 		if( launcherPath != null ) return launcherPath + File.separator + getJavaLauncherName();
 
+		// JPackage launcher
+		if( System.getProperty( "jpackage.app-path" ) != null ) return System.getProperty( "jpackage.app-path" );
+
 		// Official launcher
 		return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + getJavaLauncherName();
 	}
