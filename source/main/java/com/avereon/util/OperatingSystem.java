@@ -377,6 +377,10 @@ public class OperatingSystem {
 		return isWindows() ? ".exe" : "";
 	}
 
+	public static String asString() {
+		return getName() + " " + getArchitecture() + " " + getVersion();
+	}
+
 	static void clearProcessElevatedFlag() {
 		elevated = null;
 	}
