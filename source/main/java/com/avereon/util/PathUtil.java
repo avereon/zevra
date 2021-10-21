@@ -49,10 +49,10 @@ public class PathUtil {
 	 * Examples:
 	 * <ul>
 	 *   <li>resolve( "", "" ) -> ""</li>
-	 *   <li>resolve( "/root", "path" ) -> "/root/path"</li>
-	 *   <li>resolve( "/root/", "path" ) -> "/root/path"</li>
-	 *   <li>resolve( "/root", "/path" ) -> "/path"</li>
-	 *   <li>resolve( "root", "path" ) -> "root/path"</li>
+	 *   <li>resolve( "/root", "path" ) -&gt; "/root/path"</li>
+	 *   <li>resolve( "/root/", "path" ) -&gt; "/root/path"</li>
+	 *   <li>resolve( "/root", "/path" ) -&gt; "/path"</li>
+	 *   <li>resolve( "root", "path" ) -&gt; "root/path"</li>
 	 * </ul>
 	 * </p>
 	 * <p>

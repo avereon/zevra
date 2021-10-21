@@ -92,7 +92,7 @@ import java.util.stream.Collectors;
  * to handle the case where lambdas are registered for changes the the value.
  * Example:
  * <pre>
- *   person.register( "name", e -> displayPersonName( e.getNewValue() ) );
+ *   person.register( "name", e -&gt; displayPersonName( e.getNewValue() ) );
  * </pre>
  *
  * <h2>Transactions</h2>
