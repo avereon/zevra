@@ -255,7 +255,8 @@ public class OperatingSystem {
 	 * java launcher that comes with the runtime. Starting with Java 14, if the
 	 * java.launcher.path (set by the launcher) and the java.launcher.name (set
 	 * by the application) are both set, then this returns the path to the
-	 * custom launcher.
+	 * custom launcher. Starting with Java 17 the java launcher path is now in
+	 * jpackage.app-path and can be returned directly.
 	 *
 	 * @return The Java VM launcher path
 	 */
