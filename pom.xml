@@ -77,8 +77,10 @@
 					<argLine>
 						--add-opens=com.avereon.zevra/com.avereon.data=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.event=ALL-UNNAMED
+						--add-opens=com.avereon.zevra/com.avereon.index=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.log=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.product=ALL-UNNAMED
+						--add-opens=com.avereon.zevra/com.avereon.result=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.settings=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.transaction=ALL-UNNAMED
 						--add-opens=com.avereon.zevra/com.avereon.util=ALL-UNNAMED,com.fasterxml.jackson.databind
