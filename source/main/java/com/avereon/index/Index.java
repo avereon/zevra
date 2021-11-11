@@ -1,10 +1,8 @@
 package com.avereon.index;
 
-import com.avereon.result.Result;
 import lombok.CustomLog;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,10 +25,6 @@ public class Index {
 
 	public Set<Hit> getHits( String word ) {
 		return index.getOrDefault( word, Set.of() );
-	}
-
-	public Result<List<Hit>> search( IndexQuery query ) {
-		return new FuzzySearch().search( this, query );
 	}
 
 	public void push( String word, Hit hit ) {

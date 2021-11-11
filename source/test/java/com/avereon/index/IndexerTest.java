@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,7 +42,7 @@ public class IndexerTest {
 
 	@Test
 	void testSubmit() {
-		Document document = Document.of( new StringReader( "" ) );
+		Document document = Document.of( URI.create(""), new StringReader( "" ) );
 
 		indexer.start();
 		Result<Future<?>> result = indexer.submit( document );
@@ -53,7 +54,7 @@ public class IndexerTest {
 	@Test
 	void testParse() throws Exception {
 		String text = "This is some arbitrary content";
-		Document document = Document.of( new StringReader( text ) );
+		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
 		Result<Future<?>> result = indexer.submit( document );
@@ -76,7 +77,7 @@ public class IndexerTest {
 		String line0 = "This is";
 		String line1 = "some \"arbitrary content\"!";
 		String text = " " + line0 + "\n" + line1 + " ";
-		Document document = Document.of( new StringReader( text ) );
+		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
 		Result<Future<?>> result = indexer.submit( document );
@@ -97,7 +98,7 @@ public class IndexerTest {
 	@Test
 	void testSearch() throws Exception {
 		String text = "This is some \"arbitrary content\".";
-		Document document = Document.of( new StringReader( text ) );
+		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
 		Result<Future<?>> result = indexer.submit( document );
@@ -109,10 +110,11 @@ public class IndexerTest {
 
 		String scope = Index.DEFAULT;
 		String word = "content";
+
 		List<Hit> hits = indexer
 			.getIndex( scope )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( word ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
-			.search( IndexQuery.builder().text( word ).build() )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
 		assertThat( hits.get( 0 ).document(), is( document ) );
@@ -121,7 +123,7 @@ public class IndexerTest {
 
 	@Test
 	void testSearchWithTags() throws Exception {
-		Document document = Document.of( new StringReader( "" ) );
+		Document document = Document.of( URI.create(""), new StringReader( "" ) );
 		document.addTags( Set.of( "help", "empty" ) );
 
 		indexer.start();
@@ -134,10 +136,11 @@ public class IndexerTest {
 
 		String scope = Index.DEFAULT;
 		String word = "help";
+
 		List<Hit> hits = indexer
 			.getIndex( scope )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( word ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
-			.search( IndexQuery.builder().text( word ).build() )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
 		assertThat( hits.get( 0 ).document(), is( document ) );
@@ -146,9 +149,9 @@ public class IndexerTest {
 
 	@Test
 	void testFuzzySearch() throws Exception {
-		Document document0 = Document.of( new StringReader( "The cat and the fiddle" ) );
-		Document document1 = Document.of( new StringReader( "The dog ran away with the spoon" ) );
-		Document document2 = Document.of( new StringReader( "The cow jumped over the moon" ) );
+		Document document0 = Document.of( URI.create(""), new StringReader( "The cat and the fiddle" ) );
+		Document document1 = Document.of( URI.create(""), new StringReader( "The dog ran away with the spoon" ) );
+		Document document2 = Document.of( URI.create(""), new StringReader( "The cow jumped over the moon" ) );
 
 		indexer.start();
 		Result<Set<Future<?>>> result = indexer.submit( document0, document1, document2 );
@@ -157,16 +160,24 @@ public class IndexerTest {
 			f.get();
 		}
 
-		String scope = Index.DEFAULT;
-		String word = "moon";
 		List<Hit> hits = indexer
-			.getIndex( scope )
-			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
-			.search( IndexQuery.builder().text( word ).build() )
-			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
+			.getIndex( Index.DEFAULT )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "moon" ).build() ) )
+			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
+			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
 		assertThat( hits.get( 0 ).document(), is( document2 ) );
 		assertThat( hits.get( 1 ).document(), is( document1 ) );
+		assertThat( hits.size(), is( 2 ) );
+
+		hits = indexer
+			.getIndex( Index.DEFAULT )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "soon" ).build() ) )
+			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
+			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
+
+		assertThat( hits.get( 0 ).document(), is( document1 ) );
+		assertThat( hits.get( 1 ).document(), is( document2 ) );
 		assertThat( hits.size(), is( 2 ) );
 	}
 }
