@@ -107,16 +107,19 @@ public class Result<T> {
 	 * @throws NullPointerException if value is present and the given action is
 	 * {@code null}
 	 */
-	public void ifPresent( Consumer<? super T> action ) {
+	public Result<T> ifPresent( Consumer<? super T> action ) {
 		if( isPresent() ) action.accept( value );
+		return this;
 	}
 
-	public void ifSuccess(Consumer<? super T> action ) {
+	public Result<T> ifSuccess(Consumer<? super T> action ) {
 		if( isPresent() && isSuccessful() ) action.accept( value );
+		return this;
 	}
 
-	public void ifFailure(Consumer<Exception> action ) {
+	public Result<T> ifFailure(Consumer<Exception> action ) {
 		if( isFailed() ) action.accept( exception );
+		return this;
 	}
 
 	/**
@@ -129,12 +132,13 @@ public class Result<T> {
 	 * is {@code null}, or no value is present and the given empty-based
 	 * action is {@code null}.
 	 */
-	public void ifPresentOrElse( Consumer<? super T> action, Runnable emptyAction ) {
+	public Result<T> ifPresentOrElse( Consumer<? super T> action, Runnable emptyAction ) {
 		if( value != null ) {
 			action.accept( value );
 		} else {
 			emptyAction.run();
 		}
+		return this;
 	}
 
 	/**

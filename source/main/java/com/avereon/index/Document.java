@@ -1,33 +1,36 @@
 package com.avereon.index;
 
-import java.io.InputStream;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.io.Reader;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(fluent = true)
 public class Document {
 
-	private final Set<String> tags;
+	private final Set<String> tags = new CopyOnWriteArraySet<>();
 
-	private InputStream data;
+	private Reader content;
 
-	public Document() {
-		tags = new CopyOnWriteArraySet<>();
-	}
-
-	public static Document of( InputStream data ) {
+	public static Document of( Reader content ) {
 		Document document = new Document();
-		document.data = data;
+		document.content = content;
 		return document;
 	}
 
 	public void addTags( Collection<String> tags ) {
 		this.tags.addAll( tags );
-	}
-
-	public Set<String> getTags() {
-		return new HashSet<>( tags );
 	}
 
 }
