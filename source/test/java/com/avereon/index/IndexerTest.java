@@ -45,7 +45,7 @@ public class IndexerTest {
 		Document document = Document.of( URI.create(""), new StringReader( "" ) );
 
 		indexer.start();
-		Result<Future<?>> result = indexer.submit( document );
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 
 		assertTrue( result.isSuccessful() );
@@ -57,7 +57,7 @@ public class IndexerTest {
 		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
-		Result<Future<?>> result = indexer.submit( document );
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 		result.get().get();
 
@@ -80,7 +80,7 @@ public class IndexerTest {
 		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
-		Result<Future<?>> result = indexer.submit( document );
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 		result.get().get();
 
@@ -101,7 +101,7 @@ public class IndexerTest {
 		Document document = Document.of( URI.create(""), new StringReader( text ) );
 
 		indexer.start();
-		Result<Future<?>> result = indexer.submit( document );
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 
 		result.get().get();
@@ -127,7 +127,7 @@ public class IndexerTest {
 		document.addTags( Set.of( "help", "empty" ) );
 
 		indexer.start();
-		Result<Future<?>> result = indexer.submit( document );
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 
 		result.get().get();
@@ -154,7 +154,7 @@ public class IndexerTest {
 		Document document2 = Document.of( URI.create(""), new StringReader( "The cow jumped over the moon" ) );
 
 		indexer.start();
-		Result<Set<Future<?>>> result = indexer.submit( document0, document1, document2 );
+		Result<Set<Future<Result<Set<Hit>>>>> result = indexer.submit( document0, document1, document2 );
 		indexer.stop();
 		for( Future<?> f : result.get() ) {
 			f.get();

@@ -49,12 +49,12 @@ public class Indexer implements Controllable<Indexer> {
 		return this;
 	}
 
-	public Result<Future<?>> submit( Document document ) {
+	public Result<Future<Result<Set<Hit>>>> submit( Document document ) {
 		if( !isRunning() ) return Result.of( new IllegalStateException( "Indexer not running" ) );
 		return Result.of( executor.submit( () -> doIndex( document ) ) );
 	}
 
-	public Result<Set<Future<?>>> submit( Document... documents ) {
+	public Result<Set<Future<Result<Set<Hit>>>>> submit( Document... documents ) {
 		if( !isRunning() ) return Result.of( new IllegalStateException( "Indexer not running" ) );
 		return Result.of( Arrays.stream( documents ).map( d -> executor.submit( () -> doIndex( d ) ) ).collect( Collectors.toSet() ) );
 	}
@@ -67,7 +67,7 @@ public class Indexer implements Controllable<Indexer> {
 		return Optional.ofNullable( indexes.get( scope ) );
 	}
 
-	private Result<?> doIndex( Document document ) {
+	private Result<Set<Hit>> doIndex( Document document ) {
 		Index index = indexes.computeIfAbsent( Index.DEFAULT, k -> new Index() );
 
 		// Add tag words to the index
