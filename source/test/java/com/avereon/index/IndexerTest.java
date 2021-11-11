@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IndexerTest {
 
+	private static final String sample = "The quick brown fox jumps over the lazy dog";
+
 	private Indexer indexer;
 
 	@BeforeEach
@@ -142,4 +144,29 @@ public class IndexerTest {
 		assertThat( hits.size(), is( 1 ) );
 	}
 
+	@Test
+	void testFuzzySearch() throws Exception {
+		Document document0 = Document.of( new StringReader( "The cat and the fiddle" ) );
+		Document document1 = Document.of( new StringReader( "The dog ran away with the spoon" ) );
+		Document document2 = Document.of( new StringReader( "The cow jumped over the moon" ) );
+
+		indexer.start();
+		Result<Set<Future<?>>> result = indexer.submit( document0, document1, document2 );
+		indexer.stop();
+		for( Future<?> f : result.get() ) {
+			f.get();
+		}
+
+		String scope = Index.DEFAULT;
+		String word = "moon";
+		List<Hit> hits = indexer
+			.getIndex( scope )
+			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
+			.search( IndexQuery.builder().text( word ).build() )
+			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
+
+		assertThat( hits.get( 0 ).document(), is( document2 ) );
+		assertThat( hits.get( 1 ).document(), is( document1 ) );
+		assertThat( hits.size(), is( 2 ) );
+	}
 }

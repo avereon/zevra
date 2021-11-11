@@ -3,7 +3,10 @@ package com.avereon.index;
 import com.avereon.result.Result;
 import lombok.CustomLog;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -27,8 +30,7 @@ public class Index {
 	}
 
 	public Result<List<Hit>> search( IndexQuery query ) {
-		Set<Hit> hits = index.get( query.text() );
-		return Result.of( new ArrayList<>(hits) );
+		return new FuzzySearch().search( this, query );
 	}
 
 	public void push( String word, Hit hit ) {
@@ -36,7 +38,7 @@ public class Index {
 	}
 
 	public void push( Set<Hit> hits ) {
-		hits.forEach( h -> index.computeIfAbsent( h.word(), k -> new CopyOnWriteArraySet<>() ).add(h) );
+		hits.forEach( h -> index.computeIfAbsent( h.word(), k -> new CopyOnWriteArraySet<>() ).add( h ) );
 	}
 
 }
