@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -106,6 +107,31 @@ public class IndexerTest {
 
 		String scope = Index.DEFAULT;
 		String word = "content";
+		List<Hit> hits = indexer
+			.getIndex( scope )
+			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
+			.search( IndexQuery.builder().text( word ).build() )
+			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
+
+		assertThat( hits.get( 0 ).document(), is( document ) );
+		assertThat( hits.size(), is( 1 ) );
+	}
+
+	@Test
+	void testSearchWithTags() throws Exception {
+		Document document = Document.of( new StringReader( "" ) );
+		document.addTags( Set.of( "help", "empty" ) );
+
+		indexer.start();
+		Result<Future<?>> result = indexer.submit( document );
+		indexer.stop();
+
+		result.get().get();
+
+		assertThat( indexer.getIndex().orElseThrow().getDictionary(), containsInAnyOrder( "help", "empty" ) );
+
+		String scope = Index.DEFAULT;
+		String word = "help";
 		List<Hit> hits = indexer
 			.getIndex( scope )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )

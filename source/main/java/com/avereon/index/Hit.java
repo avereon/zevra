@@ -13,16 +13,18 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class Hit {
 
+	private Document document;
+
+	private String word;
+
+	private String context;
+
 	private int line;
 
 	private int index;
 
 	private int length;
 
-	private String word;
-
-	private String context;
-
-	private Document document;
+	private int priority;
 
 }

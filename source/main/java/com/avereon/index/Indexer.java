@@ -63,10 +63,10 @@ public class Indexer implements Controllable<Indexer> {
 	private Result<?> doIndex( Document document ) {
 		Index index = indexes.computeIfAbsent( Index.DEFAULT, k -> new Index() );
 
-		// TODO Also add tag words to the index
-		// NOTE Should there be different data scopes in an index?
-		// For example, should tags be be treated with higher priority than words?
+		// Add tag words to the index
+		document.tags().forEach( t -> index.push( t, Hit.builder().word(t).document(document).priority( 1 ).build() ) );
 
+		// Add document words to the index
 		return new DefaultDocumentParser().parse( document )
 			.ifSuccess( index::push )
 			.ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
