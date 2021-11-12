@@ -70,11 +70,8 @@ public class Indexer implements Controllable<Indexer> {
 	private Result<Set<Hit>> doIndex( Document document ) {
 		Index index = indexes.computeIfAbsent( Index.DEFAULT, k -> new Index() );
 
-		// Add tag words to the index
-		document.tags().forEach( t -> index.push( t, Hit.builder().word( t ).document( document ).priority( 1 ).build() ) );
-
 		// Add document words to the index
-		return new DefaultDocumentParser().parse( document ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
+		return new DefaultDocumentParser().index( document ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
 	}
 
 }

@@ -6,6 +6,6 @@ import java.util.Set;
 
 public interface DocumentParser {
 
-	Result<Set<Hit>> parse( Document document );
+	Result<Set<Hit>> index( Document document );
 
 }

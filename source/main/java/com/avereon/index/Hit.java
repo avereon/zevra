@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(fluent = true)
+@Accessors( fluent = true )
 public class Hit {
 
 	private Document document;
@@ -26,5 +26,10 @@ public class Hit {
 	private int length;
 
 	private int priority;
+
+//	@Override
+//	public String toString() {
+//		return document.name();
+//	}
 
 }
