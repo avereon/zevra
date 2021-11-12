@@ -21,7 +21,17 @@ public class FuzzySearch implements Search {
 	 * everything in the index (probably not what we want) and using 100 would
 	 * return only exact matches.
 	 */
-	private static final int CUTOFF = 80;
+	private static final int CUTOFF = 50;
+
+	private final int cutoff;
+
+	public FuzzySearch() {
+		this( CUTOFF );
+	}
+
+	public FuzzySearch( int cutoff ) {
+		this.cutoff = cutoff;
+	}
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
@@ -31,7 +41,7 @@ public class FuzzySearch implements Search {
 		List<Rank> ranks = new ArrayList<>();
 		dictionary.forEach( w -> {
 			int points = getRankPoints( term, w );
-			if( points < CUTOFF ) return;
+			if( points < cutoff ) return;
 			ranks.add( new Rank( w, points ) );
 		} );
 		Collections.sort( ranks );
