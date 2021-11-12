@@ -27,9 +27,9 @@ public class Hit {
 
 	private int priority;
 
-//	@Override
-//	public String toString() {
-//		return document.name();
-//	}
+	@Override
+	public String toString() {
+		return document.name();
+	}
 
 }

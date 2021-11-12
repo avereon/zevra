@@ -25,14 +25,6 @@ public class Document {
 
 	private final Set<String> tags = new CopyOnWriteArraySet<>();
 
-	public static Document of( URI uri, Reader content ) {
-		return of( uri, "", content );
-	}
-
-	public static Document of( URI uri, String name, Reader content ) {
-		return new Document( uri, name, content );
-	}
-
 	public Set<String> tags() {
 		return new HashSet<>( tags );
 	}

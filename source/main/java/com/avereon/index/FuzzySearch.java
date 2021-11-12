@@ -21,7 +21,7 @@ public class FuzzySearch implements Search {
 	 * everything in the index (probably not what we want) and using 100 would
 	 * return only exact matches.
 	 */
-	private static final int CUTOFF = 50;
+	private static final int CUTOFF = 80;
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
