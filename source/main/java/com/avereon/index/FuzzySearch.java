@@ -75,7 +75,7 @@ public class FuzzySearch implements Search {
 
 		@Override
 		public int compareTo( Rank that ) {
-			return that.points - this.points;
+			return this.points - that.points;
 		}
 
 	}
