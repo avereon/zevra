@@ -64,20 +64,20 @@ public class IndexerTest {
 
 		// Check the hits
 		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ),
-			contains( Hit.builder().context( name ).line( 0 ).index( 0 ).word( "document" ).length( 8 ).document( document ).priority( 1 ).build() )
+			contains( Hit.builder().context( name ).line( 0 ).index( 0 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( text ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ), contains( Hit.builder().context( text ).line( 0 ).index( 5 ).word( "is" ).length( 2 ).document( document ).priority( 2 ).build() ) );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ), contains( Hit.builder().context( text ).line( 0 ).index( 5 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() ) );
 		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 8 ).word( "some" ).length( 4 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( text ).line( 0 ).index( 8 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 13 ).word( "arbitrary" ).length( 9 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( text ).line( 0 ).index( 13 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 23 ).word( "content" ).length( 7 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( text ).line( 0 ).index( 23 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 
 		// Check the dictionary
@@ -99,25 +99,24 @@ public class IndexerTest {
 
 		// Check the hits
 		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ),
-			contains( Hit.builder().context( name.trim() ).line( 0 ).index( 10 ).word( "document" ).length( 8 ).document( document ).priority( 1 ).build() )
+			contains( Hit.builder().context( name.trim() ).line( 0 ).index( 10 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ),
-			containsInAnyOrder( Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( 1 ).build(),
-				Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( 2 ).build()
+			containsInAnyOrder( Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.NAME_PRIORITY ).build(),
+				Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
 			)
 		);
-		assertThat(
-			indexer.getIndex().orElseThrow().getHits( "is" ),
-			contains( Hit.builder().context( line0.trim() ).line( 0 ).index( 6 ).word( "is" ).length( 2 ).document( document ).priority( 2 ).build() )
+		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ),
+			contains( Hit.builder().context( line0.trim() ).line( 0 ).index( 6 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 0 ).word( "some" ).length( 4 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 0 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 6 ).word( "arbitrary" ).length( 9 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 6 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 16 ).word( "content" ).length( 7 ).document( document ).priority( 2 ).build() )
+			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 16 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
 		);
 
 		// Check the dictionary
@@ -208,5 +207,28 @@ public class IndexerTest {
 		assertThat( hits.get( 0 ).document(), is( document1 ) );
 		assertThat( hits.get( 1 ).document(), is( document2 ) );
 		assertThat( hits.size(), is( 2 ) );
+	}
+
+	@Test
+	void testPrioritySort() throws Exception {
+		String name = "Document";
+		String text = "This is an arbitrary document";
+		Document document = new Document( URI.create( "" ), name, new StringReader( text ) );
+
+		indexer.start();
+		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
+		indexer.stop();
+		result.get().get();
+
+		List<Hit> hits = indexer
+			.getIndex( Index.DEFAULT )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "document" ).build() ) )
+			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
+			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
+
+		assertThat( hits.get( 0 ).priority(), is( Hit.NAME_PRIORITY ) );
+		assertThat( hits.get( 1 ).priority(), is( Hit.CONTENT_PRIORITY ) );
+		assertThat( hits.size(), is( 2 ) );
+
 	}
 }

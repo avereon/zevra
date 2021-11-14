@@ -13,28 +13,18 @@ import java.util.Set;
 
 public class DefaultDocumentParser implements DocumentParser {
 
-	private static final int TAG_PRIORITY = 0;
-
-	private static final int NAME_PRIORITY = 1;
-
-	private static final int CONTENT_PRIORITY = 2;
-
-	private static final int HIGEST_PRIORITY = TAG_PRIORITY;
-
-	private static final int LOWEST_PRIORITY = CONTENT_PRIORITY;
-
 	@Override
 	public Result<Set<Hit>> index( Document document ) {
 		Set<Hit> hits = new HashSet<>();
 
 		// Add tags
-		document.tags().forEach( t -> hits.add( Hit.builder().word( t ).document( document ).priority( TAG_PRIORITY ).build() ) );
+		document.tags().forEach( t -> hits.add( Hit.builder().word( t ).document( document ).priority( Hit.TAG_PRIORITY ).build() ) );
 
 		// Add name
-		hits.addAll( findHits( document, document.name(), NAME_PRIORITY ) );
+		hits.addAll( findHits( document, document.name(), Hit.NAME_PRIORITY ) );
 
 		// Add content
-		hits.addAll( findHits( document, document.content(), CONTENT_PRIORITY ) );
+		hits.addAll( findHits( document, document.content(), Hit.CONTENT_PRIORITY ) );
 
 		return Result.of( hits );
 	}

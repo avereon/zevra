@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,18 +38,18 @@ public class FuzzySearch implements Search {
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
-		String term = query.text();
 		Set<String> dictionary = index.getDictionary();
 
 		List<Rank> ranks = new ArrayList<>();
 		dictionary.forEach( w -> {
-			int points = getRankPoints( term, w );
+			int points = getRankPoints( query.text(), w );
 			if( points < cutoff ) return;
 			ranks.add( new Rank( w, points ) );
 		} );
-		Collections.sort( ranks );
+		ranks.sort( new RankSort() );
 
 		List<Hit> hits = ranks.stream().flatMap( r -> index.getHits( r.word() ).stream() ).collect( Collectors.toList() );
+		hits.sort( new HitSort() );
 
 		return Result.of( new ArrayList<>( hits ) );
 	}
@@ -67,15 +70,27 @@ public class FuzzySearch implements Search {
 	@Data
 	@RequiredArgsConstructor
 	@Accessors( fluent = true )
-	private static class Rank implements Comparable<Rank> {
+	private static class Rank {
 
 		private final String word;
 
 		private final int points;
 
+	}
+
+	private static class RankSort implements Comparator<Rank> {
+
 		@Override
-		public int compareTo( Rank that ) {
-			return this.points - that.points;
+		public int compare( Rank rank1, Rank rank2 ) {
+			return rank2.points() - rank1.points();
+		}
+	}
+
+	private static class HitSort implements Comparator<Hit> {
+
+		@Override
+		public int compare( Hit hit1, Hit hit2 ) {
+			return hit2.priority() - hit1.priority();
 		}
 
 	}
