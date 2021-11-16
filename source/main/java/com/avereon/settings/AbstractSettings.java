@@ -84,12 +84,14 @@ public abstract class AbstractSettings implements Settings {
 		if( converter != null ) {
 			value = converter.convert( getValue( key ) );
 			if( value == null ) value = converter.convert( getDefault( key ) );
+		} else if( Collection.class.isAssignableFrom( typeClass ) ) {
+			value = getCollection( key, type );
+		} else if( Map.class.isAssignableFrom( typeClass ) ) {
+			value = getMap( key, type );
 		} else if( typeClass.isArray() ) {
-			value = unmarshallValue( getArray( key ), type, getDefault( key ) );
-		} else if( typeClass.isAssignableFrom( Collection.class ) || typeClass.isAssignableFrom( Map.class ) ) {
-			value = unmarshallValue( getCollection( key ), type, getDefault( key ) );
+			value = getArray( key, type );
 		} else {
-			value = unmarshallValue( getBean( key ), type, getDefault( key ) );
+			value = getBean( key, type );
 		}
 
 		// If the value is still null use the default value
@@ -115,12 +117,14 @@ public abstract class AbstractSettings implements Settings {
 			setValue( key, null );
 		} else if( outboundConverters.containsKey( value.getClass() ) ) {
 			setValue( key, newValue = outboundConverters.get( value.getClass() ).convert( value ) );
-		} else if( value instanceof Collection || value instanceof Map ) {
-			setCollection( key, newValue = marshallValue( value ) );
+		} else if( value instanceof Collection ) {
+			setCollection( key, (Collection<?>)value );
+		} else if( value instanceof Map ) {
+			setMap( key, (Map<?, ?>)value );
 		} else if( value.getClass().isArray() ) {
-			setArray( key, newValue = marshallValue( value ) );
+			setArray( key, (Object[])value );
 		} else {
-			setBean( key, newValue = marshallValue( value ) );
+			setBean( key, value );
 		}
 
 		// Settings change event should only be fired if the values are different
@@ -157,13 +161,13 @@ public abstract class AbstractSettings implements Settings {
 	protected abstract String getValue( String key );
 
 	/**
-	 * Override this method to optimize retrieving bean values.
+	 * Override this method to optimize retrieving map values.
 	 *
 	 * @param key The value key
-	 * @return The marshalled bean value
+	 * @return The marshalled collection value
 	 */
-	protected String getBean( String key ) {
-		return getValue( key );
+	protected <S> S getBean( String key, TypeReference<S> type ) {
+		return unmarshallValue( getValue( key ), type );
 	}
 
 	/**
@@ -172,8 +176,8 @@ public abstract class AbstractSettings implements Settings {
 	 * @param key The value key
 	 * @return The marshalled array value
 	 */
-	protected String getArray( String key ) {
-		return getValue( key );
+	protected <S> Object[] getArray( String key, TypeReference<S> type ) {
+		return (Object[])unmarshallValue( getValue( key ), type );
 	}
 
 	/**
@@ -182,8 +186,18 @@ public abstract class AbstractSettings implements Settings {
 	 * @param key The value key
 	 * @return The marshalled collection value
 	 */
-	protected String getCollection( String key ) {
-		return getValue( key );
+	protected <S> Collection<?> getCollection( String key, TypeReference<S> type ) {
+		return (Collection<?>)unmarshallValue( getValue( key ), type );
+	}
+
+	/**
+	 * Override this method to optimize retrieving map values.
+	 *
+	 * @param key The value key
+	 * @return The marshalled collection value
+	 */
+	protected <S> Map<?, ?> getMap( String key, TypeReference<S> type ) {
+		return (Map<?, ?>)unmarshallValue( getValue( key ), type );
 	}
 
 	/**
@@ -200,28 +214,38 @@ public abstract class AbstractSettings implements Settings {
 	 * @param key The settings value key
 	 * @param value The settings value
 	 */
-	protected void setBean( String key, String value ) {
-		setValue( key, value );
+	protected <S> void setBean( String key, S value ) {
+		setValue( key, marshallValue( value ) );
 	}
 
 	/**
 	 * Override this method to optimize storing array values.
 	 *
 	 * @param key The settings value key
-	 * @param value The settings value
+	 * @param array The settings value
 	 */
-	protected void setArray( String key, String value ) {
-		setValue( key, value );
+	protected void setArray( String key, Object[] array ) {
+		setValue( key, marshallValue( array ) );
 	}
 
 	/**
 	 * Override this method to optimize storing collection values.
 	 *
 	 * @param key The settings value key
-	 * @param value The settings value
+	 * @param collection The settings value
 	 */
-	protected void setCollection( String key, String value ) {
-		setValue( key, value );
+	protected void setCollection( String key, Collection<?> collection ) {
+		setValue( key, marshallValue( collection ) );
+	}
+
+	/**
+	 * Override this method to optimize storing map values.
+	 *
+	 * @param key The settings value key
+	 * @param map The settings value
+	 */
+	protected void setMap( String key, Map<?, ?> map ) {
+		setValue( key, marshallValue( map ) );
 	}
 
 	protected String marshallValue( Object value ) {
@@ -233,8 +257,7 @@ public abstract class AbstractSettings implements Settings {
 		}
 	}
 
-	protected <T> T unmarshallValue( String value, TypeReference<T> type, String defaultValue ) {
-		if( value == null ) value = defaultValue;
+	protected <T> T unmarshallValue( String value, TypeReference<T> type ) {
 		if( value == null ) return null;
 		try {
 			ObjectMapper mapper = new ObjectMapper();

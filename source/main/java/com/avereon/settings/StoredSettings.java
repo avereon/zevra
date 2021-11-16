@@ -3,6 +3,7 @@ package com.avereon.settings;
 import com.avereon.util.DelayedAction;
 import com.avereon.util.FileUtil;
 import com.avereon.util.PathUtil;
+import com.avereon.util.TypeReference;
 import lombok.CustomLog;
 
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -92,20 +94,6 @@ public class StoredSettings extends AbstractSettings {
 		return root.settings.get( nodePath ) != null;
 	}
 
-	/**
-	 * This checks if the node folder exists for the specified settings path. It is possible, for new nodes or recently removed nodes, that this this method
-	 * return a different value than {@link #nodeExists} if the changes have not yet been
-	 * flushed.
-	 *
-	 * @param path The child node settings path
-	 * @return True if the node folder exists, false otherwise
-	 */
-	public boolean fileExists( String path ) {
-		String nodePath = getNodePath( this.path, path );
-		// The substring(1) removes the leading slash
-		return Files.exists( root.folder.resolve( nodePath.substring( 1 ) ) );
-	}
-
 	@Override
 	public Settings getNode( String path ) {
 		return getNode( path, (Map<String, String>)null );
@@ -171,6 +159,14 @@ public class StoredSettings extends AbstractSettings {
 	protected void setValue( String key, String value ) {
 		if( value == null ) {
 			values.remove( key );
+			Path path = getJson( key );
+			if( Files.exists( path ) ) {
+				try {
+					Files.delete( path );
+				} catch( IOException exception ) {
+					log.atError( exception ).log( "Error removing value at=%s", path );
+				}
+			}
 		} else {
 			values.setProperty( key, value );
 		}
@@ -182,9 +178,69 @@ public class StoredSettings extends AbstractSettings {
 		return values.getProperty( key );
 	}
 
-	// TODO Override setArray and/or setCollection to store state in individual files
+	@Override
+	protected <S> S getBean( String key, TypeReference<S> type ) {
+		return load( key, type, () -> super.getBean( key, type ) );
+	}
 
-	// TODO Override getArray and/or getCollection to retrieve state from individual files
+	@Override
+	protected <S> void setBean( String key, S bean ) {
+		save( key, bean );
+	}
+
+	@Override
+	@SuppressWarnings( "unchecked" )
+	protected <S> Object[] getArray( String key, TypeReference<S> type ) {
+		return (Object[])load( key, type, () -> (S)super.getArray( key, type ) );
+	}
+
+	@Override
+	protected void setArray( String key, Object[] array ) {
+		save( key, array );
+	}
+
+	@Override
+	@SuppressWarnings( "unchecked" )
+	protected <S> Collection<?> getCollection( String key, TypeReference<S> type ) {
+		return (Collection<?>)load( key, type, () -> (S)super.getCollection( key, type ) );
+	}
+
+	@Override
+	protected void setCollection( String key, Collection<?> collection ) {
+		save( key, collection );
+	}
+
+	@Override
+	@SuppressWarnings( "unchecked" )
+	protected <S> Map<?, ?> getMap( String key, TypeReference<S> type ) {
+		return (Map<?, ?>)load( key, type, () -> (S)super.getMap( key, type ) );
+	}
+
+	@Override
+	protected void setMap( String key, Map<?, ?> map ) {
+		save( key, map );
+	}
+
+	protected <S> S load( String key, TypeReference<S> type, Supplier<S> supplier ) {
+		Path path = getJson( key );
+		if( !Files.exists( path ) ) supplier.get();
+		try {
+			String value = FileUtil.load( path );
+			return unmarshallValue( value, type );
+		} catch( IOException exception ) {
+			log.atError( exception ).log( "Error loading value at=%s", path );
+		}
+		return null;
+	}
+
+	private void save( String key, Object value ) {
+		Path path = getJson( key );
+		try {
+			FileUtil.save( marshallValue( value ), path );
+		} catch( IOException exception ) {
+			log.atError( exception ).log( "Error saving value at=%s", path );
+		}
+	}
 
 	@Override
 	public Settings flush() {
@@ -249,6 +305,10 @@ public class StoredSettings extends AbstractSettings {
 
 	private Path getFile() {
 		return folder.resolve( SETTINGS_FILE_NAME );
+	}
+
+	private Path getJson( String key ) {
+		return folder.resolve( key + ".json" );
 	}
 
 }

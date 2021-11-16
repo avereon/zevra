@@ -279,11 +279,11 @@ public abstract class BaseSettingsTest {
 		bean2.setIntegerPrimitiveProperty( 2 );
 		beans.add( bean2 );
 
-		// Store the map
+		// Store the list
 		settings.set( "beans", beans );
 		assertThat( settings.get( "beans", reference ), is( not( nullValue() ) ) );
 
-		// Get the map and check the beans
+		// Get the list and check the beans
 		List<MockBean> list = settings.get( "beans", reference );
 		assertThat( list, contains( bean1, bean2 ) );
 	}
@@ -302,11 +302,11 @@ public abstract class BaseSettingsTest {
 		bean2.setIntegerPrimitiveProperty( 2 );
 		beans.add( bean2 );
 
-		// Store the map
+		// Store the set
 		settings.set( "beans", beans );
 		assertThat( settings.get( "beans", reference ), is( not( nullValue() ) ) );
 
-		// Get the map and check the beans
+		// Get the set and check the beans
 		Set<MockBean> set = settings.get( "beans", reference );
 		assertThat( set, containsInAnyOrder( bean1, bean2 ) );
 	}
