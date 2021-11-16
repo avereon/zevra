@@ -14,10 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 
 @CustomLog
 public class FileUtil {
@@ -395,8 +392,22 @@ public class FileUtil {
 	}
 
 	public static long getDeepUncompressedSize( Path source ) throws IOException {
-		// TODO Accumulates all files sizes and uncompressed zip file sizes
-		return 0;
+		List<Path> paths = listPaths( source );
+
+		long total = 0;
+		for( Path path : paths ) {
+			if( Files.isDirectory( path ) ) {
+				total += getDeepUncompressedSize( path );
+			} else {
+				try {
+					total += getUncompressedSize( path );
+				} catch( ZipException exception ) {
+					total += Files.size( path );
+				}
+			}
+		}
+
+		return total;
 	}
 
 	public static List<Path> listPaths( Path file ) throws IOException {
