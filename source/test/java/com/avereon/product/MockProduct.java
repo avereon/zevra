@@ -39,8 +39,8 @@ public class MockProduct implements Product {
 		return null;
 	}
 
-	public String getRbText( String bundleKey, String valueKey ) {
-		return Rb.textOr( this, bundleKey, valueKey, null );
+	public String getRbText( String rbKey, String valueKey ) {
+		return Rb.textOr( this, rbKey, valueKey, null );
 	}
 
 }

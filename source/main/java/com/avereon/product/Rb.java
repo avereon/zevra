@@ -44,31 +44,31 @@ public class Rb {
 		return path.startsWith( "/" ) ? path : bundlePath + "/" + path;
 	}
 
-	public static String text( String bundleKey, String valueKey, Object... values ) {
-		return doGetText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, false, null, values );
+	public static String text( String rbKey, String valueKey, Object... values ) {
+		return doGetText( getProduct(), DEFAULT_PATH, rbKey, valueKey, false, null, values );
 	}
 
-	public static String text( Product product, String bundleKey, String valueKey, Object... values ) {
-		return doGetText( product, DEFAULT_PATH, bundleKey, valueKey, false, null, values );
+	public static String text( Product product, String rbKey, String valueKey, Object... values ) {
+		return doGetText( product, DEFAULT_PATH, rbKey, valueKey, false, null, values );
 	}
 
-	public static String textOr( String bundleKey, String valueKey, String other, Object... values ) {
-		return doGetText( getProduct(), DEFAULT_PATH, bundleKey, valueKey, true, other, values );
+	public static String textOr( String rbKey, String valueKey, String other, Object... values ) {
+		return doGetText( getProduct(), DEFAULT_PATH, rbKey, valueKey, true, other, values );
 	}
 
-	public static String textOr( Product product, String bundleKey, String valueKey, String other, Object... values ) {
-		return doGetText( product, DEFAULT_PATH, bundleKey, valueKey, true, other, values );
+	public static String textOr( Product product, String rbKey, String valueKey, String other, Object... values ) {
+		return doGetText( product, DEFAULT_PATH, rbKey, valueKey, true, other, values );
 	}
 
-	private static String doGetText( Product product, String path, String bundleKey, String valueKey, boolean useOther, String other, Object... values ) {
-		return doGetText( product, product, path, bundleKey, valueKey, useOther, other, values );
+	private static String doGetText( Product product, String path, String rbKey, String valueKey, boolean useOther, String other, Object... values ) {
+		return doGetText( product, product, path, rbKey, valueKey, useOther, other, values );
 	}
 
 	private static String doGetText(
 		final Product originalProduct,
 		final Product product,
 		final String path,
-		final String bundleKey,
+		final String rbKey,
 		final String valueKey,
 		final boolean useOther,
 		final String other,
@@ -78,8 +78,8 @@ public class Rb {
 
 		String string = null;
 		Product parent = product.getParent();
-		String rbPath = getPath( product, path ) + "/" + bundleKey;
-		String missingResourceMessage = originalProduct.getCard().getArtifact() + " > " + bundleKey + " > " + valueKey;
+		String rbPath = getPath( product, path ) + "/" + rbKey;
+		String missingResourceMessage = originalProduct.getCard().getArtifact() + " > " + rbKey + " > " + valueKey;
 
 		try {
 			ResourceBundle bundle = getResourceBundle( product, rbPath );
@@ -93,7 +93,7 @@ public class Rb {
 
 		if( string == null ) {
 			if( parent != null ) {
-				string = doGetText( originalProduct, parent, path, bundleKey, valueKey, useOther, other, values );
+				string = doGetText( originalProduct, parent, path, rbKey, valueKey, useOther, other, values );
 			} else {
 				if( useOther ) {
 					string = other;
@@ -101,7 +101,7 @@ public class Rb {
 					String prompt = "Missing value for: %s";
 					string = missingResourceMessage;
 					if( log.atDebug().isEnabled() ) {
-						log.atWarning().withCause( new MissingResourceException( string, bundleKey, string ) ).log( prompt, string );
+						log.atWarning().withCause( new MissingResourceException( string, rbKey, string ) ).log( prompt, string );
 					} else {
 						log.atWarning().log( prompt, string );
 					}
