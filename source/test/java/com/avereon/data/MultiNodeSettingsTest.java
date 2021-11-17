@@ -1,6 +1,7 @@
 package com.avereon.data;
 
-import com.avereon.transaction.*;
+import com.avereon.transaction.Txn;
+import com.avereon.transaction.TxnOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -99,13 +100,13 @@ public class MultiNodeSettingsTest {
 			Txn.submit( new TxnOperation( e -> { } ) {
 
 				@Override
-				protected void commit() throws TxnException {
-
+				protected TxnOperation commit() {
+					return this;
 				}
 
 				@Override
-				protected void revert() throws TxnException {
-
+				protected TxnOperation revert() {
+					return this;
 				}
 			} );
 		}

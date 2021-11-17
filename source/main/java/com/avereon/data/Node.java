@@ -350,14 +350,6 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
 	}
 
-	//	public <T extends Event> void register( String key, EventType<? super T> type, EventHandler<NodeEvent> handler ) {
-	//		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new WeakHashMap<>() ).put( handler, handler );
-	//	}
-	//
-	//	public <T extends Event> void unregister( String key, EventType<? super T> type, EventHandler<NodeEvent> handler ) {
-	//		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
-	//	}
-
 	/**
 	 * Copy the values and resources from the specified node. This method will
 	 * only fill in missing values and resources from the specified node.
@@ -1135,8 +1127,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				if( value instanceof Node ) {
 					Node child = (Node)value;
 					if( child instanceof NodeSet ) {
-						for( Object setValue : (NodeSet<?>)value ) {
-							child = (Node)setValue;
+						for( Node setValue : (NodeSet<?>)value ) {
+							child = setValue;
 							fireTargetedEvent( child, newEvent );
 							fireDroppingEvent( child, newEvent );
 						}
@@ -1167,7 +1159,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		@Override
-		protected void commit() throws TxnException {
+		protected SetSelfModifiedOperation commit() {
 			// This operation must be created before any changes are made
 			boolean modifyAllowed = getNode().modifyAllowed( oldValue ) & getNode().modifyAllowed( newValue );
 			UpdateModifiedOperation updateModified = new UpdateModifiedOperation( getNode() );
@@ -1176,23 +1168,24 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			// Propagate the modified false flag value to children
 			if( !newValue && getNode().values != null ) {
 				// NOTE Cannot use parallelStream here because it causes out-of-order events
-				//getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
 				getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( this::doClearChildModifiedFlag );
 			}
 
 			if( modifyAllowed ) updateModified.commit();
+
 			getResult().addEventsFrom( updateModified );
+
+			return this;
 		}
 
 		private void doClearChildModifiedFlag( Node child ) {
-			// NOTE This used to call Node.setModified( false ) but it caused too many Txn events
-			child.doSetSelfModified( false );
-			child.fireHoppingEvent( new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
+			getResult().addEventsFrom( new SetSelfModifiedOperation( child, child.selfModified, false ).commit() );
 		}
 
 		@Override
-		protected void revert() {
+		protected SetSelfModifiedOperation revert() {
 			getNode().doSetSelfModified( oldValue );
+			return this;
 		}
 
 		@Override
@@ -1221,8 +1214,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		@Override
-		protected void commit() throws TxnException {
-			if( Objects.equals( getNode().getValue( key ), newValue ) ) return;
+		protected SetValueOperation commit() throws TxnException {
+			if( Objects.equals( getNode().getValue( key ), newValue ) ) return this;
 
 			// This operation must be created before any changes are made
 			boolean modifyAllowed = getNode().modifyAllowed( oldValue ) & getNode().modifyAllowed( newValue );
@@ -1264,11 +1257,14 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			fireSlidingEvent( new NodeEvent( getNode(), NodeEvent.VALUE_CHANGED, setKey, key, oldValue, newValue ) );
 			getResult().addEventsFrom( updateModified );
 			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
+
+			return this;
 		}
 
 		@Override
-		protected void revert() {
+		protected SetValueOperation revert() {
 			getNode().doSetValue( key, newValue, oldValue );
+			return this;
 		}
 
 		@Override
@@ -1285,12 +1281,15 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		@Override
-		protected void commit() {
+		protected RefreshOperation commit() {
 			fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
+			return this;
 		}
 
 		@Override
-		protected void revert() {}
+		protected RefreshOperation revert() {
+			return this;
+		}
 	}
 
 	static class UpdateModifiedOperation extends NodeTxnOperation {
@@ -1303,7 +1302,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		@Override
-		protected void commit() {
+		protected UpdateModifiedOperation commit() {
 			getNode().updateInternalModified();
 
 			boolean newModified = getNode().isModified();
@@ -1313,6 +1312,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 				fireEvent( new NodeEvent( getNode(), newModified ? NodeEvent.MODIFIED : NodeEvent.UNMODIFIED ) );
 				fireHoppingEvent( new NodeEvent( getNode(), NodeEvent.NODE_CHANGED ) );
 			}
+
+			return this;
 		}
 
 		private void updateParentsModified( boolean newModified ) {
@@ -1331,7 +1332,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		}
 
 		@Override
-		protected void revert() {}
+		protected UpdateModifiedOperation revert() {
+			return this;
+		}
 
 		@Override
 		public String toString() {

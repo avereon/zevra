@@ -290,15 +290,17 @@ class TxnTest {
 		}
 
 		@Override
-		protected void commit() throws TxnException {
+		protected MockTransactionOperation commit() throws TxnException {
 			commitCallCount++;
 			getResult().addEvent( getTarget(), new MockTxnEvent( getTarget(), MockTxnEvent.MODIFIED ) );
 			if( throwable != null ) throw new TxnException( throwable );
+			return this;
 		}
 
 		@Override
-		protected void revert() {
+		protected MockTransactionOperation revert() {
 			rollbackCallCount++;
+			return this;
 		}
 
 		int getCommitCallCount() {

@@ -291,12 +291,15 @@ public class Txn implements AutoCloseable {
 		}
 
 		@Override
-		protected void commit() throws TxnException {
+		protected ConsumerTxnOperation commit() throws TxnException {
 			consumer.accept( getTarget() );
+			return this;
 		}
 
 		@Override
-		protected void revert() throws TxnException {}
+		protected ConsumerTxnOperation revert() throws TxnException {
+			return this;
+		}
 
 	}
 

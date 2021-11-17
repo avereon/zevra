@@ -28,9 +28,9 @@ public abstract class TxnOperation {
 		status = Status.WAITING;
 	}
 
-	protected abstract void commit() throws TxnException;
+	protected abstract TxnOperation commit() throws TxnException;
 
-	protected abstract void revert() throws TxnException;
+	protected abstract TxnOperation revert() throws TxnException;
 
 	public TxnEventTarget getTarget() {
 		return target;
