@@ -7,6 +7,7 @@ import lombok.CustomLog;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
@@ -36,7 +37,7 @@ public class Txn implements AutoCloseable {
 
 	private final Queue<TxnOperation> operations;
 
-	private int depth;
+	private final AtomicInteger atomicDepth;
 
 	static {
 		transactions.set( new ArrayDeque<>() );
@@ -44,6 +45,7 @@ public class Txn implements AutoCloseable {
 
 	private Txn() {
 		operations = new ConcurrentLinkedQueue<>();
+		atomicDepth = new AtomicInteger();
 	}
 
 	/**
@@ -134,7 +136,7 @@ public class Txn implements AutoCloseable {
 	public static void reset() {
 		Txn transaction = peekTransaction();
 		if( transaction == null ) return;
-		if( --transaction.depth > 0 ) return;
+		if( transaction.atomicDepth.decrementAndGet() > 0 ) return;
 
 		while( transaction != null ) {
 			transaction.doReset();
@@ -147,15 +149,15 @@ public class Txn implements AutoCloseable {
 	}
 
 	boolean isActive() {
-		return depth > 0;
+		return atomicDepth.get() > 0;
 	}
 
 	void incrementDepth() {
-		depth++;
+		atomicDepth.incrementAndGet();
 	}
 
 	void decrementDepth() {
-		depth--;
+		atomicDepth.decrementAndGet();
 	}
 
 	private static Txn verifyActiveTransaction() throws TxnException {
