@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.*;
 
 public class DelayedActionTest {
 
-	private static final long BUFFER_TIME = 15;
+	private static final long BUFFER_TIME = 50;
 
 	private final AtomicLong actionTimestamp = new AtomicLong();
 
