@@ -223,7 +223,7 @@ public class StoredSettings extends AbstractSettings {
 
 	protected <S> S load( String key, TypeReference<S> type, Supplier<S> supplier ) {
 		Path path = getJson( key );
-		if( !Files.exists( path ) ) supplier.get();
+		if( !Files.exists( path ) ) return supplier.get();
 		try {
 			String value = FileUtil.load( path );
 			return unmarshallValue( value, type );
