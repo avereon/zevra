@@ -1305,10 +1305,10 @@ class NodeTest {
 		assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
 
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
 
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
@@ -1383,10 +1383,10 @@ class NodeTest {
 		assertThat( parent, hasStates( false, false, 0, 0 ) );
 		assertEventState( parent, index++, TxnEvent.COMMIT_BEGIN );
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( parent, index++, child, TxnEvent.COMMIT_END );
 		assertEventState( parent, index++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, index++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, index++, TxnEvent.COMMIT_SUCCESS );
@@ -1496,21 +1496,21 @@ class NodeTest {
 
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
@@ -1860,21 +1860,21 @@ class NodeTest {
 		assertFalse( child.isModified() );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_BEGIN );
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_BEGIN );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( parent, parentIndex++, child, TxnEvent.COMMIT_END );
 		assertEventState( parent, parentIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( parent, parentIndex++, NodeEvent.NODE_CHANGED );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_SUCCESS );
 		assertEventState( parent, parentIndex++, TxnEvent.COMMIT_END );
 
 		// FIXME Should the child events be wrapped in a Txn
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_BEGIN );
 		assertEventState( child, childIndex++, NodeEvent.UNMODIFIED );
 		assertEventState( child, childIndex++, NodeEvent.NODE_CHANGED );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
-		assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_SUCCESS );
+		//assertEventState( child, childIndex++, TxnEvent.COMMIT_END );
 		assertThat( parent.getEventCount(), is( parentIndex ) );
 		assertThat( child.getEventCount(), is( childIndex ) );
 	}

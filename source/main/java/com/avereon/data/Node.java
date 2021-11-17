@@ -1176,11 +1176,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			// Propagate the modified false flag value to children
 			if( !newValue && getNode().values != null ) {
 				// NOTE Cannot use parallelStream here because it causes out-of-order events
-				getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
+				//getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( v -> v.setModified( false ) );
+				getNode().values.values().stream().filter( v -> v instanceof Node ).map( v -> (Node)v ).filter( Node::isModified ).forEach( this::doClearChildModifiedFlag );
 			}
 
 			if( modifyAllowed ) updateModified.commit();
 			getResult().addEventsFrom( updateModified );
+		}
+
+		private void doClearChildModifiedFlag( Node child ) {
+			// NOTE This used to call Node.setModified( false ) but it caused too many Txn events
+			child.doSetSelfModified( false );
+			child.fireHoppingEvent( new NodeEvent( child, NodeEvent.NODE_CHANGED ) );
 		}
 
 		@Override
