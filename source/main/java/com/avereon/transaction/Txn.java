@@ -192,7 +192,7 @@ public class Txn implements AutoCloseable {
 
 		try {
 			commitLock.lock();
-			log.atFiner().log( "Object %s locked by: %s", System.identityHashCode( this ), Thread.currentThread() );
+			log.atFiner().log( "Txn %s locked by: %s", System.identityHashCode( this ), Thread.currentThread() );
 
 			// Send a commit begin event to all unique targets
 			sendEvent( TxnEvent.COMMIT_BEGIN, operations );
@@ -242,7 +242,7 @@ public class Txn implements AutoCloseable {
 			sendEvent( TxnEvent.COMMIT_END, operations );
 			doReset();
 			commitLock.unlock();
-			log.atFiner().log( "Transaction[%s] committed!", System.identityHashCode( this ) );
+			log.atFiner().log( "Txn %s unlocked by: %s", System.identityHashCode( this ), Thread.currentThread() );
 		}
 	}
 
