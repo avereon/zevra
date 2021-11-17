@@ -10,8 +10,6 @@ import static org.hamcrest.Matchers.*;
 
 public class DelayedActionTest {
 
-	private static final long BUFFER_TIME = 50;
-
 	private final AtomicLong actionTimestamp = new AtomicLong();
 
 	private final Object actionLock = new Object();
@@ -29,7 +27,7 @@ public class DelayedActionTest {
 		long after = System.currentTimeMillis();
 
 		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( 0L ) ).and( lessThanOrEqualTo( BUFFER_TIME ) ) );
+		assertThat( after - before, both( greaterThanOrEqualTo( 0L ) ).and( lessThanOrEqualTo( 50L ) ) );
 	}
 
 	@Test
@@ -64,7 +62,7 @@ public class DelayedActionTest {
 		long after = System.currentTimeMillis();
 
 		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before + minTriggerLimit ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( minTriggerLimit ) ).and( lessThanOrEqualTo( minTriggerLimit + BUFFER_TIME ) ) );
+		assertThat( after - before, both( greaterThanOrEqualTo( minTriggerLimit ) ).and( lessThanOrEqualTo( 2 * minTriggerLimit ) ) );
 	}
 
 	@Test
@@ -97,7 +95,7 @@ public class DelayedActionTest {
 		long after = System.currentTimeMillis();
 
 		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before + maxTriggerLimit ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( maxTriggerLimit ) ).and( lessThanOrEqualTo( maxTriggerLimit + BUFFER_TIME ) ) );
+		assertThat( after - before, both( greaterThanOrEqualTo( maxTriggerLimit ) ).and( lessThanOrEqualTo( 2 * maxTriggerLimit ) ) );
 	}
 
 	private void doAction() {
@@ -108,7 +106,7 @@ public class DelayedActionTest {
 	}
 
 	private void readyAction() {
-		actionTimestamp.set(0);
+		actionTimestamp.set( 0 );
 	}
 
 	private void waitForAction() throws InterruptedException, TimeoutException {
