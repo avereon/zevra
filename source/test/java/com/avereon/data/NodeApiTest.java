@@ -3,6 +3,7 @@ package com.avereon.data;
 import com.avereon.event.Event;
 import com.avereon.event.EventHandler;
 import com.avereon.event.EventType;
+import com.avereon.transaction.Txn;
 import com.avereon.transaction.TxnEvent;
 import org.junit.jupiter.api.Test;
 
@@ -506,6 +507,16 @@ public class NodeApiTest extends BaseNodeTest {
 		NodeEventAssert.assertThat( data.event( index++ ) ).hasEventState( TxnEvent.COMMIT_SUCCESS );
 		NodeEventAssert.assertThat( data.event( index++ ) ).hasEventState( TxnEvent.COMMIT_END );
 		assertThat( data.getEventCount() ).isEqualTo( index );
+	}
+
+	@Test
+	void testSetClearSetValueInTransaction() throws Exception {
+		data.setValue( "x", 1 );
+		Txn.create();
+		data.setValue( "x", null );
+		data.setValue( "x", 1 );
+		Txn.commit();
+		assertThat( data.<Integer> getValue( "x" ) ).isEqualTo( 1 );
 	}
 
 	@Test

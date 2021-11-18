@@ -2,8 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArrayUtilTest {
 
@@ -17,9 +16,9 @@ public class ArrayUtilTest {
 		Integer[] check1 = new Integer[] {source[0], source[1], source[2], four};
 		Integer[] check2 = new Integer[] {source[0], source[1], source[2], four, five};
 
-		assertThat( ArrayUtil.append( source ), is( check0 ) );
-		assertThat( ArrayUtil.append( source, four ), is( check1 ) );
-		assertThat( ArrayUtil.append( source, four, five ), is( check2 ) );
+		assertThat( ArrayUtil.append( source )).isEqualTo( check0  );
+		assertThat( ArrayUtil.append( source, four )).isEqualTo( check1  );
+		assertThat( ArrayUtil.append( source, four, five )).isEqualTo( check2  );
 	}
 
 	@Test
@@ -32,9 +31,9 @@ public class ArrayUtilTest {
 		Integer[] check1 = new Integer[] {source[0], source[1], source[2], four};
 		Integer[] check2 = new Integer[] {source[0], source[1], source[2], four, five};
 
-		assertThat( ArrayUtil.concat( source ), is( check0 ) );
-		assertThat( ArrayUtil.concat( source, four ), is( check1 ) );
-		assertThat( ArrayUtil.concat( source, four, five ), is( check2 ) );
+		assertThat( ArrayUtil.concat( source )).isEqualTo( check0  );
+		assertThat( ArrayUtil.concat( source, four )).isEqualTo( check1 );
+		assertThat( ArrayUtil.concat( source, four, five )).isEqualTo( check2  );
 	}
 
 }

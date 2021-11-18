@@ -7,10 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 class OperatingSystemTest {
 
@@ -37,100 +35,100 @@ class OperatingSystemTest {
 	@Test
 	void testLinux() {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( true ) );
-		assertThat( OperatingSystem.isLinux(), is( true ) );
-		assertThat( OperatingSystem.isMac(), is( false ) );
-		assertThat( OperatingSystem.isUnix(), is( true ) );
-		assertThat( OperatingSystem.isWindows(), is( false ) );
-		assertThat( OperatingSystem.getVersion(), is( "2.6.32_45" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86_64" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.LINUX ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "java" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Community" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( true );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( true );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( true );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( false );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "2.6.32_45" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86_64" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.LINUX );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Community" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( "" );
 	}
 
 	@Test
 	void testMac() {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( true ) );
-		assertThat( OperatingSystem.isLinux(), is( false ) );
-		assertThat( OperatingSystem.isMac(), is( true ) );
-		assertThat( OperatingSystem.isUnix(), is( true ) );
-		assertThat( OperatingSystem.isWindows(), is( false ) );
-		assertThat( OperatingSystem.getVersion(), is( "10" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "ppc" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.MACOSX ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "java" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Apple" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( "" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( true );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( true );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( true );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( false );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "ppc" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.MACOSX );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Apple" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( "" );
 
 		// Test the process launch workaround
-		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ), is( "FORK" ) );
+		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ) ).isEqualTo( "FORK" );
 	}
 
 	@Test
 	void testWindows7() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( false ) );
-		assertThat( OperatingSystem.isLinux(), is( false ) );
-		assertThat( OperatingSystem.isMac(), is( false ) );
-		assertThat( OperatingSystem.isUnix(), is( false ) );
-		assertThat( OperatingSystem.isWindows(), is( true ) );
-		assertThat( OperatingSystem.getVersion(), is( "6.1" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.1" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
 	}
 
 	@Test
 	void testWindows8() {
 		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( false ) );
-		assertThat( OperatingSystem.isLinux(), is( false ) );
-		assertThat( OperatingSystem.isMac(), is( false ) );
-		assertThat( OperatingSystem.isUnix(), is( false ) );
-		assertThat( OperatingSystem.isWindows(), is( true ) );
-		assertThat( OperatingSystem.getVersion(), is( "6.2" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.2" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
 	}
 
 	@Test
 	void testWindows8_1() {
 		OperatingSystem.init( "Windows 8.1", "x86", "6.3", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( false ) );
-		assertThat( OperatingSystem.isLinux(), is( false ) );
-		assertThat( OperatingSystem.isMac(), is( false ) );
-		assertThat( OperatingSystem.isUnix(), is( false ) );
-		assertThat( OperatingSystem.isWindows(), is( true ) );
-		assertThat( OperatingSystem.getVersion(), is( "6.3" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.3" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
 	}
 
 	@Test
 	void testWindows10() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix(), is( false ) );
-		assertThat( OperatingSystem.isLinux(), is( false ) );
-		assertThat( OperatingSystem.isMac(), is( false ) );
-		assertThat( OperatingSystem.isUnix(), is( false ) );
-		assertThat( OperatingSystem.isWindows(), is( true ) );
-		assertThat( OperatingSystem.getVersion(), is( "10.0" ) );
-		assertThat( OperatingSystem.getSystemArchitecture(), is( "x86" ) );
-		assertThat( OperatingSystem.getFamily(), is( OperatingSystem.Family.WINDOWS ) );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "javaw.exe" ) );
-		assertThat( OperatingSystem.getProvider(), is( "Microsoft" ) );
-		assertThat( OperatingSystem.getExeSuffix(), is( ".exe" ) );
+		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
+		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
+		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
+		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10.0" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
 	}
 
 	@Test
@@ -138,11 +136,11 @@ class OperatingSystemTest {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
 	}
 
 	@Test
@@ -150,22 +148,22 @@ class OperatingSystemTest {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
 	}
 
 	@Test
 	void testIsProcessElevatedWindows() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertThat( OperatingSystem.isProcessElevated(), is( false ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
 
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertThat( OperatingSystem.isProcessElevated(), is( true ) );
+		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
 	}
 
 	@Test
@@ -180,9 +178,9 @@ class OperatingSystemTest {
 
 		OperatingSystem.elevateProcessBuilder( program, builder );
 
-		assertThat( builder.command().get( 0 ), is( elevate.getCanonicalPath() ) );
-		assertThat( builder.command().get( 1 ), is( program ) );
-		assertThat( builder.command().size(), is( 2 ) );
+		assertThat( builder.command().get( 0 ) ).isEqualTo( elevate.getCanonicalPath() );
+		assertThat( builder.command().get( 1 ) ).isEqualTo( program );
+		assertThat( builder.command().size() ).isEqualTo( 2 );
 		elevate.delete();
 	}
 
@@ -198,28 +196,28 @@ class OperatingSystemTest {
 		File gksudo = new File( "/usr/bin/gksudo" );
 		File kdesudo = new File( "/usr/bin/kdesudo" );
 		if( pkexec.exists() ) {
-			assertThat( builder.command().get( 0 ), is( pkexec.toString() ) );
-			assertThat( builder.command().get( 1 ), is( program ) );
-			assertThat( builder.command().size(), is( 2 ) );
+			assertThat( builder.command().get( 0 ) ).isEqualTo( pkexec.toString() );
+			assertThat( builder.command().get( 1 ) ).isEqualTo( program );
+			assertThat( builder.command().size() ).isEqualTo( 2 );
 		} else if( gksudo.exists() ) {
-			assertThat( builder.command().get( 0 ), is( gksudo.toString() ) );
-			assertThat( builder.command().get( 1 ), is( "-D" ) );
-			assertThat( builder.command().get( 2 ), is( program ) );
-			assertThat( builder.command().get( 3 ), is( "--" ) );
-			assertThat( builder.command().get( 4 ), is( program ) );
-			assertThat( builder.command().size(), is( 5 ) );
+			assertThat( builder.command().get( 0 ) ).isEqualTo( gksudo.toString() );
+			assertThat( builder.command().get( 1 ) ).isEqualTo( "-D" );
+			assertThat( builder.command().get( 2 ) ).isEqualTo( program );
+			assertThat( builder.command().get( 3 ) ).isEqualTo( "--" );
+			assertThat( builder.command().get( 4 ) ).isEqualTo( program );
+			assertThat( builder.command().size() ).isEqualTo( 5 );
 		} else if( kdesudo.exists() ) {
-			assertThat( builder.command().get( 0 ), is( kdesudo.toString() ) );
-			assertThat( builder.command().get( 2 ), is( program ) );
-			assertThat( builder.command().size(), is( 3 ) );
+			assertThat( builder.command().get( 0 ) ).isEqualTo( kdesudo.toString() );
+			assertThat( builder.command().get( 2 ) ).isEqualTo( program );
+			assertThat( builder.command().size() ).isEqualTo( 3 );
 		} else {
-			assertThat( builder.command().get( 0 ), is( "xterm" ) );
-			assertThat( builder.command().get( 1 ), is( "-title" ) );
-			assertThat( builder.command().get( 2 ), is( program ) );
-			assertThat( builder.command().get( 3 ), is( "-e" ) );
-			assertThat( builder.command().get( 4 ), is( "sudo" ) );
-			assertThat( builder.command().get( 5 ), is( program ) );
-			assertThat( builder.command().size(), is( 6 ) );
+			assertThat( builder.command().get( 0 ) ).isEqualTo( "xterm" );
+			assertThat( builder.command().get( 1 ) ).isEqualTo( "-title" );
+			assertThat( builder.command().get( 2 ) ).isEqualTo( program );
+			assertThat( builder.command().get( 3 ) ).isEqualTo( "-e" );
+			assertThat( builder.command().get( 4 ) ).isEqualTo( "sudo" );
+			assertThat( builder.command().get( 5 ) ).isEqualTo( program );
+			assertThat( builder.command().size() ).isEqualTo( 6 );
 		}
 	}
 
@@ -236,10 +234,10 @@ class OperatingSystemTest {
 		OperatingSystem.elevateProcessBuilder( "Notepad", builder );
 
 		int index = 0;
-		assertThat( builder.command().get( index++ ), is( "wscript" ) );
-		assertThat( builder.command().get( index++ ), is( elevate.getCanonicalPath() ) );
-		assertThat( builder.command().get( index++ ), is( program ) );
-		assertThat( builder.command().size(), is( index ) );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "wscript" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( elevate.getCanonicalPath() );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( program );
+		assertThat( builder.command().size() ).isEqualTo( index );
 
 		elevate.delete();
 	}
@@ -253,12 +251,12 @@ class OperatingSystemTest {
 		OperatingSystem.reduceProcessBuilder( builder );
 
 		int index = 0;
-		assertThat( builder.command().get( index++ ), is( "su" ) );
-		assertThat( builder.command().get( index++ ), is( "-" ) );
-		assertThat( builder.command().get( index++ ), is( System.getenv( "SUDO_USER" ) ) );
-		assertThat( builder.command().get( index++ ), is( "--" ) );
-		assertThat( builder.command().get( index++ ), is( "textmate" ) );
-		assertThat( builder.command().size(), is( index ) );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "su" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "-" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( System.getenv( "SUDO_USER" ) );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "--" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "textmate" );
+		assertThat( builder.command().size() ).isEqualTo( index );
 	}
 
 	@Test
@@ -270,12 +268,12 @@ class OperatingSystemTest {
 		OperatingSystem.reduceProcessBuilder( builder );
 
 		int index = 0;
-		assertThat( builder.command().get( index++ ), is( "su" ) );
-		assertThat( builder.command().get( index++ ), is( "-" ) );
-		assertThat( builder.command().get( index++ ), is( System.getenv( "SUDO_USER" ) ) );
-		assertThat( builder.command().get( index++ ), is( "--" ) );
-		assertThat( builder.command().get( index++ ), is( "vi" ) );
-		assertThat( builder.command().size(), is( index ) );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "su" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "-" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( System.getenv( "SUDO_USER" ) );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "--" );
+		assertThat( builder.command().get( index++ ) ).isEqualTo( "vi" );
+		assertThat( builder.command().size() ).isEqualTo( index );
 	}
 
 	@Test
@@ -292,104 +290,104 @@ class OperatingSystemTest {
 			exception = ioexception;
 		}
 
-		assertNotNull( exception );
+		assertThat( exception ).isNotNull();
 	}
 
 	@Test
 	void testGetJavaExecutablePath() {
 		String java = OperatingSystem.isWindows() ? "javaw" : "java";
 		String javaPath = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + java;
-		assertThat( OperatingSystem.getJavaLauncherPath(), is( javaPath ) );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( javaPath );
 	}
 
 	@Test
 	void testResolveNativeLibPath() {
 		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "win/x86/rxtxSerial.dll" ) );
+		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ) ).isEqualTo( "win/x86/rxtxSerial.dll" );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ), is( "linux/x86_64/librxtxSerial.so" ) );
+		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ) ).isEqualTo( "linux/x86_64/librxtxSerial.so" );
 	}
 
 	@Test
 	void testGetUserProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( WINDOWS_USER_DATA ).resolve( "Program" ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( WINDOWS_USER_DATA ).resolve( "Program" ) );
 
 		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( MACOSX_USER_DATA ).resolve( "Program" ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( MACOSX_USER_DATA ).resolve( "Program" ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ), is( Paths.get( UNIX_USER_DATA ).resolve( "program" ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( UNIX_USER_DATA ).resolve( "program" ) );
 	}
 
 	@Test
 	void testBaseGetUserProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( WINDOWS_USER_DATA ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder() ).isEqualTo( Paths.get( WINDOWS_USER_DATA ) );
 
 		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( MACOSX_USER_DATA ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder() ).isEqualTo( Paths.get( MACOSX_USER_DATA ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getUserProgramDataFolder(), is( Paths.get( UNIX_USER_DATA ) ) );
+		assertThat( OperatingSystem.getUserProgramDataFolder() ).isEqualTo( Paths.get( UNIX_USER_DATA ) );
 	}
 
 	@Test
 	void testGetSharedProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( WINDOWS_SHARED_DATA ).resolve( "Program" ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( WINDOWS_SHARED_DATA ).resolve( "Program" ) );
 
 		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( MACOSX_SHARED_DATA ).resolve( "Program" ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( MACOSX_SHARED_DATA ).resolve( "Program" ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ), is( Paths.get( UNIX_SHARED_DATA ).resolve( "program" ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder( "program", "Program" ) ).isEqualTo( Paths.get( UNIX_SHARED_DATA ).resolve( "program" ) );
 	}
 
 	@Test
 	void testGetBaseSharedProgramDataFolder() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( WINDOWS_SHARED_DATA ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder() ).isEqualTo( Paths.get( WINDOWS_SHARED_DATA ) );
 
 		OperatingSystem.init( "Mac OS X", "x86_64", "14", MACOSX_USER_DATA, MACOSX_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( MACOSX_SHARED_DATA ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder() ).isEqualTo( Paths.get( MACOSX_SHARED_DATA ) );
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.getSharedProgramDataFolder(), is( Paths.get( UNIX_SHARED_DATA ) ) );
+		assertThat( OperatingSystem.getSharedProgramDataFolder() ).isEqualTo( Paths.get( UNIX_SHARED_DATA ) );
 	}
 
 	@Test
 	void testGetJavaLauncherName() {
-		assertThat( OperatingSystem.getJavaLauncherName(), is( OperatingSystem.isWindows() ? "javaw" : "java" ) );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw" : "java" );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "Mock" ) );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "Mock" );
 	}
 
 	@Test
 	void testGetJavaLauncherPath() {
-		assertThat( OperatingSystem.getJavaLauncherPath(), is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() ) );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_PATH, "/this/is/the/launcher/path" );
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
-		assertThat( OperatingSystem.getJavaLauncherPath(), is( "/this/is/the/launcher/path" + File.separator + "Mock" ) );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( "/this/is/the/launcher/path" + File.separator + "Mock" );
 	}
 
 	@Test
 	void testGetJavaLauncherNameWithJPackageAppPath() {
-		assertThat( OperatingSystem.getJavaLauncherName(), is( OperatingSystem.isWindows() ? "javaw" : "java" ) );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw" : "java" );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
-		assertThat( OperatingSystem.getJavaLauncherName(), is( "Mock" ) );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "Mock" );
 	}
 
 	@Test
 	void testGetJavaLauncherPathWithJPackageAppPath() {
-		assertThat( OperatingSystem.getJavaLauncherPath(), is( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() ) );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
-		assertThat( OperatingSystem.getJavaLauncherPath(), is( "/this/is/the/launcher/path/Mock" ) );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( "/this/is/the/launcher/path/Mock" );
 	}
 
 }

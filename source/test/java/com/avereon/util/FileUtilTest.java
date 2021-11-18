@@ -15,11 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FileUtilTest {
 
@@ -37,156 +33,156 @@ class FileUtilTest {
 
 	@Test
 	void testGetHumanSize() {
-		assertThat( FileUtil.getHumanSize( 0 ), is( "0 B" ) );
-		assertThat( FileUtil.getHumanSize( 1 ), is( "1 B" ) );
-		assertThat( FileUtil.getHumanSize( 12 ), is( "12 B" ) );
-		assertThat( FileUtil.getHumanSize( 123 ), is( "123 B" ) );
-		assertThat( FileUtil.getHumanSize( 1234 ), is( "1.2 KB" ) );
-		assertThat( FileUtil.getHumanSize( 12345 ), is( "12 KB" ) );
-		assertThat( FileUtil.getHumanSize( 123456 ), is( "123 KB" ) );
-		assertThat( FileUtil.getHumanSize( 1234567 ), is( "1.2 MB" ) );
-		assertThat( FileUtil.getHumanSize( 12345678 ), is( "12 MB" ) );
-		assertThat( FileUtil.getHumanSize( 123456789 ), is( "123 MB" ) );
+		assertThat( FileUtil.getHumanSize( 0 ) ).isEqualTo( "0 B" );
+		assertThat( FileUtil.getHumanSize( 1 ) ).isEqualTo( "1 B" );
+		assertThat( FileUtil.getHumanSize( 12 ) ).isEqualTo( "12 B" );
+		assertThat( FileUtil.getHumanSize( 123 ) ).isEqualTo( "123 B" );
+		assertThat( FileUtil.getHumanSize( 1234 ) ).isEqualTo( "1.2 KB" );
+		assertThat( FileUtil.getHumanSize( 12345 ) ).isEqualTo( "12 KB" );
+		assertThat( FileUtil.getHumanSize( 123456 ) ).isEqualTo( "123 KB" );
+		assertThat( FileUtil.getHumanSize( 1234567 ) ).isEqualTo( "1.2 MB" );
+		assertThat( FileUtil.getHumanSize( 12345678 ) ).isEqualTo( "12 MB" );
+		assertThat( FileUtil.getHumanSize( 123456789 ) ).isEqualTo( "123 MB" );
 
-		assertThat( FileUtil.getHumanSize( -0 ), is( "0 B" ) );
-		assertThat( FileUtil.getHumanSize( -1 ), is( "-1 B" ) );
-		assertThat( FileUtil.getHumanSize( -12 ), is( "-12 B" ) );
-		assertThat( FileUtil.getHumanSize( -123 ), is( "-123 B" ) );
-		assertThat( FileUtil.getHumanSize( -1234 ), is( "-1.2 KB" ) );
-		assertThat( FileUtil.getHumanSize( -12345 ), is( "-12 KB" ) );
-		assertThat( FileUtil.getHumanSize( -123456 ), is( "-123 KB" ) );
-		assertThat( FileUtil.getHumanSize( -1234567 ), is( "-1.2 MB" ) );
-		assertThat( FileUtil.getHumanSize( -12345678 ), is( "-12 MB" ) );
-		assertThat( FileUtil.getHumanSize( -123456789 ), is( "-123 MB" ) );
+		assertThat( FileUtil.getHumanSize( -0 ) ).isEqualTo( "0 B" );
+		assertThat( FileUtil.getHumanSize( -1 ) ).isEqualTo( "-1 B" );
+		assertThat( FileUtil.getHumanSize( -12 ) ).isEqualTo( "-12 B" );
+		assertThat( FileUtil.getHumanSize( -123 ) ).isEqualTo( "-123 B" );
+		assertThat( FileUtil.getHumanSize( -1234 ) ).isEqualTo( "-1.2 KB" );
+		assertThat( FileUtil.getHumanSize( -12345 ) ).isEqualTo( "-12 KB" );
+		assertThat( FileUtil.getHumanSize( -123456 ) ).isEqualTo( "-123 KB" );
+		assertThat( FileUtil.getHumanSize( -1234567 ) ).isEqualTo( "-1.2 MB" );
+		assertThat( FileUtil.getHumanSize( -12345678 ) ).isEqualTo( "-12 MB" );
+		assertThat( FileUtil.getHumanSize( -123456789 ) ).isEqualTo( "-123 MB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() - 1 ), is( "999 B" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() ), is( "1.0 KB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() - 1 ) ).isEqualTo( "999 B" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.KB.getSize() ) ).isEqualTo( "1.0 KB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() - 1 ), is( "999 KB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() ), is( "1.0 MB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() - 1 ) ).isEqualTo( "999 KB" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.MB.getSize() ) ).isEqualTo( "1.0 MB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() - 1 ), is( "999 MB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() ), is( "1.0 GB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() - 1 ) ).isEqualTo( "999 MB" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.GB.getSize() ) ).isEqualTo( "1.0 GB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() - 1 ), is( "999 GB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() ), is( "1.0 TB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() - 1 ) ).isEqualTo( "999 GB" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.TB.getSize() ) ).isEqualTo( "1.0 TB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() - 1 ), is( "999 TB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() ), is( "1.0 PB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() - 1 ) ).isEqualTo( "999 TB" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.PB.getSize() ) ).isEqualTo( "1.0 PB" );
 
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() - 1 ), is( "999 PB" ) );
-		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() ), is( "1.0 EB" ) );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() - 1 ) ).isEqualTo( "999 PB" );
+		assertThat( FileUtil.getHumanSize( SizeUnitBase10.EB.getSize() ) ).isEqualTo( "1.0 EB" );
 	}
 
 	@Test
 	void testGetHumanSizeCompact() {
-		assertThat( FileUtil.getHumanSize( 0, true ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSize( 1, true ), is( "1B" ) );
-		assertThat( FileUtil.getHumanSize( 12, true ), is( "12B" ) );
-		assertThat( FileUtil.getHumanSize( 123, true ), is( "123B" ) );
-		assertThat( FileUtil.getHumanSize( 1234, true ), is( "1.2K" ) );
-		assertThat( FileUtil.getHumanSize( 12345, true ), is( "12K" ) );
-		assertThat( FileUtil.getHumanSize( 123456, true ), is( "123K" ) );
-		assertThat( FileUtil.getHumanSize( 1234567, true ), is( "1.2M" ) );
-		assertThat( FileUtil.getHumanSize( 12345678, true ), is( "12M" ) );
-		assertThat( FileUtil.getHumanSize( 123456789, true ), is( "123M" ) );
+		assertThat( FileUtil.getHumanSize( 0, true ) ).isEqualTo( "0B" );
+		assertThat( FileUtil.getHumanSize( 1, true ) ).isEqualTo( "1B" );
+		assertThat( FileUtil.getHumanSize( 12, true ) ).isEqualTo( "12B" );
+		assertThat( FileUtil.getHumanSize( 123, true ) ).isEqualTo( "123B" );
+		assertThat( FileUtil.getHumanSize( 1234, true ) ).isEqualTo( "1.2K" );
+		assertThat( FileUtil.getHumanSize( 12345, true ) ).isEqualTo( "12K" );
+		assertThat( FileUtil.getHumanSize( 123456, true ) ).isEqualTo( "123K" );
+		assertThat( FileUtil.getHumanSize( 1234567, true ) ).isEqualTo( "1.2M" );
+		assertThat( FileUtil.getHumanSize( 12345678, true ) ).isEqualTo( "12M" );
+		assertThat( FileUtil.getHumanSize( 123456789, true ) ).isEqualTo( "123M" );
 	}
 
 	@Test
 	void testGetHumanBinSize() {
-		assertThat( FileUtil.getHumanSizeBase2( 0 ), is( "0 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1 ), is( "1 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12 ), is( "12 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123 ), is( "123 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234 ), is( "1.2 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345 ), is( "12 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456 ), is( "120 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234567 ), is( "1.2 MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345678 ), is( "11 MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456789 ), is( "117 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 0 ) ).isEqualTo( "0 B" );
+		assertThat( FileUtil.getHumanSizeBase2( 1 ) ).isEqualTo( "1 B" );
+		assertThat( FileUtil.getHumanSizeBase2( 12 ) ).isEqualTo( "12 B" );
+		assertThat( FileUtil.getHumanSizeBase2( 123 ) ).isEqualTo( "123 B" );
+		assertThat( FileUtil.getHumanSizeBase2( 1234 ) ).isEqualTo( "1.2 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( 12345 ) ).isEqualTo( "12 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( 123456 ) ).isEqualTo( "120 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( 1234567 ) ).isEqualTo( "1.2 MiB" );
+		assertThat( FileUtil.getHumanSizeBase2( 12345678 ) ).isEqualTo( "11 MiB" );
+		assertThat( FileUtil.getHumanSizeBase2( 123456789 ) ).isEqualTo( "117 MiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( -0 ), is( "0 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1 ), is( "-1 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12 ), is( "-12 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123 ), is( "-123 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1234 ), is( "-1.2 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12345 ), is( "-12 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123456 ), is( "-120 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -1234567 ), is( "-1.2 MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -12345678 ), is( "-11 MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( -123456789 ), is( "-117 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( -0 ) ).isEqualTo( "0 B" );
+		assertThat( FileUtil.getHumanSizeBase2( -1 ) ).isEqualTo( "-1 B" );
+		assertThat( FileUtil.getHumanSizeBase2( -12 ) ).isEqualTo( "-12 B" );
+		assertThat( FileUtil.getHumanSizeBase2( -123 ) ).isEqualTo( "-123 B" );
+		assertThat( FileUtil.getHumanSizeBase2( -1234 ) ).isEqualTo( "-1.2 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( -12345 ) ).isEqualTo( "-12 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( -123456 ) ).isEqualTo( "-120 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( -1234567 ) ).isEqualTo( "-1.2 MiB" );
+		assertThat( FileUtil.getHumanSizeBase2( -12345678 ) ).isEqualTo( "-11 MiB" );
+		assertThat( FileUtil.getHumanSizeBase2( -123456789 ) ).isEqualTo( "-117 MiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() - 1 ), is( "1023 B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() ), is( "1.0 KiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() - 1 ) ).isEqualTo( "1023 B" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.KiB.getSize() ) ).isEqualTo( "1.0 KiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() - 1 ), is( "1023 KiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() ), is( "1.0 MiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() - 1 ) ).isEqualTo( "1023 KiB" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.MiB.getSize() ) ).isEqualTo( "1.0 MiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() - 1 ), is( "1023 MiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() ), is( "1.0 GiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() - 1 ) ).isEqualTo( "1023 MiB" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.GiB.getSize() ) ).isEqualTo( "1.0 GiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() - 1 ), is( "1023 GiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() ), is( "1.0 TiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() - 1 ) ).isEqualTo( "1023 GiB" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.TiB.getSize() ) ).isEqualTo( "1.0 TiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() - 1 ), is( "1023 TiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() ), is( "1.0 PiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() - 1 ) ).isEqualTo( "1023 TiB" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.PiB.getSize() ) ).isEqualTo( "1.0 PiB" );
 
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() - 1 ), is( "1023 PiB" ) );
-		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() ), is( "1.0 EiB" ) );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() - 1 ) ).isEqualTo( "1023 PiB" );
+		assertThat( FileUtil.getHumanSizeBase2( SizeUnitBase2.EiB.getSize() ) ).isEqualTo( "1.0 EiB" );
 	}
 
 	@Test
 	void testGetHumanBinSizeCompact() {
-		assertThat( FileUtil.getHumanSizeBase2( 0, true ), is( "0B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1, true ), is( "1B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12, true ), is( "12B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123, true ), is( "123B" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234, true ), is( "1.2K" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345, true ), is( "12K" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456, true ), is( "120K" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 1234567, true ), is( "1.2M" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 12345678, true ), is( "11M" ) );
-		assertThat( FileUtil.getHumanSizeBase2( 123456789, true ), is( "117M" ) );
+		assertThat( FileUtil.getHumanSizeBase2( 0, true ) ).isEqualTo( "0B" );
+		assertThat( FileUtil.getHumanSizeBase2( 1, true ) ).isEqualTo( "1B" );
+		assertThat( FileUtil.getHumanSizeBase2( 12, true ) ).isEqualTo( "12B" );
+		assertThat( FileUtil.getHumanSizeBase2( 123, true ) ).isEqualTo( "123B" );
+		assertThat( FileUtil.getHumanSizeBase2( 1234, true ) ).isEqualTo( "1.2K" );
+		assertThat( FileUtil.getHumanSizeBase2( 12345, true ) ).isEqualTo( "12K" );
+		assertThat( FileUtil.getHumanSizeBase2( 123456, true ) ).isEqualTo( "120K" );
+		assertThat( FileUtil.getHumanSizeBase2( 1234567, true ) ).isEqualTo( "1.2M" );
+		assertThat( FileUtil.getHumanSizeBase2( 12345678, true ) ).isEqualTo( "11M" );
+		assertThat( FileUtil.getHumanSizeBase2( 123456789, true ) ).isEqualTo( "117M" );
 	}
 
 	@Test
 	void testGetExtensionWithPath() {
-		assertThat( FileUtil.getExtension( (Path)null ), is( nullValue() ) );
-		assertThat( FileUtil.getExtension( Paths.get( "test" ) ), is( "" ) );
-		assertThat( FileUtil.getExtension( Paths.get( "test.txt" ) ), is( "txt" ) );
+		assertThat( FileUtil.getExtension( (Path)null ) ).isNull();
+		assertThat( FileUtil.getExtension( Paths.get( "test" ) ) ).isEqualTo( "" );
+		assertThat( FileUtil.getExtension( Paths.get( "test.txt" ) ) ).isEqualTo( "txt" );
 	}
 
 	@Test
 	void testGetExtensionWithName() {
-		assertThat( FileUtil.getExtension( (String)null ), is( nullValue() ) );
-		assertThat( FileUtil.getExtension( "test" ), is( "" ) );
-		assertThat( FileUtil.getExtension( "test.txt" ), is( "txt" ) );
+		assertThat( FileUtil.getExtension( (String)null ) ).isNull();
+		assertThat( FileUtil.getExtension( "test" ) ).isEqualTo( "" );
+		assertThat( FileUtil.getExtension( "test.txt" ) ).isEqualTo( "txt" );
 	}
 
 	@Test
 	void testRemoveExtensionWithPath() {
-		assertThat( FileUtil.removeExtension( (Path)null ), is( nullValue() ) );
-		assertThat( FileUtil.removeExtension( Paths.get( "test" ) ), is( Paths.get( "test" ) ) );
-		assertThat( FileUtil.removeExtension( Paths.get( "test.txt" ) ), is( Paths.get( "test" ) ) );
+		assertThat( FileUtil.removeExtension( (Path)null ) ).isNull();
+		assertThat( FileUtil.removeExtension( Paths.get( "test" ) ) ).isEqualTo( Paths.get( "test" ) );
+		assertThat( FileUtil.removeExtension( Paths.get( "test.txt" ) ) ).isEqualTo( Paths.get( "test" ) );
 	}
 
 	@Test
 	void testRemoveExtensionWithName() {
-		assertThat( FileUtil.removeExtension( (String)null ), is( nullValue() ) );
-		assertThat( FileUtil.removeExtension( "test" ), is( "test" ) );
-		assertThat( FileUtil.removeExtension( "test.txt" ), is( "test" ) );
+		assertThat( FileUtil.removeExtension( (String)null ) ).isNull();
+		assertThat( FileUtil.removeExtension( "test" ) ).isEqualTo( "test" );
+		assertThat( FileUtil.removeExtension( "test.txt" ) ).isEqualTo( "test" );
 	}
 
 	@Test
 	void testSaveAndLoad() throws Exception {
 		Path path = FileUtil.createTempFile( PREFIX, "Test" );
 		FileUtil.save( path.toString(), path );
-		assertThat( FileUtil.load( path ), is( path.toString() ) );
+		assertThat( FileUtil.load( path ) ).isEqualTo( path.toString() );
 	}
 
 	@Test
 	void testCopyWithNonExistantFiles() throws Exception {
-		assertThat( FileUtil.copy( Paths.get( "/nonexistant" ), Paths.get( "/nonexistant" ) ), is( false ) );
+		assertThat( FileUtil.copy( Paths.get( "/nonexistant" ), Paths.get( "/nonexistant" ) ) ).isEqualTo( false );
 	}
 
 	@Test
@@ -218,12 +214,12 @@ class FileUtilTest {
 				output.writeLong( time );
 			}
 
-			assertThat( FileUtil.copy( source, target ), is( true ) );
+			assertThat( FileUtil.copy( source, target ) ).isEqualTo( true );
 
 			Path child = target.resolve( source.getFileName() );
 			FileInputStream fileInput = new FileInputStream( child.toFile() );
 			try( DataInputStream input = new DataInputStream( fileInput ) ) {
-				assertThat( input.readLong(), is( time ) );
+				assertThat( input.readLong() ).isEqualTo( time );
 			}
 		} finally {
 			FileUtil.deleteOnExit( source );
@@ -236,9 +232,9 @@ class FileUtilTest {
 		Path source = FileUtil.createTempFolder( PREFIX, "copyFolderToFileSource" );
 		Path target = FileUtil.createTempFile( PREFIX, "copyFolderToFileTarget" );
 		try {
-			assertThat( FileUtil.copy( source, target ), is( false ) );
-			assertThat( Files.exists( source ), is( true ) );
-			assertThat( Files.exists( target ), is( true ) );
+			assertThat( FileUtil.copy( source, target ) ).isEqualTo( false );
+			assertThat( Files.exists( source ) ).isEqualTo( true );
+			assertThat( Files.exists( target ) ).isEqualTo( true );
 		} finally {
 			FileUtil.deleteOnExit( source );
 			FileUtil.deleteOnExit( target );
@@ -258,25 +254,25 @@ class FileUtilTest {
 			Path leaf3 = FileUtil.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf3" );
 
 			try( Stream<Path> list = Files.list( source0 ) ) {
-				assertThat( list.count(), is( 3L ) );
+				assertThat( list.count() ).isEqualTo( 3L );
 			}
 			try( Stream<Path> list = Files.list( source1 ) ) {
-				assertThat( list.count(), is( 2L ) );
+				assertThat( list.count() ).isEqualTo( 2L );
 			}
 
-			assertThat( FileUtil.copy( source0, target0, false ), is( true ) );
+			assertThat( FileUtil.copy( source0, target0, false ) ).isEqualTo( true );
 
 			try( Stream<Path> list = Files.list( target0 ) ) {
-				assertThat( list.count(), is( 3L ) );
+				assertThat( list.count() ).isEqualTo( 3L );
 			}
 			try( Stream<Path> list = Files.list( target1 ) ) {
-				assertThat( list.count(), is( 2L ) );
+				assertThat( list.count() ).isEqualTo( 2L );
 			}
 
-			assertThat( Files.exists( target0.resolve( leaf0.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target0.resolve( leaf1.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target1.resolve( leaf2.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target1.resolve( leaf3.getFileName() ) ), is( true ) );
+			assertThat( Files.exists( target0.resolve( leaf0.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target0.resolve( leaf1.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target1.resolve( leaf2.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target1.resolve( leaf3.getFileName() ) ) ).isEqualTo( true );
 		} finally {
 			FileUtil.deleteOnExit( source0 );
 			FileUtil.deleteOnExit( source1 );
@@ -299,24 +295,24 @@ class FileUtilTest {
 			Path leaf3 = Files.createTempFile( source1, PREFIX, "copyFolderToFolderLeaf3" );
 
 			try( Stream<Path> list = Files.list( source0 ) ) {
-				assertThat( list.count(), is( 3L ) );
+				assertThat( list.count() ).isEqualTo( 3L );
 			}
 			try( Stream<Path> list = Files.list( source1 ) ) {
-				assertThat( list.count(), is( 2L ) );
+				assertThat( list.count() ).isEqualTo( 2L );
 			}
-			assertThat( FileUtil.copy( source0, target, true ), is( true ) );
+			assertThat( FileUtil.copy( source0, target, true ) ).isEqualTo( true );
 
 			try( Stream<Path> list = Files.list( target0 ) ) {
-				assertThat( list.count(), is( 3L ) );
+				assertThat( list.count() ).isEqualTo( 3L );
 			}
 			try( Stream<Path> list = Files.list( target1 ) ) {
-				assertThat( list.count(), is( 2L ) );
+				assertThat( list.count() ).isEqualTo( 2L );
 			}
 
-			assertThat( Files.exists( target0.resolve( leaf0.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target0.resolve( leaf1.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target1.resolve( leaf2.getFileName() ) ), is( true ) );
-			assertThat( Files.exists( target1.resolve( leaf3.getFileName() ) ), is( true ) );
+			assertThat( Files.exists( target0.resolve( leaf0.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target0.resolve( leaf1.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target1.resolve( leaf2.getFileName() ) ) ).isEqualTo( true );
+			assertThat( Files.exists( target1.resolve( leaf3.getFileName() ) ) ).isEqualTo( true );
 		} finally {
 			FileUtil.deleteOnExit( source0 );
 			FileUtil.deleteOnExit( source0 );
@@ -336,10 +332,10 @@ class FileUtilTest {
 				output.writeLong( time );
 			}
 
-			assertThat( FileUtil.copy( source, target ), is( 8L ) );
+			assertThat( FileUtil.copy( source, target ) ).isEqualTo( 8L );
 
 			try( DataInputStream input = new DataInputStream( new ByteArrayInputStream( target.toByteArray() ) ) ) {
-				assertThat( input.readLong(), is( time ) );
+				assertThat( input.readLong() ).isEqualTo( time );
 			}
 		} finally {
 			FileUtil.deleteOnExit( source );
@@ -361,33 +357,33 @@ class FileUtilTest {
 
 		// Initialize for zip tests
 		Files.deleteIfExists( zip );
-		assertThat( Files.exists( zip ), is( false ) );
+		assertThat( Files.exists( zip ) ).isEqualTo( false );
 
 		// Zip the data
 		FileUtil.zip( sourceData, zip );
-		assertThat( Files.exists( zip ), is( true ) );
+		assertThat( Files.exists( zip ) ).isEqualTo( true );
 
 		try( ZipFile zipFile = new ZipFile( zip.toFile() ) ) {
 			// Check that all paths are in the zip file
-			zipFile.stream().forEach( entry -> assertThat( paths.contains( entry.getName() ), is( true ) ) );
+			zipFile.stream().forEach( entry -> assertThat( paths.contains( entry.getName() ) ).isEqualTo( true ) );
 
 			// Initialize for unzip tests
-			assertThat( FileUtil.delete( targetData ), is( true ) );
-			assertThat( Files.exists( targetData ), is( false ) );
+			assertThat( FileUtil.delete( targetData ) ).isEqualTo( true );
+			assertThat( Files.exists( targetData ) ).isEqualTo( false );
 			Files.createDirectories( targetData );
-			assertThat( Files.exists( targetData ), is( true ) );
+			assertThat( Files.exists( targetData ) ).isEqualTo( true );
 
 			// Unzip the data
 			FileUtil.unzip( zip, targetData );
 
 			// Check that all the zip entries are in the target
-			zipFile.stream().forEach( entry -> assertThat( Files.exists( targetData.resolve( entry.getName() ) ), is( true ) ) );
+			zipFile.stream().forEach( entry -> assertThat( Files.exists( targetData.resolve( entry.getName() ) ) ).isEqualTo( true ) );
 
 			// Check that the target files match the source files
-			Files.walk( sourceData ).forEach( path -> assertThat( Files.exists( targetData.resolve( sourceData.relativize( path ) ) ), is( true ) ) );
+			Files.walk( sourceData ).forEach( path -> assertThat( Files.exists( targetData.resolve( sourceData.relativize( path ) ) ) ).isEqualTo( true ) );
 		} finally {
 			if( Files.exists( targetData ) ) FileUtil.delete( targetData );
-			assertThat( Files.exists( targetData ), is( false ) );
+			assertThat( Files.exists( targetData ) ).isEqualTo( false );
 		}
 	}
 
@@ -404,9 +400,9 @@ class FileUtilTest {
 			List<Path> paths = FileUtil.listPaths( sourceRoot );
 
 			for( Path expected : Arrays.asList( sourceRoot, sourceFile1, sourceFile2, sourceSubFolder, sourceFile3, sourceFile4 ) ) {
-				assertThat( paths.contains( expected ), is( true ) );
+				assertThat( paths.contains( expected ) ).isEqualTo( true );
 			}
-			assertThat( paths.size(), is( 6 ) );
+			assertThat( paths.size() ).isEqualTo( 6 );
 		} finally {
 			FileUtil.delete( sourceRoot );
 		}
@@ -416,11 +412,11 @@ class FileUtilTest {
 	void testCreateTempFolder() throws Exception {
 		Path folder = FileUtil.createTempFolder( PREFIX );
 		try {
-			assertThat( Files.exists( folder ), is( true ) );
+			assertThat( Files.exists( folder ) ).isEqualTo( true );
 			String name = folder.getFileName().toString();
 			Path check = Paths.get( System.getProperty( "java.io.tmpdir" ), name );
-			assertThat( Files.exists( check ), is( true ) );
-			assertThat( folder, is( check ) );
+			assertThat( Files.exists( check ) ).isEqualTo( true );
+			assertThat( folder ).isEqualTo( check );
 		} finally {
 			FileUtil.delete( folder );
 		}
@@ -429,30 +425,28 @@ class FileUtilTest {
 	@Test
 	void testFindValidParent() {
 		Path path = FileUtil.getTempFolder().resolve( "non/existant/path" );
-		assertFalse( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isFalse();
 
 		Path valid = FileUtil.findValidParent( path );
-		assertTrue( Files.exists( valid ) );
-		assertTrue( Files.isDirectory( valid ) );
+		assertThat( Files.exists( valid ) ).isTrue();
+		assertThat( Files.isDirectory( valid ) ).isTrue();
 	}
 
 	@Test
 	void testFindValidFolder() {
 		Path path = FileUtil.getTempFolder();
-		assertTrue( Files.exists( path ) );
-
-		System.err.println( "path=" + path );
+		assertThat( Files.exists( path ) ).isTrue();
 
 		Path valid = FileUtil.findValidFolder( path );
-		assertTrue( Files.exists( valid ) );
-		assertTrue( Files.isDirectory( valid ) );
+		assertThat( Files.exists( valid ) ).isTrue();
+		assertThat( Files.isDirectory( valid ) ).isTrue();
 	}
 
 	@Test
 	void testDeleteWithMissingPath() throws IOException {
 		Path path = Paths.get( System.getProperty( "java.io.tmpdir" ), "not-a-valid-path" );
-		assertFalse( Files.exists( path ) );
-		assertTrue( FileUtil.delete( path ) );
+		assertThat( Files.exists( path ) ).isFalse();
+		assertThat( FileUtil.delete( path ) ).isTrue();
 	}
 
 	private void assertFileCopy( long time, Path source, Path target ) throws IOException {
@@ -462,11 +456,11 @@ class FileUtilTest {
 				output.writeLong( time );
 			}
 
-			assertThat( FileUtil.copy( source, target ), is( true ) );
+			assertThat( FileUtil.copy( source, target ) ).isEqualTo( true );
 
 			FileInputStream fileInput = new FileInputStream( target.toFile() );
 			try( DataInputStream input = new DataInputStream( fileInput ) ) {
-				assertThat( input.readLong(), is( time ) );
+				assertThat( input.readLong() ).isEqualTo( time );
 			}
 		} finally {
 			FileUtil.deleteOnExit( source );

@@ -3,14 +3,11 @@ package com.avereon.log;
 import com.avereon.util.LogFlag;
 import com.avereon.util.Parameters;
 import lombok.CustomLog;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @CustomLog
 public class LogTest {
@@ -28,11 +25,11 @@ public class LogTest {
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_LEVEL, LogFlag.ALL ) );
 		Log.setPackageLogLevel( getClass().getPackageName(), LogFlag.ALL );
 
-		assertTrue( log.atError().isEnabled() );
-		assertTrue( log.atWarn().isEnabled() );
-		assertTrue( log.atInfo().isEnabled() );
-		assertTrue( log.atDebug().isEnabled() );
-		assertTrue( log.atTrace().isEnabled() );
+		assertThat( log.atError().isEnabled() ).isTrue();
+		assertThat( log.atWarn().isEnabled() ).isTrue();
+		assertThat( log.atInfo().isEnabled() ).isTrue();
+		assertThat( log.atDebug().isEnabled() ).isTrue();
+		assertThat( log.atTrace().isEnabled() ).isTrue();
 
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream( output );
@@ -45,14 +42,14 @@ public class LogTest {
 		log.atTrace().log( "TRACE" );
 
 		System.setErr( original );
-		assertThat( System.err, is( original ) );
+		assertThat( System.err ).isEqualTo( original );
 
 		BufferedReader reader = new BufferedReader( new StringReader( output.toString() ) );
-		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[E\\] .*ERROR $" ) );
-		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[W\\] .*WARN $" ) );
-		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[I\\] .*INFO $" ) );
-		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[D\\] .*DEBUG $" ) );
-		assertThat( reader.readLine(), Matchers.matchesRegex( "^" + timestampPattern + " \\[T\\] .*TRACE $" ) );
+		assertThat( reader.readLine() ).matches( "^" + timestampPattern + " \\[E] .*ERROR $" );
+		assertThat( reader.readLine() ).matches( "^" + timestampPattern + " \\[W] .*WARN $" );
+		assertThat( reader.readLine() ).matches( "^" + timestampPattern + " \\[I] .*INFO $" );
+		assertThat( reader.readLine() ).matches( "^" + timestampPattern + " \\[D] .*DEBUG $" );
+		assertThat( reader.readLine() ).matches( "^" + timestampPattern + " \\[T] .*TRACE $" );
 	}
 
 	@Test
@@ -62,7 +59,7 @@ public class LogTest {
 		String expected = new File( name ).getAbsoluteFile().toString().replace( home, "%h" );
 
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_FILE, name ) );
-		assertThat( Log.getLogFile(), is( expected ) );
+		assertThat( Log.getLogFile() ).isEqualTo( expected );
 	}
 
 	@Test
@@ -71,7 +68,7 @@ public class LogTest {
 		String name = "test.%u.log";
 		String path = home + File.separator + name;
 
-		assertThat( Log.reduceFilePattern( path ), is( "%h" + File.separator + name ) );
+		assertThat( Log.reduceFilePattern( path ) ).isEqualTo( "%h" + File.separator + name );
 	}
 
 	@Test
@@ -80,7 +77,7 @@ public class LogTest {
 		String name = "test.%u.log";
 		String path = home + File.separator + name;
 
-		assertThat( Log.expandFilePattern( "%h" + File.separator + name ), is( path ) );
+		assertThat( Log.expandFilePattern( "%h" + File.separator + name ) ).isEqualTo( path );
 	}
 
 }

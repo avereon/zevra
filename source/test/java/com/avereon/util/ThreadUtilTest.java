@@ -2,9 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ThreadUtilTest {
 
@@ -14,29 +12,32 @@ class ThreadUtilTest {
 		long start = System.nanoTime();
 		ThreadUtil.pause( length );
 		long stop = System.nanoTime();
+
+		// Compute the delta in nanoseconds
 		long delta = stop - start;
-		assertTrue( delta >= length * 1000, "Delta: " + delta );
+
+		assertThat( delta ).isGreaterThanOrEqualTo( length * 1000 );
 	}
 
 	@Test
 	void testCalledFrom() {
-		assertFalse( ThreadUtil.calledFrom( "ThreadUtilTest", "notHere" ) );
-		assertTrue( ThreadUtil.calledFrom( "ThreadUtilTest", "testCalledFrom" ) );
-		assertTrue( ThreadUtil.calledFrom( "com.parallelsymmetry.utility.ThreadUtilTest", "testCalledFrom" ) );
+		assertThat( ThreadUtil.calledFrom( "ThreadUtilTest", "notHere" ) ).isFalse();
+		assertThat( ThreadUtil.calledFrom( "ThreadUtilTest", "testCalledFrom" ) ).isTrue();
+		assertThat( ThreadUtil.calledFrom( "com.parallelsymmetry.utility.ThreadUtilTest", "testCalledFrom" ) ).isTrue();
 	}
 
 	@Test
 	void testAppendStackTraceWithNullSource() {
 		Throwable target = new Throwable();
 		StackTraceElement[] trace = target.getStackTrace();
-		assertArrayEquals( trace, ThreadUtil.appendStackTrace( (Throwable)null, target ).getStackTrace() );
+		assertThat( ThreadUtil.appendStackTrace( (Throwable)null, target ).getStackTrace() ).containsSequence( trace );
 	}
 
 	@Test
 	void testAppendStackTraceWithNullTarget() {
 		Throwable source = new Throwable();
 		StackTraceElement[] trace = source.getStackTrace();
-		assertArrayEquals( trace, ThreadUtil.appendStackTrace( source, null ).getStackTrace() );
+		assertThat( ThreadUtil.appendStackTrace( source, null ).getStackTrace() ).containsSequence( trace );
 	}
 
 	@Test
@@ -51,13 +52,13 @@ class ThreadUtilTest {
 		System.arraycopy( targetTrace, 0, elements, 0, targetTrace.length );
 		System.arraycopy( sourceTrace, 0, elements, targetTrace.length, sourceTrace.length );
 
-		assertArrayEquals( elements, ThreadUtil.appendStackTrace( source, target ).getStackTrace() );
+		assertThat( ThreadUtil.appendStackTrace( source, target ).getStackTrace() ).containsSequence( elements );
 	}
 
 	@Test
 	void testGetStackClasses() {
 		Class<?>[] frame = ThreadUtil.getStackClasses();
-		assertThat( frame[ 0 ], is( ThreadUtilTest.class ) );
+		assertThat( frame[ 0 ] ).isEqualTo( ThreadUtilTest.class );
 	}
 
 }

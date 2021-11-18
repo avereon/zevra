@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.util.*;
 
-import static com.avereon.settings.SettingsMatchers.eventHas;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.MapEntry.entry;
 
 public abstract class BaseSettingsTest {
 
@@ -18,76 +16,76 @@ public abstract class BaseSettingsTest {
 
 	@Test
 	void testNodeExists() {
-		assertTrue( settings.nodeExists( "/" ) );
+		assertThat( settings.nodeExists( "/" ) ).isTrue();
 
 		Settings deep = settings.getNode( "deep" );
 		deep.set( "a", "A" );
-		assertThat( deep.get( "a" ), is( "A" ) );
-		assertTrue( settings.nodeExists( "deep" ) );
-		assertTrue( settings.nodeExists( "/deep" ) );
+		assertThat( deep.get( "a" ) ).isEqualTo( "A" );
+		assertThat( settings.nodeExists( "deep" ) ).isTrue();
+		assertThat( settings.nodeExists( "/deep" ) ).isTrue();
 
 		Settings deeper = deep.getNode( "deeper" );
 		deeper.set( "b", "B" );
-		assertThat( deeper.get( "b" ), is( "B" ) );
-		assertTrue( deep.nodeExists( "deeper" ) );
-		assertFalse( deep.nodeExists( "/deeper" ) );
-		assertTrue( settings.nodeExists( "/deep/deeper" ) );
+		assertThat( deeper.get( "b" ) ).isEqualTo( "B" );
+		assertThat( deep.nodeExists( "deeper" ) ).isTrue();
+		assertThat( deep.nodeExists( "/deeper" ) ).isFalse();
+		assertThat( settings.nodeExists( "/deep/deeper" ) ).isTrue();
 	}
 
 	@Test
 	void testGetPath() {
-		assertThat( settings.getPath(), startsWith( "/" ) );
+		assertThat( settings.getPath() ).startsWith( "/" );
 	}
 
 	@Test
 	void testRootNode() {
 		Settings rootByEmpty = settings.getNode( PathUtil.EMPTY );
 		Settings rootByRoot = settings.getNode( PathUtil.ROOT );
-		assertEquals( rootByEmpty, rootByRoot );
-		assertThat( rootByEmpty.getPath(), is( PathUtil.ROOT ) );
-		assertThat( rootByRoot.getPath(), is( PathUtil.ROOT ) );
-		assertThat( rootByEmpty.getName(), is( PathUtil.EMPTY ) );
-		assertThat( rootByRoot.getName(), is( PathUtil.EMPTY ) );
+		assertThat( rootByRoot ).isEqualTo( rootByEmpty );
+		assertThat( rootByEmpty.getPath() ).isEqualTo( PathUtil.ROOT );
+		assertThat( rootByRoot.getPath() ).isEqualTo( PathUtil.ROOT );
+		assertThat( rootByEmpty.getName() ).isEqualTo( PathUtil.EMPTY );
+		assertThat( rootByRoot.getName() ).isEqualTo( PathUtil.EMPTY );
 	}
 
 	@Test
 	void testGetNode() {
 		Settings peer = settings.getNode( "peer" );
-		assertThat( peer, instanceOf( settings.getClass() ) );
-		assertThat( peer.getPath(), is( "/peer" ) );
+		assertThat( peer ).isInstanceOf( settings.getClass() );
+		assertThat( peer.getPath() ).isEqualTo( "/peer" );
 
 		// Is the settings object viable
 		peer.set( "a", "A" );
 		peer.flush();
-		assertThat( peer.get( "a" ), is( "A" ) );
+		assertThat( peer.get( "a" ) ).isEqualTo( "A" );
 	}
 
 	@Test
 	void testGetNodeWithParentAndName() {
-		assertThat( settings.getNode( "", "test" ).getPath(), is( "/test" ) );
-		assertThat( settings.getNode( "/", "test" ).getPath(), is( "/test" ) );
-		assertThat( settings.getNode( "/test", "path" ).getPath(), is( "/test/path" ) );
+		assertThat( settings.getNode( "", "test" ).getPath() ).isEqualTo( "/test" );
+		assertThat( settings.getNode( "/", "test" ).getPath() ).isEqualTo( "/test" );
+		assertThat( settings.getNode( "/test", "path" ).getPath() ).isEqualTo( "/test/path" );
 	}
 
 	@Test
 	void testGetGrandNodes() {
-		assertThat( settings.getPath(), startsWith( "" ) );
+		assertThat( settings.getPath() ).startsWith( "" );
 
 		Settings childSettings = settings.getNode( "child" );
 		Settings grandchildSettings = childSettings.getNode( "grand" );
-		assertThat( grandchildSettings, instanceOf( settings.getClass() ) );
-		assertThat( grandchildSettings.getPath(), is( "/child/grand" ) );
+		assertThat( grandchildSettings ).isInstanceOf( settings.getClass() );
+		assertThat( grandchildSettings.getPath() ).isEqualTo( "/child/grand" );
 
 		// Is the settings object viable
 		grandchildSettings.set( "a", "A" );
 		grandchildSettings.flush();
-		assertThat( grandchildSettings.get( "a" ), is( "A" ) );
+		assertThat( grandchildSettings.get( "a" ) ).isEqualTo( "A" );
 	}
 
 	@Test
 	void testGetNodeReturnsSameObject() {
-		assertThat( settings.getNode( "" ), is( settings ) );
-		assertThat( settings.getNode( "/" ), is( settings ) );
+		assertThat( settings.getNode( "" ) ).isEqualTo( settings );
+		assertThat( settings.getNode( "/" ) ).isEqualTo( settings );
 	}
 
 	@Test
@@ -105,116 +103,116 @@ public abstract class BaseSettingsTest {
 		childB.flush();
 		childC.flush();
 
-		assertThat( settings.getNodes(), contains( "children" ) );
+		assertThat( settings.getNodes() ).contains( "children" );
 
 		Settings children = settings.getNode( folder );
-		assertThat( children.getNodes().size(), is( 3 ) );
+		assertThat( children.getNodes().size() ).isEqualTo( 3 );
 	}
 
 	@Test
 	void testExists() {
 		String key = "key";
 		String value = "value";
-		assertFalse( settings.exists( key ) );
+		assertThat( settings.exists( key ) ).isFalse();
 
 		settings.set( key, value );
-		assertTrue( settings.exists( key ) );
+		assertThat( settings.exists( key ) ).isTrue();
 
 		settings.set( key, null );
-		assertFalse( settings.exists( key ) );
+		assertThat( settings.exists( key ) ).isFalse();
 	}
 
 	@Test
 	void testSetStringAndGetString() {
 		String key = "key";
 		String value = "value";
-		assertThat( settings.get( key ), is( nullValue() ) );
+		assertThat( settings.get( key ) ).isNull();
 
 		settings.set( key, value );
-		assertThat( settings.get( key, String.class ), is( value ) );
+		assertThat( settings.get( key, String.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, String.class ), is( nullValue() ) );
+		assertThat( settings.get( key, String.class ) ).isNull();
 	}
 
 	@Test
 	void testSetIntegerAndGetInteger() {
 		String key = "key";
 		Integer value = 5;
-		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Integer.class ) ).isNull();
 
 		settings.set( key, value );
-		assertThat( settings.get( key, Integer.class ), is( value ) );
+		assertThat( settings.get( key, Integer.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Integer.class ) ).isNull();
 	}
 
 	@Test
 	void testSetStringAndGetBoolean() {
 		String key = "key";
-		assertThat( settings.get( key, Boolean.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Boolean.class ) ).isNull();
 
 		settings.set( key, String.valueOf( true ) );
-		assertThat( settings.get( key, Boolean.class ), is( true ) );
+		assertThat( settings.get( key, Boolean.class ) ).isTrue();
 
 		settings.set( key, String.valueOf( false ) );
-		assertThat( settings.get( key, Boolean.class ), is( false ) );
+		assertThat( settings.get( key, Boolean.class ) ).isFalse();
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Boolean.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Boolean.class ) ).isNull();
 	}
 
 	@Test
 	void testSetStringAndGetInteger() {
 		String key = "key";
 		Integer value = 5;
-		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Integer.class ) ).isNull();
 
 		settings.set( key, String.valueOf( value ) );
-		assertThat( settings.get( key, Integer.class ), is( value ) );
+		assertThat( settings.get( key, Integer.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Integer.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Integer.class ) ).isNull();
 	}
 
 	@Test
 	void testSetStringAndGetLong() {
 		String key = "key";
 		Long value = 5L;
-		assertThat( settings.get( key, Long.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Long.class ) ).isNull();
 
 		settings.set( key, String.valueOf( value ) );
-		assertThat( settings.get( key, Long.class ), is( value ) );
+		assertThat( settings.get( key, Long.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Long.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Long.class ) ).isNull();
 	}
 
 	@Test
 	void testSetStringAndGetFloat() {
 		String key = "key";
 		Float value = 5.0F;
-		assertThat( settings.get( key, Float.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Float.class ) ).isNull();
 
 		settings.set( key, String.valueOf( value ) );
-		assertThat( settings.get( key, Float.class ), is( value ) );
+		assertThat( settings.get( key, Float.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Float.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Float.class ) ).isNull();
 	}
 
 	@Test
 	void testSetStringAndGetDouble() {
 		String key = "key";
 		Double value = 5.0;
-		assertThat( settings.get( key, Double.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Double.class ) ).isNull();
 
 		settings.set( key, String.valueOf( value ) );
-		assertThat( settings.get( key, Double.class ), is( value ) );
+		assertThat( settings.get( key, Double.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, Double.class ), is( nullValue() ) );
+		assertThat( settings.get( key, Double.class ) ).isNull();
 	}
 
 	@Test
@@ -222,8 +220,8 @@ public abstract class BaseSettingsTest {
 		URI uri = new URI( "test:uri" );
 		settings.set( "uri", uri );
 
-		assertThat( settings.get( "uri" ), is( uri.toString() ) );
-		assertThat( settings.get( "uri", URI.class ), is( uri ) );
+		assertThat( settings.get( "uri" ) ).isEqualTo( uri.toString() );
+		assertThat( settings.get( "uri", URI.class ) ).isEqualTo( uri );
 	}
 
 	@Test
@@ -233,20 +231,20 @@ public abstract class BaseSettingsTest {
 		bean.setIntegerProperty( 1 );
 		bean.setStringProperty( "one" );
 
-		assertThat( settings.get( "bean", MockBean.class ), is( nullValue() ) );
+		assertThat( settings.get( "bean", MockBean.class ) ).isNull();
 
 		settings.set( "bean", bean );
-		assertThat( settings.get( "bean", MockBean.class ), is( not( nullValue() ) ) );
+		assertThat( settings.get( "bean", MockBean.class ) ).isNotNull();
 
 		MockBean result = settings.get( "bean", MockBean.class );
-		assertThat( result, is( bean ) );
+		assertThat( result ).isEqualTo( bean );
 	}
 
 	@Test
 	void testSetMapAndGetMap() {
 		Map<String, MockBean> beans = new HashMap<>();
 		TypeReference<Map<String, MockBean>> reference = new TypeReference<>() {};
-		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
+		assertThat( settings.get( "beans", reference ) ).isNull();
 
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -257,20 +255,20 @@ public abstract class BaseSettingsTest {
 
 		// Store the map
 		settings.set( "beans", beans );
-		assertThat( settings.get( "beans", reference ), is( not( nullValue() ) ) );
+		assertThat( settings.get( "beans", reference ) ).isNotNull();
 
 		// Get the map and check the beans
 		Map<String, MockBean> map = settings.get( "beans", reference );
-		assertThat( map, hasEntry( is( "a" ), is( bean1 ) ) );
-		assertThat( map, hasEntry( is( "b" ), is( bean2 ) ) );
-		assertThat( map.size(), is( beans.size() ) );
+		assertThat( map ).contains( entry( "a", bean1 ) );
+		assertThat( map ).contains( entry( "b", bean2 ) );
+		assertThat( map.size() ).isEqualTo( beans.size() );
 	}
 
 	@Test
 	void testSetListAndGetList() {
 		List<MockBean> beans = new ArrayList<>();
 		TypeReference<List<MockBean>> reference = new TypeReference<>() {};
-		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
+		assertThat( settings.get( "beans", reference ) ).isNull();
 
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -281,11 +279,11 @@ public abstract class BaseSettingsTest {
 
 		// Store the list
 		settings.set( "beans", beans );
-		assertThat( settings.get( "beans", reference ), is( not( nullValue() ) ) );
+		assertThat( settings.get( "beans", reference ) ).isNotNull();
 
 		// Get the list and check the beans
 		List<MockBean> list = settings.get( "beans", reference );
-		assertThat( list, contains( bean1, bean2 ) );
+		assertThat( list ).contains( bean1, bean2 );
 	}
 
 	@Test
@@ -293,7 +291,7 @@ public abstract class BaseSettingsTest {
 		Set<MockBean> beans = new HashSet<>();
 		TypeReference<Set<MockBean>> reference = new TypeReference<>() {};
 
-		assertThat( settings.get( "beans", reference ), is( nullValue() ) );
+		assertThat( settings.get( "beans", reference ) ).isNull();
 
 		MockBean bean1 = new MockBean();
 		bean1.setIntegerPrimitiveProperty( 1 );
@@ -304,26 +302,26 @@ public abstract class BaseSettingsTest {
 
 		// Store the set
 		settings.set( "beans", beans );
-		assertThat( settings.get( "beans", reference ), is( not( nullValue() ) ) );
+		assertThat( settings.get( "beans", reference ) ).isNotNull();
 
 		// Get the set and check the beans
 		Set<MockBean> set = settings.get( "beans", reference );
-		assertThat( set, containsInAnyOrder( bean1, bean2 ) );
+		assertThat( set ).contains( bean1, bean2 );
 	}
 
 	@Test
 	void testGetUsingDefaultValue() {
-		assertThat( settings.get( "missing", "default" ), is( "default" ) );
+		assertThat( settings.get( "missing", "default" ) ).isEqualTo( "default" );
 	}
 
 	@Test
 	void testGetUsingDefaultValueWithObject() {
-		assertThat( settings.get( "missing", false ), is( "false" ) );
+		assertThat( settings.get( "missing", false ) ).isEqualTo( "false" );
 	}
 
 	@Test
 	void testGetBooleanUsingDefaultValue() {
-		assertThat( settings.get( "missing", Boolean.class, false ), is( false ) );
+		assertThat( settings.get( "missing", Boolean.class, false ) ).isFalse();
 	}
 
 	@Test
@@ -336,26 +334,26 @@ public abstract class BaseSettingsTest {
 		defaultValues.put( key, defaultValue );
 
 		// Start by checking the value is null
-		assertThat( settings.get( key, String.class ), is( nullValue() ) );
+		assertThat( settings.get( key, String.class ) ).isNull();
 
 		settings.set( key, value );
-		assertThat( settings.get( key, String.class ), is( value ) );
+		assertThat( settings.get( key, String.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, String.class ), is( nullValue() ) );
+		assertThat( settings.get( key, String.class ) ).isNull();
 
 		// Test the default settings
 		settings.setDefaultValues( defaultValues );
-		assertThat( settings.get( key, String.class ), is( defaultValue ) );
+		assertThat( settings.get( key, String.class ) ).isEqualTo( defaultValue );
 
 		settings.set( key, value );
-		assertThat( settings.get( key, String.class ), is( value ) );
+		assertThat( settings.get( key, String.class ) ).isEqualTo( value );
 
 		settings.set( key, null );
-		assertThat( settings.get( key, String.class ), is( defaultValue ) );
+		assertThat( settings.get( key, String.class ) ).isEqualTo( defaultValue );
 
 		settings.setDefaultValues( null );
-		assertThat( settings.get( key, String.class ), is( nullValue() ) );
+		assertThat( settings.get( key, String.class ) ).isNull();
 	}
 
 	@Test
@@ -367,40 +365,40 @@ public abstract class BaseSettingsTest {
 		Map<String, Object> defaultValues = new HashMap<>();
 		defaultValues.put( key, defaultValue );
 		settings.setDefaultValues( defaultValues );
-		assertThat( settings.get( "key", Boolean.class ), is( true ) );
+		assertThat( settings.get( "key", Boolean.class ) ).isTrue();
 
 		settings.set( "key", value );
-		assertThat( settings.get( "key", Boolean.class ), is( false ) );
+		assertThat( settings.get( "key", Boolean.class ) ).isFalse();
 
 		settings.set( "key", null );
-		assertThat( settings.get( "key", Boolean.class ), is( true ) );
+		assertThat( settings.get( "key", Boolean.class ) ).isTrue();
 	}
 
 	@Test
 	void testUpdatedEvent() {
 		SettingsEventWatcher watcher = new SettingsEventWatcher();
 		settings.register( SettingsEvent.ANY, watcher );
-		assertThat( watcher.getEvents().size(), is( 0 ) );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 0 );
 
 		// The value does not change so there should not be an extra event
 		settings.set( "a", null );
-		assertThat( watcher.getEvents().size(), is( 0 ) );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 0 );
 
 		settings.set( "a", "A" );
-		assertThat( watcher.getEvents().get( 0 ), eventHas( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, "A" ) );
-		assertThat( watcher.getEvents().size(), is( 1 ) );
+		SettingsEventAssert.assertThat( watcher.getEvents().get( 0 ) ).hasValues( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, "A" );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 1 );
 
 		// The value does not change so there should not be an extra event
 		settings.set( "a", "A" );
-		assertThat( watcher.getEvents().size(), is( 1 ) );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 1 );
 
 		settings.set( "a", null );
-		assertThat( watcher.getEvents().get( 1 ), eventHas( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, null ) );
-		assertThat( watcher.getEvents().size(), is( 2 ) );
+		SettingsEventAssert.assertThat( watcher.getEvents().get( 1 ) ).hasValues( settings, SettingsEvent.CHANGED, settings.getPath(), "a", null, null );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 2 );
 
 		// The value does not change so there should not be an extra event
 		settings.set( "a", null );
-		assertThat( watcher.getEvents().size(), is( 2 ) );
+		assertThat( watcher.getEvents().size() ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -409,8 +407,8 @@ public abstract class BaseSettingsTest {
 		source.set( "a", "A" );
 		source.set( "b", 2 );
 		settings.copyFrom( source );
-		assertThat( settings.get( "a" ), is( "A" ) );
-		assertThat( settings.get( "b", Integer.class ), is( 2 ) );
+		assertThat( settings.get( "a" ) ).isEqualTo( "A" );
+		assertThat( settings.get( "b", Integer.class ) ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -423,21 +421,21 @@ public abstract class BaseSettingsTest {
 		deep.set( "d", "D" );
 
 		settings.copyFrom( source );
-		assertThat( settings.get( "a" ), is( "A" ) );
-		assertThat( settings.get( "b", Integer.class ), is( 2 ) );
-		assertTrue( settings.nodeExists( "deep" ) );
-		assertThat( settings.getNode( "deep" ).get( "c" ), is( "see" ) );
-		assertThat( settings.getNode( "deep" ).get( "d" ), is( "D" ) );
+		assertThat( settings.get( "a" ) ).isEqualTo( "A" );
+		assertThat( settings.get( "b", Integer.class ) ).isEqualTo( 2 );
+		assertThat( settings.nodeExists( "deep" ) ).isTrue();
+		assertThat( settings.getNode( "deep" ).get( "c" ) ).isEqualTo( "see" );
+		assertThat( settings.getNode( "deep" ).get( "d" ) ).isEqualTo( "D" );
 	}
 
 	@Test
 	void testDelete() {
-		assertThat( settings.nodeExists( "test" ), is( false ) );
+		assertThat( settings.nodeExists( "test" ) ).isFalse();
 		Settings test = settings.getNode( "test" );
 		test.flush();
-		assertThat( settings.nodeExists( "test" ), is( true ) );
+		assertThat( settings.nodeExists( "test" ) ).isTrue();
 		test.delete();
-		assertThat( settings.nodeExists( "test" ), is( false ) );
+		assertThat( settings.nodeExists( "test" ) ).isFalse();
 	}
 
 }

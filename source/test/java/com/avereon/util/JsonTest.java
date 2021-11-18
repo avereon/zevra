@@ -10,8 +10,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonTest {
 
@@ -20,9 +19,9 @@ class JsonTest {
 		InputStream input = getClass().getResourceAsStream( "/json.text.json" );
 		JsonTest.Item item = new ObjectMapper().readerFor( new TypeReference<JsonTest.Item>() {} ).readValue( input );
 
-		assertThat( item.getName(), is( "Avereon" ) );
-		assertThat( item.getTimestamp().getTime(), is( 1296848535284L ) );
-		assertThat( item.getSite(), is( URI.create( "http://www.avereon.com" ) ) );
+		assertThat( item.getName() ).isEqualTo( "Avereon" );
+		assertThat( item.getTimestamp().getTime() ).isEqualTo( 1296848535284L );
+		assertThat( item.getSite() ).isEqualTo( URI.create( "http://www.avereon.com" ) );
 	}
 
 	@SuppressWarnings( { "WeakerAccess", "unused" } )

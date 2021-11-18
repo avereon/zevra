@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DelayedActionTest {
 
@@ -18,7 +17,7 @@ public class DelayedActionTest {
 	void testAction() throws Exception {
 		DelayedAction action = new DelayedAction();
 		action.setAction( this::doAction );
-		assertThat( actionTimestamp.get(), is( 0L ) );
+		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		long before = System.currentTimeMillis();
 		readyAction();
@@ -26,8 +25,8 @@ public class DelayedActionTest {
 		waitForAction();
 		long after = System.currentTimeMillis();
 
-		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( 0L ) ).and( lessThanOrEqualTo( 50L ) ) );
+		assertThat( actionTimestamp.get() ).isGreaterThanOrEqualTo( before ).isLessThanOrEqualTo( after );
+		assertThat( after - before ).isGreaterThanOrEqualTo( 0L ).isLessThanOrEqualTo( 50L );
 	}
 
 	@Test
@@ -42,7 +41,7 @@ public class DelayedActionTest {
 		action.setMinTriggerLimit( minTriggerLimit );
 		action.setMaxTriggerLimit( maxTriggerLimit );
 		action.setAction( this::doAction );
-		assertThat( actionTimestamp.get(), is( 0L ) );
+		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		long before = System.currentTimeMillis();
 		action.trigger();
@@ -61,8 +60,8 @@ public class DelayedActionTest {
 		waitForAction();
 		long after = System.currentTimeMillis();
 
-		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before + minTriggerLimit ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( minTriggerLimit ) ).and( lessThanOrEqualTo( 2 * minTriggerLimit ) ) );
+		assertThat( actionTimestamp.get() ).isGreaterThanOrEqualTo( before + minTriggerLimit ).isLessThanOrEqualTo( after );
+		assertThat( after - before ).isGreaterThanOrEqualTo( minTriggerLimit ).isLessThanOrEqualTo( 2 * minTriggerLimit );
 	}
 
 	@Test
@@ -77,7 +76,7 @@ public class DelayedActionTest {
 		action.setMinTriggerLimit( minTriggerLimit );
 		action.setMaxTriggerLimit( maxTriggerLimit );
 		action.setAction( this::doAction );
-		assertThat( actionTimestamp.get(), is( 0L ) );
+		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		action.trigger();
 		long before = System.currentTimeMillis();
@@ -94,8 +93,8 @@ public class DelayedActionTest {
 		waitForAction();
 		long after = System.currentTimeMillis();
 
-		assertThat( actionTimestamp.get(), both( greaterThanOrEqualTo( before + maxTriggerLimit ) ).and( lessThanOrEqualTo( after ) ) );
-		assertThat( after - before, both( greaterThanOrEqualTo( maxTriggerLimit ) ).and( lessThanOrEqualTo( 2 * maxTriggerLimit ) ) );
+		assertThat( actionTimestamp.get() ).isGreaterThanOrEqualTo( before + maxTriggerLimit ).isLessThanOrEqualTo( after );
+		assertThat( after - before ).isGreaterThanOrEqualTo( maxTriggerLimit ).isLessThanOrEqualTo( 2 * maxTriggerLimit );
 	}
 
 	private void doAction() {

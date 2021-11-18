@@ -1,7 +1,6 @@
 package com.avereon.transaction;
 
 import com.avereon.event.EventType;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,10 +8,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class TxnTest {
 
@@ -25,14 +22,14 @@ class TxnTest {
 	void testRun() {
 		final AtomicInteger count = new AtomicInteger();
 		Txn.run( count::incrementAndGet );
-		assertThat( count.get(), is( 1 ) );
+		assertThat( count.get() ).isEqualTo( 1 );
 	}
 
 	@Test
 	void testCall() throws Exception {
 		final AtomicInteger count = new AtomicInteger();
 		Txn.call( count::incrementAndGet );
-		assertThat( count.get(), is( 1 ) );
+		assertThat( count.get() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -43,8 +40,8 @@ class TxnTest {
 		Txn.submit( step );
 		Txn.commit();
 
-		assertThat( step.getCommitCallCount(), is( 1 ) );
-		assertThat( step.getRollbackCallCount(), is( 0 ) );
+		assertThat( step.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step.getRollbackCallCount() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -55,8 +52,8 @@ class TxnTest {
 			Txn.submit( step );
 		}
 
-		assertThat( step.getCommitCallCount(), is( 1 ) );
-		assertThat( step.getRollbackCallCount(), is( 0 ) );
+		assertThat( step.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step.getRollbackCallCount() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -77,16 +74,16 @@ class TxnTest {
 		Txn.submit( step5 );
 		Txn.commit();
 
-		assertThat( step1.getCommitCallCount(), is( 1 ) );
-		assertThat( step1.getRollbackCallCount(), is( 1 ) );
-		assertThat( step2.getCommitCallCount(), is( 1 ) );
-		assertThat( step2.getRollbackCallCount(), is( 1 ) );
-		assertThat( step3.getCommitCallCount(), is( 1 ) );
-		assertThat( step3.getRollbackCallCount(), is( 0 ) );
-		assertThat( step4.getCommitCallCount(), is( 0 ) );
-		assertThat( step4.getRollbackCallCount(), is( 0 ) );
-		assertThat( step5.getCommitCallCount(), is( 0 ) );
-		assertThat( step5.getRollbackCallCount(), is( 0 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step1.getRollbackCallCount() ).isEqualTo( 1 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step2.getRollbackCallCount() ).isEqualTo( 1 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step3.getRollbackCallCount() ).isEqualTo( 0 );
+		assertThat( step4.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step4.getRollbackCallCount() ).isEqualTo( 0 );
+		assertThat( step5.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step5.getRollbackCallCount() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -97,8 +94,8 @@ class TxnTest {
 		Txn.submit( step );
 		Txn.reset();
 
-		assertThat( step.getCommitCallCount(), is( 0 ) );
-		assertThat( step.getRollbackCallCount(), is( 0 ) );
+		assertThat( step.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step.getRollbackCallCount() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -106,9 +103,9 @@ class TxnTest {
 		MockTransactionOperation step1 = new MockTransactionOperation();
 		MockTransactionOperation step2 = new MockTransactionOperation();
 		MockTransactionOperation step3 = new MockTransactionOperation();
-		assertThat( step1.getCommitCallCount(), is( 0 ) );
-		assertThat( step2.getCommitCallCount(), is( 0 ) );
-		assertThat( step3.getCommitCallCount(), is( 0 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 0 );
 
 		Txn.create();
 		Txn.submit( step1 );
@@ -117,16 +114,16 @@ class TxnTest {
 		Txn.submit( step2 );
 		Txn.commit();
 
-		assertThat( step1.getCommitCallCount(), is( 0 ) );
-		assertThat( step2.getCommitCallCount(), is( 0 ) );
-		assertThat( step3.getCommitCallCount(), is( 0 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 0 );
 
 		Txn.submit( step3 );
 		Txn.commit();
 
-		assertThat( step1.getCommitCallCount(), is( 1 ) );
-		assertThat( step2.getCommitCallCount(), is( 1 ) );
-		assertThat( step3.getCommitCallCount(), is( 1 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -134,9 +131,9 @@ class TxnTest {
 		MockTransactionOperation step1 = new MockTransactionOperation();
 		MockTransactionOperation step2 = new MockTransactionOperation();
 		MockTransactionOperation step3 = new MockTransactionOperation();
-		assertThat( step1.getCommitCallCount(), is( 0 ) );
-		assertThat( step2.getCommitCallCount(), is( 0 ) );
-		assertThat( step3.getCommitCallCount(), is( 0 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 0 );
 
 		Txn.create();
 		Txn.submit( step1 );
@@ -145,16 +142,16 @@ class TxnTest {
 		Txn.submit( step2 );
 		Txn.commit();
 
-		assertThat( step1.getCommitCallCount(), is( 0 ) );
-		assertThat( step2.getCommitCallCount(), is( 1 ) );
-		assertThat( step3.getCommitCallCount(), is( 0 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 0 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 0 );
 
 		Txn.submit( step3 );
 		Txn.commit();
 
-		assertThat( step1.getCommitCallCount(), is( 1 ) );
-		assertThat( step2.getCommitCallCount(), is( 1 ) );
-		assertThat( step3.getCommitCallCount(), is( 1 ) );
+		assertThat( step1.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step2.getCommitCallCount() ).isEqualTo( 1 );
+		assertThat( step3.getCommitCallCount() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -180,7 +177,7 @@ class TxnTest {
 
 	@Test
 	void testResetWithoutTransaction() {
-		assertThat( Txn.getActiveTransaction(), is( nullValue() ) );
+		assertThat( Txn.getActiveTransaction() ).isNull();
 		Txn.reset();
 	}
 
@@ -192,17 +189,17 @@ class TxnTest {
 		Txn.submit( new MockTransactionOperation( target ) );
 		Txn.submit( new MockTransactionOperation( target ) );
 		Txn.submit( new MockTransactionOperation( target ) );
-		assertThat( target.getEvents().size(), is( 0 ) );
+		assertThat( target.getEvents().size() ).isEqualTo( 0 );
 		Txn.commit();
 
 		int index = 0;
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
-		assertThat( target.getEvents().size(), is( index ) );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_BEGIN );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_SUCCESS );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_END );
+		assertThat( target.getEvents().size() ).isEqualTo( index );
 	}
 
 	@Test
@@ -220,34 +217,34 @@ class TxnTest {
 		Txn.commit();
 
 		int index = 0;
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_BEGIN ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( MockTxnEvent.MODIFIED ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_SUCCESS ) );
-		assertThat( target.getEvents().get( index++ ).getEventType(), Matchers.is( TxnEvent.COMMIT_END ) );
-		assertThat( target.getEvents().size(), is( index ) );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_BEGIN );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_SUCCESS );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_END );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_BEGIN );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_SUCCESS );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_END );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_BEGIN );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( MockTxnEvent.MODIFIED );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_SUCCESS );
+		assertThat( target.getEvents().get( index++ ).getEventType() ).isEqualTo( TxnEvent.COMMIT_END );
+		assertThat( target.getEvents().size() ).isEqualTo( index );
 	}
 
 	@Test
 	void testTxnWithConsumerOperation() throws Exception {
 		MockTxnEventTarget target = new MockTxnEventTarget();
 		AtomicInteger count = new AtomicInteger();
-		assertThat( count.get(), is( 0 ) );
+		assertThat( count.get() ).isEqualTo( 0 );
 
 		Txn.create();
 		Txn.submit( target, t -> count.incrementAndGet() );
 		// The value should not have changed until after commit
-		assertThat( count.get(), is( 0 ) );
+		assertThat( count.get() ).isEqualTo( 0 );
 		Txn.commit();
 
-		assertThat( count.get(), is( 1 ) );
+		assertThat( count.get() ).isEqualTo( 1 );
 	}
 
 	private static class MockTxnEventTarget implements TxnEventTarget {

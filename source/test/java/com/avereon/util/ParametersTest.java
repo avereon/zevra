@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 class ParametersTest {
 
@@ -28,28 +26,28 @@ class ParametersTest {
 	@Test
 	void testEmpty() {
 		Parameters parameters = Parameters.parse();
-		assertThat( parameters.size(), is( 0 ) );
+		assertThat( parameters.size() ).isEqualTo( 0 );
 	}
 
 	@Test
 	void testEmptyValues() {
 		Parameters parameters = Parameters.parse();
-		assertThat( parameters.getUris().size(), is( 0 ) );
-		assertThat( parameters.getValues( "help" ).size(), is( 0 ) );
-		assertThat( parameters.getOriginalCommands().size(), is( 0 ) );
-		assertThat( parameters.getResolvedCommands().size(), is( 0 ) );
+		assertThat( parameters.getUris().size() ).isEqualTo( 0 );
+		assertThat( parameters.getValues( "help" ).size() ).isEqualTo( 0 );
+		assertThat( parameters.getOriginalCommands().size() ).isEqualTo( 0 );
+		assertThat( parameters.getResolvedCommands().size() ).isEqualTo( 0 );
 	}
 
 	@Test
 	void testParse() {
 		Parameters parameters = Parameters.parse( "-help" );
-		assertThat( parameters.get( "help" ), is( "true" ) );
+		assertThat( parameters.get( "help" ) ).isEqualTo( "true" );
 	}
 
 	@Test
 	void testParseWithValue() {
 		Parameters parameters = Parameters.parse( "-help", "topic" );
-		assertThat( parameters.get( "help" ), is( "topic" ) );
+		assertThat( parameters.get( "help" ) ).isEqualTo( "topic" );
 	}
 
 	@Test
@@ -59,43 +57,43 @@ class ParametersTest {
 		String notakey = "notakey";
 		String[] args = new String[]{ "-" + key, value };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isTrue( notakey ), is( false ) );
-		assertThat( parameters.get( key ), is( value ) );
+		assertThat( parameters.isTrue( notakey ) ).isFalse();
+		assertThat( parameters.get( key ) ).isEqualTo( value );
 	}
 
 	@Test
 	void testParseWithMultiValues() {
 		Parameters parameters = Parameters.parse( "-module", "a", "-module", "b", "--module", "c" );
-		assertThat( parameters.getValues( "module" ), contains( "a", "b", "c" ) );
+		assertThat( parameters.getValues( "module" ) ).contains( "a", "b", "c" );
 	}
 
 	@Test
 	void testParseWithValueAndFile() {
 		Parameters parameters = Parameters.parse( "-help", "topic", "test.txt" );
-		assertThat( parameters.get( "help" ), is( "topic" ) );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test.txt" ).toString() ) );
+		assertThat( parameters.get( "help" ) ).isEqualTo( "topic" );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "test.txt" ).toString() );
 	}
 
 	@Test
 	void testParseWithValueAndFiles() {
 		Parameters parameters = Parameters.parse( "-help", "topic", "test1.txt", "test2.txt" );
-		assertThat( parameters.get( "help" ), is( "topic" ) );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test1.txt" ).toString(), UriUtil.resolve( "test2.txt" ).toString() ) );
+		assertThat( parameters.get( "help" ) ).isEqualTo( "topic" );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "test1.txt" ).toString(), UriUtil.resolve( "test2.txt" ).toString() );
 	}
 
 	@Test
 	void testParseWithFlags() {
 		Parameters parameters = Parameters.parse( "-one", "-two", "-three" );
-		assertThat( parameters.get( "one" ), is( "true" ) );
-		assertThat( parameters.get( "two" ), is( "true" ) );
-		assertThat( parameters.get( "three" ), is( "true" ) );
+		assertThat( parameters.get( "one" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "two" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "three" ) ).isEqualTo( "true" );
 	}
 
 	@Test
 	void testParseWithFlagAndFile() {
 		Parameters parameters = Parameters.parse( new String[]{ "-help", "topic", "test.txt" }, "-help" );
-		assertThat( parameters.get( "help" ), is( "topic" ) );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "test.txt" ).toString() ) );
+		assertThat( parameters.get( "help" ) ).isEqualTo( "topic" );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "test.txt" ).toString() );
 	}
 
 	@Test
@@ -104,7 +102,7 @@ class ParametersTest {
 			Parameters.parse( new String[]{ "-help", "topic", "-test", "test", "test.txt" }, "-help" );
 			fail( "Unknown flags should cause an exception" );
 		} catch( IllegalArgumentException exception ) {
-			assertThat( exception.getMessage(), is( "Unknown command: -test" ) );
+			assertThat( exception.getMessage() ).isEqualTo( "Unknown command: -test" );
 		}
 	}
 
@@ -114,8 +112,8 @@ class ParametersTest {
 		String notaflag = "notaflag";
 		String[] args = new String[]{ "-" + flag };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isTrue( notaflag ), is( false ) );
-		assertThat( parameters.isTrue( flag ), is( true ) );
+		assertThat( parameters.isTrue( notaflag ) ).isFalse();
+		assertThat( parameters.isTrue( flag ) ).isTrue();
 	}
 
 	@Test
@@ -135,9 +133,9 @@ class ParametersTest {
 		}
 
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isTrue( notaflag ), is( false ) );
+		assertThat( parameters.isTrue( notaflag ) ).isFalse();
 		for( String flag : flags ) {
-			assertThat( parameters.isTrue( flag ), is( true ) );
+			assertThat( parameters.isTrue( flag ) ).isTrue();
 		}
 	}
 
@@ -159,37 +157,37 @@ class ParametersTest {
 		}
 
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isSet( notakey ), is( false ) );
-		assertThat( parameters.isTrue( notakey ), is( false ) );
+		assertThat( parameters.isSet( notakey ) ).isFalse();
+		assertThat( parameters.isTrue( notakey ) ).isFalse();
 		for( int index = 0; index < count; index++ ) {
-			assertThat( parameters.get( keys.get( index ) ), is( values.get( index ) ) );
+			assertThat( parameters.get( keys.get( index ) ) ).isEqualTo( values.get( index ) );
 		}
 	}
 
 	@Test
 	void testParseWithEscapedValues() {
 		Parameters parameters = Parameters.parse( "--test", "go", "\\-help" );
-		assertThat( parameters.isSet( "test" ), is( true ) );
-		assertThat( parameters.isTrue( "test" ), is( false ) );
-		assertThat( parameters.getValues( "test" ), contains( "go", "-help" ) );
+		assertThat( parameters.isSet( "test" ) ).isTrue();
+		assertThat( parameters.isTrue( "test" ) ).isFalse();
+		assertThat( parameters.getValues( "test" ) ).contains( "go", "-help" );
 	}
 
 	@Test
 	void testParseFlagsWithValue() {
 		String[] args = new String[]{ "-flag1", "-key", "value", "-flag2" };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isTrue( "flag1" ), is( true ) );
-		assertThat( parameters.get( "key" ), is( "value" ) );
-		assertThat( parameters.isTrue( "flag2" ), is( true ) );
+		assertThat( parameters.isTrue( "flag1" ) ).isTrue();
+		assertThat( parameters.get( "key" ) ).isEqualTo( "value" );
+		assertThat( parameters.isTrue( "flag2" ) ).isTrue();
 	}
 
 	@Test
 	void testParseValuesWithFlag() {
 		String[] args = new String[]{ "-key1", "value1", "-flag", "-key2", "value2" };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.get( "key1" ), is( "value1" ) );
-		assertThat( parameters.isTrue( "flag" ), is( true ) );
-		assertThat( parameters.get( "key2" ), is( "value2" ) );
+		assertThat( parameters.get( "key1" ) ).isEqualTo( "value1" );
+		assertThat( parameters.isTrue( "flag" ) ).isTrue();
+		assertThat( parameters.get( "key2" ) ).isEqualTo( "value2" );
 	}
 
 	@Test
@@ -197,7 +195,7 @@ class ParametersTest {
 		String filename = "test.file";
 		String[] args = new String[]{ filename };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( filename ).toString() ) );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( filename ).toString() );
 	}
 
 	@Test
@@ -213,9 +211,9 @@ class ParametersTest {
 
 		List<String> uris = parameters.getUris();
 		for( int index = 0; index < count; index++ ) {
-			assertThat( uris.get( index ), is( UriUtil.resolve( "test" + index + ".file" ).toString() ) );
+			assertThat( uris.get( index ) ).isEqualTo( UriUtil.resolve( "test" + index + ".file" ).toString() );
 		}
-		assertThat( uris.size(), is( count ) );
+		assertThat( uris.size() ).isEqualTo( count );
 	}
 
 	@Test
@@ -224,8 +222,8 @@ class ParametersTest {
 		String[] args = new String[]{ "-flag", "--", filename };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( "Flag not set.", parameters.isTrue( "flag" ), is( true ) );
-		assertThat( "URI incorrect.", parameters.getUris(), contains( UriUtil.resolve( filename ).toString() ) );
+		assertThat( parameters.isTrue( "flag" ) ).isTrue();
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( filename ).toString() );
 	}
 
 	@Test
@@ -235,7 +233,7 @@ class ParametersTest {
 			Parameters.parse( args );
 			fail( "Null values should cause an exception" );
 		} catch( IllegalArgumentException exception ) {
-			assertThat( exception.getMessage(), is( "Null command at index: 0" ) );
+			assertThat( exception.getMessage() ).isEqualTo( "Null command at index: 0" );
 		} catch( Exception exception ) {
 			exception.printStackTrace( System.out );
 			fail( "Unexpected exception " + exception );
@@ -247,45 +245,45 @@ class ParametersTest {
 		String[] commands = new String[]{ "--execmode=dev" };
 		Parameters parameters = Parameters.parse( commands );
 
-		assertThat( parameters.getOriginalCommands(), contains( commands ) );
-		assertThat( parameters.getFlags(), contains( "--execmode" ) );
-		assertThat( parameters.get( "execmode" ), is( "dev" ) );
+		assertThat( parameters.getOriginalCommands() ).contains( commands );
+		assertThat( parameters.getFlags() ).contains( "--execmode" );
+		assertThat( parameters.get( "execmode" ) ).isEqualTo( "dev" );
 	}
 
 	@Test
 	void testAdd() {
 		String[] args = new String[]{ "-flag", "-key", "value1", "file1" };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.get( "none" ), is( nullValue() ) );
-		assertThat( parameters.get( "flag" ), is( "true" ) );
-		assertThat( parameters.get( "key" ), is( "value1" ) );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1" ).toString() ) );
+		assertThat( parameters.get( "none" ) ).isNull();
+		assertThat( parameters.get( "flag" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "key" ) ).isEqualTo( "value1" );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "file1" ).toString() );
 
 		String[] addArgs = new String[]{ "-flag", "false", "-key", "value2", "file2" };
 		Parameters addParameters = Parameters.parse( addArgs );
 		parameters.add( addParameters );
 
-		assertThat( parameters.get( "none" ), is( nullValue() ) );
-		assertThat( parameters.get( "flag" ), is( "true" ) );
-		assertThat( parameters.get( "key" ), is( "value1" ) );
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1" ).toString(), UriUtil.resolve( "file2" ).toString() ) );
+		assertThat( parameters.get( "none" ) ).isNull();
+		assertThat( parameters.get( "flag" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "key" ) ).isEqualTo( "value1" );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "file1" ).toString(), UriUtil.resolve( "file2" ).toString() );
 	}
 
 	@Test
 	void testGet() {
 		String[] args = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.get( "none" ), is( nullValue() ) );
-		assertThat( parameters.get( "flag" ), is( "true" ) );
-		assertThat( parameters.get( "key" ), is( "value" ) );
+		assertThat( parameters.get( "none" ) ).isNull();
+		assertThat( parameters.get( "flag" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "key" ) ).isEqualTo( "value" );
 
-		assertThat( parameters.get( "-none" ), is( nullValue() ) );
-		assertThat( parameters.get( "-flag" ), is( "true" ) );
-		assertThat( parameters.get( "-key" ), is( "value" ) );
+		assertThat( parameters.get( "-none" ) ).isNull();
+		assertThat( parameters.get( "-flag" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "-key" ) ).isEqualTo( "value" );
 
-		assertThat( parameters.get( "--none" ), is( nullValue() ) );
-		assertThat( parameters.get( "--flag" ), is( "true" ) );
-		assertThat( parameters.get( "--key" ), is( "value" ) );
+		assertThat( parameters.get( "--none" ) ).isNull();
+		assertThat( parameters.get( "--flag" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "--key" ) ).isEqualTo( "value" );
 	}
 
 	@Test
@@ -293,9 +291,9 @@ class ParametersTest {
 		String[] args = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.get( "none", "true" ), is( "true" ) );
-		assertThat( parameters.get( "flag", "false" ), is( "true" ) );
-		assertThat( parameters.get( "key", null ), is( "value" ) );
+		assertThat( parameters.get( "none", "true" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "flag", "false" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "key", null ) ).isEqualTo( "value" );
 	}
 
 	@Test
@@ -303,8 +301,8 @@ class ParametersTest {
 		String[] args = new String[]{ "-flag", "-key", "value", "--flag", "value1", "value2", "value3", "--", "file0", "file1" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.getFlags(), containsInAnyOrder( "--flag", "-flag", "-key" ) );
-		assertThat( parameters.getValues( "flag" ), contains( "true", "value1", "value2", "value3" ) );
+		assertThat( parameters.getFlags() ).contains( "--flag", "-flag", "-key" );
+		assertThat( parameters.getValues( "flag" ) ).contains( "true", "value1", "value2", "value3" );
 	}
 
 	@Test
@@ -312,9 +310,9 @@ class ParametersTest {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.getValues( "flag" ), contains( "value0", "value1", "value2" ) );
-		assertThat( parameters.getValues( "-flag" ), contains( "value0", "value1", "value2" ) );
-		assertThat( parameters.getValues( "--flag" ), contains( "value0", "value1", "value2" ) );
+		assertThat( parameters.getValues( "flag" ) ).contains( "value0", "value1", "value2" );
+		assertThat( parameters.getValues( "-flag" ) ).contains( "value0", "value1", "value2" );
+		assertThat( parameters.getValues( "--flag" ) ).contains( "value0", "value1", "value2" );
 	}
 
 	@Test
@@ -322,10 +320,10 @@ class ParametersTest {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "-other" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.getValues( "flag" ), contains( "value0", "value1", "value2" ) );
+		assertThat( parameters.getValues( "flag" ) ).contains( "value0", "value1", "value2" );
 
-		assertThat( parameters.isSet( "other" ), is( true ) );
-		assertThat( parameters.isTrue( "other" ), is( true ) );
+		assertThat( parameters.isSet( "other" ) ).isTrue();
+		assertThat( parameters.isTrue( "other" ) ).isTrue();
 	}
 
 	@Test
@@ -333,9 +331,9 @@ class ParametersTest {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "--", "file1.txt" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.getValues( "flag" ), contains( "value0", "value1", "value2" ) );
+		assertThat( parameters.getValues( "flag" ) ).contains( "value0", "value1", "value2" );
 
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1.txt" ).toString() ) );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "file1.txt" ).toString() );
 	}
 
 	@Test
@@ -343,12 +341,12 @@ class ParametersTest {
 		String[] args = new String[]{ "--flag", "value0", "value1", "value2", "-other", "test", "file1.txt" };
 		Parameters parameters = Parameters.parse( args );
 
-		assertThat( parameters.getValues( "flag" ), contains( "value0", "value1", "value2" ) );
+		assertThat( parameters.getValues( "flag" ) ).contains( "value0", "value1", "value2" );
 
-		assertThat( parameters.isSet( "other" ), is( true ) );
-		assertThat( parameters.isTrue( "other" ), is( false ) );
+		assertThat( parameters.isSet( "other" ) ).isTrue();
+		assertThat( parameters.isTrue( "other" ) ).isFalse();
 
-		assertThat( parameters.getUris(), contains( UriUtil.resolve( "file1.txt" ).toString() ) );
+		assertThat( parameters.getUris() ).contains( UriUtil.resolve( "file1.txt" ).toString() );
 	}
 
 	@Test
@@ -356,48 +354,48 @@ class ParametersTest {
 		String[] commands = new String[]{ "-title", "The Title of the Program" };
 		Parameters parameters = Parameters.parse( commands );
 
-		assertThat( parameters.get( "title" ), is( "The Title of the Program" ) );
+		assertThat( parameters.get( "title" ) ).isEqualTo( "The Title of the Program" );
 	}
 
 	@Test
 	void testIsSet() {
 		String[] args = new String[]{ "-flag1", "false", "-flag2", "true", "-flag3" };
 		Parameters parameters = Parameters.parse( args );
-		assertThat( parameters.isSet( "flag0" ), is( false ) );
-		assertThat( parameters.isTrue( "flag0" ), is( false ) );
+		assertThat( parameters.isSet( "flag0" ) ).isFalse();
+		assertThat( parameters.isTrue( "flag0" ) ).isFalse();
 
-		assertThat( parameters.isSet( "flag1" ), is( true ) );
-		assertThat( parameters.isTrue( "flag1" ), is( false ) );
+		assertThat( parameters.isSet( "flag1" ) ).isTrue();
+		assertThat( parameters.isTrue( "flag1" ) ).isFalse();
 
-		assertThat( parameters.isSet( "flag2" ), is( true ) );
-		assertThat( parameters.isTrue( "flag2" ), is( true ) );
+		assertThat( parameters.isSet( "flag2" ) ).isTrue();
+		assertThat( parameters.isTrue( "flag2" ) ).isTrue();
 
-		assertThat( parameters.isSet( "flag3" ), is( true ) );
-		assertThat( parameters.isTrue( "flag3" ), is( true ) );
+		assertThat( parameters.isSet( "flag3" ) ).isTrue();
+		assertThat( parameters.isTrue( "flag3" ) ).isTrue();
 
-		assertThat( parameters.isSet( "-flag0" ), is( false ) );
-		assertThat( parameters.isTrue( "-flag0" ), is( false ) );
+		assertThat( parameters.isSet( "-flag0" ) ).isFalse();
+		assertThat( parameters.isTrue( "-flag0" ) ).isFalse();
 
-		assertThat( parameters.isSet( "-flag1" ), is( true ) );
-		assertThat( parameters.isTrue( "-flag1" ), is( false ) );
+		assertThat( parameters.isSet( "-flag1" ) ).isTrue();
+		assertThat( parameters.isTrue( "-flag1" ) ).isFalse();
 
-		assertThat( parameters.isSet( "-flag2" ), is( true ) );
-		assertThat( parameters.isTrue( "-flag2" ), is( true ) );
+		assertThat( parameters.isSet( "-flag2" ) ).isTrue();
+		assertThat( parameters.isTrue( "-flag2" ) ).isTrue();
 
-		assertThat( parameters.isSet( "-flag3" ), is( true ) );
-		assertThat( parameters.isTrue( "-flag3" ), is( true ) );
+		assertThat( parameters.isSet( "-flag3" ) ).isTrue();
+		assertThat( parameters.isTrue( "-flag3" ) ).isTrue();
 
-		assertThat( parameters.isSet( "--flag0" ), is( false ) );
-		assertThat( parameters.isTrue( "--flag0" ), is( false ) );
+		assertThat( parameters.isSet( "--flag0" ) ).isFalse();
+		assertThat( parameters.isTrue( "--flag0" ) ).isFalse();
 
-		assertThat( parameters.isSet( "--flag1" ), is( true ) );
-		assertThat( parameters.isTrue( "--flag1" ), is( false ) );
+		assertThat( parameters.isSet( "--flag1" ) ).isTrue();
+		assertThat( parameters.isTrue( "--flag1" ) ).isFalse();
 
-		assertThat( parameters.isSet( "--flag2" ), is( true ) );
-		assertThat( parameters.isTrue( "--flag2" ), is( true ) );
+		assertThat( parameters.isSet( "--flag2" ) ).isTrue();
+		assertThat( parameters.isTrue( "--flag2" ) ).isTrue();
 
-		assertThat( parameters.isSet( "--flag3" ), is( true ) );
-		assertThat( parameters.isTrue( "--flag3" ), is( true ) );
+		assertThat( parameters.isSet( "--flag3" ) ).isTrue();
+		assertThat( parameters.isTrue( "--flag3" ) ).isTrue();
 	}
 
 	@Test
@@ -406,21 +404,21 @@ class ParametersTest {
 		Parameters parameters = Parameters.parse( args );
 		List<String> commands = parameters.getOriginalCommands();
 
-		assertThat( parameters.getOriginalCommands(), not( Matchers.sameInstance( args ) ) );
-		assertThat( commands, contains( "-flag", "-key", "value", "file" ) );
+		assertThat( parameters.getOriginalCommands() ).isNotEqualTo( Matchers.sameInstance( args ) );
+		assertThat( commands ).contains( "-flag", "-key", "value", "file" );
 	}
 
 	@Test
 	void testIdempotentParse() {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
 		Parameters parameters = Parameters.parse( commands );
-		assertThat( Parameters.parse( parameters.getOriginalCommands() ), is( parameters ) );
+		assertThat( Parameters.parse( parameters.getOriginalCommands() ) ).isEqualTo( parameters );
 	}
 
 	@Test
 	void testHashCode() {
 		String[] commands = new String[]{ "-flag", "-key", "value", "file" };
-		assertEquals( Parameters.parse( commands ).hashCode(), Parameters.parse( commands ).hashCode() );
+		assertThat( Parameters.parse( commands ).hashCode() ).isEqualTo( Parameters.parse( commands ).hashCode() );
 	}
 
 	@Test
@@ -430,10 +428,10 @@ class ParametersTest {
 		Parameters parameters2 = Parameters.parse( commands );
 		Parameters parameters3 = Parameters.parse( "-flag", "-key", "value", "otherfile" );
 
-		assertThat( parameters1.equals( parameters2 ), is( true ) );
-		assertThat( parameters2.equals( parameters1 ), is( true ) );
-		assertThat( parameters1.equals( parameters3 ), is( false ) );
-		assertThat( parameters3.equals( parameters1 ), is( false ) );
+		assertThat( parameters1.equals( parameters2 ) ).isTrue();
+		assertThat( parameters2.equals( parameters1 ) ).isTrue();
+		assertThat( parameters1.equals( parameters3 ) ).isFalse();
+		assertThat( parameters3.equals( parameters1 ) ).isFalse();
 	}
 
 }

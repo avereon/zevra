@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class IndenterTest {
 
@@ -14,32 +14,32 @@ class IndenterTest {
 
 	@Test
 	void testCreateIndent() {
-		assertEquals( IND, Indenter.createIndent() );
+		assertThat( Indenter.createIndent() ).isEqualTo( IND);
 	}
 
 	@Test
 	void testCreateIndentWithSize() {
-		assertEquals( "", Indenter.createIndent( -1 ) );
-		assertEquals( "", Indenter.createIndent( 0 ) );
-		assertEquals( IND + "", Indenter.createIndent( 1 ) );
-		assertEquals( IND + "" + IND + "", Indenter.createIndent( 2 ) );
-		assertEquals( IND + "" + IND + "" + IND + "", Indenter.createIndent( 3 ) );
+		assertThat( Indenter.createIndent( -1 ) ).isEqualTo( "");
+		assertThat( Indenter.createIndent( 0 ) ).isEqualTo( "");
+		assertThat( Indenter.createIndent( 1 ) ).isEqualTo( IND + "");
+		assertThat( Indenter.createIndent( 2 ) ).isEqualTo( IND + "" + IND + "");
+		assertThat( Indenter.createIndent( 3 ) ).isEqualTo( IND + "" + IND + "" + IND + "");
 	}
 
 	@Test
 	void testCreateIndentWithString() {
-		assertEquals( "", Indenter.createIndent( -1, "<>" ) );
-		assertEquals( "", Indenter.createIndent( 0, "<>" ) );
-		assertEquals( "<>", Indenter.createIndent( 1, "<>" ) );
-		assertEquals( "<><>", Indenter.createIndent( 2, "<>" ) );
-		assertEquals( "<><><>", Indenter.createIndent( 3, "<>" ) );
+		assertThat( Indenter.createIndent( -1, "<>" ) ).isEqualTo( "");
+		assertThat( Indenter.createIndent( 0, "<>" ) ).isEqualTo( "");
+		assertThat( Indenter.createIndent( 1, "<>" ) ).isEqualTo( "<>");
+		assertThat( Indenter.createIndent( 2, "<>" ) ).isEqualTo( "<><>");
+		assertThat( Indenter.createIndent( 3, "<>" ) ).isEqualTo( "<><><>");
 	}
 
 	@Test
 	void testWriteIndent() throws Exception {
 		StringWriter writer = new StringWriter();
 		Indenter.writeIndent( writer );
-		assertEquals( IND, writer.toString() );
+		assertThat( writer.toString() ).isEqualTo( IND);
 	}
 
 	@Test
@@ -69,209 +69,209 @@ class IndenterTest {
 
 	@Test
 	void testIndent() {
-		assertNull( Indenter.indent( null ) );
+		assertThat( Indenter.indent( null )).isNull();
 
-		assertEquals( IND, Indenter.indent( "" ) );
-		assertEquals( IND + "a", Indenter.indent( "a" ) );
+		assertThat( Indenter.indent( "" ) ).isEqualTo( IND);
+		assertThat( Indenter.indent( "a" ) ).isEqualTo( IND + "a");
 
-		assertEquals( IND + "\n" + IND, Indenter.indent( "\n" ) );
-		assertEquals( IND + "a\n" + IND + "a", Indenter.indent( "a\na" ) );
+		assertThat( Indenter.indent( "\n" ) ).isEqualTo( IND + "\n" + IND);
+		assertThat( Indenter.indent( "a\na" ) ).isEqualTo( IND + "a\n" + IND + "a");
 
-		assertEquals( IND + "\n" + IND + "\n" + IND, Indenter.indent( "\n\n" ) );
-		assertEquals( IND + "a\n" + IND + "a\n" + IND + "a", Indenter.indent( "a\na\na" ) );
+		assertThat( Indenter.indent( "\n\n" ) ).isEqualTo( IND + "\n" + IND + "\n" + IND);
+		assertThat( Indenter.indent( "a\na\na" ) ).isEqualTo( IND + "a\n" + IND + "a\n" + IND + "a");
 	}
 
 	@Test
 	void testIndentWithSize() {
-		assertNull( Indenter.indent( null, 2 ) );
+		assertThat( Indenter.indent( null, 2 ) ).isNull();
 
-		assertEquals( IND + IND, Indenter.indent( "", 2 ) );
-		assertEquals( IND + IND + "a", Indenter.indent( "a", 2 ) );
+		assertThat( Indenter.indent( "", 2 ) ).isEqualTo( IND + IND);
+		assertThat( Indenter.indent( "a", 2 ) ).isEqualTo( IND + IND + "a");
 
-		assertEquals( IND + IND + "\n" + IND + IND, Indenter.indent( "\n", 2 ) );
-		assertEquals( IND + IND + "a\n" + IND + IND + "a", Indenter.indent( "a\na", 2 ) );
+		assertThat( Indenter.indent( "\n", 2 ) ).isEqualTo( IND + IND + "\n" + IND + IND);
+		assertThat( Indenter.indent( "a\na", 2 ) ).isEqualTo( IND + IND + "a\n" + IND + IND + "a");
 
-		assertEquals( IND + IND + "\n" + IND + IND + "\n" + IND + IND, Indenter.indent( "\n\n", 2 ) );
-		assertEquals( IND + IND + "a\n" + IND + IND + "a\n" + IND + IND + "a", Indenter.indent( "a\na\na", 2 ) );
+		assertThat( Indenter.indent( "\n\n", 2 ) ).isEqualTo( IND + IND + "\n" + IND + IND + "\n" + IND + IND);
+		assertThat( Indenter.indent( "a\na\na", 2 ) ).isEqualTo( IND + IND + "a\n" + IND + IND + "a\n" + IND + IND + "a");
 	}
 
 	@Test
 	void testIndentWithString() {
-		assertNull( Indenter.indent( null, "<>" ) );
+		assertThat( Indenter.indent( null, "<>" ) ).isNull();
 
-		assertEquals( "<>", Indenter.indent( "", "<>" ) );
-		assertEquals( "<>a", Indenter.indent( "a", "<>" ) );
+		assertThat( Indenter.indent( "", "<>" ) ).isEqualTo( "<>");
+		assertThat( Indenter.indent( "a", "<>" ) ).isEqualTo( "<>a");
 
-		assertEquals( "<>\n<>", Indenter.indent( "\n", "<>" ) );
-		assertEquals( "<>a\n<>a", Indenter.indent( "a\na", "<>" ) );
+		assertThat( Indenter.indent( "\n", "<>" ) ).isEqualTo( "<>\n<>");
+		assertThat( Indenter.indent( "a\na", "<>" ) ).isEqualTo( "<>a\n<>a");
 
-		assertEquals( "<>\n<>\n<>", Indenter.indent( "\n\n", "<>" ) );
-		assertEquals( "<>a\n<>a\n<>a", Indenter.indent( "a\na\na", "<>" ) );
+		assertThat( Indenter.indent( "\n\n", "<>" ) ).isEqualTo( "<>\n<>\n<>");
+		assertThat( Indenter.indent( "a\na\na", "<>" ) ).isEqualTo( "<>a\n<>a\n<>a");
 	}
 
 	@Test
 	void testIndentWithSizeAndString() {
-		assertNull( Indenter.indent( null, 1, "<>" ) );
+		assertThat( Indenter.indent( null, 1, "<>" ) ).isNull();
 
-		assertEquals( "<><><>", Indenter.indent( "", 3, "<>" ) );
-		assertEquals( "<><><>a", Indenter.indent( "a", 3, "<>" ) );
+		assertThat( Indenter.indent( "", 3, "<>" ) ).isEqualTo( "<><><>");
+		assertThat( Indenter.indent( "a", 3, "<>" ) ).isEqualTo( "<><><>a");
 
-		assertEquals( "<><><>\n<><><>", Indenter.indent( "\n", 3, "<>" ) );
-		assertEquals( "<><><>a\n<><><>a", Indenter.indent( "a\na", 3, "<>" ) );
+		assertThat( Indenter.indent( "\n", 3, "<>" ) ).isEqualTo( "<><><>\n<><><>");
+		assertThat( Indenter.indent( "a\na", 3, "<>" ) ).isEqualTo( "<><><>a\n<><><>a");
 
-		assertEquals( "<><><>\n<><><>\n<><><>", Indenter.indent( "\n\n", 3, "<>" ) );
-		assertEquals( "<><><>a\n<><><>a\n<><><>a", Indenter.indent( "a\na\na", 3, "<>" ) );
+		assertThat( Indenter.indent( "\n\n", 3, "<>" ) ).isEqualTo( "<><><>\n<><><>\n<><><>");
+		assertThat( Indenter.indent( "a\na\na", 3, "<>" ) ).isEqualTo( "<><><>a\n<><><>a\n<><><>a");
 	}
 
 	@Test
 	void testCanUnindent() {
-		assertFalse( Indenter.canUnindent( null ) );
+		assertThat( Indenter.canUnindent( null ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "a" + IND ) );
-		assertFalse( Indenter.canUnindent( IND + "a\nb" + IND ) );
-		assertFalse( Indenter.canUnindent( IND + "a\n" + IND + "b\nc" + IND ) );
+		assertThat( Indenter.canUnindent( "a" + IND ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + "a\nb" + IND ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + "a\n" + IND + "b\nc" + IND ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "" ) );
-		assertFalse( Indenter.canUnindent( IND + "\n" ) );
-		assertFalse( Indenter.canUnindent( IND + "\n" + IND + "\n" ) );
-		assertFalse( Indenter.canUnindent( IND + "\n" + IND + "\n" + IND + "\n" ) );
+		assertThat( Indenter.canUnindent( "" ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + "\n" ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + "\n" + IND + "\n" ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + "\n" + IND + "\n" + IND + "\n" ) ).isFalse();
 
-		assertTrue( Indenter.canUnindent( "", true ) );
-		assertTrue( Indenter.canUnindent( IND + "\n", true ) );
-		assertTrue( Indenter.canUnindent( IND + "\n" + IND + "\n", true ) );
-		assertTrue( Indenter.canUnindent( IND + "\n" + IND + "\n" + IND + "\n", true ) );
+		assertThat( Indenter.canUnindent( "", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + "\n", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + "\n" + IND + "\n", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + "\n" + IND + "\n" + IND + "\n", true ) ).isTrue();
 
-		assertTrue( Indenter.canUnindent( IND + "a" ) );
-		assertTrue( Indenter.canUnindent( IND + "a\n" + IND + "b" ) );
-		assertTrue( Indenter.canUnindent( IND + "a\n" + IND + "b\n" + IND + "c" ) );
+		assertThat( Indenter.canUnindent( IND + "a" ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + "a\n" + IND + "b" ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + "a\n" + IND + "b\n" + IND + "c" ) ).isTrue();
 	}
 
 	@Test
 	void testCanUnindentWithSize() {
-		assertFalse( Indenter.canUnindent( null ) );
+		assertThat( Indenter.canUnindent( null ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "a" + IND + IND + "", 2 ) );
-		assertFalse( Indenter.canUnindent( IND + IND + "a\nb" + IND + IND + "", 2 ) );
-		assertFalse( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b\nc" + IND + IND + "", 2 ) );
+		assertThat( Indenter.canUnindent( "a" + IND + IND + "", 2 ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + IND + "a\nb" + IND + IND + "", 2 ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b\nc" + IND + IND + "", 2 ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "", 2 ) );
-		assertFalse( Indenter.canUnindent( IND + IND + "\n", 2 ) );
-		assertFalse( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n", 2 ) );
-		assertFalse( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND + "\n", 2 ) );
+		assertThat( Indenter.canUnindent( "", 2 ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + IND + "\n", 2 ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n", 2 ) ).isFalse();
+		assertThat( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND + "\n", 2 ) ).isFalse();
 
-		assertTrue( Indenter.canUnindent( "", 2, true ) );
-		assertTrue( Indenter.canUnindent( IND + IND + "\n", 2, true ) );
-		assertTrue( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n", 2, true ) );
-		assertTrue( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND + "\n", 2, true ) );
+		assertThat( Indenter.canUnindent( "", 2, true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + IND + "\n", 2, true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n", 2, true ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND + "\n", 2, true ) ).isTrue();
 
-		assertTrue( Indenter.canUnindent( IND + IND + "a", 2 ) );
-		assertTrue( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b", 2 ) );
-		assertTrue( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) );
+		assertThat( Indenter.canUnindent( IND + IND + "a", 2 ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b", 2 ) ).isTrue();
+		assertThat( Indenter.canUnindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) ).isTrue();
 	}
 
 	@Test
 	void testCanUnindentWithString() {
-		assertFalse( Indenter.canUnindent( null ) );
+		assertThat( Indenter.canUnindent( null ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "a<><><>", 3, "<>" ) );
-		assertFalse( Indenter.canUnindent( "<><><>a\nb<><><>", 3, "<>" ) );
-		assertFalse( Indenter.canUnindent( "<><><>a\n<><><>b\nc<><><>", 3, "<>" ) );
+		assertThat( Indenter.canUnindent( "a<><><>", 3, "<>" ) ).isFalse();
+		assertThat( Indenter.canUnindent( "<><><>a\nb<><><>", 3, "<>" ) ).isFalse();
+		assertThat( Indenter.canUnindent( "<><><>a\n<><><>b\nc<><><>", 3, "<>" ) ).isFalse();
 
-		assertFalse( Indenter.canUnindent( "", 3, "<>" ) );
-		assertFalse( Indenter.canUnindent( "<><><>\n", 3, "<>" ) );
-		assertFalse( Indenter.canUnindent( "<><><>\n" + "<><><>\n", 3, "<>" ) );
-		assertFalse( Indenter.canUnindent( "<><><>\n" + "<><><>\n" + "<><><>\n", 3, "<>" ) );
+		assertThat( Indenter.canUnindent( "", 3, "<>" ) ).isFalse();
+		assertThat( Indenter.canUnindent( "<><><>\n", 3, "<>" ) ).isFalse();
+		assertThat( Indenter.canUnindent( "<><><>\n" + "<><><>\n", 3, "<>" ) ).isFalse();
+		assertThat( Indenter.canUnindent( "<><><>\n" + "<><><>\n" + "<><><>\n", 3, "<>" ) ).isFalse();
 
-		assertTrue( Indenter.canUnindent( "", 3, "<>", true ) );
-		assertTrue( Indenter.canUnindent( "<><><>\n", 3, "<>", true ) );
-		assertTrue( Indenter.canUnindent( "<><><>\n" + "<><><>\n", 3, "<>", true ) );
-		assertTrue( Indenter.canUnindent( "<><><>\n" + "<><><>\n" + "<><><>\n", 3, "<>", true ) );
+		assertThat( Indenter.canUnindent( "", 3, "<>", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( "<><><>\n", 3, "<>", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( "<><><>\n" + "<><><>\n", 3, "<>", true ) ).isTrue();
+		assertThat( Indenter.canUnindent( "<><><>\n" + "<><><>\n" + "<><><>\n", 3, "<>", true ) ).isTrue();
 
-		assertTrue( Indenter.canUnindent( "<><><>a", 3, "<>" ) );
-		assertTrue( Indenter.canUnindent( "<><><>a\n" + "<><><>b", 3, "<>" ) );
-		assertTrue( Indenter.canUnindent( "<><><>a\n" + "<><><>b\n" + "<><><>c", 3, "<>" ) );
+		assertThat( Indenter.canUnindent( "<><><>a", 3, "<>" ) ).isTrue();
+		assertThat( Indenter.canUnindent( "<><><>a\n" + "<><><>b", 3, "<>" ) ).isTrue();
+		assertThat( Indenter.canUnindent( "<><><>a\n" + "<><><>b\n" + "<><><>c", 3, "<>" ) ).isTrue();
 	}
 
 	@Test
 	void testUnindent() {
-		assertNull( Indenter.unindent( null ) );
+		assertThat( Indenter.unindent( null )).isNull();
 
-		assertEquals( "", Indenter.unindent( "" ) );
-		assertEquals( "\n", Indenter.unindent( "\n" ) );
+		assertThat( Indenter.unindent( "" ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( "\n" ) ).isEqualTo( "\n");
 
-		assertEquals( "", Indenter.unindent( IND ) );
-		assertEquals( "a", Indenter.unindent( IND + "a" ) );
+		assertThat( Indenter.unindent( IND ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( IND + "a" ) ).isEqualTo( "a");
 
-		assertEquals( "\n", Indenter.unindent( IND + "\n" + IND ) );
-		assertEquals( "a\nb", Indenter.unindent( IND + "a\n" + IND + "b" ) );
+		assertThat( Indenter.unindent( IND + "\n" + IND ) ).isEqualTo( "\n");
+		assertThat( Indenter.unindent( IND + "a\n" + IND + "b" ) ).isEqualTo( "a\nb");
 
-		assertEquals( "\n\n", Indenter.unindent( IND + "\n" + IND + "\n" + IND ) );
-		assertEquals( "a\nb\nc", Indenter.unindent( IND + "a\n" + IND + "b\n" + IND + "c" ) );
+		assertThat( Indenter.unindent( IND + "\n" + IND + "\n" + IND ) ).isEqualTo( "\n\n");
+		assertThat( Indenter.unindent( IND + "a\n" + IND + "b\n" + IND + "c" ) ).isEqualTo( "a\nb\nc");
 	}
 
 	@Test
 	void testUnindentWithSize() {
-		assertNull( Indenter.unindent( null, 2 ) );
+		assertThat( Indenter.unindent( null, 2 ) ).isNull();
 
-		assertEquals( "", Indenter.unindent( "", 2 ) );
-		assertEquals( "\n", Indenter.unindent( "\n", 2 ) );
+		assertThat( Indenter.unindent( "", 2 ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( "\n", 2 ) ).isEqualTo( "\n");
 
-		assertEquals( "", Indenter.unindent( IND + IND, 2 ) );
-		assertEquals( "a", Indenter.unindent( IND + IND + "a", 2 ) );
+		assertThat( Indenter.unindent( IND + IND, 2 ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( IND + IND + "a", 2 ) ).isEqualTo( "a");
 
-		assertEquals( "\n", Indenter.unindent( IND + IND + "\n" + IND + IND, 2 ) );
-		assertEquals( "a\nb", Indenter.unindent( IND + IND + "a\n" + IND + IND + "b", 2 ) );
+		assertThat( Indenter.unindent( IND + IND + "\n" + IND + IND, 2 ) ).isEqualTo( "\n");
+		assertThat( Indenter.unindent( IND + IND + "a\n" + IND + IND + "b", 2 ) ).isEqualTo( "a\nb");
 
-		assertEquals( "\n\n", Indenter.unindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND, 2 ) );
-		assertEquals( "a\nb\nc", Indenter.unindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) );
+		assertThat( Indenter.unindent( IND + IND + "\n" + IND + IND + "\n" + IND + IND, 2 ) ).isEqualTo( "\n\n");
+		assertThat( Indenter.unindent( IND + IND + "a\n" + IND + IND + "b\n" + IND + IND + "c", 2 ) ).isEqualTo( "a\nb\nc");
 	}
 
 	@Test
 	void testUnindentWithString() {
-		assertNull( Indenter.unindent( null, 3, "<>" ) );
+		assertThat( Indenter.unindent( null, 3, "<>" ) ).isNull();
 
-		assertEquals( "", Indenter.unindent( "", 3, "<>" ) );
-		assertEquals( "\n", Indenter.unindent( "\n", 3, "<>" ) );
+		assertThat( Indenter.unindent( "", 3, "<>" ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( "\n", 3, "<>" ) ).isEqualTo( "\n");
 
-		assertEquals( "", Indenter.unindent( "<><><>", 3, "<>" ) );
-		assertEquals( "a", Indenter.unindent( "<><><>a", 3, "<>" ) );
+		assertThat( Indenter.unindent( "<><><>", 3, "<>" ) ).isEqualTo( "");
+		assertThat( Indenter.unindent( "<><><>a", 3, "<>" ) ).isEqualTo( "a");
 
-		assertEquals( "\n", Indenter.unindent( "<><><>\n<><><>", 3, "<>" ) );
-		assertEquals( "a\nb", Indenter.unindent( "<><><>a\n<><><>b", 3, "<>" ) );
+		assertThat( Indenter.unindent( "<><><>\n<><><>", 3, "<>" ) ).isEqualTo( "\n");
+		assertThat( Indenter.unindent( "<><><>a\n<><><>b", 3, "<>" ) ).isEqualTo( "a\nb");
 
-		assertEquals( "\n\n", Indenter.unindent( "<><><>\n<><><>\n<><><>", 3, "<>" ) );
-		assertEquals( "a\nb\nc", Indenter.unindent( "<><><>a\n<><><>b\n<><><>c", 3, "<>" ) );
+		assertThat( Indenter.unindent( "<><><>\n<><><>\n<><><>", 3, "<>" ) ).isEqualTo( "\n\n");
+		assertThat( Indenter.unindent( "<><><>a\n<><><>b\n<><><>c", 3, "<>" ) ).isEqualTo( "a\nb\nc");
 	}
 
 	@Test
 	void testTrim() {
-		assertNull( Indenter.trim( null, null ) );
-		assertEquals( "", Indenter.trim( "", "" ) );
-		assertEquals( "b", Indenter.trim( "abc", "ac" ) );
+		assertThat( Indenter.trim( null, null ) ).isNull();
+		assertThat( Indenter.trim( "", "" ) ).isEqualTo( "");
+		assertThat( Indenter.trim( "abc", "ac" ) ).isEqualTo( "b");
 	}
 
 	@Test
 	void testTrimLines() {
-		assertNull( Indenter.trimLines( null, null ) );
-		assertEquals( "", Indenter.trimLines( "", "" ) );
+		assertThat( Indenter.trimLines( null, null ) ).isNull();
+		assertThat( Indenter.trimLines( "", "" ) ).isEqualTo( "");
 	}
 
 	private void assertWriteIndent( String result, int size ) throws IOException {
 		StringWriter writer = new StringWriter();
 		Indenter.writeIndent( writer, size );
-		assertEquals( result, writer.toString() );
+		assertThat( writer.toString() ).isEqualTo( result);
 	}
 
 	private void assertWriteIndentWithString( String result, String text ) throws IOException {
 		StringWriter writer = new StringWriter();
 		Indenter.writeIndent( writer, text );
-		assertEquals( result, writer.toString() );
+		assertThat( writer.toString() ).isEqualTo( result);
 	}
 
 	private void assertWriteIndentWithSizeAndString( String result, int size, String text ) throws IOException {
 		StringWriter writer = new StringWriter();
 		Indenter.writeIndent( writer, size, text );
-		assertEquals( result, writer.toString() );
+		assertThat( writer.toString() ).isEqualTo( result);
 	}
 
 }

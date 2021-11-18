@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -8,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MapUtilTest {
 
@@ -30,7 +29,7 @@ public class MapUtilTest {
 		c.put( "children", Map.of( "d", d, "e", e ) );
 
 		Set<Object> values = MapUtil.flatten( a, "children", "value" ).collect( Collectors.toSet() );
-		MatcherAssert.assertThat( values, containsInAnyOrder( "a", "b", "c", "d", "e" ) );
+		assertThat( values ).contains( "a", "b", "c", "d", "e" );
 	}
 
 }

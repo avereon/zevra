@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class StoredSettingsTest extends BaseSettingsTest {
 
@@ -36,24 +33,24 @@ class StoredSettingsTest extends BaseSettingsTest {
 
 	@Test
 	void testGetNodesFromFolder() throws IOException {
-		assertThat( settings.getNodes().size(), is( 0 ) );
+		assertThat( settings.getNodes().size() ).isEqualTo( 0 );
 		Path childFolder = path.resolve( "children" );
 		Path childSettings = childFolder.resolve( "settings.properties" );
 		Files.createDirectory( childFolder );
 		Files.createFile( childSettings );
-		assertTrue( Files.exists( childSettings ) );
-		assertThat( settings.getNodes().size(), is( 1 ) );
+		assertThat( Files.exists( childSettings ) ).isTrue();
+		assertThat( settings.getNodes().size() ).isEqualTo( 1 );
 	}
 
 	@Test
 	void testSaveAfterDelete() {
 		settings.set( "test", "1" );
-		assertTrue( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isTrue();
 		settings.delete();
-		assertFalse( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isFalse();
 		settings.set( "test", "2" );
 		settings.flush();
-		assertFalse( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isFalse();
 	}
 
 }

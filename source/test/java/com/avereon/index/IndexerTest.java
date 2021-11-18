@@ -14,10 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class IndexerTest {
 
@@ -33,11 +30,11 @@ public class IndexerTest {
 
 	@Test
 	void testIsRunning() {
-		assertFalse( indexer.isRunning() );
+		assertThat( indexer.isRunning() ).isFalse();
 		indexer.start();
-		assertTrue( indexer.isRunning() );
+		assertThat( indexer.isRunning() ).isTrue();
 		indexer.stop();
-		assertFalse( indexer.isRunning() );
+		assertThat( indexer.isRunning() ).isFalse();
 	}
 
 	@Test
@@ -48,7 +45,7 @@ public class IndexerTest {
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
 		indexer.stop();
 
-		assertTrue( result.isSuccessful() );
+		assertThat( result.isSuccessful() ).isTrue();
 	}
 
 	@Test
@@ -63,25 +60,21 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ),
-			contains( Hit.builder().context( name ).line( 0 ).index( 0 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ), contains( Hit.builder().context( text ).line( 0 ).index( 5 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() ) );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 8 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 13 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ),
-			contains( Hit.builder().context( text ).line( 0 ).index( 23 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
+		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ) )
+			.contains( Hit.builder().context( name ).line( 0 ).index( 0 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ) )
+			.contains( Hit.builder().context( text ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ) )
+			.contains( Hit.builder().context( text ).line( 0 ).index( 5 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ) )
+			.contains( Hit.builder().context( text ).line( 0 ).index( 8 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ) )
+			.contains( Hit.builder().context( text ).line( 0 ).index( 13 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ) )
+			.contains( Hit.builder().context( text ).line( 0 ).index( 23 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
 
 		// Check the dictionary
-		assertThat( indexer.getIndex().orElseThrow().getDictionary(), containsInAnyOrder( "document", "this", "is", "some", "arbitrary", "content" ) );
+		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "document", "this", "is", "some", "arbitrary", "content" );
 	}
 
 	@Test
@@ -98,29 +91,23 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ),
-			contains( Hit.builder().context( name.trim() ).line( 0 ).index( 10 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() )
+		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ) )
+			.contains( Hit.builder().context( name.trim() ).line( 0 ).index( 10 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ) ).contains(
+			Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.NAME_PRIORITY ).build(),
+			Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
 		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ),
-			containsInAnyOrder( Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.NAME_PRIORITY ).build(),
-				Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
-			)
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ),
-			contains( Hit.builder().context( line0.trim() ).line( 0 ).index( 6 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 0 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 6 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ),
-			contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 16 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() )
-		);
+		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ) )
+			.contains( Hit.builder().context( line0.trim() ).line( 0 ).index( 6 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ) )
+			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 0 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ) )
+			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 6 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
+		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ) )
+			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 16 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
 
 		// Check the dictionary
-		assertThat( indexer.getIndex().orElseThrow().getDictionary(), containsInAnyOrder( "a", "document", "this", "is", "some", "arbitrary", "content" ) );
+		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "a", "document", "this", "is", "some", "arbitrary", "content" );
 	}
 
 	@Test
@@ -134,7 +121,7 @@ public class IndexerTest {
 
 		result.get().get();
 
-		assertThat( indexer.getIndex().orElseThrow().getDictionary(), containsInAnyOrder( "this", "is", "some", "arbitrary", "content" ) );
+		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "this", "is", "some", "arbitrary", "content" );
 
 		String scope = Index.DEFAULT;
 		String word = "content";
@@ -145,8 +132,8 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
-		assertThat( hits.get( 0 ).document(), is( document ) );
-		assertThat( hits.size(), is( 1 ) );
+		assertThat( hits.get( 0 ).document() ).isEqualTo( document );
+		assertThat( hits.size() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -160,7 +147,7 @@ public class IndexerTest {
 
 		result.get().get();
 
-		assertThat( indexer.getIndex().orElseThrow().getDictionary(), containsInAnyOrder( "help", "empty" ) );
+		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "help", "empty" );
 
 		String scope = Index.DEFAULT;
 		String word = "help";
@@ -171,8 +158,8 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
-		assertThat( hits.get( 0 ).document(), is( document ) );
-		assertThat( hits.size(), is( 1 ) );
+		assertThat( hits.get( 0 ).document() ).isEqualTo( document );
+		assertThat( hits.size() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -194,9 +181,9 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
-		assertThat( hits.get( 0 ).document(), is( document2 ) );
-		assertThat( hits.get( 1 ).document(), is( document1 ) );
-		assertThat( hits.size(), is( 2 ) );
+		assertThat( hits.get( 0 ).document() ).isEqualTo( document2 );
+		assertThat( hits.get( 1 ).document() ).isEqualTo( document1 );
+		assertThat( hits.size() ).isEqualTo( 2 );
 
 		hits = indexer
 			.getIndex( Index.DEFAULT )
@@ -204,9 +191,9 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
-		assertThat( hits.get( 0 ).document(), is( document1 ) );
-		assertThat( hits.get( 1 ).document(), is( document2 ) );
-		assertThat( hits.size(), is( 2 ) );
+		assertThat( hits.get( 0 ).document() ).isEqualTo( document1 );
+		assertThat( hits.get( 1 ).document() ).isEqualTo( document2 );
+		assertThat( hits.size() ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -226,9 +213,9 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
-		assertThat( hits.get( 0 ).priority(), is( Hit.NAME_PRIORITY ) );
-		assertThat( hits.get( 1 ).priority(), is( Hit.CONTENT_PRIORITY ) );
-		assertThat( hits.size(), is( 2 ) );
+		assertThat( hits.get( 0 ).priority() ).isEqualTo( Hit.NAME_PRIORITY );
+		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+		assertThat( hits.size() ).isEqualTo( 2 );
 
 	}
 }

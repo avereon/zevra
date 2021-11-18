@@ -2,7 +2,7 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestUtilTest {
 
@@ -10,7 +10,7 @@ class TestUtilTest {
 	void testIsTest() {
 		boolean isTest = TestUtil.isTest();
 		if( !isTest ) new Throwable( "Unable to determine test runner from thread stack:" ).printStackTrace();
-		assertTrue( TestUtil.isTest(), "Unable to determine test runner from thread stack" );
+		assertThat( TestUtil.isTest() ).withFailMessage( "Unable to determine test runner from thread stack" ).isTrue();
 	}
 
 }

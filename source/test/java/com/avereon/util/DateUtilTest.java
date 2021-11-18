@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class DateUtilTest {
 
@@ -18,11 +19,11 @@ class DateUtilTest {
 			// Intentionally ignore exception.
 		}
 
-		assertNull( DateUtil.parse( null, null ) );
-		assertNull( DateUtil.parse( null, "" ) );
-		assertNull( DateUtil.parse( "", "" ) );
+		assertThat( DateUtil.parse( null, null ) ).isNull();
+		assertThat( DateUtil.parse( null, "" ) ).isNull();
+		assertThat( DateUtil.parse( "", "" ) ).isNull();
 
-		assertEquals( new Date( 0 ), DateUtil.parse( "1970-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss" ) );
+		assertThat( DateUtil.parse( "1970-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss" ) ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test
@@ -55,25 +56,25 @@ class DateUtilTest {
 			// Intentionally ignore exception.
 		}
 
-		assertNull( DateUtil.parse( null, null, (TimeZone)null ) );
-		assertNull( DateUtil.parse( null, null, (String)null ) );
-		assertNull( DateUtil.parse( null, "", "" ) );
-		assertNull( DateUtil.parse( "", "", "" ) );
+		assertThat( DateUtil.parse( null, null, (TimeZone)null ) ).isNull();
+		assertThat( DateUtil.parse( null, null, (String)null ) ).isNull();
+		assertThat( DateUtil.parse( null, "", "" ) ).isNull();
+		assertThat( DateUtil.parse( "", "", "" ) ).isNull();
 
-		assertEquals( new Date( 0 ), DateUtil.parse( "1970-01-01 05:00:00", "yyyy-MM-dd HH:mm:ss", "GMT+05" ) );
+		assertThat( DateUtil.parse( "1970-01-01 05:00:00", "yyyy-MM-dd HH:mm:ss", "GMT+05" ) ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test
 	void testFormatDuration() {
-		assertEquals( "", DateUtil.formatDuration( 0L ) );
-		assertEquals( "345ms", DateUtil.formatDuration( 345L ) );
-		assertEquals( "1s", DateUtil.formatDuration( 1000L ) );
-		assertEquals( "1m", DateUtil.formatDuration( 60000L ) );
-		assertEquals( "1h", DateUtil.formatDuration( 3600000L ) );
-		assertEquals( "1h 5s", DateUtil.formatDuration( 3605000L ) );
-		assertEquals( "1d", DateUtil.formatDuration( 24 * 3600000L ) );
-		assertEquals( "12h 7m 53s 654ms", DateUtil.formatDuration( 43673654L ) );
-		assertEquals( "74d 13h 54m 33s 321ms", DateUtil.formatDuration( 6443673321L ) );
+		assertThat( DateUtil.formatDuration( 0L ) ).isEqualTo( "" );
+		assertThat( DateUtil.formatDuration( 345L ) ).isEqualTo( "345ms" );
+		assertThat( DateUtil.formatDuration( 1000L ) ).isEqualTo( "1s" );
+		assertThat( DateUtil.formatDuration( 60000L ) ).isEqualTo( "1m" );
+		assertThat( DateUtil.formatDuration( 3600000L ) ).isEqualTo( "1h" );
+		assertThat( DateUtil.formatDuration( 3605000L ) ).isEqualTo( "1h 5s" );
+		assertThat( DateUtil.formatDuration( 24 * 3600000L ) ).isEqualTo( "1d" );
+		assertThat( DateUtil.formatDuration( 43673654L ) ).isEqualTo( "12h 7m 53s 654ms" );
+		assertThat( DateUtil.formatDuration( 6443673321L ) ).isEqualTo( "74d 13h 54m 33s 321ms" );
 	}
 
 }

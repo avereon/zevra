@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class NonBlockingReaderTest {
 
@@ -24,10 +22,10 @@ class NonBlockingReaderTest {
 		NonBlockingReader reader = new NonBlockingReader( new StringReader( content ) );
 
 		long time = delay;
-		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ), is( line1 ) );
-		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ), is( line2 ) );
-		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ), is( line3 ) );
-		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ), is( nullValue() ) );
+		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ) ).isEqualTo( line1 );
+		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ) ).isEqualTo( line2 );
+		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ) ).isEqualTo( line3 );
+		assertThat( reader.readLine( time, TimeUnit.MILLISECONDS ) ).isNull();
 	}
 
 	@Test
@@ -36,7 +34,7 @@ class NonBlockingReaderTest {
 			NonBlockingReader reader = null;
 			try {
 				reader = new NonBlockingReader( System.in );
-				assertThat( reader.readLine( delay, TimeUnit.MILLISECONDS ), is( nullValue() ) );
+				assertThat( reader.readLine( delay, TimeUnit.MILLISECONDS ) ).isNull();
 			} finally {
 				if( reader != null ) reader.close();
 			}
@@ -62,7 +60,7 @@ class NonBlockingReaderTest {
 		} ).start();
 
 		// Read a line with a timeout longer than the closing thread pause
-		assertThat( reader.readLine( 2 * time, TimeUnit.MILLISECONDS ), is( nullValue() ) );
+		assertThat( reader.readLine( 2 * time, TimeUnit.MILLISECONDS ) ).isNull();
 	}
 
 }

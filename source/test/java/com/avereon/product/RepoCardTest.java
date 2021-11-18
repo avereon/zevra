@@ -10,10 +10,7 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RepoCardTest {
 
@@ -28,8 +25,8 @@ class RepoCardTest {
 		b.setName( "Example Repo" );
 		b.setUrl( "http://example.com/repo" );
 
-		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
-		assertThat( a.hashCode(), is( b.hashCode() ) );
+		assertThat( System.identityHashCode( a ) ).isNotEqualTo( System.identityHashCode( b ) );
+		assertThat( a.hashCode() ).isEqualTo( b.hashCode() );
 	}
 
 	@Test
@@ -43,8 +40,8 @@ class RepoCardTest {
 		b.setName( "Example Repo" );
 		b.setUrl( "http://example.com/repo" );
 
-		assertThat( System.identityHashCode( a ), not( is( System.identityHashCode( b ) ) ) );
-		assertThat( a, is( b ) );
+		assertThat( System.identityHashCode( a ) ).isNotEqualTo( System.identityHashCode( b ) );
+		assertThat( a ).isEqualTo( b );
 	}
 
 	@Test
@@ -58,24 +55,21 @@ class RepoCardTest {
 		mapper.configure( SerializationFeature.INDENT_OUTPUT, true );
 		String store = mapper.writeValueAsString( card );
 
-		//System.out.println( store );
-
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
-		assertThat( reader.readLine(), is( "{" ) );
-		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
-		assertThat( reader.readLine(), is( "  \"name\" : \"Example Repo\"," ) );
-		//assertThat( reader.readLine(), is( "  \"icon\" : \"http://example.com/repo/icon.png\"," ) );
-		assertThat( reader.readLine(), is( "  \"icons\" : [ \"http://example.com/repo/icon.png\" ]," ) );
-		assertThat( reader.readLine(), is( "  \"url\" : \"http://example.com/repo\"" ) );
-		assertThat( reader.readLine(), is( "}" ) );
-		assertThat( reader.readLine(), is( nullValue() ) );
+		assertThat( reader.readLine() ).isEqualTo( "{" );
+		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"name\" : \"Example Repo\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"icons\" : [ \"http://example.com/repo/icon.png\" ]," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"url\" : \"http://example.com/repo\"" );
+		assertThat( reader.readLine() ).isEqualTo( "}" );
+		assertThat( reader.readLine() ).isNull();
 	}
 
 	@Test
 	void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Example Repo\", \"url\" : \"http://example.com/repo\"}";
 		RepoCard card = new RepoCard().fromJson( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
-		assertThat( card.getName(), is( "Example Repo" ) );
+		assertThat( card.getName() ).isEqualTo( "Example Repo" );
 	}
 
 }

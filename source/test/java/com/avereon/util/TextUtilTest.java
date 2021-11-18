@@ -9,331 +9,328 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TextUtilTest {
 
 	@Test
 	void testIsEmpty() {
-		assertThat( TextUtil.isEmpty( null ), is( true ) );
-		assertThat( TextUtil.isEmpty( "" ), is( true ) );
-		assertThat( TextUtil.isEmpty( " " ), is( true ) );
-		assertThat( TextUtil.isEmpty( "." ), is( false ) );
+		assertThat( TextUtil.isEmpty( null ) ).isTrue();
+		assertThat( TextUtil.isEmpty( "" ) ).isTrue();
+		assertThat( TextUtil.isEmpty( " " ) ).isTrue();
+		assertThat( TextUtil.isEmpty( "." ) ).isFalse();
 	}
 
 	@Test
 	@SuppressWarnings( "ConstantConditions" )
 	void testAreEqual() {
-		assertThat( TextUtil.areEqual( null, null ), is( true ) );
-		assertThat( TextUtil.areEqual( "", "" ), is( true ) );
-		assertThat( TextUtil.areEqual( " ", " " ), is( true ) );
-		assertThat( TextUtil.areEqual( "a", "a" ), is( true ) );
+		assertThat( TextUtil.areEqual( null, null ) ).isTrue();
+		assertThat( TextUtil.areEqual( "", "" ) ).isTrue();
+		assertThat( TextUtil.areEqual( " ", " " ) ).isTrue();
+		assertThat( TextUtil.areEqual( "a", "a" ) ).isTrue();
 
-		assertThat( TextUtil.areEqual( null, "" ), is( false ) );
-		assertThat( TextUtil.areEqual( "", null ), is( false ) );
-		assertThat( TextUtil.areEqual( "a", "b" ), is( false ) );
-		assertThat( TextUtil.areEqual( "b", "a" ), is( false ) );
+		assertThat( TextUtil.areEqual( null, "" ) ).isFalse();
+		assertThat( TextUtil.areEqual( "", null ) ).isFalse();
+		assertThat( TextUtil.areEqual( "a", "b" ) ).isFalse();
+		assertThat( TextUtil.areEqual( "b", "a" ) ).isFalse();
 	}
 
 	@Test
 	@SuppressWarnings( "ConstantConditions" )
 	void testAreEqualIgnoreCase() {
-		assertThat( TextUtil.areEqualIgnoreCase( null, null ), is( true ) );
-		assertThat( TextUtil.areEqualIgnoreCase( "", "" ), is( true ) );
-		assertThat( TextUtil.areEqualIgnoreCase( " ", " " ), is( true ) );
-		assertThat( TextUtil.areEqualIgnoreCase( "A", "a" ), is( true ) );
-		assertThat( TextUtil.areEqualIgnoreCase( "a", "A" ), is( true ) );
+		assertThat( TextUtil.areEqualIgnoreCase( null, null ) ).isTrue();
+		assertThat( TextUtil.areEqualIgnoreCase( "", "" ) ).isTrue();
+		assertThat( TextUtil.areEqualIgnoreCase( " ", " " ) ).isTrue();
+		assertThat( TextUtil.areEqualIgnoreCase( "A", "a" ) ).isTrue();
+		assertThat( TextUtil.areEqualIgnoreCase( "a", "A" ) ).isTrue();
 
-		assertThat( TextUtil.areEqualIgnoreCase( null, "" ), is( false ) );
-		assertThat( TextUtil.areEqualIgnoreCase( "", null ), is( false ) );
-		assertThat( TextUtil.areEqual( "A", "b" ), is( false ) );
-		assertThat( TextUtil.areEqual( "B", "a" ), is( false ) );
+		assertThat( TextUtil.areEqualIgnoreCase( null, "" ) ).isFalse();
+		assertThat( TextUtil.areEqualIgnoreCase( "", null ) ).isFalse();
+		assertThat( TextUtil.areEqual( "A", "b" ) ).isFalse();
+		assertThat( TextUtil.areEqual( "B", "a" ) ).isFalse();
 	}
 
 	@Test
 	void testAreSame() {
-		assertThat( TextUtil.areSame( null, null ), is( true ) );
-		assertThat( TextUtil.areSame( "", "" ), is( true ) );
-		assertThat( TextUtil.areSame( " ", " " ), is( true ) );
-		assertThat( TextUtil.areSame( "a", "a" ), is( true ) );
+		assertThat( TextUtil.areSame( null, null ) ).isTrue();
+		assertThat( TextUtil.areSame( "", "" ) ).isTrue();
+		assertThat( TextUtil.areSame( " ", " " ) ).isTrue();
+		assertThat( TextUtil.areSame( "a", "a" ) ).isTrue();
 
-		assertThat( TextUtil.areSame( null, "" ), is( true ) );
-		assertThat( TextUtil.areSame( "", null ), is( true ) );
-		assertThat( TextUtil.areSame( null, " " ), is( true ) );
+		assertThat( TextUtil.areSame( null, "" ) ).isTrue();
+		assertThat( TextUtil.areSame( "", null ) ).isTrue();
+		assertThat( TextUtil.areSame( null, " " ) ).isTrue();
 
-		assertThat( TextUtil.areSame( null, "a" ), is( false ) );
-		assertThat( TextUtil.areSame( "", "a" ), is( false ) );
-		assertThat( TextUtil.areSame( " ", "a" ), is( false ) );
+		assertThat( TextUtil.areSame( null, "a" ) ).isFalse();
+		assertThat( TextUtil.areSame( "", "a" ) ).isFalse();
+		assertThat( TextUtil.areSame( " ", "a" ) ).isFalse();
 	}
 
 	@Test
 	void testCompare() {
-		assertEquals( 0, TextUtil.compare( null, null ) );
-		assertEquals( -1, TextUtil.compare( null, "" ) );
-		assertEquals( 1, TextUtil.compare( "", null ) );
-		assertEquals( 0, TextUtil.compare( "", "" ) );
+		assertThat( TextUtil.compare( null, null ) ).isEqualTo( 0 );
+		assertThat( TextUtil.compare( null, "" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.compare( "", null ) ).isEqualTo( 1 );
+		assertThat( TextUtil.compare( "", "" ) ).isEqualTo( 0 );
 
-		assertEquals( 0, TextUtil.compare( "a", "a" ) );
-		assertEquals( -1, TextUtil.compare( "a", "b" ) );
-		assertEquals( 1, TextUtil.compare( "b", "a" ) );
+		assertThat( TextUtil.compare( "a", "a" ) ).isEqualTo( 0 );
+		assertThat( TextUtil.compare( "a", "b" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.compare( "b", "a" ) ).isEqualTo( 1 );
 	}
 
 	@Test
 	void testCompareIgnoreCase() {
-		assertEquals( 0, TextUtil.compareIgnoreCase( null, null ) );
-		assertEquals( -1, TextUtil.compareIgnoreCase( null, "" ) );
-		assertEquals( 1, TextUtil.compareIgnoreCase( "", null ) );
-		assertEquals( 0, TextUtil.compareIgnoreCase( "", "" ) );
+		assertThat( TextUtil.compareIgnoreCase( null, null ) ).isEqualTo( 0 );
+		assertThat( TextUtil.compareIgnoreCase( null, "" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.compareIgnoreCase( "", null ) ).isEqualTo( 1 );
+		assertThat( TextUtil.compareIgnoreCase( "", "" ) ).isEqualTo( 0 );
 
-		assertEquals( 0, TextUtil.compareIgnoreCase( "A", "a" ) );
-		assertEquals( 0, TextUtil.compareIgnoreCase( "a", "A" ) );
-		assertEquals( -1, TextUtil.compareIgnoreCase( "a", "B" ) );
-		assertEquals( -1, TextUtil.compareIgnoreCase( "A", "b" ) );
-		assertEquals( 1, TextUtil.compareIgnoreCase( "B", "a" ) );
-		assertEquals( 1, TextUtil.compareIgnoreCase( "b", "A" ) );
+		assertThat( TextUtil.compareIgnoreCase( "A", "a" ) ).isEqualTo( 0 );
+		assertThat( TextUtil.compareIgnoreCase( "a", "A" ) ).isEqualTo( 0 );
+		assertThat( TextUtil.compareIgnoreCase( "a", "B" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.compareIgnoreCase( "A", "b" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.compareIgnoreCase( "B", "a" ) ).isEqualTo( 1 );
+		assertThat( TextUtil.compareIgnoreCase( "b", "A" ) ).isEqualTo( 1 );
 	}
 
 	@Test
 	void testCleanNull() {
-		assertNull( TextUtil.cleanNull( null ) );
-		assertNull( TextUtil.cleanNull( "" ) );
-		assertNull( TextUtil.cleanNull( " " ) );
-		assertEquals( "a", TextUtil.cleanNull( " a " ) );
+		assertThat( TextUtil.cleanNull( null ) ).isNull();
+		assertThat( TextUtil.cleanNull( "" ) ).isNull();
+		assertThat( TextUtil.cleanNull( " " ) ).isNull();
+		assertThat( TextUtil.cleanNull( " a " ) ).isEqualTo( "a" );
 	}
 
 	@Test
 	void testCleanEmpty() {
-		assertEquals( "", TextUtil.cleanEmpty( null ) );
-		assertEquals( "", TextUtil.cleanEmpty( "" ) );
-		assertEquals( "", TextUtil.cleanEmpty( " " ) );
-		assertEquals( "a", TextUtil.cleanEmpty( " a " ) );
+		assertThat( TextUtil.cleanEmpty( null ) ).isEqualTo( "" );
+		assertThat( TextUtil.cleanEmpty( "" ) ).isEqualTo( "" );
+		assertThat( TextUtil.cleanEmpty( " " ) ).isEqualTo( "" );
+		assertThat( TextUtil.cleanEmpty( " a " ) ).isEqualTo( "a" );
 	}
 
 	@Test
 	void testConcatenate() {
-		assertEquals( "Count: 10", TextUtil.concatenate( "Count: ", 10 ) );
-		assertEquals( "Flag: false", TextUtil.concatenate( "Flag: ", false ) );
-		assertEquals( "Test String", TextUtil.concatenate( "Test", " ", "String" ) );
+		assertThat( TextUtil.concatenate( "Count: ", 10 ) ).isEqualTo( "Count: 10" );
+		assertThat( TextUtil.concatenate( "Flag: ", false ) ).isEqualTo( "Flag: false" );
+		assertThat( TextUtil.concatenate( "Test", " ", "String" ) ).isEqualTo( "Test String" );
 	}
 
 	@Test
 	void testToPrintableStringUsingByte() {
-		assertEquals( "[0]", TextUtil.toPrintableString( (byte)0 ) );
-		assertEquals( "[27]", TextUtil.toPrintableString( (byte)27 ) );
-		assertEquals( "[31]", TextUtil.toPrintableString( (byte)31 ) );
-		assertEquals( " ", TextUtil.toPrintableString( (byte)32 ) );
-		assertEquals( "A", TextUtil.toPrintableString( (byte)65 ) );
-		assertEquals( "~", TextUtil.toPrintableString( (byte)126 ) );
-		assertEquals( "[127]", TextUtil.toPrintableString( (byte)127 ) );
-		assertEquals( "[128]", TextUtil.toPrintableString( (byte)128 ) );
-		assertEquals( "[255]", TextUtil.toPrintableString( (byte)255 ) );
+		assertThat( TextUtil.toPrintableString( (byte)0 ) ).isEqualTo( "[0]" );
+		assertThat( TextUtil.toPrintableString( (byte)27 ) ).isEqualTo( "[27]" );
+		assertThat( TextUtil.toPrintableString( (byte)31 ) ).isEqualTo( "[31]" );
+		assertThat( TextUtil.toPrintableString( (byte)32 ) ).isEqualTo( " " );
+		assertThat( TextUtil.toPrintableString( (byte)65 ) ).isEqualTo( "A" );
+		assertThat( TextUtil.toPrintableString( (byte)126 ) ).isEqualTo( "~" );
+		assertThat( TextUtil.toPrintableString( (byte)127 ) ).isEqualTo( "[127]" );
+		assertThat( TextUtil.toPrintableString( (byte)128 ) ).isEqualTo( "[128]" );
+		assertThat( TextUtil.toPrintableString( (byte)255 ) ).isEqualTo( "[255]" );
 
-		assertEquals( "[255]", TextUtil.toPrintableString( (byte)-1 ) );
-		assertEquals( "[0]", TextUtil.toPrintableString( (byte)256 ) );
+		assertThat( TextUtil.toPrintableString( (byte)-1 ) ).isEqualTo( "[255]" );
+		assertThat( TextUtil.toPrintableString( (byte)256 ) ).isEqualTo( "[0]" );
 	}
 
 	@Test
 	void testToPrintableString() {
-		assertEquals( "[0]", TextUtil.toPrintableString( (char)0 ) );
-		assertEquals( "[27]", TextUtil.toPrintableString( (char)27 ) );
-		assertEquals( "[31]", TextUtil.toPrintableString( (char)31 ) );
-		assertEquals( " ", TextUtil.toPrintableString( (char)32 ) );
-		assertEquals( "A", TextUtil.toPrintableString( (char)65 ) );
-		assertEquals( "~", TextUtil.toPrintableString( (char)126 ) );
-		assertEquals( "[127]", TextUtil.toPrintableString( (char)127 ) );
-		assertEquals( "[255]", TextUtil.toPrintableString( (char)255 ) );
+		assertThat( TextUtil.toPrintableString( (char)0 ) ).isEqualTo( "[0]" );
+		assertThat( TextUtil.toPrintableString( (char)27 ) ).isEqualTo( "[27]" );
+		assertThat( TextUtil.toPrintableString( (char)31 ) ).isEqualTo( "[31]" );
+		assertThat( TextUtil.toPrintableString( (char)32 ) ).isEqualTo( " " );
+		assertThat( TextUtil.toPrintableString( (char)65 ) ).isEqualTo( "A" );
+		assertThat( TextUtil.toPrintableString( (char)126 ) ).isEqualTo( "~" );
+		assertThat( TextUtil.toPrintableString( (char)127 ) ).isEqualTo( "[127]" );
+		assertThat( TextUtil.toPrintableString( (char)255 ) ).isEqualTo( "[255]" );
 	}
 
 	@Test
 	void testToHexEncodedStringWithBytes() {
 		Charset encoding = StandardCharsets.ISO_8859_1;
-		assertEquals( "", TextUtil.toHexEncodedString( "".getBytes( encoding ) ) );
-		assertEquals( "00", TextUtil.toHexEncodedString( "\u0000".getBytes( encoding ) ) );
-		assertEquals( "0001", TextUtil.toHexEncodedString( "\u0000\u0001".getBytes( encoding ) ) );
-		assertEquals( "ff01", TextUtil.toHexEncodedString( "\u00ff\u0001".getBytes( encoding ) ) );
-		assertEquals( "00010f", TextUtil.toHexEncodedString( "\u0000\u0001\u000f".getBytes( encoding ) ) );
-		assertEquals( "74657374", TextUtil.toHexEncodedString( "test".getBytes( encoding ) ) );
+		assertThat( TextUtil.toHexEncodedString( "".getBytes( encoding ) ) ).isEqualTo( "" );
+		assertThat( TextUtil.toHexEncodedString( "\u0000".getBytes( encoding ) ) ).isEqualTo( "00" );
+		assertThat( TextUtil.toHexEncodedString( "\u0000\u0001".getBytes( encoding ) ) ).isEqualTo( "0001" );
+		assertThat( TextUtil.toHexEncodedString( "\u00ff\u0001".getBytes( encoding ) ) ).isEqualTo( "ff01" );
+		assertThat( TextUtil.toHexEncodedString( "\u0000\u0001\u000f".getBytes( encoding ) ) ).isEqualTo( "00010f" );
+		assertThat( TextUtil.toHexEncodedString( "test".getBytes( encoding ) ) ).isEqualTo( "74657374" );
 	}
 
 	@Test
 	void testHexEncodeWithString() {
-		assertEquals( "", TextUtil.hexEncode( "" ) );
-		assertEquals( "0000", TextUtil.hexEncode( "\u0000" ) );
-		assertEquals( "00000001", TextUtil.hexEncode( "\u0000\u0001" ) );
-		assertEquals( "00000001000f", TextUtil.hexEncode( "\u0000\u0001\u000f" ) );
-		assertEquals( "0074006500730074", TextUtil.hexEncode( "test" ) );
+		assertThat( TextUtil.hexEncode( "" ) ).isEqualTo( "" );
+		assertThat( TextUtil.hexEncode( "\u0000" ) ).isEqualTo( "0000" );
+		assertThat( TextUtil.hexEncode( "\u0000\u0001" ) ).isEqualTo( "00000001" );
+		assertThat( TextUtil.hexEncode( "\u0000\u0001\u000f" ) ).isEqualTo( "00000001000f" );
+		assertThat( TextUtil.hexEncode( "test" ) ).isEqualTo( "0074006500730074" );
 	}
 
 	@Test
 	void testHexDecodeWithString() {
-		assertNull( TextUtil.hexDecode( null ) );
-		assertEquals( "", TextUtil.hexDecode( "" ) );
-		assertEquals( "\u0000", TextUtil.hexDecode( "0000" ) );
-		assertEquals( "\u0000\u0001", TextUtil.hexDecode( "00000001" ) );
-		assertEquals( "\u0000\u0001\u000f", TextUtil.hexDecode( "00000001000f" ) );
-		assertEquals( "test", TextUtil.hexDecode( "0074006500730074" ) );
+		assertThat( TextUtil.hexDecode( null ) ).isNull();
+		assertThat( TextUtil.hexDecode( "" ) ).isEqualTo( "" );
+		assertThat( TextUtil.hexDecode( "0000" ) ).isEqualTo( "\u0000" );
+		assertThat( TextUtil.hexDecode( "00000001" ) ).isEqualTo( "\u0000\u0001" );
+		assertThat( TextUtil.hexDecode( "00000001000f" ) ).isEqualTo( "\u0000\u0001\u000f" );
+		assertThat( TextUtil.hexDecode( "0074006500730074" ) ).isEqualTo( "test" );
 
 	}
 
 	@Test
 	void testHexByteEncode() {
 		Charset encoding = StandardCharsets.ISO_8859_1;
-		assertEquals( "", TextUtil.secureHexByteEncode( "".getBytes( encoding ) ) );
-		assertEquals( "00", TextUtil.secureHexByteEncode( "\u0000".getBytes( encoding ) ) );
-		assertEquals( "0001", TextUtil.secureHexByteEncode( "\u0000\u0001".getBytes( encoding ) ) );
-		assertEquals( "ff01", TextUtil.secureHexByteEncode( "\u00ff\u0001".getBytes( encoding ) ) );
-		assertEquals( "00010f", TextUtil.secureHexByteEncode( "\u0000\u0001\u000f".getBytes( encoding ) ) );
-		assertEquals( "74657374", TextUtil.secureHexByteEncode( "test".getBytes( encoding ) ) );
+		assertThat( TextUtil.secureHexByteEncode( "".getBytes( encoding ) ) ).isEqualTo( "" );
+		assertThat( TextUtil.secureHexByteEncode( "\u0000".getBytes( encoding ) ) ).isEqualTo( "00" );
+		assertThat( TextUtil.secureHexByteEncode( "\u0000\u0001".getBytes( encoding ) ) ).isEqualTo( "0001" );
+		assertThat( TextUtil.secureHexByteEncode( "\u00ff\u0001".getBytes( encoding ) ) ).isEqualTo( "ff01" );
+		assertThat( TextUtil.secureHexByteEncode( "\u0000\u0001\u000f".getBytes( encoding ) ) ).isEqualTo( "00010f" );
+		assertThat( TextUtil.secureHexByteEncode( "test".getBytes( encoding ) ) ).isEqualTo( "74657374" );
 	}
 
 	@Test
 	void testHexByteDecode() {
 		Charset encoding = StandardCharsets.ISO_8859_1;
-		assertNull( TextUtil.secureHexByteDecode( null ) );
-		assertEquals( "", new String( TextUtil.secureHexByteDecode( "" ), encoding ) );
-		assertEquals( "\u0000", new String( TextUtil.secureHexByteDecode( "00" ), encoding ) );
-		assertEquals( "\u0000\u0001", new String( TextUtil.secureHexByteDecode( "0001" ), encoding ) );
-		assertEquals( "\u00ff\u0001", new String( TextUtil.secureHexByteDecode( "ff01" ), encoding ) );
-		assertEquals( "\u0000\u0001\u000f", new String( TextUtil.secureHexByteDecode( "00010f" ), encoding ) );
-		assertEquals( "test", new String( TextUtil.secureHexByteDecode( "74657374" ), encoding ) );
+		assertThat( TextUtil.secureHexByteDecode( null ) ).isNull();
+		assertThat( new String( TextUtil.secureHexByteDecode( "" ), encoding ) ).isEqualTo( "" );
+		assertThat( new String( TextUtil.secureHexByteDecode( "00" ), encoding ) ).isEqualTo( "\u0000" );
+		assertThat( new String( TextUtil.secureHexByteDecode( "0001" ), encoding ) ).isEqualTo( "\u0000\u0001" );
+		assertThat( new String( TextUtil.secureHexByteDecode( "ff01" ), encoding ) ).isEqualTo( "\u00ff\u0001" );
+		assertThat( new String( TextUtil.secureHexByteDecode( "00010f" ), encoding ) ).isEqualTo( "\u0000\u0001\u000f" );
+		assertThat( new String( TextUtil.secureHexByteDecode( "74657374" ), encoding ) ).isEqualTo( "test" );
 	}
 
 	@Test
 	void testHexCharEncode() {
-		assertNull( TextUtil.secureHexEncode( null ) );
-		assertEquals( "", TextUtil.secureHexEncode( "".toCharArray() ) );
-		assertEquals( "0000", TextUtil.secureHexEncode( "\u0000".toCharArray() ) );
-		assertEquals( "00000001", TextUtil.secureHexEncode( "\u0000\u0001".toCharArray() ) );
-		assertEquals( "00000001000f", TextUtil.secureHexEncode( "\u0000\u0001\u000f".toCharArray() ) );
-		assertEquals( "0074006500730074", TextUtil.secureHexEncode( "test".toCharArray() ) );
+		assertThat( TextUtil.secureHexEncode( null ) ).isNull();
+		assertThat( TextUtil.secureHexEncode( "".toCharArray() ) ).isEqualTo( "" );
+		assertThat( TextUtil.secureHexEncode( "\u0000".toCharArray() ) ).isEqualTo( "0000" );
+		assertThat( TextUtil.secureHexEncode( "\u0000\u0001".toCharArray() ) ).isEqualTo( "00000001" );
+		assertThat( TextUtil.secureHexEncode( "\u0000\u0001\u000f".toCharArray() ) ).isEqualTo( "00000001000f" );
+		assertThat( TextUtil.secureHexEncode( "test".toCharArray() ) ).isEqualTo( "0074006500730074" );
 	}
 
 	@Test
 	void testHexCharDecode() {
-		assertNull( TextUtil.secureHexDecode( null ) );
-		assertEquals( "", new String( TextUtil.secureHexDecode( "" ) ) );
-		assertEquals( "\u0000", new String( TextUtil.secureHexDecode( "0000" ) ) );
-		assertEquals( "\u0000\u0001", new String( TextUtil.secureHexDecode( "00000001" ) ) );
-		assertEquals( "\u0000\u0001\u000f", new String( TextUtil.secureHexDecode( "00000001000f" ) ) );
-		assertEquals( "test", new String( TextUtil.secureHexDecode( "0074006500730074" ) ) );
+		assertThat( TextUtil.secureHexDecode( null ) ).isNull();
+		assertThat( new String( TextUtil.secureHexDecode( "" ) ) ).isEqualTo( "" );
+		assertThat( new String( TextUtil.secureHexDecode( "0000" ) ) ).isEqualTo( "\u0000" );
+		assertThat( new String( TextUtil.secureHexDecode( "00000001" ) ) ).isEqualTo( "\u0000\u0001" );
+		assertThat( new String( TextUtil.secureHexDecode( "00000001000f" ) ) ).isEqualTo( "\u0000\u0001\u000f" );
+		assertThat( new String( TextUtil.secureHexDecode( "0074006500730074" ) ) ).isEqualTo( "test" );
 	}
 
 	@Test
 	void testIsInteger() {
-		assertFalse( TextUtil.isInteger( null ) );
-		assertFalse( TextUtil.isInteger( "" ) );
+		assertThat( TextUtil.isInteger( null ) ).isFalse();
+		assertThat( TextUtil.isInteger( "" ) ).isFalse();
 
-		assertFalse( TextUtil.isInteger( "1e-10" ) );
-		assertFalse( TextUtil.isInteger( "1.0" ) );
-		assertFalse( TextUtil.isInteger( "2147483648" ) );
-		assertFalse( TextUtil.isInteger( "-2147483649" ) );
+		assertThat( TextUtil.isInteger( "1e-10" ) ).isFalse();
+		assertThat( TextUtil.isInteger( "1.0" ) ).isFalse();
+		assertThat( TextUtil.isInteger( "2147483648" ) ).isFalse();
+		assertThat( TextUtil.isInteger( "-2147483649" ) ).isFalse();
 
-		assertTrue( TextUtil.isInteger( "0" ) );
-		assertTrue( TextUtil.isInteger( "2147483647" ) );
-		assertTrue( TextUtil.isInteger( "-2147483648" ) );
+		assertThat( TextUtil.isInteger( "0" ) ).isTrue();
+		assertThat( TextUtil.isInteger( "2147483647" ) ).isTrue();
+		assertThat( TextUtil.isInteger( "-2147483648" ) ).isTrue();
 	}
 
 	@Test
 	void testIsLong() {
-		assertFalse( TextUtil.isLong( null ) );
-		assertFalse( TextUtil.isLong( "" ) );
+		assertThat( TextUtil.isLong( null ) ).isFalse();
+		assertThat( TextUtil.isLong( "" ) ).isFalse();
 
-		assertFalse( TextUtil.isLong( "1e-10" ) );
-		assertFalse( TextUtil.isLong( "1.0" ) );
-		assertFalse( TextUtil.isLong( "9223372036854775808" ) );
-		assertFalse( TextUtil.isLong( "-9223372036854775809" ) );
+		assertThat( TextUtil.isLong( "1e-10" ) ).isFalse();
+		assertThat( TextUtil.isLong( "1.0" ) ).isFalse();
+		assertThat( TextUtil.isLong( "9223372036854775808" ) ).isFalse();
+		assertThat( TextUtil.isLong( "-9223372036854775809" ) ).isFalse();
 
-		assertTrue( TextUtil.isLong( "0" ) );
-		assertTrue( TextUtil.isLong( "9223372036854775807" ) );
-		assertTrue( TextUtil.isLong( "-9223372036854775808" ) );
+		assertThat( TextUtil.isLong( "0" ) ).isTrue();
+		assertThat( TextUtil.isLong( "9223372036854775807" ) ).isTrue();
+		assertThat( TextUtil.isLong( "-9223372036854775808" ) ).isTrue();
 	}
 
 	@Test
 	void testIsFloat() {
-		assertFalse( TextUtil.isFloat( null ) );
-		assertFalse( TextUtil.isFloat( "" ) );
+		assertThat( TextUtil.isFloat( null ) ).isFalse();
+		assertThat( TextUtil.isFloat( "" ) ).isFalse();
 
-		assertTrue( TextUtil.isFloat( "0" ) );
-		assertTrue( TextUtil.isFloat( "1.0" ) );
-		assertTrue( TextUtil.isFloat( "1e10" ) );
-		assertTrue( TextUtil.isFloat( "1e-10" ) );
-		assertTrue( TextUtil.isFloat( "-1e10" ) );
-		assertTrue( TextUtil.isFloat( "-1e-10" ) );
+		assertThat( TextUtil.isFloat( "0" ) ).isTrue();
+		assertThat( TextUtil.isFloat( "1.0" ) ).isTrue();
+		assertThat( TextUtil.isFloat( "1e10" ) ).isTrue();
+		assertThat( TextUtil.isFloat( "1e-10" ) ).isTrue();
+		assertThat( TextUtil.isFloat( "-1e10" ) ).isTrue();
+		assertThat( TextUtil.isFloat( "-1e-10" ) ).isTrue();
 	}
 
 	@Test
 	void testIsDouble() {
-		assertFalse( TextUtil.isDouble( null ) );
-		assertFalse( TextUtil.isDouble( "" ) );
+		assertThat( TextUtil.isDouble( null ) ).isFalse();
+		assertThat( TextUtil.isDouble( "" ) ).isFalse();
 
-		assertTrue( TextUtil.isDouble( "0" ) );
-		assertTrue( TextUtil.isDouble( "1.0" ) );
-		assertTrue( TextUtil.isDouble( "1e10" ) );
-		assertTrue( TextUtil.isDouble( "1e-10" ) );
-		assertTrue( TextUtil.isDouble( "-1e10" ) );
-		assertTrue( TextUtil.isDouble( "-1e-10" ) );
+		assertThat( TextUtil.isDouble( "0" ) ).isTrue();
+		assertThat( TextUtil.isDouble( "1.0" ) ).isTrue();
+		assertThat( TextUtil.isDouble( "1e10" ) ).isTrue();
+		assertThat( TextUtil.isDouble( "1e-10" ) ).isTrue();
+		assertThat( TextUtil.isDouble( "-1e10" ) ).isTrue();
+		assertThat( TextUtil.isDouble( "-1e-10" ) ).isTrue();
 	}
 
 	@Test
 	void testCapitalize() {
-		assertNull( TextUtil.capitalize( null ) );
-		assertEquals( "", TextUtil.capitalize( "" ) );
-		assertEquals( "Test", TextUtil.capitalize( "test" ) );
-		assertEquals( "New brunswick", TextUtil.capitalize( "new brunswick" ) );
+		assertThat( TextUtil.capitalize( null ) ).isNull();
+		assertThat( TextUtil.capitalize( "" ) ).isEqualTo( "" );
+		assertThat( TextUtil.capitalize( "test" ) ).isEqualTo( "Test" );
+		assertThat( TextUtil.capitalize( "new brunswick" ) ).isEqualTo( "New brunswick" );
 	}
 
 	@Test
 	void testJustify() {
-		assertEquals( "        ", TextUtil.justify( TextUtil.LEFT, "", 8 ) );
-		assertEquals( "X       ", TextUtil.justify( TextUtil.LEFT, "X", 8 ) );
-		assertEquals( "        ", TextUtil.justify( TextUtil.CENTER, "", 8 ) );
-		assertEquals( "   X    ", TextUtil.justify( TextUtil.CENTER, "X", 8 ) );
-		assertEquals( "   XX   ", TextUtil.justify( TextUtil.CENTER, "XX", 8 ) );
-		assertEquals( "        ", TextUtil.justify( TextUtil.RIGHT, "", 8 ) );
-		assertEquals( "       X", TextUtil.justify( TextUtil.RIGHT, "X", 8 ) );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "", 8 ) ).isEqualTo( "        " );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "X", 8 ) ).isEqualTo( "X       " );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "", 8 ) ).isEqualTo( "        " );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "X", 8 ) ).isEqualTo( "   X    " );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "XX", 8 ) ).isEqualTo( "   XX   " );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "", 8 ) ).isEqualTo( "        " );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "X", 8 ) ).isEqualTo( "       X" );
 	}
 
 	@Test
 	void testJustifyWithChar() {
-		assertEquals( "........", TextUtil.justify( TextUtil.LEFT, "", 8, '.' ) );
-		assertEquals( "X.......", TextUtil.justify( TextUtil.LEFT, "X", 8, '.' ) );
-		assertEquals( "........", TextUtil.justify( TextUtil.CENTER, "", 8, '.' ) );
-		assertEquals( "...X....", TextUtil.justify( TextUtil.CENTER, "X", 8, '.' ) );
-		assertEquals( "...XX...", TextUtil.justify( TextUtil.CENTER, "XX", 8, '.' ) );
-		assertEquals( "........", TextUtil.justify( TextUtil.RIGHT, "", 8, '.' ) );
-		assertEquals( ".......X", TextUtil.justify( TextUtil.RIGHT, "X", 8, '.' ) );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "", 8, '.' ) ).isEqualTo( "........" );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "X", 8, '.' ) ).isEqualTo( "X......." );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "", 8, '.' ) ).isEqualTo( "........" );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "X", 8, '.' ) ).isEqualTo( "...X...." );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "XX", 8, '.' ) ).isEqualTo( "...XX..." );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "", 8, '.' ) ).isEqualTo( "........" );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "X", 8, '.' ) ).isEqualTo( ".......X" );
 	}
 
 	@Test
 	void testJustifyWithCharAndPad() {
-		assertEquals( "  ......", TextUtil.justify( TextUtil.LEFT, "", 8, '.', 2 ) );
-		assertEquals( "X  .....", TextUtil.justify( TextUtil.LEFT, "X", 8, '.', 2 ) );
-		assertEquals( "..    ..", TextUtil.justify( TextUtil.CENTER, "", 8, '.', 2 ) );
-		assertEquals( ".  X  ..", TextUtil.justify( TextUtil.CENTER, "X", 8, '.', 2 ) );
-		assertEquals( ".  XX  .", TextUtil.justify( TextUtil.CENTER, "XX", 8, '.', 2 ) );
-		assertEquals( "......  ", TextUtil.justify( TextUtil.RIGHT, "", 8, '.', 2 ) );
-		assertEquals( ".....  X", TextUtil.justify( TextUtil.RIGHT, "X", 8, '.', 2 ) );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "", 8, '.', 2 ) ).isEqualTo( "  ......" );
+		assertThat( TextUtil.justify( TextUtil.LEFT, "X", 8, '.', 2 ) ).isEqualTo( "X  ....." );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "", 8, '.', 2 ) ).isEqualTo( "..    .." );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "X", 8, '.', 2 ) ).isEqualTo( ".  X  .." );
+		assertThat( TextUtil.justify( TextUtil.CENTER, "XX", 8, '.', 2 ) ).isEqualTo( ".  XX  ." );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "", 8, '.', 2 ) ).isEqualTo( "......  " );
+		assertThat( TextUtil.justify( TextUtil.RIGHT, "X", 8, '.', 2 ) ).isEqualTo( ".....  X" );
 	}
 
 	@Test
 	void testPad() {
-		assertEquals( "", TextUtil.pad( -1 ) );
-		assertEquals( "", TextUtil.pad( 0 ) );
-		assertEquals( " ", TextUtil.pad( 1 ) );
-		assertEquals( "     ", TextUtil.pad( 5 ) );
-		assertEquals( "        ", TextUtil.pad( 8 ) );
+		assertThat( TextUtil.pad( -1 ) ).isEqualTo( "" );
+		assertThat( TextUtil.pad( 0 ) ).isEqualTo( "" );
+		assertThat( TextUtil.pad( 1 ) ).isEqualTo( " " );
+		assertThat( TextUtil.pad( 5 ) ).isEqualTo( "     " );
+		assertThat( TextUtil.pad( 8 ) ).isEqualTo( "        " );
 	}
 
 	@Test
 	void testPadWithChar() {
-		assertEquals( "", TextUtil.pad( -1, '.' ) );
-		assertEquals( "", TextUtil.pad( 0, '.' ) );
-		assertEquals( "x", TextUtil.pad( 1, 'x' ) );
-		assertEquals( ",,,,,", TextUtil.pad( 5, ',' ) );
-		assertEquals( "--------", TextUtil.pad( 8, '-' ) );
+		assertThat( TextUtil.pad( -1, '.' ) ).isEqualTo( "" );
+		assertThat( TextUtil.pad( 0, '.' ) ).isEqualTo( "" );
+		assertThat( TextUtil.pad( 1, 'x' ) ).isEqualTo( "x" );
+		assertThat( TextUtil.pad( 5, ',' ) ).isEqualTo( ",,,,," );
+		assertThat( TextUtil.pad( 8, '-' ) ).isEqualTo( "--------" );
 	}
 
 	@Test
@@ -341,20 +338,20 @@ class TextUtilTest {
 		String test = "This\nis\na\ntest.";
 		List<String> lines = TextUtil.getLines( test );
 
-		assertEquals( "This", lines.get( 0 ) );
-		assertEquals( "is", lines.get( 1 ) );
-		assertEquals( "a", lines.get( 2 ) );
-		assertEquals( "test.", lines.get( 3 ) );
+		assertThat( lines.get( 0 ) ).isEqualTo( "This" );
+		assertThat( lines.get( 1 ) ).isEqualTo( "is" );
+		assertThat( lines.get( 2 ) ).isEqualTo( "a" );
+		assertThat( lines.get( 3 ) ).isEqualTo( "test." );
 	}
 
 	@Test
 	void testGetLineCount() {
-		assertEquals( 0, TextUtil.getLineCount( null ) );
-		assertEquals( 0, TextUtil.getLineCount( "" ) );
-		assertEquals( 1, TextUtil.getLineCount( " " ) );
-		assertEquals( 2, TextUtil.getLineCount( " \n " ) );
-		assertEquals( 2, TextUtil.getLineCount( " \r " ) );
-		assertEquals( 2, TextUtil.getLineCount( " \r\n " ) );
+		assertThat( TextUtil.getLineCount( null ) ).isEqualTo( 0 );
+		assertThat( TextUtil.getLineCount( "" ) ).isEqualTo( 0 );
+		assertThat( TextUtil.getLineCount( " " ) ).isEqualTo( 1 );
+		assertThat( TextUtil.getLineCount( " \n " ) ).isEqualTo( 2 );
+		assertThat( TextUtil.getLineCount( " \r " ) ).isEqualTo( 2 );
+		assertThat( TextUtil.getLineCount( " \r\n " ) ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -364,11 +361,11 @@ class TextUtilTest {
 			lines.add( "Test line " + index );
 		}
 
-		assertEquals( 0, TextUtil.countLines( lines, "Test line" ) );
-		assertEquals( 1, TextUtil.countLines( lines, "Test line 1" ) );
-		assertEquals( 5, TextUtil.countLines( lines, "Test line ." ) );
-		assertEquals( 2, TextUtil.countLines( lines, "Test .* [3,4]" ) );
-		assertEquals( 1, TextUtil.countLines( lines, ".*4" ) );
+		assertThat( TextUtil.countLines( lines, "Test line" ) ).isEqualTo( 0 );
+		assertThat( TextUtil.countLines( lines, "Test line 1" ) ).isEqualTo( 1 );
+		assertThat( TextUtil.countLines( lines, "Test line ." ) ).isEqualTo( 5 );
+		assertThat( TextUtil.countLines( lines, "Test .* [3,4]" ) ).isEqualTo( 2 );
+		assertThat( TextUtil.countLines( lines, ".*4" ) ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -378,12 +375,12 @@ class TextUtilTest {
 			lines.add( "Test line " + index );
 		}
 
-		assertNull( TextUtil.findLine( lines, "Test line" ) );
-		assertEquals( "Test line 1", TextUtil.findLine( lines, "Test line 1" ) );
-		assertEquals( "Test line 2", TextUtil.findLine( lines, "Test line .*", 2 ) );
-		assertEquals( "Test line 3", TextUtil.findLine( lines, "Test .* 3" ) );
-		assertEquals( "Test line 2", TextUtil.findLine( lines, "Test line .*", 2 ) );
-		assertEquals( "Test line 4", TextUtil.findLine( lines, ".*4" ) );
+		assertThat( TextUtil.findLine( lines, "Test line" ) ).isNull();
+		assertThat( TextUtil.findLine( lines, "Test line 1" ) ).isEqualTo( "Test line 1" );
+		assertThat( TextUtil.findLine( lines, "Test line .*", 2 ) ).isEqualTo( "Test line 2" );
+		assertThat( TextUtil.findLine( lines, "Test .* 3" ) ).isEqualTo( "Test line 3" );
+		assertThat( TextUtil.findLine( lines, "Test line .*", 2 ) ).isEqualTo( "Test line 2" );
+		assertThat( TextUtil.findLine( lines, ".*4" ) ).isEqualTo( "Test line 4" );
 	}
 
 	@Test
@@ -396,19 +393,19 @@ class TextUtilTest {
 		List<String> result;
 
 		result = TextUtil.findLines( lines, "Test line" );
-		assertEquals( 0, result.size() );
+		assertThat( result.size() ).isEqualTo( 0 );
 
 		result = TextUtil.findLines( lines, "Test line ." );
-		assertEquals( 5, result.size() );
+		assertThat( result.size() ).isEqualTo( 5 );
 
 		result = TextUtil.findLines( lines, "Test line 1" );
-		assertEquals( 1, result.size() );
+		assertThat( result.size() ).isEqualTo( 1 );
 
 		result = TextUtil.findLines( lines, "Test line [2,3]" );
-		assertEquals( 2, result.size() );
+		assertThat( result.size() ).isEqualTo( 2 );
 
 		result = TextUtil.findLines( lines, ".*4" );
-		assertEquals( 1, result.size() );
+		assertThat( result.size() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -418,58 +415,58 @@ class TextUtilTest {
 			lines.add( "Test line " + index );
 		}
 
-		assertEquals( -1, TextUtil.findLineIndex( lines, "Test line" ) );
-		assertEquals( 1, TextUtil.findLineIndex( lines, "Test line 1" ) );
-		assertEquals( 2, TextUtil.findLineIndex( lines, "Test line .*", 2 ) );
-		assertEquals( 3, TextUtil.findLineIndex( lines, "Test .* 3" ) );
-		assertEquals( 2, TextUtil.findLineIndex( lines, "Test line .*", 2 ) );
-		assertEquals( 4, TextUtil.findLineIndex( lines, ".*4" ) );
+		assertThat( TextUtil.findLineIndex( lines, "Test line" ) ).isEqualTo( -1 );
+		assertThat( TextUtil.findLineIndex( lines, "Test line 1" ) ).isEqualTo( 1 );
+		assertThat( TextUtil.findLineIndex( lines, "Test line .*", 2 ) ).isEqualTo( 2 );
+		assertThat( TextUtil.findLineIndex( lines, "Test .* 3" ) ).isEqualTo( 3 );
+		assertThat( TextUtil.findLineIndex( lines, "Test line .*", 2 ) ).isEqualTo( 2 );
+		assertThat( TextUtil.findLineIndex( lines, ".*4" ) ).isEqualTo( 4 );
 	}
 
 	@Test
 	void testPrepend() {
-		assertNull( TextUtil.prepend( null, "X" ) );
-		assertEquals( "A", TextUtil.prepend( "A", null ) );
-		assertEquals( "B", TextUtil.prepend( "B", "" ) );
+		assertThat( TextUtil.prepend( null, "X" ) ).isNull();
+		assertThat( TextUtil.prepend( "A", null ) ).isEqualTo( "A" );
+		assertThat( TextUtil.prepend( "B", "" ) ).isEqualTo( "B" );
 
-		assertEquals( "XC", TextUtil.prepend( "C", "X" ) );
-		assertEquals( "XD\nXE", TextUtil.prepend( "D\nE", "X" ) );
-		assertEquals( "XF\nXG\nX", TextUtil.prepend( "F\nG\n", "X" ) );
+		assertThat( TextUtil.prepend( "C", "X" ) ).isEqualTo( "XC" );
+		assertThat( TextUtil.prepend( "D\nE", "X" ) ).isEqualTo( "XD\nXE" );
+		assertThat( TextUtil.prepend( "F\nG\n", "X" ) ).isEqualTo( "XF\nXG\nX" );
 	}
 
 	@Test
 	void testAppend() {
-		assertNull( TextUtil.append( null, "X" ) );
-		assertEquals( "A", TextUtil.append( "A", null ) );
-		assertEquals( "B", TextUtil.append( "B", "" ) );
+		assertThat( TextUtil.append( null, "X" ) ).isNull();
+		assertThat( TextUtil.append( "A", null ) ).isEqualTo( "A" );
+		assertThat( TextUtil.append( "B", "" ) ).isEqualTo( "B" );
 
-		assertEquals( "CX", TextUtil.append( "C", "X" ) );
-		assertEquals( "DX\nEX", TextUtil.append( "D\nE", "X" ) );
-		assertEquals( "FX\nGX\nX", TextUtil.append( "F\nG\n", "X" ) );
+		assertThat( TextUtil.append( "C", "X" ) ).isEqualTo( "CX" );
+		assertThat( TextUtil.append( "D\nE", "X" ) ).isEqualTo( "DX\nEX" );
+		assertThat( TextUtil.append( "F\nG\n", "X" ) ).isEqualTo( "FX\nGX\nX" );
 	}
 
 	@Test
 	void testReline() throws Exception {
 		int length = 40;
 
-		assertNull( TextUtil.reline( null, length ) );
+		assertThat( TextUtil.reline( null, length ) ).isNull();
 
 		String sample = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 		String result = TextUtil.reline( sample, length );
 
 		BufferedReader parser = new BufferedReader( new StringReader( result ) );
-		assertEquals( "Lorem ipsum dolor sit amet, consectetur", parser.readLine() );
-		assertEquals( "adipisicing elit, sed do eiusmod tempor", parser.readLine() );
-		assertEquals( "incididunt ut labore et dolore magna", parser.readLine() );
-		assertEquals( "aliqua. Ut enim ad minim veniam, quis", parser.readLine() );
-		assertEquals( "nostrud exercitation ullamco laboris", parser.readLine() );
-		assertEquals( "nisi ut aliquip ex ea commodo consequat.", parser.readLine() );
-		assertEquals( "Duis aute irure dolor in reprehenderit", parser.readLine() );
-		assertEquals( "in voluptate velit esse cillum dolore eu", parser.readLine() );
-		assertEquals( "fugiat nulla pariatur. Excepteur sint", parser.readLine() );
-		assertEquals( "occaecat cupidatat non proident, sunt in", parser.readLine() );
-		assertEquals( "culpa qui officia deserunt mollit anim", parser.readLine() );
-		assertEquals( "id est laborum.", parser.readLine() );
+		assertThat( parser.readLine() ).isEqualTo( "Lorem ipsum dolor sit amet, consectetur" );
+		assertThat( parser.readLine() ).isEqualTo( "adipisicing elit, sed do eiusmod tempor" );
+		assertThat( parser.readLine() ).isEqualTo( "incididunt ut labore et dolore magna" );
+		assertThat( parser.readLine() ).isEqualTo( "aliqua. Ut enim ad minim veniam, quis" );
+		assertThat( parser.readLine() ).isEqualTo( "nostrud exercitation ullamco laboris" );
+		assertThat( parser.readLine() ).isEqualTo( "nisi ut aliquip ex ea commodo consequat." );
+		assertThat( parser.readLine() ).isEqualTo( "Duis aute irure dolor in reprehenderit" );
+		assertThat( parser.readLine() ).isEqualTo( "in voluptate velit esse cillum dolore eu" );
+		assertThat( parser.readLine() ).isEqualTo( "fugiat nulla pariatur. Excepteur sint" );
+		assertThat( parser.readLine() ).isEqualTo( "occaecat cupidatat non proident, sunt in" );
+		assertThat( parser.readLine() ).isEqualTo( "culpa qui officia deserunt mollit anim" );
+		assertThat( parser.readLine() ).isEqualTo( "id est laborum." );
 	}
 
 	@Test
@@ -482,7 +479,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "[0] [1] [2] [3] [4]", TextUtil.toString( array ) );
+		assertThat( TextUtil.toString( array ) ).isEqualTo( "[0] [1] [2] [3] [4]" );
 	}
 
 	@Test
@@ -495,7 +492,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "[2] [3] [4]", TextUtil.toString( array, 2 ) );
+		assertThat( TextUtil.toString( array, 2 ) ).isEqualTo( "[2] [3] [4]" );
 	}
 
 	@Test
@@ -508,7 +505,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "[1] [2] [3]", TextUtil.toString( array, 1, 3 ) );
+		assertThat( TextUtil.toString( array, 1, 3 ) ).isEqualTo( "[1] [2] [3]" );
 	}
 
 	@Test
@@ -521,7 +518,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "0_1_2_3_4", TextUtil.toString( array, "_" ) );
+		assertThat( TextUtil.toString( array, "_" ) ).isEqualTo( "0_1_2_3_4" );
 	}
 
 	@Test
@@ -534,7 +531,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "2_3_4", TextUtil.toString( array, "_", 2 ) );
+		assertThat( TextUtil.toString( array, "_", 2 ) ).isEqualTo( "2_3_4" );
 	}
 
 	@Test
@@ -547,7 +544,7 @@ class TextUtilTest {
 		array[ 3 ] = 3;
 		array[ 4 ] = 4;
 
-		assertEquals( "1_2_3", TextUtil.toString( array, "_", 1, 3 ) );
+		assertThat( TextUtil.toString( array, "_", 1, 3 ) ).isEqualTo( "1_2_3" );
 	}
 
 	@Test
@@ -560,7 +557,7 @@ class TextUtilTest {
 		list.add( 3 );
 		list.add( 4 );
 
-		assertEquals( "[0] [1] [2] [3] [4]", TextUtil.toString( list ) );
+		assertThat( TextUtil.toString( list ) ).isEqualTo( "[0] [1] [2] [3] [4]" );
 	}
 
 	@Test
@@ -573,7 +570,7 @@ class TextUtilTest {
 		list.add( 3 );
 		list.add( 4 );
 
-		assertEquals( "0 1 2 3 4", TextUtil.toString( list, " " ) );
+		assertThat( TextUtil.toString( list, " " ) ).isEqualTo( "0 1 2 3 4" );
 	}
 
 	@Test
@@ -586,43 +583,43 @@ class TextUtilTest {
 		list.add( 3 );
 		list.add( 4 );
 
-		assertEquals( "<0> <1> <2> <3> <4>", TextUtil.toString( list, "<", ">" ) );
+		assertThat( TextUtil.toString( list, "<", ">" ) ).isEqualTo( "<0> <1> <2> <3> <4>" );
 	}
 
 	@Test
 	void testSplit() {
 		String string = "string to split";
-		assertThat( TextUtil.split( string ), contains( "string", "to", "split" ) );
+		assertThat( TextUtil.split( string ) ).contains( "string", "to", "split" );
 	}
 
 	@Test
 	void testSplitWithExtraWhitespace() {
 		String string = "  \tstring   to  split\n";
-		assertThat( TextUtil.split( string ), contains( "string", "to", "split" ) );
+		assertThat( TextUtil.split( string ) ).contains( "string", "to", "split" );
 	}
 
 	@Test
 	void testSplitWithQuotes() {
 		String string = "string \"with quotes\" to split ";
-		assertThat( TextUtil.split( string ), contains( "string", "with quotes", "to", "split" ) );
+		assertThat( TextUtil.split( string ) ).contains( "string", "with quotes", "to", "split" );
 	}
 
 	@Test
 	void testSplitWithEscapedQuotes() {
 		String string = "string \"with\\\" quotes\" to split ";
-		assertThat( TextUtil.split( string ), contains( "string", "with\" quotes", "to", "split" ) );
+		assertThat( TextUtil.split( string ) ).contains( "string", "with\" quotes", "to", "split" );
 	}
 
 	@Test
 	void testSplitWindowsPath() {
 		String string = "copy C:\\some\\path C:\\some\\other\\path ";
-		assertThat( TextUtil.split( string ), contains( "copy", "C:\\some\\path", "C:\\some\\other\\path" ) );
+		assertThat( TextUtil.split( string ) ).contains( "copy", "C:\\some\\path", "C:\\some\\other\\path" );
 	}
 
 	@Test
 	void testToStringOrNull() {
-		assertNull( TextUtil.toStringOrNull( null ) );
-		assertThat( TextUtil.toStringOrNull( 1.234D ), is( "1.234" ) );
+		assertThat( TextUtil.toStringOrNull( null ) ).isNull();
+		assertThat( TextUtil.toStringOrNull( 1.234D ) ).isEqualTo( "1.234" );
 	}
 
 }

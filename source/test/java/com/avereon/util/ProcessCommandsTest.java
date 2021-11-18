@@ -7,9 +7,8 @@ import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 class ProcessCommandsTest {
 
@@ -36,15 +35,15 @@ class ProcessCommandsTest {
 
 		// Assert all the commands
 		int index = 0;
-		assertThat( commands.get( index++ ), is( javaPath ) );
+		assertThat( commands.get( index++ )).isEqualTo( javaPath );
 		for( String command : runtimeCommands ) {
-			assertThat( commands.get( index++ ), is( command ) );
+			assertThat( commands.get( index++ )).isEqualTo( command );
 		}
-		assertThat( commands.get( index++ ), is( "-p" ) );
-		assertThat( commands.get( index++ ), is( modulePath ) );
-		assertThat( commands.get( index++ ), is( "-m" ) );
-		assertThat( commands.get( index++ ), is( moduleMain + "/" + moduleMainClass ) );
-		assertThat( commands.size(), is( index ) );
+		assertThat( commands.get( index++ )).isEqualTo( "-p" );
+		assertThat( commands.get( index++ )).isEqualTo( modulePath );
+		assertThat( commands.get( index++ )).isEqualTo( "-m" );
+		assertThat( commands.get( index++ )).isEqualTo( moduleMain + "/" + moduleMainClass );
+		assertThat( commands.size()).isEqualTo( index );
 	}
 
 	@Test
@@ -61,17 +60,17 @@ class ProcessCommandsTest {
 
 		// Assert all the commands
 		int index = 0;
-		assertThat( commands.get( index++ ), is( javaPath ) );
+		assertThat( commands.get( index++ )).isEqualTo( javaPath );
 		for( String command : runtimeCommands ) {
-			assertThat( commands.get( index++ ), is( command ) );
+			assertThat( commands.get( index++ )).isEqualTo( command );
 		}
-		assertThat( commands.get( index++ ), is( "-p" ) );
-		assertThat( commands.get( index++ ), is( modulePath ) );
-		assertThat( commands.get( index++ ), is( "-m" ) );
-		assertThat( commands.get( index++ ), is( moduleMain + "/" + moduleMainClass ) );
-		assertThat( commands.get( index++ ), is( "-flag" ) );
-		assertThat( commands.get( index++ ), is( "value" ) );
-		assertThat( commands.size(), is( index ) );
+		assertThat( commands.get( index++ )).isEqualTo( "-p" );
+		assertThat( commands.get( index++ )).isEqualTo( modulePath );
+		assertThat( commands.get( index++ )).isEqualTo( "-m" );
+		assertThat( commands.get( index++ )).isEqualTo( moduleMain + "/" + moduleMainClass );
+		assertThat( commands.get( index++ )).isEqualTo( "-flag" );
+		assertThat( commands.get( index++ )).isEqualTo( "value" );
+		assertThat( commands.size()).isEqualTo( index );
 	}
 
 	@Test
@@ -88,18 +87,18 @@ class ProcessCommandsTest {
 
 		// Assert all the commands
 		int index = 0;
-		assertThat( commands.get( index++ ), is( javaPath ) );
+		assertThat( commands.get( index++ )).isEqualTo( javaPath );
 		for( String command : runtimeCommands ) {
-			assertThat( commands.get( index++ ), is( command ) );
+			assertThat( commands.get( index++ )).isEqualTo( command );
 		}
-		assertThat( commands.get( index++ ), is( "-p" ) );
-		assertThat( commands.get( index++ ), is( modulePath ) );
-		assertThat( commands.get( index++ ), is( "-m" ) );
-		assertThat( commands.get( index++ ), is( moduleMain + "/" + moduleMainClass ) );
-		assertThat( commands.get( index++ ), is( "-flag" ) );
-		assertThat( commands.get( index++ ), is( "value" ) );
-		assertThat( commands.get( index++ ), is( "-hello" ) );
-		assertThat( commands.size(), is( index ) );
+		assertThat( commands.get( index++ )).isEqualTo( "-p" );
+		assertThat( commands.get( index++ )).isEqualTo( modulePath );
+		assertThat( commands.get( index++ )).isEqualTo( "-m" );
+		assertThat( commands.get( index++ )).isEqualTo( moduleMain + "/" + moduleMainClass );
+		assertThat( commands.get( index++ )).isEqualTo( "-flag" );
+		assertThat( commands.get( index++ )).isEqualTo( "value" );
+		assertThat( commands.get( index++ )).isEqualTo( "-hello" );
+		assertThat( commands.size()).isEqualTo( index );
 	}
 
 	private List<String> getRuntimeCommands() {
