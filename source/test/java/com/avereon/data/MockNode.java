@@ -79,6 +79,10 @@ class MockNode extends Node {
 		return this;
 	}
 
+	public Event event(int index ) {
+		return watcher.getEvents().get(index);
+	}
+
 	public NodeWatcher getWatcher() {
 		return watcher;
 	}

@@ -3,9 +3,7 @@ package com.avereon.data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class NodeLinkTest {
 
@@ -17,30 +15,29 @@ public class NodeLinkTest {
 	}
 
 	@Test
-	@SuppressWarnings( "unchecked" )
 	void testAddRemove() {
 		MockNode a = new MockNode( "a" );
 		MockNode peer = new MockNode( "peer" );
 
 		data.setValue( "a", a );
 		data.setModified( false );
-		assertFalse( data.isModified() );
+		assertThat( data.isModified() ).isFalse();
 
 		NodeLink<MockNode> l = new NodeLink<>( a );
 		peer.setValue( "l", l );
-		assertFalse( peer.isModified() );
-		assertFalse( data.isModified() );
+		assertThat( peer.isModified() ).isFalse();
+		assertThat( data.isModified() ).isFalse();
 		// Node 'l' should belong to peer
-		assertThat( peer.getValue( "l" ), is( l ) );
+		assertThat( peer.<Object> getValue( "l" ) ).isEqualTo( l );
 		// Node 'a' should still belong to 'data'
-		assertThat( data.getValue( "a" ), is( a ) );
-		assertThat( ((NodeLink<MockNode>)peer.getValue( "l" )).getNode(), is( a ) );
+		assertThat( data.<Object> getValue( "a" ) ).isEqualTo( a );
+		assertThat( peer.<NodeLink<MockNode>> getValue( "l" ).getNode() ).isEqualTo( a );
 
 		peer.setValue( "l", null );
-		assertFalse( peer.isModified() );
-		assertFalse( data.isModified() );
-		assertNull( peer.getValue( "l" ) );
-		assertThat( data.getValue( "a" ), is( a ) );
+		assertThat( peer.isModified() ).isFalse();
+		assertThat( data.isModified() ).isFalse();
+		assertThat( peer.<Object> getValue( "l" ) ).isNull();
+		assertThat( data.<MockNode> getValue( "a" ) ).isEqualTo( a );
 	}
 
 	@Test
@@ -50,17 +47,17 @@ public class NodeLinkTest {
 
 		data.setValue( "a", a );
 		data.setModified( false );
-		assertFalse( data.isModified() );
+		assertThat( data.isModified() ).isFalse();
 
 		NodeLink<MockNode> l = new NodeLink<>( a );
 		peer.setValue( "l", l );
-		assertFalse( peer.isModified() );
+		assertThat( peer.isModified() ).isFalse();
 
 		a.setValue( "x", 2.4 );
-		assertTrue( a.isModified() );
-		assertTrue( data.isModified() );
-		assertFalse( l.isModified() );
-		assertFalse( peer.isModified() );
+		assertThat( a.isModified() ).isTrue();
+		assertThat( data.isModified() ).isTrue();
+		assertThat( l.isModified() ).isFalse();
+		assertThat( peer.isModified() ).isFalse();
 	}
 
 }

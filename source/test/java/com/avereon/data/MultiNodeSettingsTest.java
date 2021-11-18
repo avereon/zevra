@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MultiNodeSettingsTest {
 
@@ -45,22 +45,22 @@ public class MultiNodeSettingsTest {
 		MultiNodeSettings settings = new MultiNodeSettings( Set.of( node1, node2, node3 ) );
 
 		// These are MOCK_ID, "color" and "size"
-		assertThat( settings.getKeys().size(), is( 3 ) );
+		assertThat( settings.getKeys().size() ).isEqualTo( 3 );
 	}
 
 	@Test
 	void testGetName() {
-		assertNull( settings.getName() );
+		assertThat( settings.getName() ).isNull();
 	}
 
 	@Test
 	void testGetPath() {
-		assertNull( settings.getPath() );
+		assertThat( settings.getPath() ).isNull();
 	}
 
 	@Test
 	void testGetKeys() {
-		assertThat( settings.getKeys(), containsInAnyOrder( MockNode.MOCK_ID, "color", "size" ) );
+		assertThat( settings.getKeys() ).contains( MockNode.MOCK_ID, "color", "size" );
 	}
 
 	@Test
@@ -72,28 +72,28 @@ public class MultiNodeSettingsTest {
 
 	@Test
 	void testGet() {
-		assertThat( settings.get( "color" ), is( "blue" ) );
-		assertThat( settings.get( "size", "default" ), is( "default" ) );
-		assertThat( settings.get( "size" ), is( nullValue() ) );
-		assertThat( settings.get( "count" ), is( nullValue() ) );
+		assertThat( settings.get( "color" ) ).isEqualTo( "blue" );
+		assertThat( settings.get( "size", "default" ) ).isEqualTo( "default" );
+		assertThat( settings.get( "size" ) ).isNull();
+		assertThat( settings.get( "count" ) ).isNull();
 	}
 
 	@Test
 	void testSet() {
-		assertThat( node1.getValue( "count" ), is( nullValue() ) );
-		assertThat( node2.getValue( "count" ), is( 42 ) );
-		assertThat( node3.getValue( "count" ), is( nullValue() ) );
+		assertThat( node1.<Integer> getValue( "count" ) ).isNull();
+		assertThat( node2.<Integer> getValue( "count" ) ).isEqualTo( 42 );
+		assertThat( node3.<Integer> getValue( "count" ) ).isNull();
 		settings.set( "count", 37 );
-		assertThat( node1.getValue( "count" ), is( 37 ) );
-		assertThat( node2.getValue( "count" ), is( 37 ) );
-		assertThat( node3.getValue( "count" ), is( 37 ) );
+		assertThat( node1.<Integer> getValue( "count" ) ).isEqualTo( 37 );
+		assertThat( node2.<Integer> getValue( "count" ) ).isEqualTo( 37 );
+		assertThat( node3.<Integer> getValue( "count" ) ).isEqualTo( 37 );
 	}
 
 	@Test
 	void testSetWithNestedTxn() throws Exception {
-		assertThat( node1.getValue( "count" ), is( nullValue() ) );
-		assertThat( node2.getValue( "count" ), is( 42 ) );
-		assertThat( node3.getValue( "count" ), is( nullValue() ) );
+		assertThat( node1.<Integer> getValue( "count" ) ).isNull();
+		assertThat( node2.<Integer> getValue( "count" ) ).isEqualTo( 42 );
+		assertThat( node3.<Integer> getValue( "count" ) ).isNull();
 		try( Txn ignored = Txn.create( true ) ) {
 			settings.set( "temp", "temp-value" );
 			settings.set( "count", 37 );
@@ -110,9 +110,9 @@ public class MultiNodeSettingsTest {
 				}
 			} );
 		}
-		assertThat( node1.getValue( "count" ), is( 37 ) );
-		assertThat( node2.getValue( "count" ), is( 37 ) );
-		assertThat( node3.getValue( "count" ), is( 37 ) );
+		assertThat( node1.<Integer> getValue( "count" ) ).isEqualTo( 37 );
+		assertThat( node2.<Integer> getValue( "count" ) ).isEqualTo( 37 );
+		assertThat( node3.<Integer> getValue( "count" ) ).isEqualTo( 37 );
 	}
 
 	@Test

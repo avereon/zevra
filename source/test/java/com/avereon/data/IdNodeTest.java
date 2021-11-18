@@ -3,20 +3,18 @@ package com.avereon.data;
 import com.avereon.transaction.Txn;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class IdNodeTest {
 
 	@Test
 	void testId() {
-		assertNotNull( new MockIdNode().getId() );
+		assertThat( new MockIdNode().getId() ).isNotNull();
 	}
 
 	@Test
 	void testConstructor() {
-		IdNode node = new MockIdNode();
-		assertNotNull( node.getId() );
+		assertThat( new MockIdNode() ).isNotNull();
 	}
 
 	@Test
@@ -25,9 +23,9 @@ public class IdNodeTest {
 		try( Txn ignore = Txn.create() ) {
 			node = new MockIdNode();
 			// The id will be null until the txn is complete
-			assertNull( node.getId() );
+			assertThat( node.getId() ).isNull();
 		}
-		assertNotNull( node.getId() );
+		assertThat( node.getId() ).isNotNull();
 	}
 
 }
