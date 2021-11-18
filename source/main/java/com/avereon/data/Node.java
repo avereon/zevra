@@ -662,7 +662,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 *
 	 * @return A collection of all the values
 	 */
-	protected Collection<?> getValues() {
+	protected Collection<Object> getValues() {
 		return values == null ? Set.of() : values.values();
 	}
 
