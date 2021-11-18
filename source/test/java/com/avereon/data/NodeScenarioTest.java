@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NodeTest extends BaseNodeTest {
+class NodeScenarioTest extends BaseNodeTest {
 
 	@Test
 	void testGetAndSetValueEvents() {
