@@ -1,9 +1,11 @@
 package com.avereon.product;
 
 import com.avereon.settings.Settings;
+import lombok.experimental.Accessors;
 
 import java.nio.file.Path;
 
+@Accessors(fluent=true)
 public class MockProduct implements Product {
 
 	private final Product parent;

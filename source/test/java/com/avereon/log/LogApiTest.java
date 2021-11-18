@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LogApiTest {
 
@@ -37,29 +36,29 @@ public class LogApiTest {
 	@Test
 	void testAtInfo() {
 		log.atInfo().log();
-		assertThat( wrapper.getData().getLevel(), is( Level.INFO ) );
-		assertThat( wrapper.getData().getMessage(), is( "" ) );
+		assertThat( wrapper.getData().getLevel() ).isEqualTo( Level.INFO );
+		assertThat( wrapper.getData().getMessage() ).isEqualTo( "" );
 	}
 
 	@Test
 	void testLogWithMessage() {
 		log.atInfo().log( "Hello World!" );
-		assertThat( wrapper.getData().getLevel(), is( Level.INFO ) );
-		assertThat( wrapper.getData().getMessage(), is( "Hello World!" ) );
+		assertThat( wrapper.getData().getLevel() ).isEqualTo( Level.INFO );
+		assertThat( wrapper.getData().getMessage() ).isEqualTo( "Hello World!" );
 	}
 
 	@Test
 	void testLogWithMessageAndParameter() {
 		log.atInfo().log( "Hello %s!", "World" );
-		assertThat( wrapper.getData().getLevel(), is( Level.INFO ) );
-		assertThat( wrapper.getData().getMessage(), is( "Hello World!" ) );
+		assertThat( wrapper.getData().getLevel() ).isEqualTo( Level.INFO );
+		assertThat( wrapper.getData().getMessage() ).isEqualTo( "Hello World!" );
 	}
 
 	@Test
 	void testLogWithMessageAndLazyParameter() {
 		log.atInfo().log( "Hello %s!", LazyEval.of( () -> "World" ) );
-		assertThat( wrapper.getData().getLevel(), is( Level.INFO ) );
-		assertThat( wrapper.getData().getMessage(), is( "Hello World!" ) );
+		assertThat( wrapper.getData().getLevel() ).isEqualTo( Level.INFO );
+		assertThat( wrapper.getData().getMessage() ).isEqualTo( "Hello World!" );
 	}
 
 	private static class TestProvider extends AbstractLoggingProvider {

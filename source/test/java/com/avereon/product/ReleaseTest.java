@@ -9,9 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ReleaseTest {
 
@@ -27,114 +25,114 @@ class ReleaseTest {
 	@Test
 	void testConstructorWithStringAndTimestamp() throws Exception {
 		Release release = new Release( versionString, timestampFormat.parse( "1970-01-01 00:00:00" ) );
-		assertEquals( versionString, release.getVersion().toString() );
-		assertEquals( new Date( 0 ), release.getTimestamp() );
+		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
+		assertThat( release.getTimestamp() ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test
 	void testConstructorWithStringStringAndNullTimestamp() {
 		Release release = new Release( versionString, null );
-		assertThat( release.getVersion().toString(), is( versionString ) );
-		assertThat( release.getTimestamp(), is( nullValue() ) );
+		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
+		assertThat( release.getTimestamp() ).isNull();
 	}
 
 	@Test
 	void testCreateWithBadTimestampString() {
 		Release release = Release.create( versionString, "bad date string" );
-		assertThat( release.getVersion().toString(), is( versionString ) );
-		assertThat( release.getTimestamp(), is( nullValue() ) );
+		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
+		assertThat( release.getTimestamp() ).isNull();
 	}
 
 	@Test
 	void testGetVersion() {
 		Release release = new Release( versionString );
-		assertEquals( 0, new Version( "1.2.3-u-04" ).compareTo( release.getVersion() ) );
+		assertThat( new Version( "1.2.3-u-04" ).compareTo( release.getVersion() ) ).isEqualTo( 0 );
 	}
 
 	@Test
 	void testGetTimestamp() {
-		assertNull( new Release( versionString ).getTimestamp() );
-		assertEquals( new Date( 0 ), new Release( new Version( versionString ), new Date( 0 ) ).getTimestamp() );
+		assertThat( new Release( versionString ).getTimestamp() ).isNull();
+		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).getTimestamp() ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test
 	void testGetTimestampString() {
-		assertEquals( "", new Release( versionString ).getTimestampString() );
-		assertEquals( "1970-01-01 00:00:00", new Release( versionString, new Date( 0 ) ).getTimestampString() );
+		assertThat( new Release( versionString ).getTimestampString() ).isEqualTo( "" );
+		assertThat( new Release( versionString, new Date( 0 ) ).getTimestampString() ).isEqualTo( "1970-01-01 00:00:00" );
 	}
 
 	@Test
 	void testGetTimestampStringWithTimeZone() {
 		TimeZone zone = TimeZone.getTimeZone( "US/Pacific" );
-		assertEquals( "", new Release( versionString ).getTimestampString( zone ) );
-		assertEquals( "1969-12-31 16:00:00 PST", new Release( versionString, new Date( 0 ) ).getTimestampString( zone ) );
+		assertThat( new Release( versionString ).getTimestampString( zone ) ).isEqualTo( "" );
+		assertThat( new Release( versionString, new Date( 0 ) ).getTimestampString( zone ) ).isEqualTo( "1969-12-31 16:00:00 PST" );
 	}
 
 	@Test
 	void testToString() {
-		assertEquals( "1.2.3-u-04", new Release( versionString ).toString() );
-		assertEquals( "1.2.3-u-04  1970-01-01 00:00:00", new Release( new Version( versionString ), new Date( 0 ) ).toString() );
+		assertThat( new Release( versionString ).toString() ).isEqualTo( "1.2.3-u-04" );
+		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).toString() ).isEqualTo( "1.2.3-u-04  1970-01-01 00:00:00" );
 	}
 
 	@Test
 	void testToHumanString() {
-		assertEquals( "1.2.3 Update 04", new Release( versionString ).toHumanString() );
-		assertEquals( "1.2.3 Update 04  1970-01-01 00:00:00", new Release( new Version( versionString ), new Date( 0 ) ).toHumanString() );
+		assertThat( new Release( versionString ).toHumanString() ).isEqualTo( "1.2.3 Update 04" );
+		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).toHumanString() ).isEqualTo( "1.2.3 Update 04  1970-01-01 00:00:00" );
 	}
 
 	@Test
 	void testToHumanStringWithTimeZone() {
 		TimeZone zone = TimeZone.getTimeZone( "Antarctica/South_Pole" );
-		assertEquals( "1.2.3 Update 04", new Release( versionString ).toHumanString( zone ) );
-		assertEquals( "1.2.3 Update 04  1970-01-01 12:00:00 NZST", new Release( new Version( versionString ), new Date( 0 ) ).toHumanString( zone ) );
+		assertThat( new Release( versionString ).toHumanString( zone ) ).isEqualTo( "1.2.3 Update 04" );
+		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).toHumanString( zone ) ).isEqualTo( "1.2.3 Update 04  1970-01-01 12:00:00 NZST" );
 	}
 
 	@Test
 	void testEncode() {
-		assertEquals( "", Release.encode( new Release( "" ) ) );
-		assertEquals( "1.2.3-u-04", Release.encode( new Release( versionString ) ) );
-		assertEquals( "1.2.3-u-04  0", Release.encode( new Release( versionString, new Date( 0 ) ) ) );
+		assertThat( Release.encode( new Release( "" ) ) ).isEqualTo( "" );
+		assertThat( Release.encode( new Release( versionString ) ) ).isEqualTo( "1.2.3-u-04" );
+		assertThat( Release.encode( new Release( versionString, new Date( 0 ) ) ) ).isEqualTo( "1.2.3-u-04  0" );
 	}
 
 	@Test
 	void testDecode() {
-		assertNull( Release.decode( null ) );
-		assertEquals( new Release( "" ), Release.decode( "" ) );
-		assertEquals( new Release( versionString ), Release.decode( "1.2.3-u-04" ) );
-		assertEquals( new Release( versionString, new Date( 0 ) ), Release.decode( "1.2.3-u-04  0" ) );
+		assertThat( Release.decode( null ) ).isNull();
+		assertThat( Release.decode( "" ) ).isEqualTo( new Release( "" ) );
+		assertThat( Release.decode( "1.2.3-u-04" ) ).isEqualTo( new Release( versionString ) );
+		assertThat( Release.decode( "1.2.3-u-04  0" ) ).isEqualTo( new Release( versionString, new Date( 0 ) ) );
 	}
 
 	@Test
 	void testEquals() {
-		assertThat( new Release( versionString ), is( new Release( versionString ) ) );
-		assertThat( new Release( versionString ), is( not( new Release( "1.2.3 Update 04" ) ) ) );
+		assertThat( new Release( versionString ) ).isEqualTo( new Release( versionString ) );
+		assertThat( new Release( versionString ) ).isNotEqualTo( new Release( "1.2.3 Update 04" ) );
 
-		assertThat( new Release( "1" ), is( new Release( new Version( "1" ) ) ) );
-		assertThat( new Release( "2" ), is( not( new Release( new Version( "1" ) ) ) ) );
-		assertThat( new Release( "1", new Date( 0 ) ), is( new Release( new Version( "1" ), new Date( 0 ) ) ) );
-		assertThat( new Release( "1", new Date( 1 ) ), is( not( new Release( new Version( "1" ), new Date( 0 ) ) ) ) );
+		assertThat( new Release( "1" ) ).isEqualTo( new Release( new Version( "1" ) ) );
+		assertThat( new Release( "2" ) ).isNotEqualTo( new Release( new Version( "1" ) ) );
+		assertThat( new Release( "1", new Date( 0 ) ) ).isEqualTo( new Release( new Version( "1" ), new Date( 0 ) ) );
+		assertThat( new Release( "1", new Date( 1 ) ) ).isNotEqualTo( new Release( new Version( "1" ), new Date( 0 ) ) );
 	}
 
 	@Test
 	void testHashCode() {
-		assertThat( new Release( versionString ).hashCode(), is( new Release( versionString ).hashCode() ) );
-		assertThat( new Release( versionString, null ).hashCode(), is( new Release( versionString, null ).hashCode() ) );
-		assertThat( new Release( versionString, new Date( 0 ) ).hashCode(), is( new Release( versionString, new Date( 0 ) ).hashCode() ) );
+		assertThat( new Release( versionString ).hashCode() ).isEqualTo( new Release( versionString ).hashCode() );
+		assertThat( new Release( versionString, null ).hashCode() ).isEqualTo( new Release( versionString, null ).hashCode() );
+		assertThat( new Release( versionString, new Date( 0 ) ).hashCode() ).isEqualTo( new Release( versionString, new Date( 0 ) ).hashCode() );
 	}
 
 	@Test
 	void testCompareTo() {
-		assertThat( new Release( "1" ).compareTo( new Release( "1" ) ), is( 0 ) );
-		assertTrue( new Release( "1" ).compareTo( new Release( "2" ) ) < 0 );
-		assertTrue( new Release( "2" ).compareTo( new Release( "1" ) ) > 0 );
+		assertThat( new Release( "1" ).compareTo( new Release( "1" ) ) ).isEqualTo( 0 );
+		assertThat( new Release( "1" ).compareTo( new Release( "2" ) ) ).isLessThan( 0 );
+		assertThat( new Release( "2" ).compareTo( new Release( "1" ) ) ).isGreaterThan( 0 );
 
-		assertThat( new Release( new Version( "1" ), new Date( 0 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ), is( 0 ) );
-		assertTrue( new Release( new Version( "1" ), new Date( -1 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) < 0 );
-		assertTrue( new Release( new Version( "1" ), new Date( 1 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) > 0 );
+		assertThat( new Release( new Version( "1" ), new Date( 0 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) ).isEqualTo( 0 );
+		assertThat( new Release( new Version( "1" ), new Date( -1 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) ).isLessThan( 0 );
+		assertThat( new Release( new Version( "1" ), new Date( 1 ) ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) ).isGreaterThan( 0 );
 
-		assertThat( new Release( new Version( "1" ), null ).compareTo( new Release( new Version( "1" ), null ) ), is( 0 ) );
-		assertThat( new Release( new Version( "1" ), null ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ), is( 0 ) );
-		assertThat( new Release( new Version( "1" ), new Date( 0 ) ).compareTo( new Release( new Version( "1" ), null ) ), is( 0 ) );
+		assertThat( new Release( new Version( "1" ), null ).compareTo( new Release( new Version( "1" ), null ) ) ).isEqualTo( 0 );
+		assertThat( new Release( new Version( "1" ), null ).compareTo( new Release( new Version( "1" ), new Date( 0 ) ) ) ).isEqualTo( 0 );
+		assertThat( new Release( new Version( "1" ), new Date( 0 ) ).compareTo( new Release( new Version( "1" ), null ) ) ).isEqualTo( 0 );
 	}
 
 }

@@ -6,25 +6,23 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 public class ResultTest {
 
 	@Test
 	void testEmpty() {
 		Result<?> result = Result.empty();
-		assertTrue( result.isEmpty() );
-		assertFalse( result.isPresent() );
+		assertThat( result.isEmpty() ).isTrue();
+		assertThat( result.isPresent() ).isFalse();
 	}
 
 	@Test
 	void testResult() {
 		Result<String> result = Result.of( "value" );
-		assertFalse( result.isEmpty() );
-		assertTrue( result.isPresent() );
+		assertThat( result.isEmpty() ).isFalse();
+		assertThat( result.isPresent() ).isTrue();
 	}
 
 	@Test
@@ -34,7 +32,7 @@ public class ResultTest {
 		Result<String> result = Result.of( "present" );
 		result.ifPresent( results::add );
 
-		assertThat( results.get( 0 ), is( "present" ) );
+		assertThat( results.get( 0 ) ).isEqualTo( "present" );
 	}
 
 	@Test
@@ -44,7 +42,7 @@ public class ResultTest {
 		Result<String> result = Result.of( new RuntimeException() );
 		result.ifPresent( results::add );
 
-		assertThat( results.size(), is( 0 ) );
+		assertThat( results.size() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -54,7 +52,7 @@ public class ResultTest {
 		Result<String> result = Result.of( "success" );
 		result.ifSuccess( results::add );
 
-		assertThat( results.get( 0 ), is( "success" ) );
+		assertThat( results.get( 0 ) ).isEqualTo( "success" );
 	}
 
 	@Test
@@ -64,7 +62,7 @@ public class ResultTest {
 		Result<String> result = Result.of( new RuntimeException() );
 		result.ifSuccess( results::add );
 
-		assertThat( results.size(), is( 0 ) );
+		assertThat( results.size() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -74,7 +72,7 @@ public class ResultTest {
 		Result<String> result = Result.of( new RuntimeException( "failure" ) );
 		result.ifFailure( e -> results.add( e.getMessage() ) );
 
-		assertThat( results.get( 0 ), is( "failure" ) );
+		assertThat( results.get( 0 ) ).isEqualTo( "failure" );
 	}
 
 	@Test
@@ -84,10 +82,11 @@ public class ResultTest {
 		Result<String> result = Result.of( "success" );
 		result.ifFailure( e -> results.add( e.getMessage() ) );
 
-		assertThat( results.size(), is( 0 ) );
+		assertThat( results.size() ).isEqualTo( 0 );
 	}
 
 	@Test
+	@SuppressWarnings( "CatchMayIgnoreException" )
 	void testAcceptExceptionWithAnException() {
 		Result<String> result = Result.of( new RuntimeException( "test exception" ) );
 
@@ -95,7 +94,7 @@ public class ResultTest {
 			result.tryException();
 			fail( "Exception not thrown as expected" );
 		} catch( RuntimeException exception ) {
-			assertThat( exception.getMessage(), is( "test exception" ) );
+			assertThat( exception.getMessage() ).isEqualTo( "test exception" );
 		} catch( Exception exception ) {
 			fail( "RuntimeException not handled as expected" );
 		}
@@ -125,9 +124,9 @@ public class ResultTest {
 			return r;
 		} );
 
-		assertTrue( result.isPresent() );
-		assertThat( result.get(), is( "result" ) );
-		assertThat( results, contains( "andThen", "ifPresent" ) );
+		assertThat( result.isPresent() ).isTrue();
+		assertThat( result.get() ).isEqualTo( "result" );
+		assertThat( results ).contains( "andThen", "ifPresent" );
 	}
 
 	@Test
@@ -141,9 +140,9 @@ public class ResultTest {
 			return r;
 		} );
 
-		assertTrue( result.isPresent() );
-		assertThat( result.get(), is( "result" ) );
-		assertThat( results, contains( "andThen", "andThen" ) );
+		assertThat( result.isPresent() ).isTrue();
+		assertThat( result.get() ).isEqualTo( "result" );
+		assertThat( results ).contains( "andThen", "andThen" );
 	}
 
 }

@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 class EventHubTest {
 
@@ -48,28 +46,28 @@ class EventHubTest {
 		bus.dispatch( new TestEvent( this, TestEvent.B ) );
 		bus.dispatch( new Event( this, Event.ANY ) );
 
-		assertThat( rootEvents.size(), is( 4 ) );
-		assertThat( testEvents1.size(), is( 3 ) );
-		assertThat( testEvents2.size(), is( 3 ) );
-		assertThat( aEvents.size(), is( 1 ) );
-		assertThat( bEvents.size(), is( 1 ) );
+		assertThat( rootEvents.size() ).isEqualTo( 4 );
+		assertThat( testEvents1.size() ).isEqualTo( 3 );
+		assertThat( testEvents2.size() ).isEqualTo( 3 );
+		assertThat( aEvents.size() ).isEqualTo( 1 );
+		assertThat( bEvents.size() ).isEqualTo( 1 );
 	}
 
 	@Test
 	void testPrior() {
 		EventHub bus = new EventHub();
-		assertThat( bus.getPriorEvent( TestEvent.class ), is( nullValue() ) );
+		assertThat( bus.<Event> getPriorEvent( TestEvent.class ) ).isNull();
 		TestEvent any = new TestEvent( this, TestEvent.ANY );
 		bus.dispatch( any );
-		assertThat( bus.getPriorEvent( TestEvent.class ), is( any ) );
+		assertThat( bus.<Event> getPriorEvent( TestEvent.class ) ).isEqualTo( any );
 
 		TestEvent a = new TestEvent( this, TestEvent.A );
 		bus.dispatch( a );
-		assertThat( bus.getPriorEvent( TestEvent.class ), is( a ) );
+		assertThat( bus.<Event> getPriorEvent( TestEvent.class ) ).isEqualTo( a );
 
 		TestEvent b = new TestEvent( this, TestEvent.B );
 		bus.dispatch( b );
-		assertThat( bus.getPriorEvent( TestEvent.class ), is( b ) );
+		assertThat( bus.<Event> getPriorEvent( TestEvent.class ) ).isEqualTo( b );
 	}
 
 	@Test
@@ -84,8 +82,8 @@ class EventHubTest {
 		peer.register( TestEvent.ANY, peerEvents::add );
 
 		bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
-		assertThat( peerEvents.size(), is( 1 ) );
-		assertThat( testEvents.size(), is( 1 ) );
+		assertThat( peerEvents.size() ).isEqualTo( 1 );
+		assertThat( testEvents.size() ).isEqualTo( 1 );
 	}
 
 	private static class TestEvent extends Event {

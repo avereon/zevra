@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test the storage and retrieval of Java beans using JSON
@@ -38,7 +37,7 @@ class JsonSettingsTest {
 
 		// Load the beans
 		TypeReference<Map<String, MockBean>> typeRef = new TypeReference<>() {};
-		assertThat( ((Map<String, MockBean>)mapper.readerFor( typeRef ).readValue( store )).values(), containsInAnyOrder( bean1, bean2, bean3 ) );
+		assertThat( ((Map<String, MockBean>)mapper.readerFor( typeRef ).readValue( store )).values() ).contains( bean1, bean2, bean3 );
 	}
 
 	@Test
@@ -64,7 +63,7 @@ class JsonSettingsTest {
 
 		// Load the beans
 		TypeReference<List<MockBean>> typeRef = new TypeReference<>() {};
-		assertThat( mapper.readerFor( typeRef ).readValue( store ), containsInAnyOrder( bean1, bean2, bean3 ) );
+		assertThat( mapper.readerFor( typeRef ).<Set<MockBean>> readValue( store ) ).contains( bean1, bean2, bean3 );
 
 		//System.out.println( store );
 	}
@@ -92,7 +91,7 @@ class JsonSettingsTest {
 
 		// Load the beans
 		TypeReference<Set<MockBean>> typeRef = new TypeReference<>() {};
-		assertThat( mapper.readerFor( typeRef ).readValue( store ), containsInAnyOrder( bean1, bean2, bean3 ) );
+		assertThat( mapper.readerFor( typeRef ).<Set<MockBean>> readValue( store ) ).contains( bean1, bean2, bean3 );
 	}
 
 }

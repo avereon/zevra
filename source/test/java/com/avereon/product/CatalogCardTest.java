@@ -11,9 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CatalogCardTest {
 
@@ -23,8 +21,8 @@ class CatalogCardTest {
 		RepoCard repo = new RepoCard();
 		CatalogCard card = CatalogCard.fromJson( repo, new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
 
-		assertThat( card.getTimestamp(), is( 1557457963562L ) );
-		assertThat( card.getProducts(), org.hamcrest.CoreMatchers.hasItems( "product1", "product2" ) );
+		assertThat( card.getTimestamp() ).isEqualTo( 1557457963562L );
+		assertThat( card.getProducts() ).contains( "product1", "product2" );
 	}
 
 	@Test
@@ -44,19 +42,19 @@ class CatalogCardTest {
 		String store = mapper.writeValueAsString( card );
 
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
-		assertThat( reader.readLine(), is( "{" ) );
-		assertThat( reader.readLine(), is( "  \"internalId\" : \"" + card.getInternalId() + "\"," ) );
-		assertThat( reader.readLine(), is( "  \"repo\" : {" ) );
-		assertThat( reader.readLine(), is( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\"," ) );
-		assertThat( reader.readLine(), is( "    \"name\" : \"Example Product Market\"," ) );
-		//assertThat( reader.readLine(), is( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
-		assertThat( reader.readLine(), is( "    \"icons\" : [ \"https://www.example.com/market/icon\" ]," ) );
-		assertThat( reader.readLine(), is( "    \"url\" : \"https://www.example.com/market\"" ) );
-		assertThat( reader.readLine(), is( "  }," ) );
-		assertThat( reader.readLine(), is( "  \"timestamp\" : " + card.getTimestamp() + "," ) );
-		assertThat( reader.readLine(), is( "  \"products\" : [ \"product2\", \"product1\" ]" ) );
-		assertThat( reader.readLine(), is( "}" ) );
-		assertThat( reader.readLine(), is( nullValue() ) );
+		assertThat( reader.readLine() ).isEqualTo( "{"  );
+		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\","  );
+		assertThat( reader.readLine() ).isEqualTo( "  \"repo\" : {"  );
+		assertThat( reader.readLine() ).isEqualTo( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\","  );
+		assertThat( reader.readLine() ).isEqualTo( "    \"name\" : \"Example Product Market\","  );
+		//assertThat( reader.readLine()).isEqualTo( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
+		assertThat( reader.readLine() ).isEqualTo( "    \"icons\" : [ \"https://www.example.com/market/icon\" ],"  );
+		assertThat( reader.readLine() ).isEqualTo( "    \"url\" : \"https://www.example.com/market\""  );
+		assertThat( reader.readLine() ).isEqualTo( "  },"  );
+		assertThat( reader.readLine() ).isEqualTo( "  \"timestamp\" : " + card.getTimestamp() + ","  );
+		assertThat( reader.readLine() ).isEqualTo( "  \"products\" : [ \"product2\", \"product1\" ]"  );
+		assertThat( reader.readLine() ).isEqualTo( "}"  );
+		assertThat( reader.readLine() ).isNull();
 	}
 
 }

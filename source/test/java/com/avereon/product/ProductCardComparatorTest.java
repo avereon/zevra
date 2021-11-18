@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ProductCardComparatorTest {
 
@@ -21,9 +20,9 @@ class ProductCardComparatorTest {
 		ProductCard card3 = new ProductCard();
 		card3.setName( "B" );
 
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card1, card2 ), greaterThanOrEqualTo( 1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card2, card1 ), lessThanOrEqualTo( -1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card1, card3 ), is( 0 ) );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card1, card2 ) ).isGreaterThanOrEqualTo( 1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card2, card1 ) ).isLessThanOrEqualTo( -1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.NAME ).compare( card1, card3 ) ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -37,9 +36,9 @@ class ProductCardComparatorTest {
 		ProductCard card3 = new ProductCard();
 		card3.setArtifact( "b" );
 
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card1, card2 ), greaterThanOrEqualTo( 1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card2, card1 ), lessThanOrEqualTo( -1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card1, card3 ), is( 0 ) );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card1, card2 ) ).isGreaterThanOrEqualTo( 1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card2, card1 ) ).isLessThanOrEqualTo( -1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.ARTIFACT ).compare( card1, card3 ) ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -53,9 +52,9 @@ class ProductCardComparatorTest {
 		ProductCard card3 = new ProductCard();
 		card3.setVersion( "2" );
 
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card1, card2 ), greaterThanOrEqualTo( 1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card2, card1 ), lessThanOrEqualTo( -1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card1, card3 ), is( 0 ) );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card1, card2 ) ).isGreaterThanOrEqualTo( 1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card2, card1 ) ).isLessThanOrEqualTo( -1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.VERSION ).compare( card1, card3 ) ).isEqualTo( 0 );
 
 		List<ProductCard> cards = new ArrayList<>();
 		cards.add( new ProductCard().setVersion( "1" ) );
@@ -63,10 +62,10 @@ class ProductCardComparatorTest {
 		cards.add( new ProductCard().setVersion( "2" ) );
 
 		cards.sort( new ProductCardComparator( ProductCardComparator.Field.VERSION ) );
-		assertThat( cards.get( 0 ).getVersion(), is( "1" ) );
+		assertThat( cards.get( 0 ).getVersion() ).isEqualTo( "1" );
 
 		cards.sort( new ProductCardComparator( ProductCardComparator.Field.VERSION ).reversed() );
-		assertThat( cards.get( 0 ).getVersion(), is( "3" ) );
+		assertThat( cards.get( 0 ).getVersion() ).isEqualTo( "3" );
 	}
 
 	@Test
@@ -80,19 +79,19 @@ class ProductCardComparatorTest {
 		ProductCard card3 = new ProductCard();
 		card3.setVersion( "1" ).setTimestamp( "2018-02-14 00:00:00" );
 
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card1, card2 ), greaterThanOrEqualTo( 1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card2, card1 ), lessThanOrEqualTo( -1 ) );
-		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card1, card3 ), is( 0 ) );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card1, card2 ) ).isGreaterThanOrEqualTo( 1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card2, card1 ) ).isLessThanOrEqualTo( -1 );
+		assertThat( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).compare( card1, card3 ) ).isEqualTo( 0 );
 
 		List<ProductCard> cards = new ArrayList<>();
 		cards.add( new ProductCard().setVersion( "0.8" ).setTimestamp( "2018-04-17 00:17:05" ) );
 		cards.add( new ProductCard().setVersion( "0.9-SNAPSHOT" ).setTimestamp( "2018-06-27 23:47:46" ) );
 
 		cards.sort( new ProductCardComparator( ProductCardComparator.Field.RELEASE ) );
-		assertThat( cards.get( 0 ).getVersion(), is( "0.8" ) );
+		assertThat( cards.get( 0 ).getVersion() ).isEqualTo( "0.8" );
 
 		cards.sort( new ProductCardComparator( ProductCardComparator.Field.RELEASE ).reversed() );
-		assertThat( cards.get( 0 ).getVersion(), is( "0.9-SNAPSHOT" ) );
+		assertThat( cards.get( 0 ).getVersion() ).isEqualTo( "0.9-SNAPSHOT" );
 	}
 
 }

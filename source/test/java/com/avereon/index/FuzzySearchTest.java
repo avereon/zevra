@@ -2,8 +2,7 @@ package com.avereon.index;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FuzzySearchTest {
 
@@ -11,9 +10,9 @@ public class FuzzySearchTest {
 
 	@Test
 	void testGetRankPoints() {
-		assertThat( search.getRankPoints( "exact", "exact" ), is( 100 ) );
-		assertThat( search.getRankPoints( "exact", "exam" ), is( 67 ) );
-		assertThat( search.getRankPoints( "exact", "example" ), is( 50 ) );
+		assertThat( search.getRankPoints( "exact", "exact" ) ).isEqualTo( 100 );
+		assertThat( search.getRankPoints( "exact", "exam" ) ).isEqualTo( 67 );
+		assertThat( search.getRankPoints( "exact", "example" ) ).isEqualTo( 50 );
 	}
 
 }
