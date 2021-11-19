@@ -6,87 +6,84 @@ import java.io.File;
 import java.net.URI;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UriUtilTest {
 
 	@Test
 	void understandUriParts() {
 		URI uri = URI.create( "program:product#updates" );
-		assertThat( uri.isOpaque(), is( true ) );
-		assertThat( uri.isAbsolute(), is( true ) );
-		assertThat( uri.getScheme(), is( "program" ) );
-		assertThat( uri.getUserInfo(), is( nullValue() ) );
-		assertThat( uri.getHost(), is( nullValue() ) );
-		assertThat( uri.getAuthority(), is( nullValue() ) );
-		assertThat( uri.getPath(), is( nullValue() ) );
-		assertThat( uri.getQuery(), is( nullValue() ) );
-		assertThat( uri.getFragment(), is( "updates" ) );
-		assertThat( uri.getSchemeSpecificPart(), is( "product" ) );
+		assertThat( uri.isOpaque() ).isEqualTo( true );
+		assertThat( uri.isAbsolute() ).isEqualTo( true );
+		assertThat( uri.getScheme() ).isEqualTo( "program" );
+		assertThat( uri.getUserInfo() ).isNull();
+		assertThat( uri.getHost() ).isNull();
+		assertThat( uri.getAuthority() ).isNull();
+		assertThat( uri.getPath() ).isNull();
+		assertThat( uri.getQuery() ).isNull();
+		assertThat( uri.getFragment() ).isEqualTo( "updates" );
+		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "product" );
 
-		uri = URI.create( "http://avereon.com/download/xenon/product/card?version=latest&refresh=false#name" );
-		assertThat( uri.isOpaque(), is( false ) );
-		assertThat( uri.isAbsolute(), is( true ) );
-		assertThat( uri.getScheme(), is( "http" ) );
-		assertThat( uri.getUserInfo(), is( nullValue() ) );
-		assertThat( uri.getHost(), is( "avereon.com" ) );
-		assertThat( uri.getAuthority(), is( "avereon.com" ) );
-		assertThat( uri.getPath(), is( "/download/xenon/product/card" ) );
-		assertThat( uri.getQuery(), is( "version=latest&refresh=false" ) );
-		assertThat( uri.getFragment(), is( "name" ) );
-		assertThat( uri.getSchemeSpecificPart(), is( "//avereon.com/download/xenon/product/card?version=latest&refresh=false" ) );
+		uri = URI.create( "https://avereon.com/download/xenon/product/card?version=latest&refresh=false#name" );
+		assertThat( uri.isOpaque() ).isEqualTo( false );
+		assertThat( uri.isAbsolute() ).isEqualTo( true );
+		assertThat( uri.getScheme() ).isEqualTo( "https" );
+		assertThat( uri.getUserInfo() ).isNull();
+		assertThat( uri.getHost() ).isEqualTo( "avereon.com" );
+		assertThat( uri.getAuthority() ).isEqualTo( "avereon.com" );
+		assertThat( uri.getPath() ).isEqualTo( "/download/xenon/product/card" );
+		assertThat( uri.getQuery() ).isEqualTo( "version=latest&refresh=false" );
+		assertThat( uri.getFragment() ).isEqualTo( "name" );
+		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//avereon.com/download/xenon/product/card?version=latest&refresh=false" );
 
 		uri = URI.create( "ssh://user@avereon.com/tmp" );
-		assertThat( uri.isOpaque(), is( false ) );
-		assertThat( uri.isAbsolute(), is( true ) );
-		assertThat( uri.getScheme(), is( "ssh" ) );
-		assertThat( uri.getUserInfo(), is( "user" ) );
-		assertThat( uri.getHost(), is( "avereon.com" ) );
-		assertThat( uri.getAuthority(), is( "user@avereon.com" ) );
-		assertThat( uri.getPath(), is( "/tmp" ) );
-		assertThat( uri.getQuery(), is( nullValue() ) );
-		assertThat( uri.getFragment(), is( nullValue() ) );
-		assertThat( uri.getSchemeSpecificPart(), is( "//user@avereon.com/tmp" ) );
+		assertThat( uri.isOpaque() ).isEqualTo( false );
+		assertThat( uri.isAbsolute() ).isEqualTo( true );
+		assertThat( uri.getScheme() ).isEqualTo( "ssh" );
+		assertThat( uri.getUserInfo() ).isEqualTo( "user" );
+		assertThat( uri.getHost() ).isEqualTo( "avereon.com" );
+		assertThat( uri.getAuthority() ).isEqualTo( "user@avereon.com" );
+		assertThat( uri.getPath() ).isEqualTo( "/tmp" );
+		assertThat( uri.getQuery() ).isNull();
+		assertThat( uri.getFragment() ).isNull();
+		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//user@avereon.com/tmp" );
 
 		URI a = URI.create( "program:about" );
 		URI b = URI.create( "program:about#detail" );
-		assertThat( a.compareTo( b ), is( lessThan( 0 ) ) );
+		assertThat( a.compareTo( b ) ).isLessThan( 0 );
 	}
 
 	@Test
 	void testAddToPath() {
-		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ), is( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) );
-		assertThat( UriUtil.addToPath( URI.create( "/path/to" ), "resource" ), is( URI.create( "/path/to/resource" ) ) );
-		assertThat( UriUtil.addToPath( URI.create( "/path/of" ), "../to/resource" ), is( URI.create( "/path/to/resource" ) ) );
+		assertThat( UriUtil.addToPath( URI.create( "https://host:74/path/to?parm1=a&parm2=b" ), "resource" ) ).isEqualTo( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) );
+		assertThat( UriUtil.addToPath( URI.create( "/path/to" ), "resource" ) ).isEqualTo( URI.create( "/path/to/resource" ) );
+		assertThat( UriUtil.addToPath( URI.create( "/path/of" ), "../to/resource" ) ).isEqualTo( URI.create( "/path/to/resource" ) );
 	}
 
 	@Test
 	void testParseName() {
-		assertThat( UriUtil.parseName( URI.create( "file:///C:/" ) ), is( "C:" ) );
-		assertThat( UriUtil.parseName( URI.create( "https://host:74" ) ), is( "/" ) );
-		assertThat( UriUtil.parseName( URI.create( "https://host:74/" ) ), is( "/" ) );
-		assertThat( UriUtil.parseName( URI.create( "https://host:74/path/to/resource" ) ), is( "resource" ) );
+		assertThat( UriUtil.parseName( URI.create( "file:///C:/" ) ) ).isEqualTo( "C:" );
+		assertThat( UriUtil.parseName( URI.create( "https://host:74" ) ) ).isEqualTo( "/" );
+		assertThat( UriUtil.parseName( URI.create( "https://host:74/" ) ) ).isEqualTo( "/" );
+		assertThat( UriUtil.parseName( URI.create( "https://host:74/path/to/resource" ) ) ).isEqualTo( "resource" );
 	}
 
 	@Test
 	void testRemoveQueryAndFragment() {
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( "program:product#update" ) ), is( URI.create( "program:product" ) ) );
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://absolute/path?query" ) ), is( URI.create( "https://absolute/path" ) ) );
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( "/absolute/path?query#fragment" ) ), is( URI.create( "/absolute/path" ) ) );
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( "relative/path?query#fragment" ) ), is( URI.create( "relative/path" ) ) );
-		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ), is( URI.create( "https://host:74/path/to/resource" ) ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "program:product#update" ) ) ).isEqualTo( URI.create( "program:product" ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://absolute/path?query" ) ) ).isEqualTo( URI.create( "https://absolute/path" ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "/absolute/path?query#fragment" ) ) ).isEqualTo( URI.create( "/absolute/path" ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "relative/path?query#fragment" ) ) ).isEqualTo( URI.create( "relative/path" ) );
+		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) ).isEqualTo( URI.create( "https://host:74/path/to/resource" ) );
 	}
 
 	@Test
 	void testResolveWithString() throws Exception {
-		assertThat( UriUtil.resolve( "" ), is( new File( "" ).getCanonicalFile().toURI() ) );
-		assertThat( UriUtil.resolve( "." ), is( new File( "." ).getCanonicalFile().toURI() ) );
-		assertThat( UriUtil.resolve( "test" ), is( new File( "test" ).getCanonicalFile().toURI() ) );
-		assertThat( UriUtil.resolve( "/test" ), is( new File( "/test" ).getCanonicalFile().toURI() ) );
-		assertThat( UriUtil.resolve( "ssh://localhost" ), is( URI.create( "ssh://localhost" ) ) );
+		assertThat( UriUtil.resolve( "" ) ).isEqualTo( new File( "" ).getCanonicalFile().toURI() );
+		assertThat( UriUtil.resolve( "." ) ).isEqualTo( new File( "." ).getCanonicalFile().toURI() );
+		assertThat( UriUtil.resolve( "test" ) ).isEqualTo( new File( "test" ).getCanonicalFile().toURI() );
+		assertThat( UriUtil.resolve( "/test" ) ).isEqualTo( new File( "/test" ).getCanonicalFile().toURI() );
+		assertThat( UriUtil.resolve( "ssh://localhost" ) ).isEqualTo( URI.create( "ssh://localhost" ) );
 	}
 
 	@Test
@@ -96,148 +93,148 @@ class UriUtilTest {
 		URI relative = URI.create( "relative" );
 		URI jar = URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/resource" );
 
-		assertThat( UriUtil.resolve( null, null ), is( nullValue() ) );
-		assertThat( UriUtil.resolve( base, null ), is( nullValue() ) );
-		assertThat( UriUtil.resolve( null, relative ), is( URI.create( "relative" ) ) );
-		assertThat( UriUtil.resolve( null, absolute ), is( URI.create( "file:/test/folder/absolute" ) ) );
+		assertThat( UriUtil.resolve( null, null ) ).isNull();
+		assertThat( UriUtil.resolve( base, null ) ).isNull();
+		assertThat( UriUtil.resolve( null, relative ) ).isEqualTo( URI.create( "relative" ) );
+		assertThat( UriUtil.resolve( null, absolute ) ).isEqualTo( URI.create( "file:/test/folder/absolute" ) );
 
-		assertThat( UriUtil.resolve( base, absolute ), is( URI.create( "file:/test/folder/absolute" ) ) );
-		assertThat( UriUtil.resolve( base, relative ), is( URI.create( "file:/test/folder/relative" ) ) );
-		assertThat( UriUtil.resolve( absolute, relative ), is( URI.create( "file:/test/folder/relative" ) ) );
+		assertThat( UriUtil.resolve( base, absolute ) ).isEqualTo( URI.create( "file:/test/folder/absolute" ) );
+		assertThat( UriUtil.resolve( base, relative ) ).isEqualTo( URI.create( "file:/test/folder/relative" ) );
+		assertThat( UriUtil.resolve( absolute, relative ) ).isEqualTo( URI.create( "file:/test/folder/relative" ) );
 
-		assertThat( UriUtil.resolve( jar, relative ), is( URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/relative" ) ) );
+		assertThat( UriUtil.resolve( jar, relative ) ).isEqualTo( URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/relative" ) );
 	}
 
 	@Test
 	void testResolveWithAbsoluteUri() {
 		URI jar = URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/resource" );
-		URI icon = URI.create( "http://www.parallelsymmetry.com/images/icons/escape.png" );
-		assertThat( UriUtil.resolve( jar, icon ), is( URI.create( "http://www.parallelsymmetry.com/images/icons/escape.png" ) ) );
+		URI icon = URI.create( "https://www.parallelsymmetry.com/images/icons/escape.png" );
+		assertThat( UriUtil.resolve( jar, icon ) ).isEqualTo( URI.create( "https://www.parallelsymmetry.com/images/icons/escape.png" ) );
 	}
 
 	@Test
 	void testGetParent() {
 		URI absolute = URI.create( "file:/test/folder/absolute" );
-		URI opaque = URI.create( "jar:" + absolute.toString() );
-		URI doubleOpaque = URI.create( "double:jar:" + absolute.toString() );
+		URI opaque = URI.create( "jar:" + absolute );
+		URI doubleOpaque = URI.create( "double:jar:" + absolute );
 
-		assertThat( UriUtil.getParent( absolute ).toString(), is( "file:/test/folder/" ) );
-		assertThat( UriUtil.getParent( opaque ).toString(), is( "jar:file:/test/folder/" ) );
-		assertThat( UriUtil.getParent( doubleOpaque ).toString(), is( "double:jar:file:/test/folder/" ) );
+		assertThat( UriUtil.getParent( absolute ).toString() ).isEqualTo( "file:/test/folder/" );
+		assertThat( UriUtil.getParent( opaque ).toString() ).isEqualTo( "jar:file:/test/folder/" );
+		assertThat( UriUtil.getParent( doubleOpaque ).toString() ).isEqualTo( "double:jar:file:/test/folder/" );
 	}
 
 	@Test
 	void testGetParentWithFolder() {
 		URI absolute = URI.create( "file:/test/folder/" );
-		URI opaque = URI.create( "jar:" + absolute.toString() );
-		URI doubleOpaque = URI.create( "double:jar:" + absolute.toString() );
+		URI opaque = URI.create( "jar:" + absolute );
+		URI doubleOpaque = URI.create( "double:jar:" + absolute );
 
-		assertThat( UriUtil.getParent( absolute ).toString(), is( "file:/test/" ) );
-		assertThat( UriUtil.getParent( opaque ).toString(), is( "jar:file:/test/" ) );
-		assertThat( UriUtil.getParent( doubleOpaque ).toString(), is( "double:jar:file:/test/" ) );
+		assertThat( UriUtil.getParent( absolute ).toString() ).isEqualTo( "file:/test/" );
+		assertThat( UriUtil.getParent( opaque ).toString() ).isEqualTo( "jar:file:/test/" );
+		assertThat( UriUtil.getParent( doubleOpaque ).toString() ).isEqualTo( "double:jar:file:/test/" );
 	}
 
 	@Test
 	void testIsRoot() {
-		assertTrue( UriUtil.isRoot( URI.create( "/" ) ) );
-		assertTrue( UriUtil.isRoot( URI.create( "file:/" ) ) );
+		assertThat( UriUtil.isRoot( URI.create( "/" ) ) ).isTrue();
+		assertThat( UriUtil.isRoot( URI.create( "file:/" ) ) ).isTrue();
 
-		assertFalse( UriUtil.isRoot( URI.create( "" ) ) );
-		assertFalse( UriUtil.isRoot( URI.create( "/test" ) ) );
-		assertFalse( UriUtil.isRoot( URI.create( "/test/" ) ) );
-		assertFalse( UriUtil.isRoot( URI.create( "file:/test" ) ) );
-		assertFalse( UriUtil.isRoot( URI.create( "file:/test/" ) ) );
+		assertThat( UriUtil.isRoot( URI.create( "" ) ) ).isFalse();
+		assertThat( UriUtil.isRoot( URI.create( "/test" ) ) ).isFalse();
+		assertThat( UriUtil.isRoot( URI.create( "/test/" ) ) ).isFalse();
+		assertThat( UriUtil.isRoot( URI.create( "file:/test" ) ) ).isFalse();
+		assertThat( UriUtil.isRoot( URI.create( "file:/test/" ) ) ).isFalse();
 	}
 
 	@Test
 	void testHasParent() {
-		assertFalse( UriUtil.hasParent( URI.create( "/" ) ) );
-		assertFalse( UriUtil.hasParent( URI.create( "file:/" ) ) );
+		assertThat( UriUtil.hasParent( URI.create( "/" ) ) ).isFalse();
+		assertThat( UriUtil.hasParent( URI.create( "file:/" ) ) ).isFalse();
 
-		assertFalse( UriUtil.hasParent( URI.create( "" ) ) );
-		assertFalse( UriUtil.hasParent( URI.create( "/../../.." ) ) );
+		assertThat( UriUtil.hasParent( URI.create( "" ) ) ).isFalse();
+		assertThat( UriUtil.hasParent( URI.create( "/../../.." ) ) ).isFalse();
 
-		assertTrue( UriUtil.hasParent( URI.create( "/test" ) ) );
-		assertTrue( UriUtil.hasParent( URI.create( "/test/" ) ) );
-		assertTrue( UriUtil.hasParent( URI.create( "file:/test" ) ) );
-		assertTrue( UriUtil.hasParent( URI.create( "file:/test/" ) ) );
+		assertThat( UriUtil.hasParent( URI.create( "/test" ) ) ).isTrue();
+		assertThat( UriUtil.hasParent( URI.create( "/test/" ) ) ).isTrue();
+		assertThat( UriUtil.hasParent( URI.create( "file:/test" ) ) ).isTrue();
+		assertThat( UriUtil.hasParent( URI.create( "file:/test/" ) ) ).isTrue();
 	}
 
 	@Test
 	void testGetParentWithRootUri() {
-		assertThat( UriUtil.getParent( URI.create( "/" ) ).toString(), is( "/" ) );
-		assertThat( UriUtil.getParent( URI.create( "file:/" ) ).toString(), is( "file:/" ) );
+		assertThat( UriUtil.getParent( URI.create( "/" ) ).toString() ).isEqualTo( "/" );
+		assertThat( UriUtil.getParent( URI.create( "file:/" ) ).toString() ).isEqualTo( "file:/" );
 	}
 
 	@Test
 	void testParseFragmentWithUri() {
-		assertThat( UriUtil.parseFragment( (URI)null ), is( nullValue() ) );
+		assertThat( UriUtil.parseFragment( (URI)null ) ).isNull();
 
 		URI uri = URI.create( "test:///path#fragment" );
-		assertThat( UriUtil.parseFragment( uri ), is( "fragment" ) );
+		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );
 
 		uri = URI.create( "test:///path#fragment?attr1&attr2" );
-		assertThat( UriUtil.parseFragment( uri ), is( "fragment" ) );
+		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );
 	}
 
 	@Test
 	void testParseFragmentWithString() {
-		assertThat( UriUtil.parseFragment( (String)null ), is( nullValue() ) );
+		assertThat( UriUtil.parseFragment( (String)null ) ).isNull();
 
-		assertThat( UriUtil.parseFragment( "fragment" ), is( "fragment" ) );
+		assertThat( UriUtil.parseFragment( "fragment" ) ).isEqualTo( "fragment" );
 
-		assertThat( UriUtil.parseFragment( "fragment?attr1&attr2" ), is( "fragment" ) );
+		assertThat( UriUtil.parseFragment( "fragment?attr1&attr2" ) ).isEqualTo( "fragment" );
 	}
 
 	@Test
 	void testParseQueryWithUri() {
-		assertThat( UriUtil.parseQuery( (URI)null ), is( nullValue() ) );
+		assertThat( UriUtil.parseQuery( (URI)null ) ).isNull();
 
 		URI uri = URI.create( "test:///path?attr1&attr2" );
 		Map<String, String> parameters = UriUtil.parseQuery( uri.getQuery() );
-		assertThat( parameters.get( "attr1" ), is( "true" ) );
-		assertThat( parameters.get( "attr2" ), is( "true" ) );
+		assertThat( parameters.get( "attr1" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "attr2" ) ).isEqualTo( "true" );
 
 		uri = URI.create( "test:///path?attr1=value1&attr2=value2" );
 		parameters = UriUtil.parseQuery( uri.getQuery() );
-		assertThat( parameters.get( "attr1" ), is( "value1" ) );
-		assertThat( parameters.get( "attr2" ), is( "value2" ) );
+		assertThat( parameters.get( "attr1" ) ).isEqualTo( "value1" );
+		assertThat( parameters.get( "attr2" ) ).isEqualTo( "value2" );
 
 		uri = URI.create( "test:///path?attr1=value1&attr2=value2#fragment" );
 		parameters = UriUtil.parseQuery( uri.getQuery() );
-		assertThat( UriUtil.parseFragment( uri.getFragment() ), is( "fragment" ) );
-		assertThat( parameters.get( "attr1" ), is( "value1" ) );
-		assertThat( parameters.get( "attr2" ), is( "value2" ) );
+		assertThat( UriUtil.parseFragment( uri.getFragment() ) ).isEqualTo( "fragment" );
+		assertThat( parameters.get( "attr1" ) ).isEqualTo( "value1" );
+		assertThat( parameters.get( "attr2" ) ).isEqualTo( "value2" );
 	}
 
 	@Test
 	void testParseQueryWithString() {
-		assertThat( UriUtil.parseQuery( (String)null ), is( Map.of() ) );
+		assertThat( UriUtil.parseQuery( (String)null ) ).isEqualTo( Map.of() );
 
 		Map<String, String> parameters = UriUtil.parseQuery( "attr1&attr2" );
-		assertThat( parameters.get( "attr1" ), is( "true" ) );
-		assertThat( parameters.get( "attr2" ), is( "true" ) );
+		assertThat( parameters.get( "attr1" ) ).isEqualTo( "true" );
+		assertThat( parameters.get( "attr2" ) ).isEqualTo( "true" );
 
 		parameters = UriUtil.parseQuery( "attr1=value1&attr2=value2" );
-		assertThat( parameters.get( "attr1" ), is( "value1" ) );
-		assertThat( parameters.get( "attr2" ), is( "value2" ) );
+		assertThat( parameters.get( "attr1" ) ).isEqualTo( "value1" );
+		assertThat( parameters.get( "attr2" ) ).isEqualTo( "value2" );
 	}
 
 	@Test
 	void testGetUriPartsWithOpaqueUri() {
-		assertThat( UriUtil.getParts( URI.create( "program:about#details" ) ), contains( "program", "about", "details" ) );
+		assertThat( UriUtil.getParts( URI.create( "program:about#details" ) ) ).contains( "program", "about", "details" );
 	}
 
 	@Test
 	void testGetUriPartsWithHierarchicalUri() {
-		assertThat( UriUtil.getParts( URI.create( "http://avereon.com/download/razor/product/card#latest" ) ), contains( "http", "avereon.com", "", "download", "razor", "product", "card", "latest" ) );
-		assertThat( UriUtil.getParts( URI.create( "/" ) ).size(), is( 2 ) );
-		assertThat( UriUtil.getParts( URI.create( "" ) ), contains( "" ) );
+		assertThat( UriUtil.getParts( URI.create( "https://avereon.com/download/razor/product/card#latest" ) ) ).contains( "https", "avereon.com", "", "download", "razor", "product", "card", "latest" );
+		assertThat( UriUtil.getParts( URI.create( "/" ) ).size() ).isEqualTo( 2 );
+		assertThat( UriUtil.getParts( URI.create( "" ) ) ).contains( "" );
 	}
 
 	@Test
 	void testGetUriPartsWithRelativeUri() {
-		assertThat( UriUtil.getParts( URI.create( "/download/razor/product" ) ), contains( "", "download", "razor", "product" ) );
+		assertThat( UriUtil.getParts( URI.create( "/download/razor/product" ) ) ).contains( "", "download", "razor", "product" );
 	}
 
 	@Test
@@ -247,20 +244,20 @@ class UriUtilTest {
 		URI c = URI.create( "program:settings" );
 		URI d = URI.create( "program:settings#general" );
 
-		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( a, a ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( b, b ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( c, c ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( d, d ) ).isEqualTo( 0 );
 
-		assertThat( UriUtil.getMatchScore( a, b ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( b, a ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( a, c ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( c, a ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( a, b ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( b, a ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( a, c ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( c, a ) ).isEqualTo( 1 );
 
-		assertThat( UriUtil.getMatchScore( a, d ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( d, a ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( b, d ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( d, b ), is( 2 ) );
+		assertThat( UriUtil.getMatchScore( a, d ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( d, a ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( b, d ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( d, b ) ).isEqualTo( 2 );
 	}
 
 	@Test
@@ -268,37 +265,37 @@ class UriUtilTest {
 		URI a = URI.create( "" );
 		URI b = URI.create( "/" );
 		URI c = URI.create( "ssh://user@sshhost.com" );
-		URI d = URI.create( "http://avereon.com/download/xenon" );
-		URI e = URI.create( "http://avereon.com/download/xenon/product/card" );
-		URI f = URI.create( "http://avereon.com/download/xenon/product/card#latest" );
+		URI d = URI.create( "https://avereon.com/download/xenon" );
+		URI e = URI.create( "https://avereon.com/download/xenon/product/card" );
+		URI f = URI.create( "https://avereon.com/download/xenon/product/card#latest" );
 
 		// Same matches
-		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( e, e ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( f, f ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( a, a ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( b, b ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( c, c ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( d, d ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( e, e ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( f, f ) ).isEqualTo( 0 );
 
 		// Empty and root checks
-		assertThat( UriUtil.getMatchScore( a, c ), is( 4 ) );
-		assertThat( UriUtil.getMatchScore( a, d ), is( 5 ) );
-		assertThat( UriUtil.getMatchScore( a, e ), is( 7 ) );
-		assertThat( UriUtil.getMatchScore( a, f ), is( 8 ) );
+		assertThat( UriUtil.getMatchScore( a, c ) ).isEqualTo( 4 );
+		assertThat( UriUtil.getMatchScore( a, d ) ).isEqualTo( 5 );
+		assertThat( UriUtil.getMatchScore( a, e ) ).isEqualTo( 7 );
+		assertThat( UriUtil.getMatchScore( a, f ) ).isEqualTo( 8 );
 
-		assertThat( UriUtil.getMatchScore( b, c ), is( 4 ) );
-		assertThat( UriUtil.getMatchScore( b, d ), is( 5 ) );
-		assertThat( UriUtil.getMatchScore( b, e ), is( 7 ) );
-		assertThat( UriUtil.getMatchScore( b, f ), is( 8 ) );
+		assertThat( UriUtil.getMatchScore( b, c ) ).isEqualTo( 4 );
+		assertThat( UriUtil.getMatchScore( b, d ) ).isEqualTo( 5 );
+		assertThat( UriUtil.getMatchScore( b, e ) ).isEqualTo( 7 );
+		assertThat( UriUtil.getMatchScore( b, f ) ).isEqualTo( 8 );
 
 		// Different scheme
-		assertThat( UriUtil.getMatchScore( c, d ), is( 5 ) );
-		assertThat( UriUtil.getMatchScore( d, c ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( c, d ) ).isEqualTo( 5 );
+		assertThat( UriUtil.getMatchScore( d, c ) ).isEqualTo( 5 );
 
 		// Different path
-		assertThat( UriUtil.getMatchScore( d, e ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( d, f ), is( 3 ) );
-		assertThat( UriUtil.getMatchScore( e, f ), is( 1 ) );
+		assertThat( UriUtil.getMatchScore( d, e ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( d, f ) ).isEqualTo( 3 );
+		assertThat( UriUtil.getMatchScore( e, f ) ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -313,43 +310,43 @@ class UriUtilTest {
 		URI h = URI.create( "a/branch/of/the/tree" );
 
 		// Same matches
-		assertThat( UriUtil.getMatchScore( a, a ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( b, b ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( c, c ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( d, d ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( e, e ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( f, f ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( g, g ), is( 0 ) );
-		assertThat( UriUtil.getMatchScore( h, h ), is( 0 ) );
+		assertThat( UriUtil.getMatchScore( a, a ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( b, b ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( c, c ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( d, d ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( e, e ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( f, f ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( g, g ) ).isEqualTo( 0 );
+		assertThat( UriUtil.getMatchScore( h, h ) ).isEqualTo( 0 );
 
 		// Empty and root checks
-		assertThat( UriUtil.getMatchScore( a, b ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( a, c ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( a, d ), is( 4 ) );
-		assertThat( UriUtil.getMatchScore( a, f ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( a, b ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( a, c ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( a, d ) ).isEqualTo( 4 );
+		assertThat( UriUtil.getMatchScore( a, f ) ).isEqualTo( 4 );
 
-		assertThat( UriUtil.getMatchScore( b, a ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( b, c ), is( 1 ) );
-		assertThat( UriUtil.getMatchScore( b, d ), is( 4 ) );
-		assertThat( UriUtil.getMatchScore( b, f ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( b, a ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( b, c ) ).isEqualTo( 1 );
+		assertThat( UriUtil.getMatchScore( b, d ) ).isEqualTo( 4 );
+		assertThat( UriUtil.getMatchScore( b, f ) ).isEqualTo( 4 );
 
 		// Absolute path checks
-		assertThat( UriUtil.getMatchScore( c, d ), is( 3 ) );
-		assertThat( UriUtil.getMatchScore( c, e ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( c, f ), is( 4 ) );
+		assertThat( UriUtil.getMatchScore( c, d ) ).isEqualTo( 3 );
+		assertThat( UriUtil.getMatchScore( c, e ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( c, f ) ).isEqualTo( 4 );
 
-		assertThat( UriUtil.getMatchScore( d, c ), is( 3 ) );
-		assertThat( UriUtil.getMatchScore( d, e ), is( 5 ) );
-		assertThat( UriUtil.getMatchScore( d, f ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( d, c ) ).isEqualTo( 3 );
+		assertThat( UriUtil.getMatchScore( d, e ) ).isEqualTo( 5 );
+		assertThat( UriUtil.getMatchScore( d, f ) ).isEqualTo( 5 );
 
 		// Relative path checks
-		assertThat( UriUtil.getMatchScore( e, f ), is( 3 ) );
-		assertThat( UriUtil.getMatchScore( e, g ), is( 2 ) );
-		assertThat( UriUtil.getMatchScore( e, h ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( e, f ) ).isEqualTo( 3 );
+		assertThat( UriUtil.getMatchScore( e, g ) ).isEqualTo( 2 );
+		assertThat( UriUtil.getMatchScore( e, h ) ).isEqualTo( 5 );
 
-		assertThat( UriUtil.getMatchScore( f, e ), is( 3 ) );
-		assertThat( UriUtil.getMatchScore( f, g ), is( 4 ) );
-		assertThat( UriUtil.getMatchScore( f, h ), is( 5 ) );
+		assertThat( UriUtil.getMatchScore( f, e ) ).isEqualTo( 3 );
+		assertThat( UriUtil.getMatchScore( f, g ) ).isEqualTo( 4 );
+		assertThat( UriUtil.getMatchScore( f, h ) ).isEqualTo( 5 );
 	}
 
 }

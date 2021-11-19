@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Reader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class XmlUtilTest {
 
@@ -17,29 +17,30 @@ class XmlUtilTest {
 	void testLoadXmlDocument() throws Exception {
 		InputStream input = XmlUtilTest.class.getResourceAsStream( "/xml.test.xml" );
 		Document document = XmlUtil.loadXmlDocument( input );
-		assertNotNull( document );
+		assertThat( document ).isNotNull();
 	}
 
 	@Test
 	void testLoadXmlDocumentWithNullUri() throws Exception {
-		assertNull( XmlUtil.loadXmlDocument( (String)null ) );
+		assertThat( XmlUtil.loadXmlDocument( (String)null ) ).isNull();
 	}
 
 	@Test
 	void testLoadXmlDocumentWithNullReader() throws Exception {
-		assertNull( XmlUtil.loadXmlDocument( (Reader)null ) );
+		assertThat( XmlUtil.loadXmlDocument( (Reader)null ) ).isNull();
 	}
 
 	@Test
 	void testLoadXmlDocumentWithNullStream() throws Exception {
-		assertNull( XmlUtil.loadXmlDocument( (InputStream)null ) );
+		assertThat( XmlUtil.loadXmlDocument( (InputStream)null ) ).isNull();
 	}
 
 	@Test
 	void testGetDocumentType() throws Exception {
 		InputStream input = XmlUtilTest.class.getResourceAsStream( "/xml.test.xml" );
 		Document document = XmlUtil.loadXmlDocument( input );
-		assertEquals( "test", document.getDocumentElement().getNodeName() );
+		assertThat( document ).isNotNull();
+		assertThat( document.getDocumentElement().getNodeName() ).isEqualTo( "test" );
 	}
 
 	@Test
@@ -58,7 +59,7 @@ class XmlUtilTest {
 			test = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag>\n  <indent/>\n</tag>";
 		}
 
-		assertEquals( test, output.toString().replace( "\r\n", "\n" ).trim() );
+		assertThat( output.toString().replace( "\r\n", "\n" ).trim() ).isEqualTo( test );
 	}
 
 	@Test
@@ -76,16 +77,17 @@ class XmlUtilTest {
 			test = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag>\n   <indent/>\n</tag>";
 		}
 
-		assertEquals( test, output.toString().replace( "\r\n", "\n" ).trim() );
+		assertThat( output.toString().replace( "\r\n", "\n" ).trim() ).isEqualTo( test );
 	}
 
 	@Test
 	void testGetPath() throws Exception {
 		Document document = XmlUtil.loadXmlDocument( XmlUtilTest.class.getResourceAsStream( "/xml.test.xml" ) );
 
-		assertNull( XmlUtil.getPath( null ) );
-		assertEquals( "/test", XmlUtil.getPath( document.getFirstChild() ) );
-		assertEquals( "/test/a", XmlUtil.getPath( document.getFirstChild().getFirstChild().getNextSibling() ) );
+		assertThat( XmlUtil.getPath( null ) ).isNull();
+		assertThat( XmlUtil.getPath( document ) ).isNotNull();
+		assertThat( XmlUtil.getPath( document.getFirstChild() ) ).isEqualTo( "/test" );
+		assertThat( XmlUtil.getPath( document.getFirstChild().getFirstChild().getNextSibling() ) ).isEqualTo( "/test/a" );
 	}
 
 }

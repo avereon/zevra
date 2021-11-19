@@ -20,7 +20,7 @@
 		<notthisone>nottwo</notthisone>
 		<node>three</node>
 	</nodes>
-	<summary>This summary needs to span multiple line in order for the test to
+	<summary>This summary needs to span multiple lines in order for the test to
 		work correctly. Please ensure that this summary is wrapped roughly
 		at characters per line so that there are three lines.
 	</summary>
