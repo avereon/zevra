@@ -1,6 +1,5 @@
 package com.avereon.util;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ class ParametersTest {
 			Parameters.parse( (List<String>)null );
 			fail( "Parameters.parse(null) should throw a NullPointerException." );
 		} catch( NullPointerException exception ) {
-			// 
+			//
 		}
 	}
 
@@ -404,7 +403,7 @@ class ParametersTest {
 		Parameters parameters = Parameters.parse( args );
 		List<String> commands = parameters.getOriginalCommands();
 
-		assertThat( parameters.getOriginalCommands() ).isNotEqualTo( Matchers.sameInstance( args ) );
+		assertThat( parameters.getOriginalCommands() ).isNotSameAs( args );
 		assertThat( commands ).contains( "-flag", "-key", "value", "file" );
 	}
 
