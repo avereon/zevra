@@ -159,7 +159,7 @@ public class StoredSettings extends AbstractSettings {
 	protected void setValue( String key, String value ) {
 		if( value == null ) {
 			values.remove( key );
-			Path path = getJson( key );
+			Path path = getJsonFilePath( key );
 			if( Files.exists( path ) ) {
 				try {
 					Files.delete( path );
@@ -222,7 +222,7 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	protected <S> S load( String key, TypeReference<S> type, Supplier<S> supplier ) {
-		Path path = getJson( key );
+		Path path = getJsonFilePath( key );
 		if( !Files.exists( path ) ) return supplier.get();
 		try {
 			String value = FileUtil.load( path );
@@ -234,8 +234,9 @@ public class StoredSettings extends AbstractSettings {
 	}
 
 	private void save( String key, Object value ) {
-		Path path = getJson( key );
+		Path path = getJsonFilePath( key );
 		try {
+			Files.createDirectories( path.getParent() );
 			FileUtil.save( marshallValue( value ), path );
 		} catch( IOException exception ) {
 			log.atError( exception ).log( "Error saving value at=%s", path );
@@ -307,7 +308,7 @@ public class StoredSettings extends AbstractSettings {
 		return folder.resolve( SETTINGS_FILE_NAME );
 	}
 
-	private Path getJson( String key ) {
+	private Path getJsonFilePath( String key ) {
 		return folder.resolve( key + ".json" );
 	}
 
