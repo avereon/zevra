@@ -5,7 +5,10 @@ import com.avereon.skill.Controllable;
 import lombok.CustomLog;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,6 +69,10 @@ public class Indexer implements Controllable<Indexer> {
 
 	public Set<Index> allIndexes() {
 		return Set.copyOf( indexes.values() );
+	}
+
+	public Map<String, Index> getIndexes() {
+		return Map.copyOf( indexes );
 	}
 
 	public Optional<Index> getIndex( String index ) {

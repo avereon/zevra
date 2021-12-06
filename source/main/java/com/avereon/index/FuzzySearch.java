@@ -48,8 +48,7 @@ public class FuzzySearch implements Search {
 		} );
 		ranks.sort( new RankSort() );
 
-		List<Hit> hits = ranks.stream().flatMap( r -> index.getHits( r.word() ).stream() ).collect( Collectors.toList() );
-		hits.sort( new HitSort() );
+		List<Hit> hits = ranks.stream().flatMap( r -> index.getHits( r.word() ).stream() ).sorted( new HitSort() ).collect( Collectors.toList() );
 
 		return Result.of( new ArrayList<>( hits ) );
 	}
@@ -78,7 +77,7 @@ public class FuzzySearch implements Search {
 
 	}
 
-	private static class RankSort implements Comparator<Rank> {
+	public static class RankSort implements Comparator<Rank> {
 
 		@Override
 		public int compare( Rank rank1, Rank rank2 ) {
@@ -86,7 +85,7 @@ public class FuzzySearch implements Search {
 		}
 	}
 
-	private static class HitSort implements Comparator<Hit> {
+	public static class HitSort implements Comparator<Hit> {
 
 		@Override
 		public int compare( Hit hit1, Hit hit2 ) {

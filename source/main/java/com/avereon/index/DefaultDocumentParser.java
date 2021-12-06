@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DefaultDocumentParser implements DocumentParser {
 
@@ -18,15 +19,19 @@ public class DefaultDocumentParser implements DocumentParser {
 		Set<Hit> hits = new HashSet<>();
 
 		// Add tags
-		document.tags().forEach( t -> hits.add( Hit.builder().word( t ).document( document ).priority( Hit.TAG_PRIORITY ).build() ) );
+		hits.addAll( findHits( document, document.tags(), Hit.TAG_PRIORITY ) );
 
 		// Add name
-		hits.addAll( findHits( document, document.name(), Hit.NAME_PRIORITY ) );
+		hits.addAll( findHits( document, document.title(), Hit.TITLE_PRIORITY ) );
 
 		// Add content
 		hits.addAll( findHits( document, document.content(), Hit.CONTENT_PRIORITY ) );
 
 		return Result.of( hits );
+	}
+
+	private Set<Hit> findHits( Document document, Set<String> content, int priority ) {
+		return content.stream().flatMap( t -> findHits( document, t, priority ).stream() ).collect( Collectors.toSet() );
 	}
 
 	private Set<Hit> findHits( Document document, String content, int priority ) {

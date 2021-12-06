@@ -19,7 +19,9 @@ public class Document {
 
 	private final URI uri;
 
-	private final String name;
+	private final String icon;
+
+	private final String title;
 
 	private final Reader content;
 
