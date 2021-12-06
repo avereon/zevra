@@ -60,21 +60,21 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) )
 			.contains( Hit.builder().context( name ).line( 0 ).index( 0 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) )
 			.contains( Hit.builder().context( text ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) )
 			.contains( Hit.builder().context( text ).line( 0 ).index( 5 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) )
 			.contains( Hit.builder().context( text ).line( 0 ).index( 8 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) )
 			.contains( Hit.builder().context( text ).line( 0 ).index( 13 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) )
 			.contains( Hit.builder().context( text ).line( 0 ).index( 23 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
 
 		// Check the dictionary
-		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "document", "this", "is", "some", "arbitrary", "content" );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "document", "this", "is", "some", "arbitrary", "content" );
 	}
 
 	@Test
@@ -91,23 +91,23 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex().orElseThrow().getHits( "document" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) )
 			.contains( Hit.builder().context( name.trim() ).line( 0 ).index( 10 ).word( "document" ).length( 8 ).document( document ).priority( Hit.NAME_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "this" ) ).contains(
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains(
 			Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.NAME_PRIORITY ).build(),
 			Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
 		);
-		assertThat( indexer.getIndex().orElseThrow().getHits( "is" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) )
 			.contains( Hit.builder().context( line0.trim() ).line( 0 ).index( 6 ).word( "is" ).length( 2 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "some" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) )
 			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 0 ).word( "some" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "arbitrary" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) )
 			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 6 ).word( "arbitrary" ).length( 9 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
-		assertThat( indexer.getIndex().orElseThrow().getHits( "content" ) )
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) )
 			.contains( Hit.builder().context( line1.trim() ).line( 1 ).index( 16 ).word( "content" ).length( 7 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build() );
 
 		// Check the dictionary
-		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "a", "document", "this", "is", "some", "arbitrary", "content" );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "a", "document", "this", "is", "some", "arbitrary", "content" );
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class IndexerTest {
 
 		result.get().get();
 
-		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "this", "is", "some", "arbitrary", "content" );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "this", "is", "some", "arbitrary", "content" );
 
 		String scope = Index.DEFAULT;
 		String word = "content";
@@ -147,7 +147,7 @@ public class IndexerTest {
 
 		result.get().get();
 
-		assertThat( indexer.getIndex().orElseThrow().getDictionary() ).contains( "help", "empty" );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "help", "empty" );
 
 		String scope = Index.DEFAULT;
 		String word = "help";

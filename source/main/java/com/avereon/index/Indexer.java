@@ -5,10 +5,7 @@ import com.avereon.skill.Controllable;
 import lombok.CustomLog;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,25 +47,37 @@ public class Indexer implements Controllable<Indexer> {
 	}
 
 	public Result<Future<Result<Set<Hit>>>> submit( Document document ) {
+		return submit( Index.DEFAULT, document );
+	}
+
+	public Result<Future<Result<Set<Hit>>>> submit( String index, Document document ) {
 		if( !isRunning() ) return Result.of( new IllegalStateException( "Indexer not running" ) );
-		return Result.of( executor.submit( () -> doIndex( document ) ) );
+		return Result.of( executor.submit( () -> doIndex( index, document ) ) );
 	}
 
 	public Result<Set<Future<Result<Set<Hit>>>>> submit( Document... documents ) {
+		return submit( Index.DEFAULT, documents );
+	}
+
+	public Result<Set<Future<Result<Set<Hit>>>>> submit( String index, Document... documents ) {
 		if( !isRunning() ) return Result.of( new IllegalStateException( "Indexer not running" ) );
-		return Result.of( Arrays.stream( documents ).map( d -> executor.submit( () -> doIndex( d ) ) ).collect( Collectors.toSet() ) );
+		return Result.of( Arrays.stream( documents ).map( d -> executor.submit( () -> doIndex( index, d ) ) ).collect( Collectors.toSet() ) );
 	}
 
-	public Optional<Index> getIndex() {
-		return getIndex( Index.DEFAULT );
+	public Set<Index> allIndexes() {
+		return Set.copyOf( indexes.values() );
 	}
 
-	public Optional<Index> getIndex( String scope ) {
-		return Optional.ofNullable( indexes.get( scope ) );
+	public Optional<Index> getIndex( String index ) {
+		return Optional.ofNullable( indexes.get( index ) );
 	}
 
-	private Result<Set<Hit>> doIndex( Document document ) {
-		Index index = indexes.computeIfAbsent( Index.DEFAULT, k -> new Index() );
+	public void removeIndex( String index ) {
+		indexes.remove( index );
+	}
+
+	private Result<Set<Hit>> doIndex( String name, Document document ) {
+		Index index = indexes.computeIfAbsent( name, k -> new Index() );
 
 		// Add document words to the index
 		return new DefaultDocumentParser().index( document ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
