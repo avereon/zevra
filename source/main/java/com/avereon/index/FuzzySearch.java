@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,11 +35,15 @@ public class FuzzySearch implements Search {
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
+		return Result.of(  query.terms().stream().flatMap( t -> search( index, t ).orElseGet( List::of ).stream() ).collect( Collectors.toList() ) );
+	}
+
+	private Result<List<Hit>> search( Index index, String term ) {
 		Set<String> dictionary = index.getDictionary();
 
 		List<Rank> ranks = new ArrayList<>();
 		dictionary.forEach( w -> {
-			int points = getRankPoints( query.text(), w );
+			int points = getRankPoints( term, w );
 			if( points < cutoff ) return;
 			ranks.add( new Rank( w, points ) );
 		} );

@@ -218,7 +218,7 @@ public class IndexerTest {
 
 		List<Hit> hits = indexer
 			.getIndex( scope )
-			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( word ).build() ) )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().term( word ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
@@ -244,7 +244,7 @@ public class IndexerTest {
 
 		List<Hit> hits = indexer
 			.getIndex( scope )
-			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( word ).build() ) )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().term( word ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + scope ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found for: " + word ) );
 
@@ -267,7 +267,7 @@ public class IndexerTest {
 
 		List<Hit> hits = indexer
 			.getIndex( Index.DEFAULT )
-			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "moon" ).build() ) )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().term( "moon" ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
@@ -277,7 +277,7 @@ public class IndexerTest {
 
 		hits = indexer
 			.getIndex( Index.DEFAULT )
-			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "soon" ).build() ) )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().term( "soon" ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
@@ -300,7 +300,7 @@ public class IndexerTest {
 
 		List<Hit> hits = indexer
 			.getIndex( Index.DEFAULT )
-			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().text( "document" ).build() ) )
+			.map( i -> new FuzzySearch().search( i, IndexQuery.builder().term( "document" ).build() ) )
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 

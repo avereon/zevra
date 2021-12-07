@@ -5,10 +5,7 @@ import com.avereon.skill.Controllable;
 import lombok.CustomLog;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +44,15 @@ public class Indexer implements Controllable<Indexer> {
 	public Indexer stop() {
 		if( executor != null ) executor.shutdown();
 		return this;
+	}
+
+	public static Result<List<Hit>> search( Search search, IndexQuery query, Collection<Index> indexes ) {
+		Index merged = new Index();
+		for( Index index : indexes ) {
+			merged = Index.merge( merged, index );
+		}
+
+		return search.search( merged, query );
 	}
 
 	public Result<Future<Result<Set<Hit>>>> submit( Document document ) {
