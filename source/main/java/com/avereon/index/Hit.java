@@ -39,7 +39,7 @@ public class Hit {
 
 	@Override
 	public String toString() {
-		return document.title();
+		return "{" + "title=" + document.title() + " index=" + index + " length=" + length + " term=" + word + " context=" + context + " line=" + line + "}";
 	}
 
 }

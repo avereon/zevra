@@ -1,58 +1,31 @@
 package com.avereon.index;
 
-import lombok.CustomLog;
-
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
-@CustomLog
-public class Index {
+public interface Index {
 
-	public static final String DEFAULT = "default";
+	String DEFAULT = "default";
 
-	private final Map<String, Set<Hit>> index;
+	Set<String> getDictionary();
 
-	public Index() {
-		this.index = new ConcurrentHashMap<>();
+	Set<Hit> getHits( String word );
+
+	Index push( Collection<Hit> hits );
+
+	default Set<Hit> getHits() {
+		return getDictionary().stream().flatMap( t -> getHits( t ).stream() ).collect( Collectors.toSet() );
 	}
 
-	public Set<String> getDictionary() {
-		return new HashSet<>( index.keySet() );
+	static Index merge( Collection<Index> indexes ) {
+		return indexes.stream().reduce( new StandardIndex(), Index::merge );
 	}
 
-	public Set<Hit> getHits( String word ) {
-		return index.getOrDefault( word, Set.of() );
-	}
-
-	public void push( String word, Hit hit ) {
-		index.computeIfAbsent( word, k -> new CopyOnWriteArraySet<>() ).add( hit );
-	}
-
-	public void push( Set<Hit> hits ) {
-		hits.forEach( h -> index.computeIfAbsent( h.word(), k -> new CopyOnWriteArraySet<>() ).add( h ) );
-	}
-
-	public static Index merge( Index a, Index b ) {
-		Index merged = new Index();
-
-		// Go through a and add
-		for( String term : a.index.keySet() ) {
-			merged.index.put( term, new HashSet<>( a.index.get( term ) ) );
-		}
-
-		// Go through b and merge
-		for( String term : b.index.keySet() ) {
-			Set<Hit> hits = merged.index.get( term );
-			if( hits == null ) {
-				merged.index.put( term, new HashSet<>( b.index.get( term ) ) );
-			} else {
-				hits.addAll( b.index.get( term ) );
-			}
-		}
-
+	static StandardIndex merge( Index a, Index b ) {
+		StandardIndex merged = new StandardIndex();
+		merged.push( a.getHits() );
+		merged.push( b.getHits() );
 		return merged;
 	}
 

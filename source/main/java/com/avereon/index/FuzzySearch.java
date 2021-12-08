@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +38,17 @@ public class FuzzySearch implements Search {
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
-		return Result.of(  query.terms().stream().flatMap( t -> search( index, t ).orElseGet( List::of ).stream() ).collect( Collectors.toList() ) );
+		// TODO Find the results common among the search terms
+//		Index source = index;
+//
+//		for( String term : query.terms() ) {
+//			source = new StandardIndex().push( search(source,term).get() );
+//		}
+//
+//		source.getHits();
+
+		// FIXME This implementation simply adds more hits instead of refining them
+		return Result.of( query.terms().stream().flatMap( t -> search( index, t ).orElseGet( List::of ).stream() ).collect( Collectors.toList() ) );
 	}
 
 	private Result<List<Hit>> search( Index index, String term ) {

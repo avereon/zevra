@@ -47,12 +47,7 @@ public class Indexer implements Controllable<Indexer> {
 	}
 
 	public static Result<List<Hit>> search( Search search, IndexQuery query, Collection<Index> indexes ) {
-		Index merged = new Index();
-		for( Index index : indexes ) {
-			merged = Index.merge( merged, index );
-		}
-
-		return search.search( merged, query );
+		return search.search( Index.merge( indexes ), query );
 	}
 
 	public Result<Future<Result<Set<Hit>>>> submit( Document document ) {
@@ -90,7 +85,7 @@ public class Indexer implements Controllable<Indexer> {
 	}
 
 	private Result<Set<Hit>> doIndex( String name, Document document ) {
-		Index index = indexes.computeIfAbsent( name, k -> new Index() );
+		Index index = indexes.computeIfAbsent( name, k -> new StandardIndex() );
 
 		// Add document words to the index
 		return new DefaultDocumentParser().index( document ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );

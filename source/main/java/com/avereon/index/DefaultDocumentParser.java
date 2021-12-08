@@ -6,9 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,14 @@ public class DefaultDocumentParser implements DocumentParser {
 			String text;
 			int line = 0;
 			while( (text = reader.readLine()) != null ) {
-				hits.addAll( findContentHits( document, line++, text.trim(), priority ) );
+				final String trimText = text.trim();
+				final int finalLine = line;
+				hits.addAll( Terms.split( trimText, ( start, end ) -> {
+					int length = end - start;
+					String word = trimText.substring( start, end ).toLowerCase();
+					return Hit.builder().document( document ).context( trimText ).word( word ).line( finalLine ).index( start ).length( length ).priority( priority ).build();
+				} ) );
+				line++;
 			}
 		} catch( IOException exception ) {
 			// Intentionally ignore this exception as this should never occur
@@ -53,40 +58,4 @@ public class DefaultDocumentParser implements DocumentParser {
 		return hits;
 	}
 
-	private List<Hit> findContentHits( Document document, int line, String text, int priority ) {
-		List<Hit> hits = new ArrayList<>();
-
-		int point;
-		int index = 0;
-		int start = -1;
-		int length = text.length();
-		int endIndex = length - 1;
-		String hitText = text.toLowerCase();
-		while( index < length ) {
-			point = hitText.codePointAt( index );
-
-			// Are we at the last character in the line?
-			boolean lastChar = index == endIndex;
-			// Is the character a word character?
-			boolean wordChar = Character.isLetterOrDigit( point );
-			// Is this character the start of a word?
-			boolean startOfWord = wordChar && start < 0;
-			// Is this character the end of a word?
-			boolean endOfWord = start >= 0 && (!wordChar || lastChar);
-
-			// At the start of a word just set the word start index
-			if( startOfWord ) start = index;
-
-			// At the end of a word store a hit and reset the word start index
-			if( endOfWord ) {
-				String word = hitText.substring( start, (lastChar && wordChar) ? length : index );
-				hits.add( Hit.builder().document( document ).context( text ).word( word ).line( line ).index( start ).length( word.length() ).priority( priority ).build() );
-				start = -1;
-			}
-
-			index++;
-		}
-
-		return hits;
-	}
 }
