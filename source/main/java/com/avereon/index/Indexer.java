@@ -72,10 +72,6 @@ public class Indexer implements Controllable<Indexer> {
 		return Set.copyOf( indexes.values() );
 	}
 
-	public Map<String, Index> getIndexes() {
-		return Map.copyOf( indexes );
-	}
-
 	public Optional<Index> getIndex( String index ) {
 		return Optional.ofNullable( indexes.get( index ) );
 	}

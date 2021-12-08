@@ -48,6 +48,7 @@ public class FuzzySearch implements Search {
 //		source.getHits();
 
 		// FIXME This implementation simply adds more hits instead of refining them
+		// FIXME Need to sort results predictably
 		return Result.of( query.terms().stream().flatMap( t -> search( index, t ).orElseGet( List::of ).stream() ).collect( Collectors.toList() ) );
 	}
 

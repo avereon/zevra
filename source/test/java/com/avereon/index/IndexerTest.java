@@ -309,36 +309,4 @@ public class IndexerTest {
 		assertThat( hits.size() ).isEqualTo( 2 );
 	}
 
-	@Test
-	void testSearchWithMultipleIndexes() throws Exception {
-		String icon = "document";
-		String name = "Document";
-		String text = "This is an arbitrary document";
-
-		indexer.start();
-		Result<Future<Result<Set<Hit>>>> resultA = indexer.submit( "a", new Document( URI.create( "" ), icon, name, new StringReader( text ) ) );
-		Result<Future<Result<Set<Hit>>>> resultB = indexer.submit( "b", new Document( URI.create( "" ), icon, name, new StringReader( text ) ) );
-		indexer.stop();
-		resultA.get().get();
-		resultB.get().get();
-
-		Index indexA = indexer.getIndex( "a" ).orElseGet( StandardIndex::new );
-		Index indexB = indexer.getIndex( "b" ).orElseGet( StandardIndex::new );
-
-		assertThat( indexA.getDictionary().size() ).isEqualTo( 5 );
-		assertThat( indexB.getDictionary().size() ).isEqualTo( 5 );
-		assertThat( indexA ).isEqualTo( indexB );
-		assertThat( indexB ).isEqualTo( indexA );
-
-		Search search = new FuzzySearch( 80 );
-		IndexQuery query = IndexQuery.builder().terms( Set.of( "document" ) ).build();
-		List<Hit> hits = Indexer.search( search, query, indexer.getIndexes().values() ).get();
-
-		assertThat( hits.get( 0 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, name, new StringReader( text ) ) );
-		assertThat( hits.get( 0 ).priority() ).isEqualTo( Hit.TITLE_PRIORITY );
-		assertThat( hits.get( 1 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, name, new StringReader( text ) ) );
-		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
-		assertThat( hits.size() ).isEqualTo( 2 );
-	}
-
 }
