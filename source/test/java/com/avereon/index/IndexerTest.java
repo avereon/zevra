@@ -309,4 +309,39 @@ public class IndexerTest {
 		assertThat( hits.size() ).isEqualTo( 2 );
 	}
 
+	@Test
+	void testSearchWithDuplicateSearchTerms() throws Exception {
+		String icon = "document";
+		String nameA = "About";
+		String textA = "This is an about document";
+		String nameB = "Another";
+		String textB = "This is another document";
+
+		indexer.start();
+		Result<Future<Result<Set<Hit>>>> resultA = indexer.submit( "a", new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
+		Result<Future<Result<Set<Hit>>>> resultB = indexer.submit( "b", new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
+		indexer.stop();
+		resultA.get().get();
+		resultB.get().get();
+
+		Index indexA = indexer.getIndex( "a" ).orElseGet( StandardIndex::new );
+		Index indexB = indexer.getIndex( "b" ).orElseGet( StandardIndex::new );
+
+		assertThat( indexA.getDictionary().size() ).isEqualTo( 5 );
+		assertThat( indexB.getDictionary().size() ).isEqualTo( 4 );
+
+		Search search = new FuzzySearch( 100 );
+		IndexQuery query = IndexQuery.builder().terms( List.of( "document", "about" ) ).build();
+		List<Hit> hits = Indexer.search( search, query, indexer.allIndexes() ).get();
+
+		// FIXME This will fail because the results come out of order on occasion
+//		assertThat( hits.get( 0 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
+//		assertThat( hits.get( 0 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+//		assertThat( hits.get( 1 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
+//		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+
+		// FIXME This failure is due to including the search term twice
+		assertThat( hits.size() ).isEqualTo( 1 );
+	}
+
 }

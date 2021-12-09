@@ -38,18 +38,19 @@ public class FuzzySearch implements Search {
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
-		// TODO Find the results common among the search terms
-//		Index source = index;
-//
-//		for( String term : query.terms() ) {
-//			source = new StandardIndex().push( search(source,term).get() );
-//		}
-//
-//		source.getHits();
+		List<Hit> hits = new ArrayList<>();
 
-		// FIXME This implementation simply adds more hits instead of refining them
-		// FIXME Need to sort results predictably
-		return Result.of( query.terms().stream().flatMap( t -> search( index, t ).orElseGet( List::of ).stream() ).collect( Collectors.toList() ) );
+		for( String term : query.terms() ) {
+			List<Hit> termHits = search( index, term ).get();
+			//System.out.println( "hits=" + termHits.size() );
+			if( hits.isEmpty() ) {
+				hits.addAll( termHits );
+			} else {
+				hits.retainAll( termHits );
+			}
+		}
+
+		return Result.of( hits );
 	}
 
 	private Result<List<Hit>> search( Index index, String term ) {
