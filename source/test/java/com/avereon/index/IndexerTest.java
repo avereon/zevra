@@ -330,7 +330,7 @@ public class IndexerTest {
 		assertThat( indexA.getDictionary().size() ).isEqualTo( 5 );
 		assertThat( indexB.getDictionary().size() ).isEqualTo( 4 );
 
-		Search search = new FuzzySearch( 100 );
+		Search search = new FuzzySearch( 80 );
 		IndexQuery query = IndexQuery.builder().terms( List.of( "document", "about" ) ).build();
 		List<Hit> hits = Indexer.search( search, query, indexer.allIndexes() ).get();
 
@@ -340,7 +340,7 @@ public class IndexerTest {
 //		assertThat( hits.get( 1 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
 //		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
 
-		// FIXME This failure is due to including the search term twice
+		// There should only be one hit that matched on both terms
 		assertThat( hits.size() ).isEqualTo( 1 );
 	}
 

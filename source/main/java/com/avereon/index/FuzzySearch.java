@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,11 +35,10 @@ public class FuzzySearch implements Search {
 
 	@Override
 	public Result<List<Hit>> search( Index index, IndexQuery query ) {
-		List<Hit> hits = new ArrayList<>();
+		List<HitMatchWrapper> hits = new ArrayList<>();
 
 		for( String term : query.terms() ) {
-			List<Hit> termHits = search( index, term ).get();
-			//System.out.println( "hits=" + termHits.size() );
+			List<HitMatchWrapper> termHits = HitMatchWrapper.wrap( search( index, term ).get() );
 			if( hits.isEmpty() ) {
 				hits.addAll( termHits );
 			} else {
@@ -50,7 +46,7 @@ public class FuzzySearch implements Search {
 			}
 		}
 
-		return Result.of( hits );
+		return Result.of( HitMatchWrapper.unwrap( hits ) );
 	}
 
 	private Result<List<Hit>> search( Index index, String term ) {
@@ -93,7 +89,7 @@ public class FuzzySearch implements Search {
 
 	}
 
-	public static class RankSort implements Comparator<Rank> {
+	private static class RankSort implements Comparator<Rank> {
 
 		@Override
 		public int compare( Rank rank1, Rank rank2 ) {
@@ -101,13 +97,48 @@ public class FuzzySearch implements Search {
 		}
 	}
 
-	public static class HitSort implements Comparator<Hit> {
+	private static class HitSort implements Comparator<Hit> {
 
 		@Override
 		public int compare( Hit hit1, Hit hit2 ) {
 			return hit2.priority() - hit1.priority();
 		}
 
+	}
+
+	/**
+	 * This hit wrapper allows fuzzy search to compare hits only on some fields
+	 * of {@link Hit}, instead of all fields, which is the default.
+	 */
+	private static class HitMatchWrapper {
+
+		private final Hit hit;
+
+		private HitMatchWrapper( Hit hit ) {
+			this.hit = hit;
+		}
+
+		public int hashCode() {
+			return this.hit.document().hashCode();
+		}
+
+		public boolean equals( Object object ) {
+			if( !(object instanceof HitMatchWrapper) ) return false;
+			HitMatchWrapper that = (HitMatchWrapper)object;
+
+			//if( !Objects.equals( this.hit.priority(), that.hit.priority() ) ) return false;
+			//if( !Objects.equals( this.hit.line(), that.hit.line() ) ) return false;
+			//if( !Objects.equals( this.hit.context(), that.hit.context() ) ) return false;
+			return Objects.equals( this.hit.document(), that.hit.document() );
+		}
+
+		static List<HitMatchWrapper> wrap( List<Hit> hits ) {
+			return hits.stream().map( HitMatchWrapper::new ).collect( Collectors.toList() );
+		}
+
+		static List<Hit> unwrap( List<HitMatchWrapper> wrappers ) {
+			return wrappers.stream().map( w -> w.hit ).collect( Collectors.toList() );
+		}
 	}
 
 }

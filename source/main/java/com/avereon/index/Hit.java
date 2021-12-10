@@ -1,9 +1,6 @@
 package com.avereon.index;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Data
@@ -25,9 +22,9 @@ public class Hit {
 
 	private Document document;
 
-	private String word;
-
 	private String context;
+
+	private String word;
 
 	private int line;
 
