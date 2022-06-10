@@ -13,6 +13,8 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.core;
 	requires me.xdrop.fuzzywuzzy;
 
+	opens com.avereon.util to com.fasterxml.jackson.databind;
+
 	exports com.avereon.data;
 	exports com.avereon.event;
 	exports com.avereon.index;
