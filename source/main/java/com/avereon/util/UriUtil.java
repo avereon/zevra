@@ -28,6 +28,23 @@ public final class UriUtil {
 		return path.isEmpty() ? "/" : path;
 	}
 
+	public static URI removeFragment( URI uri ) {
+		if( uri == null ) return null;
+
+		// Return a URI without query or fragment data
+		try {
+			if( uri.isOpaque() ) {
+				return new URI( uri.getScheme(), uri.getSchemeSpecificPart(), null );
+			} else {
+				return new URI( uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(), null );
+			}
+		} catch( URISyntaxException exception ) {
+			log.atSevere().withCause( exception ).log( "Error resolving asset URI: %s", uri );
+		}
+
+		return null;
+	}
+
 	public static URI removeQueryAndFragment( URI uri ) {
 		if( uri == null ) return null;
 

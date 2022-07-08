@@ -69,6 +69,15 @@ class UriUtilTest {
 	}
 
 	@Test
+	void testRemoveFragment() {
+		assertThat( UriUtil.removeFragment( URI.create( "program:product#update" ) ) ).isEqualTo( URI.create( "program:product" ) );
+		assertThat( UriUtil.removeFragment( URI.create( "https://absolute/path?query" ) ) ).isEqualTo( URI.create( "https://absolute/path?query" ) );
+		assertThat( UriUtil.removeFragment( URI.create( "/absolute/path?query#fragment" ) ) ).isEqualTo( URI.create( "/absolute/path?query" ) );
+		assertThat( UriUtil.removeFragment( URI.create( "relative/path?query#fragment" ) ) ).isEqualTo( URI.create( "relative/path?query" ) );
+		assertThat( UriUtil.removeFragment( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) ) ).isEqualTo( URI.create( "https://host:74/path/to/resource?parm1=a&parm2=b" ) );
+	}
+
+	@Test
 	void testRemoveQueryAndFragment() {
 		assertThat( UriUtil.removeQueryAndFragment( URI.create( "program:product#update" ) ) ).isEqualTo( URI.create( "program:product" ) );
 		assertThat( UriUtil.removeQueryAndFragment( URI.create( "https://absolute/path?query" ) ) ).isEqualTo( URI.create( "https://absolute/path" ) );
