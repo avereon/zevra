@@ -44,7 +44,7 @@
 
 		<!-- Needs to stay at a version compatible with all projects and the website -->
 		<!-- Keep consistent with the CI pipeline -->
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
