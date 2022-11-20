@@ -48,9 +48,15 @@ class UriUtilTest {
 		assertThat( uri.getFragment() ).isNull();
 		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//user@avereon.com/tmp" );
 
-		URI a = URI.create( "program:about" );
-		URI b = URI.create( "program:about#detail" );
+		URI a = URI.create( "program:help" );
+		URI b = URI.create( "program:help#detail" );
 		assertThat( a.compareTo( b ) ).isLessThan( 0 );
+
+		assertThat( b.getScheme()).isNotEqualTo( "program:help" );
+		assertThat( b.getScheme()).isEqualTo( "program" );
+
+		URI c = URI.create( b.getSchemeSpecificPart() );
+		assertThat( c.getScheme()).isNotEqualTo( "help");
 	}
 
 	@Test

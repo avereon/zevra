@@ -9,12 +9,6 @@ public class IoUtil {
 
 	private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-	public static String toString( InputStream input ) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		input.transferTo( output );
-		return output.toString( StandardCharsets.UTF_8 );
-	}
-
 	public static long copy( InputStream input, OutputStream output ) throws IOException {
 		return copy( input, output, DEFAULT_BUFFER_SIZE );
 	}
@@ -49,11 +43,19 @@ public class IoUtil {
 	}
 
 	public static long copy( InputStream input, Writer writer, String encoding ) throws IOException {
-		return copy( new InputStreamReader( input, Charset.forName( encoding )), writer, DEFAULT_BUFFER_SIZE );
+		return copy( input, writer, Charset.forName( encoding ) );
+	}
+
+	public static long copy( InputStream input, Writer writer, Charset encoding ) throws IOException {
+		return copy( new InputStreamReader( input, encoding ), writer, DEFAULT_BUFFER_SIZE );
+	}
+
+	public static long copy( Reader reader, Writer writer ) throws IOException {
+		return copy( reader, writer, new char[ DEFAULT_BUFFER_SIZE ] );
 	}
 
 	public static long copy( Reader reader, Writer writer, int bufferSize ) throws IOException {
-		return copy( reader, writer, new char[bufferSize]);
+		return copy( reader, writer, new char[ bufferSize ] );
 	}
 
 	public static long copy( Reader reader, Writer writer, char[] buffer ) throws IOException {
@@ -73,19 +75,39 @@ public class IoUtil {
 		return total;
 	}
 
+	public static void write( String data, OutputStream output, String encoding ) throws IOException {
+		write( data, output, Charset.forName( encoding ) );
+	}
+
+	public static void write( String data, OutputStream output, Charset encoding ) throws IOException {
+		write( data.toCharArray(), output,  encoding );
+	}
+
 	public static void write( char[] data, OutputStream output, Charset encoding ) throws IOException {
 		if( data != null ) output.write( new String( data ).getBytes( encoding ) );
 	}
 
-	public static void write( String data, OutputStream output, String encoding ) throws IOException {
-		write( data.toCharArray(), output, Charset.forName( encoding ) );
+	public static String toString( InputStream input ) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		input.transferTo( output );
+		return output.toString( StandardCharsets.UTF_8 );
 	}
 
 	public static String toString( InputStream input, String encoding ) throws IOException {
+		return toString( input, Charset.forName( encoding ) );
+	}
+
+	public static String toString( InputStream input, Charset encoding ) throws IOException {
 		try( final StringWriter sw = new StringWriter() ) {
 			copy( input, sw, encoding );
 			return sw.toString();
 		}
+	}
+
+	public static String toString( Reader reader ) throws IOException {
+		StringWriter writer = new StringWriter();
+		reader.transferTo( writer );
+		return writer.toString();
 	}
 
 }

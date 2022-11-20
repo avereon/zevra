@@ -5,6 +5,8 @@ import lombok.CustomLog;
 import java.io.*;
 import java.net.URI;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
@@ -170,20 +172,28 @@ public class FileUtil {
 	}
 
 	public static void save( String data, Path target ) throws IOException {
-		save( data, target, "UTF-8" );
+		save( data, target, StandardCharsets.UTF_8 );
 	}
 
 	public static void save( String data, Path target, String encoding ) throws IOException {
+		save( data, target, Charset.forName( encoding ) );
+	}
+
+	public static void save( String data, Path target, Charset encoding ) throws IOException {
 		try( OutputStream output = new FileOutputStream( target.toFile() ) ) {
 			IoUtil.write( data, output, encoding );
 		}
 	}
 
 	public static String load( Path source ) throws IOException {
-		return load( source, "UTF-8" );
+		return load( source, StandardCharsets.UTF_8 );
 	}
 
 	public static String load( Path source, String encoding ) throws IOException {
+		return load( source, Charset.forName( encoding ) );
+	}
+
+	public static String load( Path source, Charset encoding ) throws IOException {
 		try( FileInputStream input = new FileInputStream( source.toString() ) ) {
 			return IoUtil.toString( input, encoding );
 		}

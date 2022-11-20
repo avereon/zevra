@@ -38,7 +38,7 @@ public class PathUtil {
 	public static String getName( String path ) {
 		if( path == null ) return null;
 		String[] names = parseNames( path );
-		return names[names.length -1 ];
+		return names[ names.length - 1 ];
 	}
 
 	/**
@@ -153,16 +153,11 @@ public class PathUtil {
 		if( root == null || path == null ) return null;
 		String child = relativize( root, path );
 		int index = child.indexOf( SEPARATOR );
-		return index < 0 ? child : child.substring(0,index);
+		return index < 0 ? child : child.substring( 0, index );
 	}
 
-	private static String subpath( String[] names, int startIndex, int endIndex ) {
-		StringBuilder builder = new StringBuilder();
-		for( int index = startIndex; index < endIndex; index++ ) {
-			if( index > startIndex ) builder.append( SEPARATOR );
-			builder.append( names[ index ] );
-		}
-		return builder.toString();
+	public static String[] split( String path ) {
+		return parseNames( path );
 	}
 
 	static String[] parseNames( String path ) {
@@ -188,6 +183,15 @@ public class PathUtil {
 		if( path.length() > lastIndex ) names.add( path.substring( lastIndex ) );
 
 		return names.toArray( new String[ names.size() ] );
+	}
+
+	private static String subpath( String[] names, int startIndex, int endIndex ) {
+		StringBuilder builder = new StringBuilder();
+		for( int index = startIndex; index < endIndex; index++ ) {
+			if( index > startIndex ) builder.append( SEPARATOR );
+			builder.append( names[ index ] );
+		}
+		return builder.toString();
 	}
 
 	private static String cleanTrailingSeparator( String path ) {

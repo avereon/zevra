@@ -26,6 +26,8 @@ public class Document {
 	@EqualsAndHashCode.Exclude
 	private final Reader content;
 
+	private boolean store;
+
 	public Set<String> tags() {
 		return new HashSet<>( tags == null ? Set.of() : tags );
 	}
