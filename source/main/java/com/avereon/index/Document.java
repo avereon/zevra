@@ -53,6 +53,8 @@ public class Document {
 		content( content );
 	}
 
+	private boolean store;
+
 	public Set<String> tags() {
 		return new HashSet<>( tags == null ? Set.of() : tags );
 	}
