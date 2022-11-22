@@ -281,7 +281,7 @@ public class OperatingSystem {
 	public static long getTotalSystemMemory() {
 		long memory = -1;
 		try {
-			memory = ((com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
+			memory = ((com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean()).getTotalMemorySize();
 		} catch( Throwable throwable ) {
 			// Intentionally ignore exception.
 		}

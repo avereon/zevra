@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,7 +38,7 @@ public class IndexerTest {
 
 	@Test
 	void testSubmit() {
-		Document document = new Document( URI.create( "" ), "", "", new StringReader( "" ) );
+		Document document = new Document( URI.create( "" ), "", "", "" );
 
 		indexer.start();
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
@@ -53,7 +52,7 @@ public class IndexerTest {
 		String icon = "document";
 		String title = "Document";
 		String text = "This is some arbitrary content";
-		Document document = new Document( URI.create( "" ), icon, title, new StringReader( text ) );
+		Document document = new Document( URI.create( "" ), icon, title, text );
 
 		indexer.start();
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
@@ -133,7 +132,7 @@ public class IndexerTest {
 		String line0 = " This, is";
 		String line1 = "some \"arbitrary content\". ";
 		String text = line0 + "\n" + line1;
-		Document document = new Document( URI.create( "" ), icon, name, new StringReader( text ) );
+		Document document = new Document( URI.create( "" ), icon, name, text );
 
 		indexer.start();
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
@@ -203,7 +202,7 @@ public class IndexerTest {
 	@Test
 	void testSearch() throws Exception {
 		String text = "This is some \"arbitrary content\".";
-		Document document = new Document( URI.create( "" ), "", "", new StringReader( text ) );
+		Document document = new Document( URI.create( "" ), "", "", text );
 
 		indexer.start();
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
@@ -228,7 +227,7 @@ public class IndexerTest {
 
 	@Test
 	void testSearchWithTags() throws Exception {
-		Document document = new Document( URI.create( "" ), "", "", new StringReader( "" ) );
+		Document document = new Document( URI.create( "" ), "", "", "" );
 		document.tags( Set.of( "help", "empty" ) );
 
 		indexer.start();
@@ -254,9 +253,9 @@ public class IndexerTest {
 
 	@Test
 	void testFuzzySearch() throws Exception {
-		Document document0 = new Document( URI.create( "" ), "poem", "The Cat", new StringReader( "The cat and the fiddle" ) );
-		Document document1 = new Document( URI.create( "" ), "poem", "The Dog", new StringReader( "The dog ran away with the spoon" ) );
-		Document document2 = new Document( URI.create( "" ), "poem", "The Cow", new StringReader( "The cow jumped over the moon" ) );
+		Document document0 = new Document( URI.create( "" ), "poem", "The Cat", "The cat and the fiddle" );
+		Document document1 = new Document( URI.create( "" ), "poem", "The Dog", "The dog ran away with the spoon" );
+		Document document2 = new Document( URI.create( "" ), "poem", "The Cow", "The cow jumped over the moon" );
 
 		indexer.start();
 		Result<Set<Future<Result<Set<Hit>>>>> result = indexer.submit( document0, document1, document2 );
@@ -291,7 +290,7 @@ public class IndexerTest {
 		String icon = "document";
 		String name = "Document";
 		String text = "This is an arbitrary document";
-		Document document = new Document( URI.create( "" ), icon, name, new StringReader( text ) );
+		Document document = new Document( URI.create( "" ), icon, name, text );
 
 		indexer.start();
 		Result<Future<Result<Set<Hit>>>> result = indexer.submit( document );
@@ -318,8 +317,8 @@ public class IndexerTest {
 		String textB = "This is another document";
 
 		indexer.start();
-		Result<Future<Result<Set<Hit>>>> resultA = indexer.submit( "a", new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
-		Result<Future<Result<Set<Hit>>>> resultB = indexer.submit( "b", new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
+		Result<Future<Result<Set<Hit>>>> resultA = indexer.submit( "a", new Document( URI.create( "" ), icon, nameA, textA ) );
+		Result<Future<Result<Set<Hit>>>> resultB = indexer.submit( "b", new Document( URI.create( "" ), icon, nameB, textB ) );
 		indexer.stop();
 		resultA.get().get();
 		resultB.get().get();
@@ -335,10 +334,10 @@ public class IndexerTest {
 		List<Hit> hits = Indexer.search( search, query, indexer.allIndexes() ).get();
 
 		// FIXME This will fail because the results come out of order on occasion
-//		assertThat( hits.get( 0 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
-//		assertThat( hits.get( 0 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
-//		assertThat( hits.get( 1 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
-//		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+		//		assertThat( hits.get( 0 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
+		//		assertThat( hits.get( 0 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+		//		assertThat( hits.get( 1 ).document() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
+		//		assertThat( hits.get( 1 ).priority() ).isEqualTo( Hit.CONTENT_PRIORITY );
 
 		// There should only be one hit that matched on both terms
 		assertThat( hits.size() ).isEqualTo( 1 );

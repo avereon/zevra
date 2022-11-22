@@ -1,6 +1,7 @@
 package com.avereon.index;
 
 import com.avereon.result.Result;
+import lombok.CustomLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@CustomLog
 public class DefaultDocumentParser implements DocumentParser {
 
 	@Override
@@ -23,7 +25,12 @@ public class DefaultDocumentParser implements DocumentParser {
 		hits.addAll( findHits( document, document.title(), Hit.TITLE_PRIORITY ) );
 
 		// Add content
-		hits.addAll( findHits( document, document.content(), Hit.CONTENT_PRIORITY ) );
+		try {
+			hits.addAll( findHits( document, document.reader(), Hit.CONTENT_PRIORITY ) );
+		} catch( IOException exception ) {
+			log.atError().log( "Error finding index hits", exception );
+			//throw new RuntimeException( exception );
+		}
 
 		return Result.of( hits );
 	}
