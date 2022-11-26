@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * A generic data node supporting getting and setting values, a modified (or
  * dirty) flag, {@link NodeEvent events} and {@link Txn transactions}. It is
- * expected that this class be inherited and that sub-classes will be configured
+ * expected that this class be inherited and that subclasses will be configured
  * to represent specific data types. For example, consider this Person type:
  * <p>
  * <pre>
@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
  * originally "Foo".
  *
  * <h2>Modifying Values</h2>
- * By default no values will cause the modified flag to change. In order for a
+ * By default, no values will cause the modified flag to change. In order for a
  * change in a value to cause a change in the modified flag it must be
  * configured as a modifying value with the {@link #addModifyingKeys(String...)}
  * method. Note in the example above that the "name" value was set as a
@@ -89,7 +89,7 @@ import java.util.stream.Collectors;
  *
  * <h2>Value Events</h2>
  * Event handlers can also be registered for changes to specific values. This is
- * to handle the case where lambdas are registered for changes the the value.
+ * to handle the case where lambdas are registered for changes the value.
  * Example:
  * <pre>
  *   person.register( "name", e -&gt; displayPersonName( e.getNewValue() ) );
@@ -382,8 +382,22 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return (T)this;
 	}
 
+	@Override
+	@SuppressWarnings( "MethodDoesntCallSuperMethod" )
+	public Object clone() {
+		try {
+			getClass().getConstructor().newInstance();
+			Node clone = getClass().getConstructor().newInstance();
+			clone.copyFrom( this );
+			return clone;
+		} catch( Exception exception ) {
+			log.atWarn( exception );
+		}
+		return null;
+	}
+
 	/**
-	 * Get a string representation of this node. By default this implementation
+	 * Get a string representation of this node. By default, this implementation
 	 * only returns the primary and natural keys and values. For a full list of
 	 * values use {@link #toString(boolean) toString(true)}. For a list of
 	 * specific values use {@link #toString(List)}.
@@ -570,6 +584,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param key The value key
 	 * @return True if the value key is read-only, false otherwise
 	 */
+	@SuppressWarnings( "SameParameterValue" )
 	protected boolean isReadOnly( String key ) {
 		return getReadOnlyKeys().contains( key );
 	}
@@ -610,6 +625,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 *
 	 * @param keys The value keys
 	 */
+	@SuppressWarnings( "unused" )
 	public void removeExcludedModifyingKeys( String... keys ) {
 		if( excludedModifyingKeySet == null ) return;
 		excludedModifyingKeySet.removeAll( Set.of( keys ) );
@@ -747,6 +763,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param <T> The value type
 	 * @return The value
 	 */
+	@SuppressWarnings( "unused" )
 	protected <T> T computeIfPresent( String key, BiFunction<String, ? super T, ? extends T> function ) {
 		Objects.requireNonNull( function );
 		T value = getValue( key );
@@ -849,9 +866,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return collectionId;
 	}
 
-	Node setCollectionId( String id ) {
+	void setCollectionId( String id ) {
 		this.collectionId = Objects.requireNonNull( id );
-		return this;
 	}
 
 	protected boolean isModifiedBySelf() {
@@ -910,6 +926,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return (T)parent;
 	}
 
+	@SuppressWarnings( "StatementWithEmptyBody" )
 	void doSetParent( Node parent ) {
 		checkForCircularReference( parent );
 
@@ -929,6 +946,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		return getNodePath( null );
 	}
 
+	@SuppressWarnings( "SameParameterValue" )
 	List<Node> getNodePath( Node stop ) {
 		List<Node> path = new ArrayList<>();
 		if( this != stop && parent != null ) path = parent.getNodePath();
@@ -986,7 +1004,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	/**
-	 * This implementation is different than calling isModified() because this
+	 * This implementation is different from calling isModified() because this
 	 * implementation uses the internal flags for the value, not just the
 	 * computed modified flag.
 	 *
@@ -1108,6 +1126,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			}
 		}
 
+		@SuppressWarnings( "SameParameterValue" )
 		final void fireDroppingEvent( EventType<NodeEvent> type ) {
 			Node source = getNode();
 			Node target = getNode();
@@ -1124,8 +1143,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			NodeEvent newEvent = new NodeEvent( event.getNode(), event.getEventType() );
 
 			for( Object value : target.values.values() ) {
-				if( value instanceof Node ) {
-					Node child = (Node)value;
+				if( value instanceof Node child ) {
 					if( child instanceof NodeSet ) {
 						for( Node setValue : (NodeSet<?>)value ) {
 							child = setValue;
@@ -1274,6 +1292,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	}
 
+	@SuppressWarnings( "unused" )
 	static class RefreshOperation extends NodeTxnOperation {
 
 		RefreshOperation( Node node ) {
