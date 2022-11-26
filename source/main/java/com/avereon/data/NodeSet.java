@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 /**
  * This class is the internal implementation of a {@link Node} {@link Set}. In
  * general, implementers should not need to directly work with this class, but
- * its intended used is documented here for reference. Take, for example, an
+ * its intended use is documented here for reference. Take, for example, an
  * Organization model that allows an arbitrary number of Person nodes. Both
  * Organization and Person should extend from {@link Node} or {@link IdNode}.
  * <pre>
@@ -132,6 +132,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
+	@SuppressWarnings( "RedundantCollectionOperation" )
 	public boolean add( E node ) {
 		return addAll( Set.of( node ) );
 	}
@@ -176,8 +177,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		boolean changed = false;
 		try( Txn ignored = Txn.create() ) {
 			for( Object object : collection ) {
-				if( !(object instanceof Node) ) continue;
-				Node node = (Node)object;
+				if( !(object instanceof Node node) ) continue;
 				String key = node.getCollectionId();
 				if( !hasKey( key ) ) continue;
 				Txn.submit( new SetValueOperation( this, setKey, key, node, null ) );
