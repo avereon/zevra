@@ -45,7 +45,7 @@ public class TokenReplacingReader extends Reader {
 	public TokenReplacingReader( Reader source, Map<String, String> values ) {
 		this.source = new PushbackReader( source );
 		this.tokenName = new StringBuilder();
-		this.values = values;
+		this.values = values == null ? Map.of() : values;
 	}
 
 	public int read() throws IOException {
