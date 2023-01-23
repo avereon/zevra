@@ -52,11 +52,11 @@ public class DelayedActionTest {
 		// Update() can be called as many times before the minTriggerLimit but the
 		// action should not occur unit the minTriggerLimit time has been reached
 		readyAction();
-		action.update();
-		action.update();
-		action.update();
-		action.update();
-		action.update();
+		action.request();
+		action.request();
+		action.request();
+		action.request();
+		action.request();
 		waitForAction();
 		long after = System.currentTimeMillis();
 
@@ -85,11 +85,11 @@ public class DelayedActionTest {
 		ThreadUtil.pause( minTriggerLimit + 1 );
 
 		readyAction();
-		action.update();
-		action.update();
-		action.update();
-		action.update();
-		action.update();
+		action.request();
+		action.request();
+		action.request();
+		action.request();
+		action.request();
 		waitForAction();
 		long after = System.currentTimeMillis();
 

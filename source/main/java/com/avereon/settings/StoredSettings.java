@@ -170,7 +170,7 @@ public class StoredSettings extends AbstractSettings {
 		} else {
 			values.setProperty( key, value );
 		}
-		action.update();
+		action.request();
 	}
 
 	@Override

@@ -92,7 +92,7 @@ public class DelayedAction {
 	}
 
 	// Called when the dirty time needs to be updated, commonly due to state being changed.
-	public void update() {
+	public void request() {
 		lastChangeTime.set( System.currentTimeMillis() );
 		if( lastDirtyTime.get() <= lastActionTime.get() ) lastDirtyTime.set( lastChangeTime.get() );
 		schedule();
