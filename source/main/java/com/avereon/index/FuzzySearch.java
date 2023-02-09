@@ -21,7 +21,7 @@ public class FuzzySearch implements Search {
 	 * everything in the index (probably not what we want) and using 100 would
 	 * return only exact matches.
 	 */
-	private static final int CUTOFF = 50;
+	private static final int CUTOFF = 75;
 
 	private final int cutoff;
 
@@ -75,7 +75,7 @@ public class FuzzySearch implements Search {
 	 * @return Percent rank
 	 */
 	int getRankPoints( String term, String word ) {
-		return me.xdrop.fuzzywuzzy.FuzzySearch.ratio( term, word );
+		return me.xdrop.fuzzywuzzy.FuzzySearch.partialRatio( term, word );
 	}
 
 	@Data
