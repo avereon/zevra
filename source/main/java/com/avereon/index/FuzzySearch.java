@@ -21,7 +21,7 @@ public class FuzzySearch implements Search {
 	 * everything in the index (probably not what we want) and using 100 would
 	 * return only exact matches.
 	 */
-	private static final int CUTOFF = 75;
+	private static final int CUTOFF = 80;
 
 	private final int cutoff;
 
