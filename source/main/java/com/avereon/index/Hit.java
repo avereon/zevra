@@ -3,8 +3,14 @@ package com.avereon.index;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+/**
+ * This class represents both index and search hits since both of these types
+ * of hits are very similar and have very similar uses. Index hits have all
+ * the information regarding hits while indexing. Search hits can augment index
+ * hits with more information regarding the search match.
+ */
 @Data
-@Builder
+@Builder( toBuilder = true )
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors( fluent = true )
@@ -33,6 +39,9 @@ public class Hit {
 	private int length;
 
 	private int priority;
+
+	// This is used for search hits
+	private int points;
 
 	@Override
 	public String toString() {

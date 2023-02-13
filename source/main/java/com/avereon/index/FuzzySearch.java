@@ -1,9 +1,6 @@
 package com.avereon.index;
 
 import com.avereon.result.Result;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,15 +49,13 @@ public class FuzzySearch implements Search {
 	private Result<List<Hit>> search( Index index, String term ) {
 		Set<String> dictionary = index.getDictionary();
 
-		List<Rank> ranks = new ArrayList<>();
-		dictionary.forEach( w -> {
-			int points = getRankPoints( term, w );
+		List<Hit> hits = new ArrayList<>();
+		dictionary.forEach( word -> {
+			int points = getRankPoints( term, word );
 			if( points < cutoff ) return;
-			ranks.add( new Rank( w, points ) );
+			hits.addAll( index.getHits( word ).stream().map( h -> h.toBuilder().points( points ).build()).toList());
 		} );
-		ranks.sort( new RankSort() );
-
-		List<Hit> hits = ranks.stream().flatMap( r -> index.getHits( r.word() ).stream() ).sorted( new HitSort() ).collect( Collectors.toList() );
+		hits.sort( new HitSort() );
 
 		return Result.of( new ArrayList<>( hits ) );
 	}
@@ -78,29 +73,12 @@ public class FuzzySearch implements Search {
 		return me.xdrop.fuzzywuzzy.FuzzySearch.partialRatio( term, word );
 	}
 
-	@Data
-	@RequiredArgsConstructor
-	@Accessors( fluent = true )
-	private static class Rank {
-
-		private final String word;
-
-		private final int points;
-
-	}
-
-	private static class RankSort implements Comparator<Rank> {
-
-		@Override
-		public int compare( Rank rank1, Rank rank2 ) {
-			return rank2.points() - rank1.points();
-		}
-	}
-
 	private static class HitSort implements Comparator<Hit> {
 
 		@Override
 		public int compare( Hit hit1, Hit hit2 ) {
+			int diff = hit2.points() - hit1.points();
+			if( diff != 0 ) return diff;
 			return hit2.priority() - hit1.priority();
 		}
 
