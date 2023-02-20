@@ -21,9 +21,6 @@ public final class UriUtil {
 	}
 
 	public static String parseName( URI uri ) {
-		//		PathUtil.getName( uri.getPath() );
-		//		String path = uri.getPath();
-		//		if( path.endsWith( "/" ) ) path = path.substring( 0, path.length() - 1 );
 		String path = PathUtil.getName( uri.getPath() );
 		return path.isEmpty() ? "/" : path;
 	}
@@ -187,16 +184,7 @@ public final class UriUtil {
 
 	public static String parseFragment( URI uri ) {
 		if( uri == null ) return null;
-		return parseFragment( uri.getFragment() );
-	}
-
-	public static String parseFragment( String fragment ) {
-		if( fragment == null ) return null;
-
-		int index = fragment.indexOf( "?" );
-		if( index < 0 ) return fragment;
-
-		return fragment.substring( 0, index );
+		return uri.getFragment();
 	}
 
 	public static String parseQuery( URI uri ) {

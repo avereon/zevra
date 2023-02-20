@@ -188,17 +188,9 @@ class UriUtilTest {
 		URI uri = URI.create( "test:///path#fragment" );
 		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );
 
+		// Query parameters after the fragment are part of the fragment
 		uri = URI.create( "test:///path#fragment?attr1&attr2" );
-		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );
-	}
-
-	@Test
-	void testParseFragmentWithString() {
-		assertThat( UriUtil.parseFragment( (String)null ) ).isNull();
-
-		assertThat( UriUtil.parseFragment( "fragment" ) ).isEqualTo( "fragment" );
-
-		assertThat( UriUtil.parseFragment( "fragment?attr1&attr2" ) ).isEqualTo( "fragment" );
+		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment?attr1&attr2" );
 	}
 
 	@Test
@@ -217,7 +209,7 @@ class UriUtilTest {
 
 		uri = URI.create( "test:///path?attr1=value1&attr2=value2#fragment" );
 		parameters = UriUtil.parseQuery( uri.getQuery() );
-		assertThat( UriUtil.parseFragment( uri.getFragment() ) ).isEqualTo( "fragment" );
+		assertThat( UriUtil.parseFragment( uri )).isEqualTo( "fragment" );
 		assertThat( parameters.get( "attr1" ) ).isEqualTo( "value1" );
 		assertThat( parameters.get( "attr2" ) ).isEqualTo( "value2" );
 	}
