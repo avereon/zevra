@@ -15,7 +15,18 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * This class must load the product "info" very quickly. The full product "card" can load more slowly.
+ * This class represents the product information. The product information
+ * includes group, name, version, etc.
+ * <p>
+ * Product information is stored
+ * in two files, one that loads quickly (properties file), but does not support
+ * hierarchical data, and one that supports hierarchical data (JSON file), but
+ * loads much more slowly.
+ * </p>
+ * <p>
+ * This class must load the product "info" very quickly. The full product "card"
+ * can load more slowly.
+ * </p>
  */
 @CustomLog
 @JsonIgnoreProperties( ignoreUnknown = true )
@@ -84,13 +95,13 @@ public class ProductCard extends BaseCard {
 	public ProductCard() {}
 
 	public static ProductCard card( Path path ) throws IOException {
-		try ( FileInputStream input = new FileInputStream( path.resolve( CARD ).toFile() ) ) {
+		try( FileInputStream input = new FileInputStream( path.resolve( CARD ).toFile() ) ) {
 			return new ProductCard().fromJson( input );
 		}
 	}
 
 	public static ProductCard info( Path path ) throws IOException {
-		try ( FileInputStream input = new FileInputStream( path.resolve( INFO ).toFile() ) ) {
+		try( FileInputStream input = new FileInputStream( path.resolve( INFO ).toFile() ) ) {
 			return new ProductCard().fromInfo( input );
 		}
 	}

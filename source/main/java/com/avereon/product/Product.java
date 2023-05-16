@@ -6,8 +6,20 @@ import java.nio.file.Path;
 
 public interface Product {
 
+	/**
+	 * Get the product's {@link ProductCard}.
+	 *
+	 * @return The product's product card
+	 */
 	ProductCard getCard();
 
+	/**
+	 * Get the product parent. If the product is a Program then this should return
+	 * null. If the product is a Mod this should return the parent product. Mods
+	 * can also be parents of other Mods.
+	 *
+	 * @return The parent Product or null if the product is a Program
+	 */
 	default Product getParent() {return null;}
 
 	/**
