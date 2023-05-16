@@ -14,15 +14,6 @@ public interface Product {
 	ProductCard getCard();
 
 	/**
-	 * Get the product parent. If the product is a Program then this should return
-	 * null. If the product is a Mod this should return the parent product. Mods
-	 * can also be parents of other Mods.
-	 *
-	 * @return The parent Product or null if the product is a Program
-	 */
-	default Product getParent() {return null;}
-
-	/**
 	 * Get the product settings.
 	 *
 	 * @return The product settings
@@ -40,5 +31,12 @@ public interface Product {
 	 * @return The product data folder.
 	 */
 	Path getDataFolder();
+
+	/**
+	 * Get the product parent.
+	 *
+	 * @return The parent Product or null if the product does not have a parent
+	 */
+	default Product getParent() {return null;}
 
 }
