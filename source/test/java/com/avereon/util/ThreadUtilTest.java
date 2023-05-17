@@ -57,8 +57,8 @@ class ThreadUtilTest {
 
 	@Test
 	void testGetStackClasses() {
-		Class<?>[] frame = ThreadUtil.getStackClasses();
-		assertThat( frame[ 0 ] ).isEqualTo( ThreadUtilTest.class );
+		String[] frame = ThreadUtil.getStackClasses();
+		assertThat( frame[ 0 ] ).isEqualTo( ThreadUtilTest.class.getName() );
 	}
 
 }

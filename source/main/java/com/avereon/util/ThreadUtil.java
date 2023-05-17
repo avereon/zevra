@@ -110,25 +110,17 @@ public class ThreadUtil {
 	 *
 	 * @return A class array of the execution stack before this method was called.
 	 */
-	public static Class<?>[] getStackClasses() {
-		Class<?>[] frame = new StackClassResolver().getClassContext();
+	public static String[] getStackClasses() {
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		String[] frame = Arrays.stream( elements ).map( StackTraceElement::getClassName ).toList().toArray( new String[ elements.length ] );
 		return Arrays.copyOfRange( frame, 2, frame.length );
 	}
 
 	public static void printRunningThreads() {
-		Map<Thread,StackTraceElement[]> traces = Thread.getAllStackTraces();
+		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
 		for( Thread thread : traces.keySet() ) {
 			System.out.println( thread.getName() );
 		}
-	}
-
-	private static final class StackClassResolver extends SecurityManager {
-
-		@Override
-		public Class<?>[] getClassContext() {
-			return super.getClassContext();
-		}
-
 	}
 
 	private static final class DaemonThreadFactory implements ThreadFactory {
