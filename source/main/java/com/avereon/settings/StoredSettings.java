@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @CustomLog
@@ -109,7 +108,6 @@ public class StoredSettings extends AbstractSettings {
 			log.atFiner().log( "node=%s", nodePath );
 			node = new StoredSettings( root, nodePath, folder, values, action.getExecutor() );
 		}
-
 		// Create missing parents
 		String parentPath = PathUtil.getParent( nodePath );
 		folder = folder.getParent();
@@ -141,9 +139,9 @@ public class StoredSettings extends AbstractSettings {
 			int index = n.indexOf( "/", length + 1 );
 			if( index < 0 ) return n.substring( length );
 			return n.substring( length, index );
-		} ).distinct().collect( Collectors.toList() );
+		} ).distinct().toList();
 
-		return Stream.concat( externalNames.stream(), internalNames.stream() ).distinct().collect( Collectors.toList() );
+		return Stream.concat( externalNames.stream(), internalNames.stream() ).distinct().toList();
 	}
 
 	@Override
