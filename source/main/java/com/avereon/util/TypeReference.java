@@ -73,4 +73,9 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 		return this.getType().getTypeName().compareTo( that.getType().getTypeName() );
 	}
 
+	@Override
+	public String toString() {
+		return referenceClass.getName();
+	}
+
 }
