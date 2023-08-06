@@ -34,6 +34,10 @@ public final class TextUtil {
 		return string == null || string.isBlank();
 	}
 
+	public static String nullToEmpty( String string ) {
+		return string == null ? EMPTY : string;
+	}
+
 	public static boolean areEqual( String string1, String string2 ) {
 		if( string1 == null && string2 == null ) return true;
 		if( string1 == null ) return false;
