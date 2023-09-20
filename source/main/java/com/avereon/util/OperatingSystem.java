@@ -31,7 +31,9 @@ public class OperatingSystem {
 	}
 
 	public static String CUSTOM_LAUNCHER_NAME = "java.launcher.name";
+
 	public static String CUSTOM_LAUNCHER_PATH = "java.launcher.path";
+
 	public static String JPACKAGE_APP_PATH = "jpackage.app-path";
 
 	public static String PROCESS_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
@@ -245,9 +247,22 @@ public class OperatingSystem {
 		launcherName = Objects.requireNonNullElseGet( customLauncherName, () -> isWindows() ? "javaw" : "java" );
 
 		// JPackage launcher
-		if( System.getProperty( JPACKAGE_APP_PATH ) != null ) launcherName = Path.of( "file://" + System.getProperty( JPACKAGE_APP_PATH )).getFileName().toString();
+		if( System.getProperty( JPACKAGE_APP_PATH ) != null ) {
+			// This might have the EXE suffix
+			Path jPackageAppPath = Path.of( System.getProperty( JPACKAGE_APP_PATH ).replace( "\\", "//" ));
+			launcherName = FileUtil.removeExtension( jPackageAppPath.getFileName().toString() );
+		}
 
 		return launcherName + getExeSuffix();
+	}
+
+	public static Path getJPackageAppPath() {
+		return getJPackageAppPath(System.getProperty( JPACKAGE_APP_PATH ));
+	}
+
+	static Path getJPackageAppPath(String property) {
+		if( property == null ) return null;
+		return Path.of( property );
 	}
 
 	/**

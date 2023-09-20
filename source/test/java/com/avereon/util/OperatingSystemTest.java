@@ -295,7 +295,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaExecutablePath() {
-		String java = OperatingSystem.isWindows() ? "javaw" : "java";
+		String java = OperatingSystem.isWindows() ? "javaw.exe" : "java";
 		String javaPath = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + java;
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( javaPath );
 	}
@@ -359,7 +359,8 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherName() {
-		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw" : "java" );
+		OperatingSystem.reset();
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "Mock" );
@@ -367,6 +368,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherPath() {
+		OperatingSystem.reset();
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_PATH, "/this/is/the/launcher/path" );
@@ -376,7 +378,8 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherNameWithJPackageAppPath() {
-		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw" : "java" );
+		OperatingSystem.reset();
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "Mock" );
@@ -384,10 +387,31 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherPathWithJPackageAppPath() {
+		OperatingSystem.reset();
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( "/this/is/the/launcher/path/Mock" );
+	}
+
+	@Test
+	void testGetJavaLauncherNameWithWindowsPath() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
+
+		String launcherPath = "C:\\Program Files\\Mock\\Mock.exe";
+		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, launcherPath );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "Mock.exe" );
+	}
+
+	@Test
+	void testGetJavaLauncherPathWithWindowsPath() {
+		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
+
+		String launcherPath = "C:\\Program Files\\Mock\\Mock.exe";
+		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, launcherPath );
+		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( "C:\\Program Files\\Mock\\Mock.exe" );
 	}
 
 }
