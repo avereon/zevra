@@ -35,33 +35,33 @@ class OperatingSystemTest {
 	@Test
 	void testLinux() {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( true );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( true );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( true );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( false );
+		assertThat( OperatingSystem.isPosix() ).isTrue();
+		assertThat( OperatingSystem.isLinux() ).isTrue();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isTrue();
+		assertThat( OperatingSystem.isWindows() ).isFalse();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "2.6.32_45" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86_64" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.LINUX );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Community" );
-		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( "" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEmpty();
 	}
 
 	@Test
 	void testMac() {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( true );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( true );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( true );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( false );
+		assertThat( OperatingSystem.isPosix() ).isTrue();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isTrue();
+		assertThat( OperatingSystem.isUnix() ).isTrue();
+		assertThat( OperatingSystem.isWindows() ).isFalse();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "ppc" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.MACOSX );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Apple" );
-		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( "" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEmpty();
 
 		// Test the process launch workaround
 		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ) ).isEqualTo( "FORK" );
@@ -70,11 +70,11 @@ class OperatingSystemTest {
 	@Test
 	void testWindows7() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.isPosix() ).isFalse();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isFalse();
+		assertThat( OperatingSystem.isWindows() ).isTrue();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.1" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
@@ -86,11 +86,11 @@ class OperatingSystemTest {
 	@Test
 	void testWindows8() {
 		OperatingSystem.init( "Windows 8", "x86", "6.2", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.isPosix() ).isFalse();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isFalse();
+		assertThat( OperatingSystem.isWindows() ).isTrue();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.2" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
@@ -102,11 +102,11 @@ class OperatingSystemTest {
 	@Test
 	void testWindows8_1() {
 		OperatingSystem.init( "Windows 8.1", "x86", "6.3", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.isPosix() ).isFalse();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isFalse();
+		assertThat( OperatingSystem.isWindows() ).isTrue();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "6.3" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
@@ -118,11 +118,11 @@ class OperatingSystemTest {
 	@Test
 	void testWindows10() {
 		OperatingSystem.init( "Windows 10", "x86", "10.0", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
-		assertThat( OperatingSystem.isPosix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isLinux() ).isEqualTo( false );
-		assertThat( OperatingSystem.isMac() ).isEqualTo( false );
-		assertThat( OperatingSystem.isUnix() ).isEqualTo( false );
-		assertThat( OperatingSystem.isWindows() ).isEqualTo( true );
+		assertThat( OperatingSystem.isPosix() ).isFalse();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isFalse();
+		assertThat( OperatingSystem.isWindows() ).isTrue();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10.0" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
 		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
@@ -136,11 +136,11 @@ class OperatingSystemTest {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
+		assertThat( OperatingSystem.isProcessElevated() ).isFalse();
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
+		assertThat( OperatingSystem.isProcessElevated() ).isTrue();
 	}
 
 	@Test
@@ -148,22 +148,22 @@ class OperatingSystemTest {
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.NORMAL_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
+		assertThat( OperatingSystem.isProcessElevated() ).isFalse();
 
 		OperatingSystem.clearProcessElevatedFlag();
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
+		assertThat( OperatingSystem.isProcessElevated() ).isTrue();
 	}
 
 	@Test
 	void testIsProcessElevatedWindows() {
 		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( false );
+		assertThat( OperatingSystem.isProcessElevated() ).isFalse();
 
 		System.setProperty( OperatingSystem.PROCESS_PRIVILEGE_KEY, OperatingSystem.ELEVATED_PRIVILEGE_VALUE );
 		OperatingSystem.clearProcessElevatedFlag();
-		assertThat( OperatingSystem.isProcessElevated() ).isEqualTo( true );
+		assertThat( OperatingSystem.isProcessElevated() ).isTrue();
 	}
 
 	@Test
@@ -180,7 +180,7 @@ class OperatingSystemTest {
 
 		assertThat( builder.command().get( 0 ) ).isEqualTo( elevate.getCanonicalPath() );
 		assertThat( builder.command().get( 1 ) ).isEqualTo( program );
-		assertThat( builder.command().size() ).isEqualTo( 2 );
+		assertThat( builder.command() ).hasSize( 2 );
 		elevate.delete();
 	}
 
@@ -198,18 +198,18 @@ class OperatingSystemTest {
 		if( pkexec.exists() ) {
 			assertThat( builder.command().get( 0 ) ).isEqualTo( pkexec.toString() );
 			assertThat( builder.command().get( 1 ) ).isEqualTo( program );
-			assertThat( builder.command().size() ).isEqualTo( 2 );
+			assertThat( builder.command() ).hasSize( 2 );
 		} else if( gksudo.exists() ) {
 			assertThat( builder.command().get( 0 ) ).isEqualTo( gksudo.toString() );
 			assertThat( builder.command().get( 1 ) ).isEqualTo( "-D" );
 			assertThat( builder.command().get( 2 ) ).isEqualTo( program );
 			assertThat( builder.command().get( 3 ) ).isEqualTo( "--" );
 			assertThat( builder.command().get( 4 ) ).isEqualTo( program );
-			assertThat( builder.command().size() ).isEqualTo( 5 );
+			assertThat( builder.command() ).hasSize( 5 );
 		} else if( kdesudo.exists() ) {
 			assertThat( builder.command().get( 0 ) ).isEqualTo( kdesudo.toString() );
 			assertThat( builder.command().get( 2 ) ).isEqualTo( program );
-			assertThat( builder.command().size() ).isEqualTo( 3 );
+			assertThat( builder.command() ).hasSize( 3 );
 		} else {
 			assertThat( builder.command().get( 0 ) ).isEqualTo( "xterm" );
 			assertThat( builder.command().get( 1 ) ).isEqualTo( "-title" );
@@ -217,7 +217,7 @@ class OperatingSystemTest {
 			assertThat( builder.command().get( 3 ) ).isEqualTo( "-e" );
 			assertThat( builder.command().get( 4 ) ).isEqualTo( "sudo" );
 			assertThat( builder.command().get( 5 ) ).isEqualTo( program );
-			assertThat( builder.command().size() ).isEqualTo( 6 );
+			assertThat( builder.command() ).hasSize( 6 );
 		}
 	}
 
@@ -237,7 +237,7 @@ class OperatingSystemTest {
 		assertThat( builder.command().get( index++ ) ).isEqualTo( "wscript" );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( elevate.getCanonicalPath() );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( program );
-		assertThat( builder.command().size() ).isEqualTo( index );
+		assertThat( builder.command() ).hasSize( index );
 
 		elevate.delete();
 	}
@@ -256,7 +256,7 @@ class OperatingSystemTest {
 		assertThat( builder.command().get( index++ ) ).isEqualTo( System.getenv( "SUDO_USER" ) );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( "--" );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( "textmate" );
-		assertThat( builder.command().size() ).isEqualTo( index );
+		assertThat( builder.command() ).hasSize( index );
 	}
 
 	@Test
@@ -273,7 +273,7 @@ class OperatingSystemTest {
 		assertThat( builder.command().get( index++ ) ).isEqualTo( System.getenv( "SUDO_USER" ) );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( "--" );
 		assertThat( builder.command().get( index++ ) ).isEqualTo( "vi" );
-		assertThat( builder.command().size() ).isEqualTo( index );
+		assertThat( builder.command() ).hasSize( index );
 	}
 
 	@Test
