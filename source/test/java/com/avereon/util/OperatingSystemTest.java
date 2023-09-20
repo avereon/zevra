@@ -132,6 +132,22 @@ class OperatingSystemTest {
 	}
 
 	@Test
+	void testWindows11() {
+		OperatingSystem.init( "Microsoft Windows 11 Pro", "x86", "10.0.22621", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		assertThat( OperatingSystem.isPosix() ).isFalse();
+		assertThat( OperatingSystem.isLinux() ).isFalse();
+		assertThat( OperatingSystem.isMac() ).isFalse();
+		assertThat( OperatingSystem.isUnix() ).isFalse();
+		assertThat( OperatingSystem.isWindows() ).isTrue();
+		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10.0.22621" );
+		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "x86" );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.WINDOWS );
+		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
+		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
+		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
+	}
+
+	@Test
 	void testIsProcessElevatedMac() {
 		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		OperatingSystem.clearProcessElevatedFlag();
