@@ -1,10 +1,13 @@
 package com.avereon.event;
 
+import lombok.CustomLog;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
+@CustomLog
 public class EventHub {
 
 	private static final EventHub ROOT = new EventHub();
@@ -42,14 +45,14 @@ public class EventHub {
 					exception = null;
 
 					var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
-					try {
-						typeHandlers.forEach( ( k, v ) -> v.handle( event ) );
-					} catch( RuntimeException re ) {
-						System.err.println( "event type=" + type.getClass() );
-
-
-						throw re;
-					}
+					typeHandlers.forEach( ( k, v ) -> {
+						try {
+							v.handle( event );
+						} catch( RuntimeException handlerException ) {
+							// Do not let any handler break the others
+							log.atWarn().log( "Error handling event", handlerException );
+						}
+					} );
 					type = type.getParentEventType();
 				} catch( ConcurrentModificationException cme ) {
 					exception = cme;

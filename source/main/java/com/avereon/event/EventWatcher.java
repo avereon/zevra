@@ -60,7 +60,7 @@ public class EventWatcher implements EventHandler<Event> {
 		}
 		duration = System.currentTimeMillis() - start;
 
-		if( duration >= timeout ) throw new TimeoutException( "Timeout waiting for event " + type );
+		if( duration >= timeout ) throw new TimeoutException( "Timeout waiting for event " + type.getParentEventType() + "." + type );
 	}
 
 	/**
