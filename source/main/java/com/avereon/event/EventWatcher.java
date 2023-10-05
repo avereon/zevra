@@ -1,5 +1,8 @@
 package com.avereon.event;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
@@ -10,7 +13,12 @@ public class EventWatcher implements EventHandler<Event> {
 
 	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
 
+	@Getter
 	private final long timeout;
+
+	@Getter
+	@Setter
+	private boolean printEventCapture;
 
 	public EventWatcher() {
 		this( DEFAULT_WAIT_TIMEOUT );
@@ -20,12 +28,10 @@ public class EventWatcher implements EventHandler<Event> {
 		this.timeout = timeout;
 	}
 
-	public long getTimeout() {
-		return timeout;
-	}
-
 	@Override
+	@SuppressWarnings( "java:S106" )
 	public synchronized void handle( Event event ) {
+		if( printEventCapture ) System.out.println( "Captured event: " + event.getEventType() );
 		events.offer( event );
 		notifyAll();
 	}
@@ -80,7 +86,7 @@ public class EventWatcher implements EventHandler<Event> {
 	private Event findNext( EventType<? extends Event> type ) {
 		Event event;
 		while( (event = events.poll()) != null ) {
-			if( event.getEventType() ==  type ) return event;
+			if( event.getEventType() == type ) return event;
 		}
 		return null;
 	}
