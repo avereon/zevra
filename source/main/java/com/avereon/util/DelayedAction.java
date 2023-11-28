@@ -142,7 +142,7 @@ public class DelayedAction {
 
 			// Cancel the existing task and schedule a new one
 			if( task != null ) task.cancel();
-			timer.cancel();
+
 			try {
 				task = new ActionTask();
 				long delay = Math.max( 0, immediate ? 0 : nextTime - now );
