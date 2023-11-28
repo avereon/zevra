@@ -145,8 +145,11 @@ public class DelayedAction {
 			timer.cancel();
 			try {
 				task = new ActionTask();
-				timer.schedule( task, immediate ? 0 : nextTime - now );
-			} catch( IllegalStateException ignore ) {}
+				long delay = Math.max( 0, immediate ? 0 : nextTime - now );
+				timer.schedule( task, delay );
+			} catch( IllegalStateException ignore ) {
+				// Intentionally ignore exception
+			}
 		}
 	}
 
