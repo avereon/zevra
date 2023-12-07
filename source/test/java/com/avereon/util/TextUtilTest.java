@@ -22,6 +22,14 @@ class TextUtilTest {
 	}
 
 	@Test
+	void testIsNotEmpty() {
+		assertThat( TextUtil.isNotEmpty( null ) ).isFalse();
+		assertThat( TextUtil.isNotEmpty( "" ) ).isFalse();
+		assertThat( TextUtil.isNotEmpty( " " ) ).isFalse();
+		assertThat( TextUtil.isNotEmpty( "." ) ).isTrue();
+	}
+
+	@Test
 	@SuppressWarnings( "ConstantConditions" )
 	void testAreEqual() {
 		assertThat( TextUtil.areEqual( null, null ) ).isTrue();

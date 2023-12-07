@@ -34,6 +34,10 @@ public final class TextUtil {
 		return string == null || string.isBlank();
 	}
 
+	public static boolean isNotEmpty( String string ) {
+		return !isEmpty( string );
+	}
+
 	public static String nullToEmpty( String string ) {
 		return string == null ? EMPTY : string;
 	}
