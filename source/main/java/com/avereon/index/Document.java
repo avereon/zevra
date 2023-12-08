@@ -1,6 +1,5 @@
 package com.avereon.index;
 
-import com.avereon.util.TextUtil;
 import com.avereon.util.TokenReplacingReader;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -67,7 +66,7 @@ public class Document {
 	public Reader reader() throws IOException {
 		Reader reader;
 
-		if( TextUtil.isNotEmpty(content ) ) {
+		if( content != null ) {
 			reader = new StringReader( content );
 		} else if( url != null ) {
 			reader = new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );

@@ -230,7 +230,11 @@ public class IndexerTest {
 
 	@Test
 	void testSearchWithTags() throws Exception {
-		Document document = new Document( URI.create( "" ), "", "", "" );
+		URI uri = URI.create( "" );
+		String icon = "";
+		String title = "";
+		String content = "";
+		Document document = new Document( uri, icon, title, content );
 		document.tags( Set.of( "help", "empty" ) );
 
 		indexer.start();
