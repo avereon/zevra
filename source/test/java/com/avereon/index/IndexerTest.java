@@ -61,8 +61,7 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( Hit
-			.builder()
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( new Hit()
 			.context( title )
 			.coordinates( List.of( 0, 0 ) )
 			.line( 0 )
@@ -70,10 +69,8 @@ public class IndexerTest {
 			.word( "document" )
 			.length( 8 )
 			.document( document )
-			.priority( Hit.TITLE_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains( Hit
-			.builder()
+			.priority( Hit.TITLE_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains( new Hit()
 			.context( text )
 			.coordinates( List.of( 0, 0 ) )
 			.line( 0 )
@@ -81,10 +78,8 @@ public class IndexerTest {
 			.word( "this" )
 			.length( 4 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( new Hit()
 			.context( text )
 			.coordinates( List.of( 0, 5 ) )
 			.line( 0 )
@@ -92,10 +87,8 @@ public class IndexerTest {
 			.word( "is" )
 			.length( 2 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( new Hit()
 			.context( text )
 			.coordinates( List.of( 0, 8 ) )
 			.line( 0 )
@@ -103,10 +96,8 @@ public class IndexerTest {
 			.word( "some" )
 			.length( 4 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( new Hit()
 			.context( text )
 			.coordinates( List.of( 0, 13 ) )
 			.line( 0 )
@@ -114,10 +105,8 @@ public class IndexerTest {
 			.word( "arbitrary" )
 			.length( 9 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( new Hit()
 			.context( text )
 			.coordinates( List.of( 0, 23 ) )
 			.line( 0 )
@@ -125,8 +114,7 @@ public class IndexerTest {
 			.word( "content" )
 			.length( 7 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
+			.priority( Hit.CONTENT_PRIORITY ) );
 
 		// Check the dictionary
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "document", "this", "is", "some", "arbitrary", "content" );
@@ -147,8 +135,7 @@ public class IndexerTest {
 		result.get().get();
 
 		// Check the hits
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( Hit
-			.builder()
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( new Hit()
 			.context( name.trim() )
 			.coordinates( List.of( 0, 10 ) )
 			.line( 0 )
@@ -156,14 +143,12 @@ public class IndexerTest {
 			.word( "document" )
 			.length( 8 )
 			.document( document )
-			.priority( Hit.TITLE_PRIORITY )
-			.build() );
+			.priority( Hit.TITLE_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains(
-			Hit.builder().context( name.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.TITLE_PRIORITY ).build(),
-			Hit.builder().context( line0.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
+			new Hit().context( name.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.TITLE_PRIORITY ),
+			new Hit().context( line0.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY )
 		);
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( Hit
-			.builder()
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( new Hit()
 			.context( line0.trim() )
 			.coordinates( List.of( 0, 6 ) )
 			.line( 0 )
@@ -171,10 +156,8 @@ public class IndexerTest {
 			.word( "is" )
 			.length( 2 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( new Hit()
 			.context( line1.trim() )
 			.coordinates( List.of( 1, 0 ) )
 			.line( 1 )
@@ -182,10 +165,8 @@ public class IndexerTest {
 			.word( "some" )
 			.length( 4 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( new Hit()
 			.context( line1.trim() )
 			.coordinates( List.of( 1, 6 ) )
 			.line( 1 )
@@ -193,10 +174,8 @@ public class IndexerTest {
 			.word( "arbitrary" )
 			.length( 9 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
-		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( Hit
-			.builder()
+			.priority( Hit.CONTENT_PRIORITY ) );
+		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( new Hit()
 			.context( line1.trim() )
 			.coordinates( List.of( 1, 16 ) )
 			.line( 1 )
@@ -204,8 +183,7 @@ public class IndexerTest {
 			.word( "content" )
 			.length( 7 )
 			.document( document )
-			.priority( Hit.CONTENT_PRIORITY )
-			.build() );
+			.priority( Hit.CONTENT_PRIORITY ) );
 
 		// Check the dictionary
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getDictionary() ).contains( "a", "document", "this", "is", "some", "arbitrary", "content" );

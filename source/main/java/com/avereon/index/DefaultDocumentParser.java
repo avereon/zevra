@@ -64,7 +64,7 @@ public class DefaultDocumentParser implements DocumentParser {
 				hits.addAll( Terms.split( trimText, ( start, end ) -> {
 					int length = end - start;
 					String word = trimText.substring( start, end ).toLowerCase();
-					return Hit.builder().document( document ).context( trimText ).word( word ).line( finalLine ).index( start ).length( length ).priority( priority ).build();
+					return new Hit().document( document ).context( trimText ).word( word ).line( finalLine ).index( start ).length( length ).priority( priority );
 				} ) );
 				line++;
 			}

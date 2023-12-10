@@ -41,7 +41,7 @@ public class HitFinder {
 		try {
 			hits.addAll( source
 				.index()
-				.map( t -> Hit.builder().document( document ).context( t.context() ).word( t.value() ).length( t.length() ).coordinates( t.coordinates() ).priority( priority ).build() )
+				.map( t -> new Hit().document( document ).context( t.context() ).word( t.value() ).length( t.length() ).coordinates( t.coordinates() ).priority( priority ) )
 				.toList() );
 		} catch( IOException ignore ) {
 			// Intentionally ignore this exception as this should never occur

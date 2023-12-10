@@ -12,7 +12,7 @@ import java.util.List;
  * hits with more information regarding the search match.
  */
 @Data
-@Builder( toBuilder = true )
+//@Builder( toBuilder = true )
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors( fluent = true )
@@ -39,11 +39,11 @@ public class Hit {
 	private List<Integer> coordinates;
 
 	@Deprecated
-	@EqualsAndHashCode.Exclude
+	//@EqualsAndHashCode.Exclude
 	private int line;
 
 	@Deprecated
-	@EqualsAndHashCode.Exclude
+	//@EqualsAndHashCode.Exclude
 	private int index;
 
 	private int priority;
@@ -51,9 +51,17 @@ public class Hit {
 	// This is used for search hits
 	private int points;
 
+	public Hit coordinates( List<Integer> coordinates ) {
+		this.coordinates = coordinates;
+		int count = coordinates.size();
+		if( count > 0 ) line = coordinates.get( 0 );
+		if( count > 1 ) index = coordinates.get( 1 );
+		return this;
+	}
+
 	@Override
 	public String toString() {
-		return "{" + "title=" + document.title() + " length=" + length + " term=" + word + " context=" + context + " coords=" + coordinates + "}";
+		return "{" + "title=" + document.title() + " length=" + length + " term=" + word + " context=" + context+ " line=" + line+ " index=" + index + " coords=" + coordinates + "}";
 	}
 
 }

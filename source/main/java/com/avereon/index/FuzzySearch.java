@@ -53,7 +53,7 @@ public class FuzzySearch implements Search {
 		dictionary.forEach( word -> {
 			int points = getRankPoints( term, word );
 			if( points < cutoff ) return;
-			hits.addAll( index.getHits( word ).stream().map( h -> h.toBuilder().points( points ).build()).toList());
+			hits.addAll( index.getHits( word ).stream().map( h -> h.points( points )).toList());
 		} );
 		hits.sort( new HitSort() );
 
