@@ -12,6 +12,7 @@ module com.avereon.zevra {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 	requires me.xdrop.fuzzywuzzy;
+	requires org.jsoup;
 
 	opens com.avereon.util to com.fasterxml.jackson.databind;
 

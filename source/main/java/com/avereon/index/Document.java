@@ -1,6 +1,8 @@
 package com.avereon.index;
 
+import com.avereon.util.TextUtil;
 import com.avereon.util.TokenReplacingReader;
+import lombok.CustomLog;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,17 +17,26 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Data
 @Accessors( fluent = true )
+@CustomLog
 public class Document {
 
-	private final URI uri;
+	public enum SupportedMediaType {
+		TEXT,
+		HTML
+	}
 
-	private final String icon;
+	private URI uri;
 
-	private final String title;
+	private String icon;
+
+	private String title;
+
+	private SupportedMediaType mediaType;
 
 	private Set<String> tags;
 
@@ -37,10 +48,17 @@ public class Document {
 
 	private Map<String, String> values;
 
+	private Map<String, Object> properties;
+
+	public Document() {
+		this( null, null, null );
+	}
+
 	public Document( URI uri, String icon, String title ) {
 		this.uri = uri;
 		this.icon = icon;
 		this.title = title;
+		this.mediaType = SupportedMediaType.TEXT;
 	}
 
 	public Document( URI uri, String icon, String title, URL url ) {
@@ -63,14 +81,22 @@ public class Document {
 		return this;
 	}
 
+	public Map<String, Object> properties() {
+		if( properties == null ) properties = new ConcurrentHashMap<>();
+		return properties;
+	}
+
 	public Reader reader() throws IOException {
 		Reader reader;
 
 		if( content != null ) {
+			if( TextUtil.isEmpty( content ) ) log.atWarn().log( "Document reader has empty content: " + uri() );
 			reader = new StringReader( content );
 		} else if( url != null ) {
+			//log.atConfig().log( "Reader from url: " + url);
 			reader = new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );
 		} else {
+			//log.atConfig().log( "No content" );
 			return null;
 		}
 

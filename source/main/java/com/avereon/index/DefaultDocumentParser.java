@@ -1,7 +1,9 @@
 package com.avereon.index;
 
 import com.avereon.result.Result;
+import com.avereon.util.IoUtil;
 import lombok.CustomLog;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +19,8 @@ public class DefaultDocumentParser implements DocumentParser {
 	@Override
 	public Result<Set<Hit>> index( Document document ) {
 		Set<Hit> hits = new HashSet<>();
+
+		// FIXME Get title of HTML documents...somehow
 
 		// Add tags
 		hits.addAll( findHits( document, document.tags(), Hit.TAG_PRIORITY ) );
@@ -35,6 +39,23 @@ public class DefaultDocumentParser implements DocumentParser {
 		return Result.of( hits );
 	}
 
+	private String getHtmlTitle( Document document ) {
+		return getHtmlRoot( document ).select( "html > head > title" ).text();
+	}
+
+	private org.jsoup.nodes.Document getHtmlRoot( Document document ) {
+		org.jsoup.nodes.Document htmlRoot = (org.jsoup.nodes.Document)document.properties().get( "org.jsoup.nodes.Document" );
+		if( htmlRoot == null ) {
+			try( Reader reader = document.reader() ) {
+				htmlRoot = Jsoup.parse( IoUtil.toString( reader ) );
+				document.properties().put( "org.jsoup.nodes.Document", htmlRoot );
+			} catch( IOException exception ) {
+				log.atWarn( exception );
+			}
+		}
+		return htmlRoot;
+	}
+
 	private Set<Hit> findHits( Document document, Set<String> content, int priority ) {
 		return content.stream().flatMap( t -> findHits( document, t, priority ).stream() ).collect( Collectors.toSet() );
 	}
@@ -51,6 +72,13 @@ public class DefaultDocumentParser implements DocumentParser {
 			while( (text = reader.readLine()) != null ) {
 				final String trimText = text.trim();
 				final int finalLine = line;
+
+				// TODO Terms can come from lots of sources:
+				// - Plain text
+				// - HTML (but not the tags)
+				// - XML (but not the tags)
+				// - JSON (but not the keys)
+
 				hits.addAll( Terms.split( trimText, ( start, end ) -> {
 					int length = end - start;
 					String word = trimText.substring( start, end ).toLowerCase();
