@@ -1,9 +1,7 @@
 package com.avereon.index;
 
 import com.avereon.result.Result;
-import com.avereon.util.IoUtil;
 import lombok.CustomLog;
-import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Deprecated
 @CustomLog
 public class DefaultDocumentParser implements DocumentParser {
 
@@ -37,23 +36,6 @@ public class DefaultDocumentParser implements DocumentParser {
 		}
 
 		return Result.of( hits );
-	}
-
-	private String getHtmlTitle( Document document ) {
-		return getHtmlRoot( document ).select( "html > head > title" ).text();
-	}
-
-	private org.jsoup.nodes.Document getHtmlRoot( Document document ) {
-		org.jsoup.nodes.Document htmlRoot = (org.jsoup.nodes.Document)document.properties().get( "org.jsoup.nodes.Document" );
-		if( htmlRoot == null ) {
-			try( Reader reader = document.reader() ) {
-				htmlRoot = Jsoup.parse( IoUtil.toString( reader ) );
-				document.properties().put( "org.jsoup.nodes.Document", htmlRoot );
-			} catch( IOException exception ) {
-				log.atWarn( exception );
-			}
-		}
-		return htmlRoot;
 	}
 
 	private Set<Hit> findHits( Document document, Set<String> content, int priority ) {

@@ -17,8 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class IndexerTest {
 
-	private static final String sample = "The quick brown fox jumps over the lazy dog";
-
 	private Indexer indexer;
 
 	private FuzzySearch search;
@@ -27,7 +25,7 @@ public class IndexerTest {
 	void setup() throws IOException {
 		Path indexPath = FileUtil.createTempFolder( "IndexerTest" );
 		indexer = new Indexer( indexPath );
-		search = new FuzzySearch(75);
+		search = new FuzzySearch( 75 );
 	}
 
 	@Test
@@ -66,6 +64,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( Hit
 			.builder()
 			.context( title )
+			.coordinates( List.of( 0, 0 ) )
 			.line( 0 )
 			.index( 0 )
 			.word( "document" )
@@ -76,6 +75,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains( Hit
 			.builder()
 			.context( text )
+			.coordinates( List.of( 0, 0 ) )
 			.line( 0 )
 			.index( 0 )
 			.word( "this" )
@@ -86,6 +86,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( Hit
 			.builder()
 			.context( text )
+			.coordinates( List.of( 0, 5 ) )
 			.line( 0 )
 			.index( 5 )
 			.word( "is" )
@@ -96,6 +97,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( Hit
 			.builder()
 			.context( text )
+			.coordinates( List.of( 0, 8 ) )
 			.line( 0 )
 			.index( 8 )
 			.word( "some" )
@@ -106,6 +108,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( Hit
 			.builder()
 			.context( text )
+			.coordinates( List.of( 0, 13 ) )
 			.line( 0 )
 			.index( 13 )
 			.word( "arbitrary" )
@@ -116,6 +119,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( Hit
 			.builder()
 			.context( text )
+			.coordinates( List.of( 0, 23 ) )
 			.line( 0 )
 			.index( 23 )
 			.word( "content" )
@@ -146,6 +150,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( Hit
 			.builder()
 			.context( name.trim() )
+			.coordinates( List.of( 0, 10 ) )
 			.line( 0 )
 			.index( 10 )
 			.word( "document" )
@@ -154,12 +159,13 @@ public class IndexerTest {
 			.priority( Hit.TITLE_PRIORITY )
 			.build() );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains(
-			Hit.builder().context( name.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.TITLE_PRIORITY ).build(),
-			Hit.builder().context( line0.trim() ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
+			Hit.builder().context( name.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.TITLE_PRIORITY ).build(),
+			Hit.builder().context( line0.trim() ).coordinates( List.of( 0, 0 ) ).line( 0 ).index( 0 ).word( "this" ).length( 4 ).document( document ).priority( Hit.CONTENT_PRIORITY ).build()
 		);
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( Hit
 			.builder()
 			.context( line0.trim() )
+			.coordinates( List.of( 0, 6 ) )
 			.line( 0 )
 			.index( 6 )
 			.word( "is" )
@@ -170,6 +176,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( Hit
 			.builder()
 			.context( line1.trim() )
+			.coordinates( List.of( 1, 0 ) )
 			.line( 1 )
 			.index( 0 )
 			.word( "some" )
@@ -180,6 +187,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( Hit
 			.builder()
 			.context( line1.trim() )
+			.coordinates( List.of( 1, 6 ) )
 			.line( 1 )
 			.index( 6 )
 			.word( "arbitrary" )
@@ -190,6 +198,7 @@ public class IndexerTest {
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( Hit
 			.builder()
 			.context( line1.trim() )
+			.coordinates( List.of( 1, 16 ) )
 			.line( 1 )
 			.index( 16 )
 			.word( "content" )

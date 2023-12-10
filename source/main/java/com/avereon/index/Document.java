@@ -93,10 +93,8 @@ public class Document {
 			if( TextUtil.isEmpty( content ) ) log.atWarn().log( "Document reader has empty content: " + uri() );
 			reader = new StringReader( content );
 		} else if( url != null ) {
-			//log.atConfig().log( "Reader from url: " + url);
 			reader = new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );
 		} else {
-			//log.atConfig().log( "No content" );
 			return null;
 		}
 

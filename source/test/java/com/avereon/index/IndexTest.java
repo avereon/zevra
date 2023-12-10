@@ -2,6 +2,7 @@ package com.avereon.index;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,9 +35,9 @@ public class IndexTest {
 		Index b = new StandardIndex();
 
 		a.push( Set.of( Hit.builder().word( "a" ).build() ) );
-		a.push( Set.of( Hit.builder().word( "b" ).line( 0 ).build() ) );
+		a.push( Set.of( Hit.builder().word( "b" ).coordinates( List.of( 0 ) ).line( 0 ).build() ) );
 
-		b.push( Set.of( Hit.builder().word( "b" ).line( 1 ).build() ) );
+		b.push( Set.of( Hit.builder().word( "b" ).coordinates( List.of( 1 ) ).line( 1 ).build() ) );
 		b.push( Set.of( Hit.builder().word( "c" ).build() ) );
 
 		// When merged, the word "b" will have two hits since they are on separate lines

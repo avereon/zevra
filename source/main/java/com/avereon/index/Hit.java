@@ -3,6 +3,8 @@ package com.avereon.index;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * This class represents both index and search hits since both of these types
  * of hits are very similar and have very similar uses. Index hits have all
@@ -32,11 +34,17 @@ public class Hit {
 
 	private String word;
 
+	private int length;
+
+	private List<Integer> coordinates;
+
+	@Deprecated
+	@EqualsAndHashCode.Exclude
 	private int line;
 
+	@Deprecated
+	@EqualsAndHashCode.Exclude
 	private int index;
-
-	private int length;
 
 	private int priority;
 
@@ -45,7 +53,7 @@ public class Hit {
 
 	@Override
 	public String toString() {
-		return "{" + "title=" + document.title() + " index=" + index + " length=" + length + " term=" + word + " context=" + context + " line=" + line + "}";
+		return "{" + "title=" + document.title() + " length=" + length + " term=" + word + " context=" + context + " coords=" + coordinates + "}";
 	}
 
 }

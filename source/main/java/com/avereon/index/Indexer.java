@@ -83,8 +83,12 @@ public class Indexer implements Controllable<Indexer> {
 	private Result<Set<Hit>> doIndex( String name, Document document ) {
 		Index index = indexes.computeIfAbsent( name, k -> new StandardIndex() );
 
-		// Add document words to the index
-		return new DefaultDocumentParser().index( document ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
+		TermSource parser = switch( document.mediaType() ) {
+			case HTML -> new HtmlTermSource(document);
+			default -> new TextTermSource(document);
+		};
+
+		return new HitFinder().find( document, parser ).ifSuccess( index::push ).ifFailure( e -> log.atWarn( e ).log( "Unable to parse document: %s", document ) );
 	}
 
 }
