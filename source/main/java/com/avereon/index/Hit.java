@@ -38,12 +38,16 @@ public class Hit {
 
 	private List<Integer> coordinates;
 
-	@Deprecated
-	//@EqualsAndHashCode.Exclude
+	/**
+	 * @deprecated Use coordinates instead
+	 */
+	@Deprecated (since = "0.9")
 	private int line;
 
-	@Deprecated
-	//@EqualsAndHashCode.Exclude
+	/**
+	 * @deprecated Use coordinates instead
+	 */
+	@Deprecated (since = "0.9")
 	private int index;
 
 	private int priority;
