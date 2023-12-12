@@ -80,18 +80,18 @@
 			<version>${fuzzywuzzy.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>${jsoup.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.jsoup</groupId>-->
+<!--			<artifactId>jsoup</artifactId>-->
+<!--			<version>${jsoup.version}</version>-->
+<!--		</dependency>-->
 
-		<!-- Required by jsoup when running curex to patch the module -->
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>3.0.2</version>
-		</dependency>
+<!--		&lt;!&ndash; Required by jsoup when running curex to patch the module &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>com.google.code.findbugs</groupId>-->
+<!--			<artifactId>jsr305</artifactId>-->
+<!--			<version>3.0.2</version>-->
+<!--		</dependency>-->
 
 	</dependencies>
 
