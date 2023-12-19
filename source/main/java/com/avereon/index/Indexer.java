@@ -84,7 +84,7 @@ public class Indexer implements Controllable<Indexer> {
 		Index index = indexes.computeIfAbsent( name, k -> new StandardIndex() );
 
 		TermSource parser = switch( document.mediaType() ) {
-			//case HTML -> new HtmlTermSource(document);
+			case HTML -> new HtmlTermSource(document);
 			default -> new TextTermSource(document);
 		};
 
