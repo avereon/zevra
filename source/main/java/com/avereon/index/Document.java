@@ -61,11 +61,6 @@ public class Document {
 	private Set<String> tags;
 
 	/**
-	 * Indicates to the indexer whether to store the content for future reference.
-	 */
-	private boolean store;
-
-	/**
 	 * The URL from where to load the document content. The url is not the same as
 	 * the {@link #uri}, but are often related.
 	 */
