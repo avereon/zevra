@@ -25,29 +25,68 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @CustomLog
 public class Document {
 
-	public enum SupportedMediaType {
+	public enum MediaType {
 		TEXT,
 		HTML
 	}
 
+	/**
+	 * The media type of the document. This is set to SupportedMediaType.TEXT by
+	 * default but should be changed to match the media type of the document. For
+	 * example, when indexing an HTML document, the media type should be set to
+	 * SupportedMediaType.HTML so the HTML tags are not indexed.
+	 */
+	private MediaType mediaType;
+
+	/**
+	 * The document URI. The URI is a unique identifier for this document,
+	 * regardless of language, replacement values, or the location of the content.
+	 * The uri is not the same as the {@link #url}, but are often related.
+	 */
 	private URI uri;
 
+	/**
+	 * The icon key or URL.
+	 */
 	private String icon;
 
+	/**
+	 * The document title.
+	 */
 	private String title;
 
-	private SupportedMediaType mediaType;
-
+	/**
+	 * The document tags.
+	 */
 	private Set<String> tags;
 
+	/**
+	 * Indicates to the indexer whether to store the content for future reference.
+	 */
 	private boolean store;
 
+	/**
+	 * The URL from where to load the document content. The url is not the same as
+	 * the {@link #uri}, but are often related.
+	 */
 	private URL url;
 
+	/**
+	 * The content loaded from the {@link #url}. This is the data that will be
+	 * indexed.
+	 */
 	private String content;
 
+	/**
+	 * The replacement values for the content. These are be replaced in the
+	 * content before the content is indexed.
+	 */
 	private Map<String, String> values;
 
+	/**
+	 * The document properties. These properties have no special meaning to the
+	 * indexer but are available to store meta-data regarding the document.
+	 */
 	private Map<String, Object> properties;
 
 	public Document() {
@@ -58,7 +97,7 @@ public class Document {
 		this.uri = uri;
 		this.icon = icon;
 		this.title = title;
-		this.mediaType = SupportedMediaType.TEXT;
+		this.mediaType = MediaType.TEXT;
 	}
 
 	public Document( URI uri, String icon, String title, URL url ) {
