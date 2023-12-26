@@ -37,7 +37,7 @@ public class FuzzySearch implements Search {
 		for( String term : query.terms() ) {
 			List<HitMatchWrapper> termHits = HitMatchWrapper.wrap( search( index, term ).get() );
 			if( hits.isEmpty() ) {
-				hits.addAll( termHits );
+				hits = termHits;
 			} else {
 				hits.retainAll( termHits );
 			}
@@ -46,19 +46,29 @@ public class FuzzySearch implements Search {
 		return Result.of( HitMatchWrapper.unwrap( hits ) );
 	}
 
-	private Result<List<Hit>> search( Index index, String term ) {
-		Set<String> dictionary = index.getDictionary();
-
-		List<Hit> hits = new ArrayList<>();
-		dictionary.forEach( word -> {
-			int points = getRankPoints( term, word );
-			if( points < cutoff ) return;
-			hits.addAll( index.getHits( word ).stream().map( h -> h.points( points )).toList());
-		} );
-		hits.sort( new HitSort() );
-
-		return Result.of( new ArrayList<>( hits ) );
+	private Result<List<Hit>> search(Index index, String term) {
+		List<Hit> hits = index.getDictionary().stream()
+			.map(word -> Map.entry(word, getRankPoints(term, word)))
+			.filter(entry -> entry.getValue() >= cutoff)
+			.flatMap(entry -> index.getHits(entry.getKey()).stream().map(h -> h.points(entry.getValue())))
+			.sorted(new HitSort())
+			.collect(Collectors.toList());
+		return Result.of(hits);
 	}
+
+//	private Result<List<Hit>> search( Index index, String term ) {
+//		Set<String> dictionary = index.getDictionary();
+//
+//		List<Hit> hits = new ArrayList<>();
+//		dictionary.forEach( word -> {
+//			int points = getRankPoints( term, word );
+//			if( points < cutoff ) return;
+//			hits.addAll( index.getHits( word ).stream().map( h -> h.points( points )).toList());
+//		} );
+//		hits.sort( new HitSort() );
+//
+//		return Result.of( new ArrayList<>( hits ) );
+//	}
 
 	/**
 	 * Get a percent rank (0-100) of how close two strings match using the
