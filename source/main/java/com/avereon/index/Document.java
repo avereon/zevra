@@ -4,6 +4,7 @@ import com.avereon.util.TextUtil;
 import com.avereon.util.TokenReplacingReader;
 import lombok.CustomLog;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.IOException;
@@ -83,6 +84,12 @@ public class Document {
 	 * indexer but are available to store meta-data regarding the document.
 	 */
 	private Map<String, Object> properties;
+
+	@EqualsAndHashCode.Exclude
+	private int searchPoints;
+
+	@EqualsAndHashCode.Exclude
+	private int searchPriority;
 
 	public Document() {
 		this( null, null, null );

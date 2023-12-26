@@ -275,8 +275,8 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
 		assertThat( hits.size() ).isEqualTo( 2 );
-		assertThat( hits.get( 0 ).getDocument() ).isEqualTo( document2 );
-		assertThat( hits.get( 1 ).getDocument() ).isEqualTo( document1 );
+		assertThat( hits.get( 0 ).getDocument() ).isEqualTo( document1 );
+		assertThat( hits.get( 1 ).getDocument() ).isEqualTo( document2 );
 	}
 
 	@Test

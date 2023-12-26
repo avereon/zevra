@@ -82,7 +82,7 @@ public class FuzzySearch implements Search {
 	 * @return Percent rank
 	 */
 	int getRankPoints( String term, String word ) {
-		return me.xdrop.fuzzywuzzy.FuzzySearch.weightedRatio( term, word );
+		return me.xdrop.fuzzywuzzy.FuzzySearch.ratio( term, word );
 	}
 
 	/**

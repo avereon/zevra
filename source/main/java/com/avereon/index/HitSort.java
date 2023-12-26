@@ -8,9 +8,9 @@ class HitSort implements Comparator<Hit> {
 	public int compare( Hit hit1, Hit hit2 ) {
 
 		return Comparator
-			.comparing( ( o ) -> ((Hit)o).getDocument().title() ).reversed()
-			.thenComparingInt( o -> ((Hit)o).getPriority() )
-			.thenComparingInt( o -> ((Hit)o).getPoints() ).reversed()
+			.comparingInt( o -> ((Hit)o).getPoints() ).reversed()
+			//.thenComparingInt( o -> ((Hit)o).getPriority() )
+			.thenComparing( ( o ) -> ((Hit)o).getDocument().title() )
 			.compare( hit1, hit2 );
 	}
 
