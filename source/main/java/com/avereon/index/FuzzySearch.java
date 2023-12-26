@@ -75,14 +75,14 @@ public class FuzzySearch implements Search {
 	/**
 	 * Get a percent rank (0-100) of how close two strings match using the
 	 * Levenshtein distance algorithm to calculate similarity between strings.
-	 * A value of 100 means an exact match.
+	 * A value of 0 means an exact match.
 	 *
 	 * @param term Search term
 	 * @param word Word to check
 	 * @return Percent rank
 	 */
 	int getRankPoints( String term, String word ) {
-		return me.xdrop.fuzzywuzzy.FuzzySearch.weightedRatio( term, word );
+		return me.xdrop.fuzzywuzzy.FuzzySearch.partialRatio( term, word );
 	}
 
 	/**
