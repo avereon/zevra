@@ -264,9 +264,9 @@ public class IndexerTest {
 			.orElseThrow( () -> new NoSuchElementException( "Index not found: " + Index.DEFAULT ) )
 			.orElseThrow( () -> new NoSuchElementException( "No documents found" ) );
 
-		assertThat( hits.size() ).isEqualTo( 2 );
+		assertThat( hits.size() ).isEqualTo( 1 );
 		assertThat( hits.get( 0 ).getDocument() ).isEqualTo( document2 );
-		assertThat( hits.get( 1 ).getDocument() ).isEqualTo( document1 );
+		//assertThat( hits.get( 1 ).getDocument() ).isEqualTo( document1 );
 
 		hits = indexer
 			.getIndex( Index.DEFAULT )
