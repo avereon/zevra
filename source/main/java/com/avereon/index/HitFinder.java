@@ -27,6 +27,7 @@ public class HitFinder {
 
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private Set<Hit> findHits( Document document, Set<String> content, int priority ) {
 		return content.stream().flatMap( t -> findHits( document, t, priority ).stream() ).collect( Collectors.toSet() );
 	}
@@ -43,8 +44,8 @@ public class HitFinder {
 				.index()
 				.map( t -> new Hit().setDocument( document ).setContext( t.context() ).setWord( t.word() ).setLength( t.length() ).coordinates( t.coordinates() ).setPriority( priority ) )
 				.toList() );
-		} catch( IOException ignore ) {
-			// Intentionally ignore this exception as this should never occur
+		} catch( IOException exception ) {
+			log.atWarn( exception );
 		}
 
 		return hits;
