@@ -1,6 +1,8 @@
 package com.avereon.index;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
 //@Builder( toBuilder = true )
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors( fluent = true )
+@Accessors( chain = true )
 public class Hit {
 
 	public static final int TAG_PRIORITY = 2;
@@ -50,10 +52,10 @@ public class Hit {
 	@Deprecated (since = "0.9")
 	private int index;
 
-	private int priority;
-
 	// This is used for search hits
 	private int points;
+
+	private int priority;
 
 	public Hit coordinates( List<Integer> coordinates ) {
 		this.coordinates = coordinates;

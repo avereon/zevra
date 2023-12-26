@@ -14,11 +14,11 @@ public class IndexTest {
 		Index a = new StandardIndex();
 		Index b = new StandardIndex();
 
-		a.push( Set.of( new Hit().word( "a" ) ) );
-		a.push( Set.of( new Hit().word( "b" ) ) );
+		a.push( Set.of( new Hit().setWord( "a" ) ) );
+		a.push( Set.of( new Hit().setWord( "b" ) ) );
 
-		b.push( Set.of( new Hit().word( "b" ) ) );
-		b.push( Set.of( new Hit().word( "c" ) ) );
+		b.push( Set.of( new Hit().setWord( "b" ) ) );
+		b.push( Set.of( new Hit().setWord( "c" ) ) );
 
 		// When merged, the word "b" will still only have one hit since the hits are equal
 
@@ -34,11 +34,11 @@ public class IndexTest {
 		Index a = new StandardIndex();
 		Index b = new StandardIndex();
 
-		a.push( Set.of( new Hit().word( "a" ) ) );
-		a.push( Set.of( new Hit().word( "b" ).coordinates( List.of( 0 ) ).line( 0 ) ) );
+		a.push( Set.of( new Hit().setWord( "a" ) ) );
+		a.push( Set.of( new Hit().setWord( "b" ).coordinates( List.of( 0 ) ).setLine( 0 ) ) );
 
-		b.push( Set.of( new Hit().word( "b" ).coordinates( List.of( 1 ) ).line( 1 ) ) );
-		b.push( Set.of( new Hit().word( "c" ) ) );
+		b.push( Set.of( new Hit().setWord( "b" ).coordinates( List.of( 1 ) ).setLine( 1 ) ) );
+		b.push( Set.of( new Hit().setWord( "c" ) ) );
 
 		// When merged, the word "b" will have two hits since they are on separate lines
 

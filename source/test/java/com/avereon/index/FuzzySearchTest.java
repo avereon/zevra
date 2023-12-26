@@ -41,7 +41,7 @@ public class FuzzySearchTest {
 	void testSearchWithDuplicateSearchTerms() {
 		Search search = new FuzzySearch( 80 );
 		IndexQuery query = IndexQuery.builder().terms( List.of( "document", "document" ) ).build();
-		Index index = new StandardIndex().push( Set.of( new Hit().word( "document" ) ) );
+		Index index = new StandardIndex().push( Set.of( new Hit().setWord( "document" ) ) );
 		List<Hit> hits = search.search( index, query ).get();
 		assertThat( hits.size() ).isEqualTo( 1 );
 	}

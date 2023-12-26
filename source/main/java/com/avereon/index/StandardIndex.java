@@ -28,7 +28,7 @@ public class StandardIndex implements Index {
 	}
 
 	public Index push( Collection<Hit> hits ) {
-		hits.forEach( h -> index.computeIfAbsent( h.word(), k -> new CopyOnWriteArraySet<>() ).add( h ) );
+		hits.forEach( h -> index.computeIfAbsent( h.getWord(), k -> new CopyOnWriteArraySet<>() ).add( h ) );
 		return this;
 	}
 
