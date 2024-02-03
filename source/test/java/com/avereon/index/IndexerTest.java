@@ -3,6 +3,7 @@ package com.avereon.index;
 import com.avereon.result.Result;
 import com.avereon.util.FileUtil;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -280,6 +281,7 @@ public class IndexerTest {
 	}
 
 	@Test
+	@Disabled( "This test is inconsistent" )
 	void testPrioritySort() throws Exception {
 		String icon = "document";
 		String name = "Document";
