@@ -85,8 +85,9 @@ public class Rb {
 			ResourceBundle bundle = getResourceBundle( product, rbPath );
 			if( valueKey != null && bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
 		} catch( MissingResourceException exception ) {
+			log.atWarning().log( "Missing bundle for: %s", rbPath );
 			if( parent == null ) {
-				log.atWarning().log( "Missing bundle for: %s", missingResourceMessage );
+				log.atWarning().log( "Missing parent bundle for: %s", rbPath );
 				return null;
 			}
 		}
