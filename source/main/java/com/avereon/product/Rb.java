@@ -78,7 +78,8 @@ public class Rb {
 
 		String string = null;
 		Product parent = product.getParent();
-		String rbPath = getPath( product, path ) + "/" + rbKey;
+		String productPath = getPath( product, path );
+		String rbPath = productPath + "/" + rbKey;
 		String missingResourceMessage = originalProduct.getCard().getArtifact() + " > " + rbKey + " > " + valueKey;
 
 		try {
@@ -86,6 +87,7 @@ public class Rb {
 			if( valueKey != null && bundle.containsKey( valueKey ) ) string = MessageFormat.format( bundle.getString( valueKey ), values );
 		} catch( MissingResourceException exception ) {
 			log.atWarning().log( "Missing bundle for: %s", rbPath );
+			log.atConfig().log( "Is module package open: %s", productPath.replace( "/", "." ) );
 			if( parent == null ) {
 				log.atWarning().log( "Missing parent bundle for: %s", rbPath );
 				return null;
