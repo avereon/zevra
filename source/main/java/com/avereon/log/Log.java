@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 public class Log {
@@ -142,6 +143,14 @@ public class Log {
 		} catch( IOException exception ) {
 			exception.printStackTrace( System.err );
 		}
+	}
+
+	public static void setBaseLogLevel( Level level ) {
+		java.util.logging.Logger.getLogger( "" ).setLevel( level );
+	}
+
+	public static void setBaseLogLevel( String levelName ) {
+		setBaseLogLevel( LogFlag.toLogLevel( levelName ) );
 	}
 
 	public static String getLogFile() {
