@@ -14,6 +14,14 @@ import java.util.*;
 @CustomLog
 public final class JavaUtil {
 
+	public static int getVersion() {
+		String version = System.getProperty( "java.version" );
+		String[] parts = version.split( "\\." );
+		int majorVersion = Integer.parseInt( parts[ 0 ] );
+		if( majorVersion == 1 ) 			majorVersion = Integer.parseInt( parts[ 1 ] );
+		return majorVersion;
+	}
+
 	public static boolean isTest() {
 		try {
 			JavaUtil.class.getClassLoader().loadClass( "org.junit.Assert" );
