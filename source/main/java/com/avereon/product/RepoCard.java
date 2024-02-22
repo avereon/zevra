@@ -15,8 +15,6 @@ import java.util.Objects;
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class RepoCard extends BaseCard {
 
-	public static final String CONFIG = "/META-INF/repositories.json";
-
 	private String name;
 
 	private List<String> icons;
