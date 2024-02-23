@@ -2,35 +2,62 @@ package com.avereon.product;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 public class CatalogCard extends BaseCard {
 
 	public static final String FILE = "catalog.card";
 
-	/**
-	 * The timestamp the catalog was last updated.
-	 */
+	private RepoCard repo;
+
 	private long timestamp;
 
-	/**
-	 * The set of products in the repository.
-	 * <p>
-	 * The set contains only the product artifact ids, not the full product cards.
-	 */
-	private Set<String> products;
+	private Set<String> products = new HashSet<>();
 
 	public CatalogCard() {}
 
-	public static CatalogCard fromJson( InputStream input ) throws IOException {
-		return new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
+	public CatalogCard( RepoCard repo ) {
+		this.repo = repo;
+	}
+
+	public RepoCard getRepo() {
+		return repo;
+	}
+
+	public void setRepo( RepoCard repo ) {
+		this.repo = repo;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp( long timestamp ) {
+		this.timestamp = timestamp;
+	}
+
+	public Set<String> getProducts() {
+		return products;
+	}
+
+	/**
+	 * The set of products in the repository. The set contains the product
+	 * artifact ids only.
+	 *
+	 * @param products The set of product ids
+	 */
+	public void setProducts( Set<String> products ) {
+		this.products = products == null ? Set.of() : new HashSet<>( products );
+	}
+
+	public static CatalogCard fromJson( RepoCard repo, InputStream input ) throws IOException {
+		CatalogCard catalog = new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
+		catalog.setRepo( repo );
+		return catalog;
 	}
 
 }
