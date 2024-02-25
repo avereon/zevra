@@ -18,8 +18,7 @@ class CatalogCardTest {
 	@Test
 	void testLoad() throws Exception {
 		String data = "{\"timestamp\":\"1557457963562\",\"products\":[\"product1\",\"product2\"]}";
-		RepoCard repo = new RepoCard();
-		CatalogCard card = CatalogCard.fromJson( repo, new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
+		CatalogCard card = CatalogCard.fromJson( new ByteArrayInputStream( data.getBytes( StandardCharsets.UTF_8 ) ) );
 
 		assertThat( card.getTimestamp() ).isEqualTo( 1557457963562L );
 		assertThat( card.getProducts() ).contains( "product1", "product2" );
@@ -42,18 +41,18 @@ class CatalogCardTest {
 		String store = mapper.writeValueAsString( card );
 
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
-		assertThat( reader.readLine() ).isEqualTo( "{"  );
-		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\","  );
-		assertThat( reader.readLine() ).isEqualTo( "  \"repo\" : {"  );
-		assertThat( reader.readLine() ).isEqualTo( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\","  );
-		assertThat( reader.readLine() ).isEqualTo( "    \"name\" : \"Example Product Market\","  );
+		assertThat( reader.readLine() ).isEqualTo( "{" );
+		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"repo\" : {" );
+		assertThat( reader.readLine() ).isEqualTo( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\"," );
+		assertThat( reader.readLine() ).isEqualTo( "    \"name\" : \"Example Product Market\"," );
 		//assertThat( reader.readLine()).isEqualTo( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
-		assertThat( reader.readLine() ).isEqualTo( "    \"icons\" : [ \"https://www.example.com/market/icon\" ],"  );
-		assertThat( reader.readLine() ).isEqualTo( "    \"url\" : \"https://www.example.com/market\""  );
-		assertThat( reader.readLine() ).isEqualTo( "  },"  );
-		assertThat( reader.readLine() ).isEqualTo( "  \"timestamp\" : " + card.getTimestamp() + ","  );
-		assertThat( reader.readLine() ).isEqualTo( "  \"products\" : [ \"product2\", \"product1\" ]"  );
-		assertThat( reader.readLine() ).isEqualTo( "}"  );
+		assertThat( reader.readLine() ).isEqualTo( "    \"icons\" : [ \"https://www.example.com/market/icon\" ]," );
+		assertThat( reader.readLine() ).isEqualTo( "    \"url\" : \"https://www.example.com/market\"" );
+		assertThat( reader.readLine() ).isEqualTo( "  }," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"timestamp\" : " + card.getTimestamp() + "," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"products\" : [ \"product2\", \"product1\" ]" );
+		assertThat( reader.readLine() ).isEqualTo( "}" );
 		assertThat( reader.readLine() ).isNull();
 	}
 

@@ -15,6 +15,7 @@ public class CatalogCard extends BaseCard {
 
 	public static final String FILE = "catalog.card";
 
+	// FIXME This is a temporary hack to get the repo card into the catalog card
 	@Setter
 	private RepoCard repo;
 
@@ -37,10 +38,8 @@ public class CatalogCard extends BaseCard {
 		this.products = products == null ? Set.of() : new HashSet<>( products );
 	}
 
-	public static CatalogCard fromJson( RepoCard repo, InputStream input ) throws IOException {
-		CatalogCard catalog = new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
-		catalog.setRepo( repo );
-		return catalog;
+	public static CatalogCard fromJson( InputStream input ) throws IOException {
+		return new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
 	}
 
 }
