@@ -15,12 +15,20 @@ class JavaUtilTest {
 
 	@Test
 	void testGetCallingClassName() {
-		assertThat( JavaUtil.getCallingClassName() ).isEqualTo( "jdk.internal.reflect.NativeMethodAccessorImpl" );
+		if( JavaUtil.getVersion() >= 21 ) {
+			assertThat( JavaUtil.getCallingClassName() ).isEqualTo( "jdk.internal.reflect.DirectMethodHandleAccessor" );
+		} else {
+			assertThat( JavaUtil.getCallingClassName() ).isEqualTo( "jdk.internal.reflect.NativeMethodAccessorImpl" );
+		}
 	}
 
 	@Test
 	void testGetCallingMethodName() {
-		assertThat( JavaUtil.getCallingMethodName() ).isEqualTo( "invoke0" );
+		if( JavaUtil.getVersion() >= 21 ) {
+			assertThat( JavaUtil.getCallingMethodName() ).isEqualTo( "invoke" );
+		} else {
+			assertThat( JavaUtil.getCallingMethodName() ).isEqualTo( "invoke0" );
+		}
 	}
 
 	@Test
