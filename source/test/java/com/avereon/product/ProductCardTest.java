@@ -25,7 +25,6 @@ class ProductCardTest {
 		assertThat( card.getArtifact() ).isEqualTo( "zevra" );
 		assertThat( card.getVersion() ).isEqualTo( "0.0-SNAPSHOT" );
 		assertThat( card.getTimestamp() ).isEqualTo( "2018-01-01 00:00:00" );
-		assertThat( card.isOsSpecific() ).isFalse();
 
 		assertThat( card.getName() ).isEqualTo( "Zevra" );
 		assertThat( card.getIcons() ).contains( "library" );
@@ -175,7 +174,6 @@ class ProductCardTest {
 		assertThat( reader.readLine() ).isEqualTo( "  \"timestamp\" : \"2018-01-01 00:00:00\"," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"packaging\" : \"lib\"," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"packagingVersion\" : \"2.7\"," );
-		assertThat( reader.readLine() ).isEqualTo( "  \"osSpecific\" : false," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"icons\" : [ \"avereon\", \"https://avereon.com/download/stable/avereon/provider/icon\" ]," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"name\" : \"Zevra\"," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"provider\" : null," );

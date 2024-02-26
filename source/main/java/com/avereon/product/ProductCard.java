@@ -54,8 +54,6 @@ public class ProductCard extends BaseCard {
 	@JsonIgnore
 	private Release release;
 
-	private boolean osSpecific;
-
 	private List<String> icons;
 
 	private String name;
@@ -201,7 +199,6 @@ public class ProductCard extends BaseCard {
 
 		this.packaging = card.packaging;
 		this.packagingVersion = card.packagingVersion;
-		this.osSpecific = card.osSpecific;
 
 		this.icons = card.icons;
 		this.name = card.name;
@@ -295,14 +292,6 @@ public class ProductCard extends BaseCard {
 
 	public Release getRelease() {
 		return release;
-	}
-
-	public boolean isOsSpecific() {
-		return osSpecific;
-	}
-
-	public void setOsSpecific( boolean osSpecific ) {
-		this.osSpecific = osSpecific;
 	}
 
 	public List<String> getIcons() {
