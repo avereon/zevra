@@ -4,14 +4,19 @@ import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
+@Accessors( chain = true )
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class RepoCard extends BaseCard {
 
@@ -38,38 +43,6 @@ public class RepoCard extends BaseCard {
 		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
 		if( source != null ) this.url = UriUtil.removeQueryAndFragment( source ).toString();
 		return copyFrom( card );
-	}
-
-	public RepoCard setInternalId( String internalId ) {
-		super.setInternalId( internalId );
-		return this;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public RepoCard setName( String name ) {
-		this.name = name;
-		return this;
-	}
-
-	public List<String> getIcons() {
-		return icons;
-	}
-
-	public RepoCard setIcons( List<String> icons ) {
-		this.icons = Collections.unmodifiableList( icons == null ? List.of() : icons );
-		return this;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public RepoCard setUrl( String url ) {
-		this.url = url;
-		return this;
 	}
 
 	public RepoCard copyFrom( RepoCard card ) {

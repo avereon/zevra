@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+// TODO Enhance the catalog card to extend RepoCard
 public class CatalogCard extends BaseCard {
 
 	public static final String FILE = "catalog.card";
