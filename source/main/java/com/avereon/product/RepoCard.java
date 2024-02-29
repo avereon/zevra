@@ -35,10 +35,6 @@ public class RepoCard extends BaseCard {
 		this.icons = List.of();
 	}
 
-	public static RepoCard fromJson( InputStream input ) throws IOException {
-		return fromJson( input, null );
-	}
-
 	public static RepoCard fromJson( InputStream input, URI source ) throws IOException {
 		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
 		if( source != null ) card.url = UriUtil.removeQueryAndFragment( source ).toString();
@@ -61,8 +57,7 @@ public class RepoCard extends BaseCard {
 	@Override
 	public boolean equals( Object object ) {
 		if( this == object ) return true;
-		if( !(object instanceof RepoCard) ) return false;
-		RepoCard that = (RepoCard)object;
+		if( !(object instanceof RepoCard that) ) return false;
 		return Objects.equals( this.url, that.url );
 	}
 

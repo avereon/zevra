@@ -15,7 +15,6 @@ import java.util.Set;
 @Getter
 @JsonInclude( JsonInclude.Include.NON_NULL )
 @JsonIgnoreProperties( ignoreUnknown = true )
-// TODO Enhance the catalog card to extend RepoCard
 public class CatalogCard extends RepoCard {
 
 	public static final String FILE = "catalog.card";
