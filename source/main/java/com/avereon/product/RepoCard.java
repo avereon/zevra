@@ -47,9 +47,9 @@ public class RepoCard extends BaseCard {
 
 	public RepoCard copyFrom( RepoCard card ) {
 		if( card == null ) return null;
-		this.name = card.name;
-		this.setIcons( card.getIcons() );
-		this.url = card.url;
+		if( card.name != null ) setName( card.name );
+		if( card.url != null ) setUrl( card.url );
+		if( card.getIcons() != null && !card.getIcons().isEmpty() ) this.setIcons( card.getIcons() );
 		return this;
 	}
 

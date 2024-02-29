@@ -36,6 +36,15 @@ public class CatalogCard extends RepoCard {
 		this.products = products == null ? Set.of() : new HashSet<>( products );
 	}
 
+	@Override
+	public RepoCard copyFrom( RepoCard card ) {
+		super.copyFrom( card );
+		if( card == null ) return null;
+		((CatalogCard)card).setTimestamp( timestamp );
+		((CatalogCard)card).setProducts( products );
+		return this;
+	}
+
 	public static CatalogCard fromJson( InputStream input ) throws IOException {
 		return new ObjectMapper().readerFor( new TypeReference<CatalogCard>() {} ).readValue( input );
 	}
