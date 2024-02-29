@@ -32,9 +32,11 @@ class CatalogCardTest {
 		repo.setIcons( List.of( "https://www.example.com/market/icon" ) );
 
 		CatalogCard card = new CatalogCard();
+		card.setName( "Example Product Market" );
+		card.setUrl( "https://www.example.com/market" );
+		card.setIcons( List.of( "https://www.example.com/market/icon" ) );
 		card.setTimestamp( System.currentTimeMillis() );
 		card.setProducts( Set.of( "product1", "product2" ) );
-		card.setRepo( repo );
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure( SerializationFeature.INDENT_OUTPUT, true );
@@ -43,15 +45,17 @@ class CatalogCardTest {
 		BufferedReader reader = new BufferedReader( new StringReader( store ) );
 		assertThat( reader.readLine() ).isEqualTo( "{" );
 		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\"," );
-		assertThat( reader.readLine() ).isEqualTo( "  \"repo\" : {" );
-		assertThat( reader.readLine() ).isEqualTo( "    \"internalId\" : \"" + card.getRepo().getInternalId() + "\"," );
-		assertThat( reader.readLine() ).isEqualTo( "    \"name\" : \"Example Product Market\"," );
-		//assertThat( reader.readLine()).isEqualTo( "    \"icon\" : \"https://www.example.com/market/icon\"," ) );
-		assertThat( reader.readLine() ).isEqualTo( "    \"icons\" : [ \"https://www.example.com/market/icon\" ]," );
-		assertThat( reader.readLine() ).isEqualTo( "    \"url\" : \"https://www.example.com/market\"" );
-		assertThat( reader.readLine() ).isEqualTo( "  }," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"name\" : \"Example Product Market\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"url\" : \"https://www.example.com/market\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"icons\" : [ \"https://www.example.com/market/icon\" ]," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"timestamp\" : " + card.getTimestamp() + "," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"products\" : [ \"product2\", \"product1\" ]" );
+		//		assertThat( reader.readLine() ).isEqualTo( "  \"repo\" : {" );
+		//		assertThat( reader.readLine() ).isEqualTo( "    \"internalId\" : \"" + card.getInternalId() + "\"," );
+		//		assertThat( reader.readLine() ).isEqualTo( "    \"name\" : \"Example Product Market\"," );
+		//		assertThat( reader.readLine() ).isEqualTo( "    \"url\" : \"https://www.example.com/market\"," );
+		//		assertThat( reader.readLine() ).isEqualTo( "    \"icons\" : [ \"https://www.example.com/market/icon\" ]" );
+		//		assertThat( reader.readLine() ).isEqualTo( "  }" );
 		assertThat( reader.readLine() ).isEqualTo( "}" );
 		assertThat( reader.readLine() ).isNull();
 	}

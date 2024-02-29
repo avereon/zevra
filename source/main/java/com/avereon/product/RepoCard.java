@@ -22,9 +22,9 @@ public class RepoCard extends BaseCard {
 
 	private String name;
 
-	private List<String> icons;
-
 	private String url;
+
+	private List<String> icons;
 
 	public RepoCard() {
 		this( null );
@@ -35,20 +35,19 @@ public class RepoCard extends BaseCard {
 		this.icons = List.of();
 	}
 
-	public RepoCard fromJson( InputStream input ) throws IOException {
+	public static RepoCard fromJson( InputStream input ) throws IOException {
 		return fromJson( input, null );
 	}
 
-	public RepoCard fromJson( InputStream input, URI source ) throws IOException {
+	public static RepoCard fromJson( InputStream input, URI source ) throws IOException {
 		RepoCard card = new ObjectMapper().readerFor( new TypeReference<RepoCard>() {} ).readValue( input );
-		if( source != null ) this.url = UriUtil.removeQueryAndFragment( source ).toString();
-		return copyFrom( card );
+		if( source != null ) card.url = UriUtil.removeQueryAndFragment( source ).toString();
+		return card;
 	}
 
 	public RepoCard copyFrom( RepoCard card ) {
 		if( card == null ) return null;
 		this.name = card.name;
-		//this.icon = card.icon;
 		this.setIcons( card.getIcons() );
 		this.url = card.url;
 		return this;

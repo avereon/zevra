@@ -59,8 +59,8 @@ class RepoCardTest {
 		assertThat( reader.readLine() ).isEqualTo( "{" );
 		assertThat( reader.readLine() ).isEqualTo( "  \"internalId\" : \"" + card.getInternalId() + "\"," );
 		assertThat( reader.readLine() ).isEqualTo( "  \"name\" : \"Example Repo\"," );
-		assertThat( reader.readLine() ).isEqualTo( "  \"icons\" : [ \"http://example.com/repo/icon.png\" ]," );
-		assertThat( reader.readLine() ).isEqualTo( "  \"url\" : \"http://example.com/repo\"" );
+		assertThat( reader.readLine() ).isEqualTo( "  \"url\" : \"http://example.com/repo\"," );
+		assertThat( reader.readLine() ).isEqualTo( "  \"icons\" : [ \"http://example.com/repo/icon.png\" ]" );
 		assertThat( reader.readLine() ).isEqualTo( "}" );
 		assertThat( reader.readLine() ).isNull();
 	}
@@ -68,7 +68,7 @@ class RepoCardTest {
 	@Test
 	void testIgnoreMissingAndUnknownProperties() throws Exception {
 		String state = "{\"name\" : \"Example Repo\", \"url\" : \"http://example.com/repo\"}";
-		RepoCard card = new RepoCard().fromJson( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
+		RepoCard card = RepoCard.fromJson( new ByteArrayInputStream( state.getBytes( StandardCharsets.UTF_8 ) ), null );
 		assertThat( card.getName() ).isEqualTo( "Example Repo" );
 	}
 
