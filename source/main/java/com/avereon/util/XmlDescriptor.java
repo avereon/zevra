@@ -1,6 +1,7 @@
 package com.avereon.util;
 
 import lombok.CustomLog;
+import lombok.Getter;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -38,6 +39,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @CustomLog
 public class XmlDescriptor {
 
+	/**
+	 * The XML node that is the root of this descriptor.
+	 */
+	@Getter
 	private Node node;
 
 	private final Map<String, List<String>> attrNames = new ConcurrentHashMap<>();
@@ -128,15 +133,6 @@ public class XmlDescriptor {
 	 */
 	public Document getDocument() {
 		return (node instanceof Document) ? (Document)node : node.getOwnerDocument();
-	}
-
-	/**
-	 * Get the XML node that is the root of this descriptor.
-	 *
-	 * @return The root XML node of the descriptor
-	 */
-	public Node getNode() {
-		return node;
 	}
 
 	/**
@@ -316,6 +312,19 @@ public class XmlDescriptor {
 	 * @return The nodes at the specified path
 	 */
 	public static Node[] getNodes( Node node, String path ) {
+		NodeList nodes = getNodeList( node, path );
+		if( nodes == null ) return null;
+
+		ArrayList<Node> values = new ArrayList<>();
+		int count = nodes.getLength();
+		for( int index = 0; index < count; index++ ) {
+			values.add( nodes.item( index ) );
+		}
+
+		return values.toArray( new Node[ 0 ] );
+	}
+
+	private static NodeList getNodeList( Node node, String path ) {
 		if( node == null || TextUtil.isEmpty( path ) ) return null;
 
 		NodeList nodes = null;
@@ -326,15 +335,7 @@ public class XmlDescriptor {
 		} catch( XPathExpressionException exception ) {
 			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
 		}
-		if( nodes == null ) return null;
-
-		ArrayList<Node> values = new ArrayList<>();
-		int count = nodes.getLength();
-		for( int index = 0; index < count; index++ ) {
-			values.add( nodes.item( index ) );
-		}
-
-		return values.toArray( new Node[ 0 ] );
+		return nodes;
 	}
 
 	/**
@@ -384,18 +385,10 @@ public class XmlDescriptor {
 	 * @return An array of values with the same path.
 	 */
 	public static String[] getValues( Node node, String path ) {
-		if( node == null || TextUtil.isEmpty( path ) ) return null;
-
-		NodeList nodes = null;
-		XPath xpath = XPathFactory.newInstance().newXPath();
-
-		try {
-			nodes = (NodeList)xpath.evaluate( path, node, XPathConstants.NODESET );
-		} catch( XPathExpressionException exception ) {
-			log.atSevere().withCause( new Exception( path, exception ) ).log( "Error evaluating xpath: %s", path );
-		}
+		NodeList nodes = getNodeList( node, path );
 		if( nodes == null ) return null;
 
+		XPath xpath = XPathFactory.newInstance().newXPath();
 		ArrayList<String> values = new ArrayList<>();
 		int count = nodes.getLength();
 		for( int index = 0; index < count; index++ ) {

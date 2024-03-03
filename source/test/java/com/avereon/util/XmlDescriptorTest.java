@@ -6,7 +6,14 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -19,6 +26,33 @@ class XmlDescriptorTest {
 		assertThat( descriptor ).isNotNull();
 		assertThat( descriptor.getPaths() ).isNotNull();
 		assertThat( descriptor.getPaths().size() ).isEqualTo( 0 );
+	}
+
+	@Test
+	void testConstructorWithUri() throws URISyntaxException, IOException {
+		URI uri = Objects.requireNonNull( XmlUtilTest.class.getResource( "/xml.test.xml" ) ).toURI();
+		XmlDescriptor descriptor = new XmlDescriptor( uri );
+		assertThat( descriptor ).isNotNull();
+		assertThat( descriptor.getPaths() ).isNotNull();
+		assertThat( descriptor.getPaths().size() ).isEqualTo( 1 );
+	}
+
+	@Test
+	void testConstructorWithUrl() throws IOException {
+		URL uri = Objects.requireNonNull( XmlUtilTest.class.getResource( "/xml.test.xml" ) );
+		XmlDescriptor descriptor = new XmlDescriptor( uri );
+		assertThat( descriptor ).isNotNull();
+		assertThat( descriptor.getPaths() ).isNotNull();
+		assertThat( descriptor.getPaths().size() ).isEqualTo( 1 );
+	}
+
+	@Test
+	void testConstructorWithReader() throws IOException {
+		Reader reader = new InputStreamReader( Objects.requireNonNull( XmlUtilTest.class.getResourceAsStream( "/xml.test.xml" ) ), StandardCharsets.UTF_8 );
+		XmlDescriptor descriptor = new XmlDescriptor( reader );
+		assertThat( descriptor ).isNotNull();
+		assertThat( descriptor.getPaths() ).isNotNull();
+		assertThat( descriptor.getPaths().size() ).isEqualTo( 1 );
 	}
 
 	@Test
@@ -194,9 +228,8 @@ class XmlDescriptorTest {
 	void testGetMultilineValue() throws Exception {
 		XmlDescriptor descriptor = loadTestDescriptor();
 
-		assertThat( descriptor.getValue( "/test/summary" ) )
-			.isEqualTo(
-				"This summary needs to span multiple lines in order for the test to work correctly. Please ensure that this summary is wrapped roughly at characters per line so that there are three lines." );
+		assertThat( descriptor.getValue( "/test/summary" ) ).isEqualTo(
+			"This summary needs to span multiple lines in order for the test to work correctly. Please ensure that this summary is wrapped roughly at characters per line so that there are three lines." );
 	}
 
 	@Test
@@ -214,6 +247,19 @@ class XmlDescriptorTest {
 	}
 
 	@Test
+	void testGetAttribute() throws IOException {
+		XmlDescriptor descriptor = loadTestDescriptor();
+
+		assertThat( descriptor.getValues( null ) ).isNull();
+		assertThat( descriptor.getValues( "" ) ).isNull();
+
+		assertThat( XmlDescriptor.getAttribute( descriptor.getNode( "/test/bounds" ), "x" ) ).isEqualTo( "5" );
+		assertThat( XmlDescriptor.getAttribute( descriptor.getNode( "/test/bounds" ), "y" ) ).isEqualTo( "10" );
+		assertThat( XmlDescriptor.getAttribute( descriptor.getNode( "/test/bounds" ), "w" ) ).isEqualTo( "20" );
+		assertThat( XmlDescriptor.getAttribute( descriptor.getNode( "/test/bounds" ), "h" ) ).isEqualTo( "15" );
+	}
+
+	@Test
 	void testGetMultilineValues() throws Exception {
 		XmlDescriptor descriptor = loadTestDescriptor();
 
@@ -222,9 +268,8 @@ class XmlDescriptorTest {
 
 		String[] values = descriptor.getValues( "/test/summary" );
 		assertThat( values.length ).isEqualTo( 1 );
-		assertThat( values[ 0 ] )
-			.isEqualTo(
-				"This summary needs to span multiple lines in order for the test to work correctly. Please ensure that this summary is wrapped roughly at characters per line so that there are three lines." );
+		assertThat( values[ 0 ] ).isEqualTo(
+			"This summary needs to span multiple lines in order for the test to work correctly. Please ensure that this summary is wrapped roughly at characters per line so that there are three lines." );
 	}
 
 	@Test
