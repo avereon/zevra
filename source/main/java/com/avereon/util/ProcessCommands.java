@@ -20,10 +20,25 @@ import java.util.Map;
  */
 public class ProcessCommands {
 
+	/**
+	 * Returns the command line representation of the current command.
+	 * This method converts the command line list returned by the getCommandLine()
+	 * method into a single string by joining the elements with a space delimiter.
+	 *
+	 * @return The command line as a string.
+	 */
 	public static String getCommandLineAsString() {
 		return TextUtil.toString( getCommandLine(), " " );
 	}
 
+	/**
+	 * Returns the command line representation of the current command. This method
+	 * retrieves the Java launcher path using the {@link OperatingSystem#getJavaLauncherPath()}
+	 * method and retrieves the input arguments using {@link RuntimeMXBean#getInputArguments()}.
+	 * It then creates a list of strings consisting of the Java launcher path followed by the input arguments.
+	 *
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> getCommandLine() {
 		List<String> commands = new ArrayList<>();
 		commands.add( OperatingSystem.getJavaLauncherPath() );
@@ -31,24 +46,60 @@ public class ProcessCommands {
 		return commands;
 	}
 
+	/**
+	 * Retrieves the command line representation for the launcher.
+	 * If the Java launcher name starts with "java", it calls the forModule()
+	 * method to get the command line for the module. Otherwise, it returns a list
+	 * containing the Java launcher path.
+	 *
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forLauncher() {
 		String launcher = OperatingSystem.getJavaLauncherName();
 		if( launcher.startsWith( "java" ) ) return forModule();
 		return new ArrayList<>( List.of( OperatingSystem.getJavaLauncherPath() ) );
 	}
 
+	/**
+	 * Retrieves the command line representation for the launcher.
+	 * If the Java launcher name starts with "java", it calls the forModule()
+	 * method to get the command line for the module. Otherwise, it returns a list
+	 * containing the Java launcher path.
+	 *
+	 * @param mainClass The main class to launch.
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forLauncher( Class<?> mainClass ) {
 		String launcher = OperatingSystem.getJavaLauncherName();
 		if( launcher.startsWith( "java" ) ) return forModule( mainClass );
 		return new ArrayList<>( List.of( OperatingSystem.getJavaLauncherPath() ) );
 	}
 
+	/**
+	 * Generates the command line representation for the launcher using the
+	 * specified parameters. This method combines the default commands generated
+	 * by the {@link #forLauncher()} method with any extra commands provided.
+	 *
+	 * @param parameters The parameters to be included in the command line.
+	 * @param extraCommands Additional commands to be included in the command line.
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forLauncher( Parameters parameters, String... extraCommands ) {
 		List<String> commands = forLauncher();
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
 	}
 
+	/**
+	 * Retrieves the command line representation for the current module. This
+	 * method uses the system properties <code>jdk.module.path</code> and
+	 * <code>jdk.module.main.class</code> to determine the module path and main
+	 * module class. It calls the private
+	 * {@link #forModule(String, String, String, String)} method to get the
+	 * command line representation.
+	 *
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forModule() {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String mainModule = System.getProperty( "jdk.module.main" );
@@ -56,6 +107,14 @@ public class ProcessCommands {
 		return forModule( null, modulePath, mainModule, mainClass );
 	}
 
+	/**
+	 * Generates the command line representation for a specific module.
+	 * It constructs a list of strings representing the command line arguments
+	 * required to run the module specified by the source class.
+	 *
+	 * @param source The source class representing the main module class.
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forModule( Class<?> source ) {
 		String modulePath = System.getProperty( "jdk.module.path" );
 		String mainModule = source.getModule().getName();
@@ -63,12 +122,32 @@ public class ProcessCommands {
 		return forModule( null, modulePath, mainModule, mainClass );
 	}
 
+	/**
+	 * Generates the command line representation for a specific module using the
+	 * specified parameters and extra commands.
+	 *
+	 * @param parameters The parameters to be included in the command line.
+	 * @param extraCommands Additional commands to be included in the command line.
+	 * @return The command line represented as a list of strings.
+	 */
 	public static List<String> forModule( Parameters parameters, String... extraCommands ) {
 		List<String> commands = forModule();
 		commands.addAll( getParameterCommands( parameters, extraCommands ) );
 		return commands;
 	}
 
+	/**
+	 * Generates the command line representation for a specific module using the
+	 * specified parameters and extra commands.
+	 *
+	 * @param javaExecutablePath The path to the Java executable.
+	 * @param modulePath The path to the module.
+	 * @param mainModule The main module.
+	 * @param mainClass The main class.
+	 * @param parameters The parameters to be included in the command line.
+	 * @param extraCommands Additional commands to be included in the command line.
+	 * @return The command line represented as a list of strings.
+	 */
 	static List<String> forModule(
 		String javaExecutablePath, String modulePath, String mainModule, String mainClass, Parameters parameters, String... extraCommands
 	) {
@@ -77,6 +156,16 @@ public class ProcessCommands {
 		return commands;
 	}
 
+	/**
+	 * Generates the command line representation for a specific module.
+	 *
+	 * @param javaLauncherPath The path to the Java launcher executable.
+	 * @param modulePath The path to the module.
+	 * @param mainModule The main module.
+	 * @param mainClass The main class.
+	 * @return The command line represented as a list of strings.
+	 * @throws NullPointerException If mainModule or mainClass is null.
+	 */
 	public static List<String> forModule( String javaLauncherPath, String modulePath, String mainModule, String mainClass ) {
 		List<String> commands = new ArrayList<>();
 
@@ -112,6 +201,13 @@ public class ProcessCommands {
 		return commands;
 	}
 
+	/**
+	 * Retrieves the parameter commands for the given parameters and extra commands.
+	 *
+	 * @param parameters The parameters to be included in the command line.
+	 * @param extraCommands Additional commands to be included in the command line.
+	 * @return The list of parameter commands.
+	 */
 	private static List<String> getParameterCommands( Parameters parameters, String... extraCommands ) {
 		Parameters allParameters = Parameters.create().add( parameters ).add( Parameters.parse( extraCommands ) );
 

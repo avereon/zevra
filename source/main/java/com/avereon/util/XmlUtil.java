@@ -29,12 +29,12 @@ public class XmlUtil {
 	private static final int DEFAULT_INDENT = 2;
 
 	/**
-	 * Load an XML document from a file.
+	 * Loads an XML document from the given file.
 	 *
-	 * @param file The file from which to load the XML document
-	 * @return The XML document
-	 * @throws SAXException If there is an XML parse problem
-	 * @throws IOException If there is an I/O problem
+	 * @param file The file to load the XML document from.
+	 * @return The loaded XML document.
+	 * @throws SAXException If there is an error parsing the XML document.
+	 * @throws IOException If there is an error reading the file.
 	 */
 	public static Document loadXmlDocument( File file ) throws SAXException, IOException {
 		return loadXmlDocument( new InputStreamReader( new FileInputStream( file ), TextUtil.ENCODING ) );
@@ -194,7 +194,7 @@ public class XmlUtil {
 		try {
 			save( node, output );
 		} catch( IOException exception ) {
-			log.atSevere().withCause(  exception ).log( "Error converting node to string" );
+			log.atSevere().withCause( exception ).log( "Error converting node to string" );
 		}
 		return output.toString();
 	}
@@ -220,6 +220,14 @@ public class XmlUtil {
 		return builder.toString();
 	}
 
+	/**
+	 * Loads an XML document from the given input source.
+	 *
+	 * @param source the input source from which to load the document
+	 * @return the loaded XML document, or null if the source is null
+	 * @throws SAXException if an error occurs during parsing
+	 * @throws IOException if an error occurs while reading the document from the input source
+	 */
 	private static Document loadXmlDocument( InputSource source ) throws SAXException, IOException {
 		if( source == null ) return null;
 
@@ -235,6 +243,15 @@ public class XmlUtil {
 		return document;
 	}
 
+	/**
+	 * This method formats the given source XML using XSLT and writes the
+	 * formatted result to the specified output.
+	 *
+	 * @param source The XML source to be formatted.
+	 * @param result The output where the formatted XML will be written.
+	 * @param indent The number of spaces to use for each level of indentation.
+	 * @throws IOException If an I/O error occurs while formatting the XML.
+	 */
 	private static void format( Source source, Result result, int indent ) throws IOException {
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();

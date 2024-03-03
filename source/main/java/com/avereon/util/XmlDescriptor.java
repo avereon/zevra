@@ -432,6 +432,12 @@ public class XmlDescriptor {
 		return names;
 	}
 
+	/**
+	 * Lists the names of child nodes under the given parent node.
+	 *
+	 * @param parent the parent node whose child nodes' names are to be listed
+	 * @return a list of names of child nodes under the given parent node
+	 */
 	private List<String> listNames( Node parent ) {
 		List<String> names = new ArrayList<>();
 		if( parent == null ) return names;
@@ -447,6 +453,12 @@ public class XmlDescriptor {
 		return names;
 	}
 
+	/**
+	 * Retrieves a list of paths from the given parent node.
+	 *
+	 * @param parent The parent node from which to retrieve the paths.
+	 * @return A list of strings representing the paths found.
+	 */
 	private List<String> listPaths( Node parent ) {
 		List<String> paths = new ArrayList<>();
 		if( parent == null ) return paths;
@@ -466,6 +478,12 @@ public class XmlDescriptor {
 		return paths;
 	}
 
+	/**
+	 * Returns the path of the given Node.
+	 *
+	 * @param node the Node for which the path needs to be determined
+	 * @return the path of the given Node as a String
+	 */
 	private String getPath( Node node ) {
 		StringBuilder builder = new StringBuilder();
 		Node parent = node.getParentNode();
