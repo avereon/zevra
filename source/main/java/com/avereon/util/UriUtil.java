@@ -173,10 +173,10 @@ public final class UriUtil {
 		// Resolve the parent
 		if( !isRoot( uri ) ) uri = uri.resolve( uri.getPath().endsWith( PathUtil.SEPARATOR ) ? PathUtil.PARENT : "" );
 
-		// Restack the schemes
+		// Re-stack the schemes
 		Collections.reverse( schemes );
 		for( String scheme : schemes ) {
-			uri = URI.create( scheme + ":" + uri.toString() );
+			uri = URI.create( scheme + ":" + uri );
 		}
 
 		return uri;

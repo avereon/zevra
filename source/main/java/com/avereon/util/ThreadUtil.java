@@ -12,7 +12,7 @@ public class ThreadUtil {
 	 * Pause a thread for a specific amount of time. If an InterruptedException
 	 * occurs the method returns immediately.
 	 *
-	 * @param duration
+	 * @param duration The pause duration in milliseconds
 	 */
 	public static void pause( long duration ) {
 		pause( duration, TimeUnit.MILLISECONDS );
@@ -22,7 +22,7 @@ public class ThreadUtil {
 	 * Pause a thread for a specific amount of time with the given unit. If an
 	 * InterruptedException occurs the method returns immediately.
 	 *
-	 * @param duration
+	 * @param duration The pause duration in TimeUnits
 	 */
 	public static void pause( long duration, TimeUnit unit ) {
 		try {
@@ -47,13 +47,14 @@ public class ThreadUtil {
 	 * are compared both by the simple name and by the full name. For example,
 	 * both of the following calls will return true:
 	 * <p>
-	 * <blockquote> <code>ThreadUtil.calledFrom( "Thread", "run" );</code><br/>
+	 * <blockquote>
+	 * <code>ThreadUtil.calledFrom( "Thread", "run" );</code><br/>
 	 * <code>ThreadUtil.calledFrom( "java.lang.Thread", "run" );</code>
 	 * </blockquote>
 	 *
-	 * @param className
-	 * @param methodName
-	 * @return
+	 * @param className The name of the calling class
+	 * @param methodName The name of the calling method
+	 * @return true if the class and method match the calling class and method
 	 */
 	public static boolean calledFrom( String className, String methodName ) {
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
@@ -69,9 +70,9 @@ public class ThreadUtil {
 	/**
 	 * Append the stack trace of the source throwable to the target throwable.
 	 *
-	 * @param source
-	 * @param target
-	 * @return
+	 * @param source The source throwable
+	 * @param target The target throwable
+	 * @return The target throwable with the stack trace appended
 	 */
 	public static Throwable appendStackTrace( Throwable source, Throwable target ) {
 		if( source == null ) return target;
@@ -82,9 +83,9 @@ public class ThreadUtil {
 	/**
 	 * Append stack trace to the target throwable.
 	 *
-	 * @param target
-	 * @param trace
-	 * @return
+	 * @param trace The stack trace to append
+	 * @param target The target throwable
+	 * @return The target throwable with the stack trace appended
 	 */
 	public static Throwable appendStackTrace( StackTraceElement[] trace, Throwable target ) {
 		if( target == null ) return null;

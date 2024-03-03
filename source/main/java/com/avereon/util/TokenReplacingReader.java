@@ -97,7 +97,7 @@ public class TokenReplacingReader extends Reader {
 		}
 
 		// Check for empty replacement values
-		if( this.tokenValue.length() == 0 ) {
+		if( this.tokenValue.isEmpty() ) {
 			return read();
 		}
 
@@ -137,10 +137,6 @@ public class TokenReplacingReader extends Reader {
 	@Override
 	public void close() throws IOException {
 		this.source.close();
-	}
-
-	public boolean markSupported() {
-		return false;
 	}
 
 	public void mark( int readAheadLimit ) throws IOException {

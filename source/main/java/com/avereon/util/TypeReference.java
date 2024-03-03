@@ -1,5 +1,7 @@
 package com.avereon.util;
 
+import lombok.Getter;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -17,6 +19,7 @@ import java.lang.reflect.Type;
  */
 public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 
+	@Getter
 	private final Type type;
 
 	private final Class<T> referenceClass;
@@ -59,10 +62,6 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 	protected TypeReference( Class<T> type ) {
 		this.type = type;
 		this.referenceClass = type;
-	}
-
-	public Type getType() {
-		return this.type;
 	}
 
 	public Class<T> getTypeClass() {
