@@ -4,10 +4,7 @@ import com.avereon.product.Version;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,6 +14,12 @@ class XmlUtilTest {
 	void testLoadXmlDocument() throws Exception {
 		InputStream input = XmlUtilTest.class.getResourceAsStream( "/xml.test.xml" );
 		Document document = XmlUtil.loadXmlDocument( input );
+		assertThat( document ).isNotNull();
+	}
+
+	@Test
+	void testLoadXmlFile() throws Exception {
+		Document document = XmlUtil.loadXmlDocument( new File( "source/test/resources/xml.test.xml" ) );
 		assertThat( document ).isNotNull();
 	}
 
