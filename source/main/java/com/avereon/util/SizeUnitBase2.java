@@ -1,5 +1,11 @@
 package com.avereon.util;
 
+import lombok.Getter;
+
+/**
+ * Enumeration of size units based on powers of 2.
+ */
+@Getter
 public enum SizeUnitBase2 {
 
 	B( 1, "B" ),
@@ -10,21 +16,13 @@ public enum SizeUnitBase2 {
 	PiB( TiB.getSize() * 1024, "P" ),
 	EiB( PiB.getSize() * 1024, "E" );
 
-	long size;
+	final long size;
 
-	String compact;
+	final String compact;
 
 	SizeUnitBase2( long size, String compact ) {
 		this.size = size;
 		this.compact = compact;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public String getCompact() {
-		return compact;
 	}
 
 }
