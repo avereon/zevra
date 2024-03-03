@@ -132,7 +132,7 @@ public class ProcessCommands {
 
 		// Add the collected URIs
 		List<String> uris = allParameters.getUris();
-		if( uris.size() > 0 ) commands.addAll( uris );
+		if( !uris.isEmpty() ) commands.addAll( uris );
 
 		return commands;
 	}

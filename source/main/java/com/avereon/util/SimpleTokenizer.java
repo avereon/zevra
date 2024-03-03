@@ -3,6 +3,9 @@ package com.avereon.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The SimpleTokenizer class provides a simple tokenization functionality for a given string.
+ */
 public class SimpleTokenizer {
 
 	private final String string;
