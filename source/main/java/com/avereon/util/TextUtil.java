@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for working with text strings.
+ */
 @CustomLog
 @SuppressWarnings( "WeakerAccess" )
 public final class TextUtil {

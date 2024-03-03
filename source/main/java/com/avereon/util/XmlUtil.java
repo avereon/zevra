@@ -20,8 +20,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A convenience class for loading, saving, formatting, and querying XML
- * documents.
+ * This class provides utility methods for working with XML documents.
  */
 @CustomLog
 @SuppressWarnings( "WeakerAccess" )

@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Utility class for checking if any thread is running in the JUnit test framework.
+ */
 public class TestUtil {
 
 	private static final Set<String> runners;

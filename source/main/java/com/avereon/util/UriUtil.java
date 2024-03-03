@@ -8,6 +8,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+/**
+ * Utility class for working with URIs.
+ */
 @CustomLog
 public final class UriUtil {
 

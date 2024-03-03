@@ -3,6 +3,9 @@ package com.avereon.util;
 import java.lang.management.ThreadInfo;
 import java.util.Comparator;
 
+/**
+ * Comparator implementation for comparing ThreadInfo objects based on their thread name.
+ */
 public class ThreadInfoNameComparator implements Comparator<ThreadInfo> {
 
 	@Override
