@@ -50,6 +50,12 @@ public class ProgramFormatter extends Formatter {
 
 	private final String format = getSimpleFormat( ProgramFormatter::getLoggingProperty );
 
+	/**
+	 * Formats the given LogRecord into a formatted log message.
+	 *
+	 * @param record the LogRecord to format
+	 * @return the formatted log message
+	 */
 	@Override
 	public String format( LogRecord record ) {
 		// Timestamp
@@ -89,6 +95,12 @@ public class ProgramFormatter extends Formatter {
 		return String.format( format, timestamp, source, logger, level, message, throwable );
 	}
 
+	/**
+	 * Returns the level abbreviation for the given Level object.
+	 *
+	 * @param level the Level object to get the abbreviation for
+	 * @return the level abbreviation as a String
+	 */
 	private String getLevel( Level level ) {
 		String result;
 
@@ -125,6 +137,12 @@ public class ProgramFormatter extends Formatter {
 		return result;
 	}
 
+	/**
+	 * Retrieves the simple format string for log messages.
+	 *
+	 * @param defaultPropertyGetter a function that retrieves a property value based on a key
+	 * @return the simple format string for log messages
+	 */
 	private static String getSimpleFormat( Function<String, String> defaultPropertyGetter ) {
 		String format = defaultPropertyGetter.apply( FORMAT_PROPERTY_KEY );
 		if( format == null ) format = getLoggingProperty( FORMAT_PROPERTY_KEY );
@@ -132,6 +150,12 @@ public class ProgramFormatter extends Formatter {
 		return format;
 	}
 
+	/**
+	 * Retrieves the value of the logging property with the given name.
+	 *
+	 * @param name the name of the logging property
+	 * @return the value of the logging property
+	 */
 	private static String getLoggingProperty( String name ) {
 		return LogManager.getLogManager().getProperty( name );
 	}

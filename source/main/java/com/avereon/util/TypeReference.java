@@ -17,12 +17,12 @@ import java.lang.reflect.Type;
  *
  * @param <T> The parameterized type being defined for use
  */
+@Getter
 public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 
-	@Getter
 	private final Type type;
 
-	private final Class<T> referenceClass;
+	private final Class<T> typeClass;
 
 	/**
 	 * This constructor is for use in circumstances where a new TypeReference
@@ -48,7 +48,7 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 		} catch( ClassNotFoundException exception ) {
 			// Should never happen
 		} finally {
-			this.referenceClass = reference;
+			this.typeClass = reference;
 		}
 
 	}
@@ -61,20 +61,30 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 	 */
 	protected TypeReference( Class<T> type ) {
 		this.type = type;
-		this.referenceClass = type;
+		this.typeClass = type;
 	}
 
-	public Class<T> getTypeClass() {
-		return referenceClass;
-	}
-
+	/**
+	 * Compares this TypeReference object with the specified TypeReference object
+	 * for order. The comparison is based on the string representation of the
+	 * reference class.
+	 *
+	 * @param that The TypeReference object to be compared.
+	 * @return A negative integer, zero, or a positive integer as this TypeReference object
+	 * is less than, equal to, or greater than the specified TypeReference object.
+	 */
 	public int compareTo( TypeReference<T> that ) {
 		return this.getType().getTypeName().compareTo( that.getType().getTypeName() );
 	}
 
+	/**
+	 * Returns the string representation of the reference class.
+	 *
+	 * @return The string representation of the reference class.
+	 */
 	@Override
 	public String toString() {
-		return referenceClass.getName();
+		return typeClass.getName();
 	}
 
 }

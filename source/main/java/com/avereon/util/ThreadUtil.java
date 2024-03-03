@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * This class provides utility methods related to thread operations.
  */
@@ -36,12 +35,25 @@ public class ThreadUtil {
 		}
 	}
 
+	/**
+	 * Creates a daemon thread with the given runnable. The thread is set as a
+	 * daemon thread, meaning it will not prevent the JVM from exiting if it is
+	 * the only thread running.
+	 *
+	 * @param runnable The runnable to be executed by the thread.
+	 * @return The created daemon thread.
+	 */
 	public static Thread asDaemon( Runnable runnable ) {
 		Thread thread = new Thread( runnable );
 		thread.setDaemon( true );
 		return thread;
 	}
 
+	/**
+	 * Creates a daemon {@link ThreadFactory}.
+	 *
+	 * @return A ThreadFactory that creates daemon threads.
+	 */
 	public static ThreadFactory createDaemonThreadFactory() {
 		return new DaemonThreadFactory();
 	}
@@ -121,6 +133,12 @@ public class ThreadUtil {
 		return Arrays.copyOfRange( frame, 2, frame.length );
 	}
 
+	/**
+	 * Prints the names of all currently running threads in the Java application.
+	 * <p>
+	 * This method retrieves all running threads using the {@link Thread#getAllStackTraces()}
+	 * method and prints the name of each thread to the console.
+	 */
 	public static void printRunningThreads() {
 		Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
 		for( Thread thread : traces.keySet() ) {
@@ -128,6 +146,9 @@ public class ThreadUtil {
 		}
 	}
 
+	/**
+	 * A {@link ThreadFactory} implementation that creates daemon threads.
+	 */
 	private static final class DaemonThreadFactory implements ThreadFactory {
 
 		public Thread newThread( Runnable runnable ) {

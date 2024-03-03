@@ -147,6 +147,9 @@ public class TokenReplacingReader extends Reader {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 *
+	 */
 	public void reset() throws IOException {
 		throw new UnsupportedOperationException();
 	}

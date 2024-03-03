@@ -14,6 +14,14 @@ import java.util.*;
 @CustomLog
 public final class UriUtil {
 
+	/**
+	 * Appends a path segment to the given URI and returns a new normalized URI.
+	 *
+	 * @param uri The original URI to which the path segment is to be appended.
+	 * @param path The path segment to be appended to the URI.
+	 * @return A new normalized URI with the path segment appended. If the URI
+	 * cannot be parsed, the original URI is returned.
+	 */
 	public static URI addToPath( URI uri, String path ) {
 		String newPath = uri.getPath() + "/" + path;
 		try {
@@ -23,11 +31,24 @@ public final class UriUtil {
 		}
 	}
 
+	/**
+	 * Parses the name from the path of the given URI.
+	 *
+	 * @param uri the URI whose path's name needs to be parsed
+	 * @return the parsed name from the path of the given URI
+	 */
 	public static String parseName( URI uri ) {
 		String path = PathUtil.getName( uri.getPath() );
 		return path.isEmpty() ? "/" : path;
 	}
 
+	/**
+	 * Removes the fragment data from the given URI.
+	 *
+	 * @param uri The URI object from which the fragment should be removed.
+	 * @return A new URI object without the fragment, or null if the input URI is
+	 * null or an error occurred while removing the fragment.
+	 */
 	public static URI removeFragment( URI uri ) {
 		if( uri == null ) return null;
 
@@ -45,6 +66,13 @@ public final class UriUtil {
 		return null;
 	}
 
+	/**
+	 * Removes the query and fragment from the given URI.
+	 *
+	 * @param uri The URI from which to remove the query and fragment. Cannot be null.
+	 * @return The modified URI without the query and fragment. Returns null if
+	 * the input URI is null or if there is an error resolving the URI.
+	 */
 	public static URI removeQueryAndFragment( URI uri ) {
 		if( uri == null ) return null;
 
@@ -102,6 +130,21 @@ public final class UriUtil {
 		return uri;
 	}
 
+	/**
+	 * Resolves the given relative URI against the given base URI. The base URI
+	 * can be either absolute or relative. If the reference URI is null, null is
+	 * returned. If the base URI is null, the reference URI is returned without
+	 * any change. This method supports resolving URIs with the "jar" scheme. If
+	 * the base URI has the "jar" scheme, it resolves the URI by adding the scheme
+	 * to a queue, removing the scheme from the URI, and then using the resolved
+	 * URI for further resolution. After resolving the URI against the base URI,
+	 * if the resulting URI has the "file" scheme, it prepends the schemes from
+	 * the queue in reverse order to the resulting URI and returns it.
+	 *
+	 * @param uri the base URI against which the reference URI is resolved
+	 * @param ref the reference URI to be resolved against the base URI
+	 * @return the resolved URI
+	 */
 	public static URI resolve( URI uri, URI ref ) {
 		if( ref == null ) return null;
 		if( uri == null ) return ref;
@@ -120,7 +163,7 @@ public final class UriUtil {
 		if( "file".equals( uri.getScheme() ) ) {
 			String scheme;
 			while( (scheme = queue.pollLast()) != null ) {
-				uri = URI.create( scheme + ":" + uri.toString() );
+				uri = URI.create( scheme + ":" + uri );
 			}
 		}
 
@@ -150,6 +193,12 @@ public final class UriUtil {
 		return true;
 	}
 
+	/**
+	 * Checks whether the given URI has a parent.
+	 *
+	 * @param uri The URI to be checked for parent.
+	 * @return {@code true} if the URI has a parent, {@code false} otherwise.
+	 */
 	public static boolean hasParent( URI uri ) {
 		return !uri.isOpaque() && isNormalized( uri ) && !(uri.equals( getParent( uri ) ));
 	}
@@ -185,16 +234,34 @@ public final class UriUtil {
 		return uri;
 	}
 
+	/**
+	 * Parses the fragment data of a given URI.
+	 *
+	 * @param uri The URI from which to parse the fragment data.
+	 * @return The fragment data of the URI, or null if the URI is null or does not have a fragment.
+	 */
 	public static String parseFragment( URI uri ) {
 		if( uri == null ) return null;
 		return uri.getFragment();
 	}
 
+	/**
+	 * Parses the query from the given URI.
+	 *
+	 * @param uri the URI from which to parse the query
+	 * @return the query string, or null if the URI is null
+	 */
 	public static String parseQuery( URI uri ) {
 		if( uri == null ) return null;
 		return uri.getQuery();
 	}
 
+	/**
+	 * Parses the given query string and returns a map of query parameters.
+	 *
+	 * @param query the query string to parse
+	 * @return a map of query parameters
+	 */
 	public static Map<String, String> parseQuery( String query ) {
 		if( query == null ) return Map.of();
 
@@ -237,6 +304,12 @@ public final class UriUtil {
 		return max - index;
 	}
 
+	/**
+	 * Returns a list of parts extracted from the given URI.
+	 *
+	 * @param uri the URI from which to extract the parts
+	 * @return a list of parts extracted from the URI
+	 */
 	static List<String> getParts( URI uri ) {
 		List<String> parts = new ArrayList<>();
 

@@ -24,10 +24,10 @@ public class TestUtil {
 	}
 
 	/**
-	 * Check if the any thread is running in the JUnit test framework. This is
-	 * done by searching the thread stack for the class junit.framework.TestSuite
-	 * and caching the result. If the TestSuite class is found the method will
-	 * return true.
+	 * Check if any thread is running in the JUnit test framework. This is done by
+	 * searching the thread stack for the class {@code junit.framework.TestSuite}
+	 * If the TestSuite class is found the method will return true. The result is
+	 * cached for faster performance after the first call.
 	 *
 	 * @return If any thread is being run by JUnit
 	 */
@@ -53,6 +53,10 @@ public class TestUtil {
 		return test = result;
 	}
 
+	/**
+	 * Prints the class names in the stack trace of the main thread with ID 1.
+	 * This method is intended for debugging purposes.
+	 */
 	@SuppressWarnings( "unused" )
 	private static void printClasses() {
 		Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
