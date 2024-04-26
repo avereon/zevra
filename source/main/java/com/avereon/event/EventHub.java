@@ -50,7 +50,11 @@ public class EventHub {
 							v.handle( event );
 						} catch( RuntimeException handlerException ) {
 							// Do not let any handler break the others
-							log.atWarn().log( "Error handling event", handlerException );
+							if( log.atDebug().isEnabled() ) {
+								log.atDebug().withCause( handlerException ).log( "Event handler exception" );
+							} else {
+								log.atWarn().log( "Event handler exception: {0}", handlerException.getMessage() );
+							}
 						}
 					} );
 					type = type.getParentEventType();
