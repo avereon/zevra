@@ -579,6 +579,9 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( String path ) {
+		// Fix Windows paths
+		path = path.replace( '\\', '/'	);
+
 		return findValidFolder( new File( URI.create( path ).getPath() ) );
 	}
 
@@ -608,9 +611,11 @@ public class FileUtil {
 		do {
 			found = false;
 			if( path.startsWith( "/" ) ) {
+				// Remove leading slashes
 				path = path.substring( 1 );
 				found = true;
 			} else if( path.startsWith( "../" ) ) {
+				// Remove leading "../"
 				path = path.substring( 3 );
 				found = true;
 			}
