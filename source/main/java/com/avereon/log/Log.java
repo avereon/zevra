@@ -176,7 +176,7 @@ public class Log {
 	}
 
 	static String expandFilePattern( String path ) {
-		return path.replace( "%h", System.getProperty( "user.home" ) );
+		return path.replace( "%h", System.getProperty( "user.home" ) ).replace( '\\', '/' );
 	}
 
 }

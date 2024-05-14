@@ -375,7 +375,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherName() {
-		OperatingSystem.reset();
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_NAME, "Mock" );
@@ -384,7 +384,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherPath() {
-		OperatingSystem.reset();
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.CUSTOM_LAUNCHER_PATH, "/this/is/the/launcher/path" );
@@ -394,7 +394,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherNameWithJPackageAppPath() {
-		OperatingSystem.reset();
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( OperatingSystem.isWindows() ? "javaw.exe" : "java" );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );
@@ -403,7 +403,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testGetJavaLauncherPathWithJPackageAppPath() {
-		OperatingSystem.reset();
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.getJavaLauncherPath() ).isEqualTo( System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + OperatingSystem.getJavaLauncherName() );
 
 		System.setProperty( OperatingSystem.JPACKAGE_APP_PATH, "/this/is/the/launcher/path/Mock" );

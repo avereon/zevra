@@ -1,6 +1,7 @@
 package com.avereon.log;
 
 import com.avereon.util.LogFlag;
+import com.avereon.util.OperatingSystem;
 import com.avereon.util.Parameters;
 import lombok.CustomLog;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,7 @@ public class LogTest {
 		String name = "test.%u.log";
 		String home = System.getProperty( "user.home" );
 		String expected = new File( name ).getAbsoluteFile().toString().replace( home, "%h" );
+		expected = expected.replace( '\\', '/' );
 
 		Log.configureLogging( this, Parameters.parse( LogFlag.LOG_FILE, name ) );
 		assertThat( Log.getLogFile() ).isEqualTo( expected );
@@ -68,7 +70,7 @@ public class LogTest {
 		String name = "test.%u.log";
 		String path = home + File.separator + name;
 
-		assertThat( Log.reduceFilePattern( path ) ).isEqualTo( "%h" + File.separator + name );
+		assertThat( Log.reduceFilePattern( path ) ).isEqualTo( "%h/" + name );
 	}
 
 	@Test
@@ -77,7 +79,7 @@ public class LogTest {
 		String name = "test.%u.log";
 		String path = home + File.separator + name;
 
-		assertThat( Log.expandFilePattern( "%h" + File.separator + name ) ).isEqualTo( path );
+		assertThat( Log.expandFilePattern( "%h" + File.separator + name ) ).isEqualTo( path.replace( '\\', '/' ) );
 	}
 
 }
