@@ -83,6 +83,13 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 	}
 
 	/**
+	 * Flushes any buffered log data.
+	 */
+	public void flush(){
+		provider.flush();
+	}
+
+	/**
 	 * Returns the name of this logger.
 	 */
 	protected String getName() {
