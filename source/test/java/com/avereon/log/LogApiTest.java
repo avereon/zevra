@@ -99,6 +99,9 @@ public class LogApiTest {
 			this.exception = exception;
 		}
 
+		@Override
+		public void flush() {}
+
 		public LogData getData() {
 			return data;
 		}

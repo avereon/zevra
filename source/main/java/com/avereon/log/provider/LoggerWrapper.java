@@ -56,4 +56,8 @@ public interface LoggerWrapper {
 	 */
 	void handleError( LogData data, RuntimeException error );
 
+	/**
+	 * Flushes any buffered log data.
+	 */
+	void flush();
 }

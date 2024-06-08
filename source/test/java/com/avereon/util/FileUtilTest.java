@@ -443,6 +443,19 @@ class FileUtilTest {
 	}
 
 	@Test
+	void testFindValidFolderWithWindowsPath() {
+		Path path = FileUtil.getTempFolder();
+		assertThat( Files.exists( path ) ).isTrue();
+
+		// Switch to Windows file separator for test
+		String stringPath = path.toString().replace( '/', '\\' );
+
+		Path valid = FileUtil.findValidFolder( stringPath );
+		assertThat( Files.exists( valid ) ).isTrue();
+		assertThat( Files.isDirectory( valid ) ).isTrue();
+	}
+
+	@Test
 	void testDeleteWithMissingPath() throws IOException {
 		Path path = Paths.get( System.getProperty( "java.io.tmpdir" ), "not-a-valid-path" );
 		assertThat( Files.exists( path ) ).isFalse();
