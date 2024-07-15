@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -79,9 +80,13 @@ public class Log {
 		if( filePattern != null ) {
 			filePattern = reduceFilePattern( new File( filePattern ).getAbsolutePath() );
 
-			File file = new File( expandFilePattern( filePattern ) );
-			File folder = file.getAbsoluteFile().getParentFile();
-			if( !folder.exists() && !(folder.mkdirs() || folder.mkdirs()) ) throw new RuntimeException( "Unable to create log folder: " + folder );
+			Path path = Paths.get( expandFilePattern( filePattern ) );
+			Path folder = path.getParent();
+			try {
+				Files.createDirectories( path );
+			} catch( IOException exception ) {
+				throw new RuntimeException( "Unable to create log folder: " + folder );
+			}
 
 			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( filePattern ).append( "\n" );
@@ -102,7 +107,13 @@ public class Log {
 
 		// Set the default logger level for all other loggers
 		// Don't set this too low (debug, trace, all) because it can be noisy
-		builder.append( ".level=" ).append( LogFlag.toLogLevel( LogFlag.WARN ).getName() ).append( "\n" );
+		builder.append( ".level=" ).
+
+			append( LogFlag.toLogLevel( LogFlag.WARN ).
+
+			getName() ).
+
+			append( "\n" );
 
 		// NOTE Log levels can be customized with Log.setPackageLogLevel()
 
@@ -110,7 +121,9 @@ public class Log {
 		String configuration = builder.toString();
 		try {
 			if( logFolder != null ) FileUtil.save( configuration, logFolder.resolve( "log.config.properties" ) );
-		} catch( IOException exception ) {
+		} catch(
+
+			IOException exception ) {
 			exception.printStackTrace( System.err );
 		}
 
@@ -118,7 +131,9 @@ public class Log {
 		try {
 			InputStream input = new ByteArrayInputStream( configuration.getBytes( StandardCharsets.UTF_8 ) );
 			LogManager.getLogManager().readConfiguration( input );
-		} catch( IOException exception ) {
+		} catch(
+
+			IOException exception ) {
 			exception.printStackTrace( System.err );
 		}
 	}
