@@ -81,7 +81,7 @@ public class Log {
 
 			File file = new File( expandFilePattern( filePattern ) );
 			File folder = file.getAbsoluteFile().getParentFile();
-			if( !folder.exists() && !folder.mkdirs() ) throw new RuntimeException( "Unable to create log folder: " + folder );
+			if( !folder.exists() && !(folder.mkdirs() || folder.mkdirs()) ) throw new RuntimeException( "Unable to create log folder: " + folder );
 
 			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( filePattern ).append( "\n" );
