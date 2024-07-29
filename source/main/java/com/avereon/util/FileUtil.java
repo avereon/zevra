@@ -3,7 +3,6 @@ package com.avereon.util;
 import lombok.CustomLog;
 
 import java.io.*;
-import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -580,7 +579,7 @@ public class FileUtil {
 		// Fix Windows paths
 		path = path.replace( '\\', '/' );
 
-		return findValidFolder( new File( URI.create( path ).getPath() ) );
+		return findValidFolder( new File( path ) );
 	}
 
 	/**

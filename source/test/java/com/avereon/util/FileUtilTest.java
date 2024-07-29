@@ -456,6 +456,21 @@ class FileUtilTest {
 	}
 
 	@Test
+	void testFindValidFolderWithSpaceInPath() throws IOException {
+		Path path = FileUtil.getTempFolder();
+		assertThat( Files.exists( path ) ).isTrue();
+
+		Path folderWithSpace = path.resolve( "test folder" );
+		Files.createDirectories( folderWithSpace );
+		assertThat( Files.exists( folderWithSpace ) ).isTrue();
+		String pathString = folderWithSpace.toString();
+
+		Path valid = FileUtil.findValidFolder( pathString );
+		assertThat( Files.exists( valid ) ).isTrue();
+		assertThat( Files.isDirectory( valid ) ).isTrue();
+	}
+
+	@Test
 	void testDeleteWithMissingPath() throws IOException {
 		Path path = Paths.get( System.getProperty( "java.io.tmpdir" ), "not-a-valid-path" );
 		assertThat( Files.exists( path ) ).isFalse();
