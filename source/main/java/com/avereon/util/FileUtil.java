@@ -439,12 +439,10 @@ public class FileUtil {
 
 			@Override
 			public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
-				if( exception == null ) {
-					Files.delete( folder );
-					return FileVisitResult.CONTINUE;
-				} else {
-					throw exception;
-				}
+				if( exception != null ) throw exception;
+
+				Files.delete( folder );
+				return FileVisitResult.CONTINUE;
 			}
 		} );
 
@@ -580,7 +578,7 @@ public class FileUtil {
 	 */
 	public static Path findValidFolder( String path ) {
 		// Fix Windows paths
-		path = path.replace( '\\', '/'	);
+		path = path.replace( '\\', '/' );
 
 		return findValidFolder( new File( URI.create( path ).getPath() ) );
 	}
