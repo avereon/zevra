@@ -131,7 +131,7 @@ public class Document {
 		Reader reader;
 
 		if( content != null ) {
-			if( TextUtil.isEmpty( content ) ) log.atWarn().log( "Document reader has empty content: " + uri() );
+			if( TextUtil.isEmpty( content ) ) log.atConfig().log( "Document reader has empty content: " + uri() );
 			reader = new StringReader( content );
 		} else if( url != null ) {
 			reader = new InputStreamReader( url.openStream(), StandardCharsets.UTF_8 );
