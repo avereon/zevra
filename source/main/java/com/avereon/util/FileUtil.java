@@ -25,33 +25,33 @@ public class FileUtil {
 	private static final long FILE_COPY_BUFFER_SIZE = SizeUnitBase2.MiB.getSize() * 25;
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-10.
+	 * Get a human-readable string using orders of magnitude in base-10.
 	 *
-	 * @param size The size to convert to human readable
-	 * @return The human readable size string
+	 * @param size The size to convert to human-readable
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSize( long size ) {
 		return getHumanSize( size, false );
 	}
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-10.
+	 * Get a human-readable string using orders of magnitude in base-10.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size The size to convert to human-readable
 	 * @param compact If the unit should use compact notation
-	 * @return The human readable size string
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSize( long size, boolean compact ) {
 		return getHumanSize( size, compact, true );
 	}
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-10.
+	 * Get a human-readable string using orders of magnitude in base-10.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size The size to convert to human-readable
 	 * @param compact If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
-	 * @return The human readable size string
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSize( long size, boolean compact, boolean showUnit ) {
 		int exponent = 0;
@@ -87,33 +87,33 @@ public class FileUtil {
 	}
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-2.
+	 * Get a human-readable string using orders of magnitude in base-2.
 	 *
-	 * @param size The size to convert to human readable
-	 * @return The human readable size string
+	 * @param size The size to convert to human-readable
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSizeBase2( long size ) {
 		return getHumanSizeBase2( size, false );
 	}
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-2.
+	 * Get a human-readable string using orders of magnitude in base-2.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size The size to convert to human-readable
 	 * @param compact If the unit should use compact notation
-	 * @return The human readable size string
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSizeBase2( long size, boolean compact ) {
 		return getHumanSizeBase2( size, compact, true );
 	}
 
 	/**
-	 * Get a human readable string using orders of magnitude in base-2.
+	 * Get a human-readable string using orders of magnitude in base-2.
 	 *
-	 * @param size The size to convert to human readable
+	 * @param size The size to convert to human-readable
 	 * @param compact If the unit should use compact notation
 	 * @param showUnit If the unit should be shown
-	 * @return The human readable size string
+	 * @return The human-readable size string
 	 */
 	public static String getHumanSizeBase2( long size, boolean compact, boolean showUnit ) {
 		int exponent = 0;
@@ -388,18 +388,20 @@ public class FileUtil {
 	}
 
 	public static long getUncompressedSize( Path source ) throws IOException {
-		ZipFile zipFile = new ZipFile( source.toFile() );
-		Iterator<? extends ZipEntry> entries = zipFile.entries().asIterator();
+		try( ZipFile zipFile = new ZipFile( source.toFile() ) ) {
+			Iterator<? extends ZipEntry> entries = zipFile.entries().asIterator();
 
-		long total = 0;
-		while( entries.hasNext() ) {
-			ZipEntry entry = entries.next();
-			total += entry.isDirectory() ? 0 : entry.getSize();
+			long total = 0;
+			while( entries.hasNext() ) {
+				ZipEntry entry = entries.next();
+				total += entry.isDirectory() ? 0 : entry.getSize();
+			}
+
+			return total;
 		}
-
-		return total;
 	}
 
+	@SuppressWarnings( "unused" )
 	public static long getDeepUncompressedSize( Path source ) throws IOException {
 		List<Path> paths = listPaths( source );
 
@@ -448,8 +450,8 @@ public class FileUtil {
 		return !Files.exists( path );
 	}
 
-	public static Path deleteOnExit( Path path ) throws IOException {
-		if( !Files.exists( path ) ) return path;
+	public static void deleteOnExit( Path path ) throws IOException {
+		if( !Files.exists( path ) ) return;
 
 		Files.walkFileTree( path, new SimpleFileVisitor<>() {
 
@@ -469,8 +471,6 @@ public class FileUtil {
 				}
 			}
 		} );
-
-		return path;
 	}
 
 	public static Path getTempFolder() {
@@ -603,7 +603,7 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( Path path ) {
-		if( path == null ) return path;
+		if( path == null ) return null;
 		while( Files.notExists( path ) || !Files.isDirectory( path ) ) {
 			path = path.getParent();
 		}
