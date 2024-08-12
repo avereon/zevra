@@ -433,6 +433,36 @@ class FileUtilTest {
 	}
 
 	@Test
+	void testFindValidParentWithNullString() {
+		assertThat( FileUtil.findValidParent( (String)null ) ).isNull();
+	}
+
+	@Test
+	void testFindValidParentWithNullFile() {
+		assertThat( FileUtil.findValidParent( (File)null ) ).isNull();
+	}
+
+	@Test
+	void testFindValidParentWithNullPath() {
+		assertThat( FileUtil.findValidParent( (Path)null ) ).isNull();
+	}
+
+	@Test
+	void testFindValidFolderWithNullString() {
+		assertThat( FileUtil.findValidFolder( (String)null ) ).isNull();
+	}
+
+	@Test
+	void testFindValidFolderWithNullFile() {
+		assertThat( FileUtil.findValidFolder( (File)null ) ).isNull();
+	}
+
+	@Test
+	void testFindValidFolderWithNullPath() {
+		assertThat( FileUtil.findValidFolder( (Path)null ) ).isNull();
+	}
+
+	@Test
 	void testFindValidFolder() {
 		Path path = FileUtil.getTempFolder();
 		assertThat( Files.exists( path ) ).isTrue();

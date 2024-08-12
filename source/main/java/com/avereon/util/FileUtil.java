@@ -549,6 +549,7 @@ public class FileUtil {
 	 * @param file The file for which to find a valid parent folder
 	 */
 	public static Path findValidParent( String file ) {
+		if( file == null ) return null;
 		return findValidParent( Paths.get( file ) );
 	}
 
@@ -558,6 +559,7 @@ public class FileUtil {
 	 * @param file The file for which to find a valid parent folder
 	 */
 	public static Path findValidParent( File file ) {
+		if( file == null ) return null;
 		return findValidParent( file.toPath() );
 	}
 
@@ -567,6 +569,7 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidParent( Path path ) {
+		if( path == null ) return null;
 		return findValidFolder( path.getParent() );
 	}
 
@@ -576,6 +579,8 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( String path ) {
+		if( path == null ) return null;
+
 		// Fix Windows paths
 		path = path.replace( '\\', '/' );
 
@@ -588,6 +593,7 @@ public class FileUtil {
 	 * @param file The file for which to find a valid parent
 	 */
 	public static Path findValidFolder( File file ) {
+		if( file == null ) return null;
 		return findValidFolder( file.toPath() );
 	}
 
@@ -597,6 +603,7 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( Path path ) {
+		if( path == null ) return path;
 		while( Files.notExists( path ) || !Files.isDirectory( path ) ) {
 			path = path.getParent();
 		}
