@@ -6,6 +6,7 @@ import com.avereon.event.EventHub;
 import com.avereon.event.EventType;
 import com.avereon.transaction.*;
 import lombok.CustomLog;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -187,7 +188,12 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
 	 * This is updated when the self modified flag, values or children are changed.
+	 * -- GETTER --
+	 *  Is the node modified. The node is modified if any data value has been
+	 *  modified or any child node has been modified since the last time the
+	 *  modified flag was cleared.
 	 */
+	@Getter
 	private boolean modified;
 
 	// The node self modified flag.
@@ -215,18 +221,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	public Node() {
 		this.collectionId = UUID.randomUUID().toString();
 		this.hub = new EventHub();
-		this.valueChangeHandlers = new ConcurrentHashMap<>();
-	}
-
-	/**
-	 * Is the node modified. The node is modified if any data value has been
-	 * modified or any child node has been modified since the last time the
-	 * modified flag was cleared.
-	 *
-	 * @return true if this node or any child nodes are modified, false otherwise.
-	 */
-	public boolean isModified() {
-		return modified;
+		this.valueChangeHandlers = new WeakHashMap<>();
 	}
 
 	/**
@@ -1254,7 +1249,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 					getNode().modifiedValues.putIfAbsent( key, oldValue == null ? WAS_PREVIOUSLY_NULL : oldValue );
 				} else if( modifiedToPriorValue && getNode().modifiedValues != null ) {
 					getNode().modifiedValues.remove( key );
-					if( getNode().modifiedValues.size() == 0 ) getNode().modifiedValues = null;
+					if( getNode().modifiedValues.isEmpty() ) getNode().modifiedValues = null;
 				}
 			}
 
