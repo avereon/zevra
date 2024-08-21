@@ -512,7 +512,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	@Override
 	public int compareTo( Node that ) {
-		if( comparator == null ) comparator = getComparator();
+		if( comparator == null ) comparator = getNaturalComparator();
 		return comparator.compare( this, that );
 	}
 
@@ -522,7 +522,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param <T> The node type
 	 * @return A node comparator
 	 */
-	public <T extends Node> Comparator<T> getComparator() {
+	public <T extends Node> Comparator<T> getNaturalComparator() {
 		return new NodeComparator<>( getNaturalKey() );
 	}
 
@@ -964,7 +964,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		if( newValue == null ) {
 			if( values == null ) return null;
 			values.remove( key );
-			if( values.size() == 0 ) values = null;
+			if( values.isEmpty() ) values = null;
 			if( oldValue instanceof Node ) doRemoveFromParent( (Node)oldValue, true );
 		} else {
 			if( values == null ) values = new ConcurrentHashMap<>();
@@ -1019,7 +1019,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			set.add( child );
 		} else if( set != null ) {
 			set.remove( child );
-			if( set.size() == 0 ) set = null;
+			if( set.isEmpty() ) set = null;
 		}
 
 		return set;

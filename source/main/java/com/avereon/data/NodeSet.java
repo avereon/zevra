@@ -199,7 +199,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	@SuppressWarnings( "SuspiciousMethodCalls" )
 	private boolean retainNodes( String setKey, Collection<?> collections ) {
-		if( collections.size() == 0 ) return false;
+		if( collections.isEmpty() ) return false;
 		Collection<?> remaining = getValues();
 		int originalSize = remaining.size();
 		remaining.removeAll( collections );
