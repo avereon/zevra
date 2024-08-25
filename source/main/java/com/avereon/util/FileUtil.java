@@ -603,8 +603,7 @@ public class FileUtil {
 	 * @param path The path for which to find a valid parent
 	 */
 	public static Path findValidFolder( Path path ) {
-		if( path == null ) return null;
-		while( Files.notExists( path ) || !Files.isDirectory( path ) ) {
+		while( path != null && Files.notExists( path ) | !Files.isDirectory( path ) ) {
 			path = path.getParent();
 		}
 		return path;
