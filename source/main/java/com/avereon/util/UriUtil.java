@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -17,20 +18,23 @@ import java.util.*;
 public final class UriUtil {
 
 	/**
-	 * Convenience method to create a URI from a string. This method ensures that
-	 * the URI is properly encoded and uses UTF-8 encoding.
+	 * Convenience method to URL encode a string using UTF-8 encoding.
 	 *
-	 * @param uri The string to convert to a URI.
-	 * @return A URI object created from the given string
+	 * @param string The string to encode
+	 * @return The encoded string
 	 */
-	public static URI create( String uri ) {
-		if( uri == null ) return null;
-		try {
-			return new URI( URLEncoder.encode( uri, StandardCharsets.UTF_8 ) );
-		} catch( URISyntaxException exception ) {
-			log.atWarn().withCause( exception ).log( "Error creating URI: %s", uri );
-			return null;
-		}
+	public static String encode( String string ) {
+		return URLEncoder.encode( string, StandardCharsets.UTF_8 );
+	}
+
+	/**
+	 * Convenience method to URL decode a string using UTF-8 encoding.
+	 *
+	 * @param string The string to decode
+	 * @return The decoded string
+	 */
+	public static String decode( String string ) {
+		return URLDecoder.decode( string, StandardCharsets.UTF_8 );
 	}
 
 	/**
@@ -173,7 +177,7 @@ public final class UriUtil {
 		if( "jar".equals( uri.getScheme() ) ) {
 			while( uri.isOpaque() ) {
 				queue.add( uri.getScheme() );
-				uri = create( uri.getRawSchemeSpecificPart() );
+				uri = URI.create( uri.getRawSchemeSpecificPart() );
 			}
 		}
 
@@ -182,7 +186,7 @@ public final class UriUtil {
 		if( "file".equals( uri.getScheme() ) ) {
 			String scheme;
 			while( (scheme = queue.pollLast()) != null ) {
-				uri = create( scheme + ":" + uri );
+				uri = URI.create( scheme + ":" + uri );
 			}
 		}
 
