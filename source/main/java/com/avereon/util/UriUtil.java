@@ -173,7 +173,7 @@ public final class UriUtil {
 		if( "jar".equals( uri.getScheme() ) ) {
 			while( uri.isOpaque() ) {
 				queue.add( uri.getScheme() );
-				uri = URI.create( uri.getRawSchemeSpecificPart() );
+				uri = create( uri.getRawSchemeSpecificPart() );
 			}
 		}
 
@@ -182,7 +182,7 @@ public final class UriUtil {
 		if( "file".equals( uri.getScheme() ) ) {
 			String scheme;
 			while( (scheme = queue.pollLast()) != null ) {
-				uri = URI.create( scheme + ":" + uri );
+				uri = create( scheme + ":" + uri );
 			}
 		}
 
