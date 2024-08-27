@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -13,6 +15,23 @@ import java.util.*;
  */
 @CustomLog
 public final class UriUtil {
+
+	/**
+	 * Convenience method to create a URI from a string. This method ensures that
+	 * the URI is properly encoded and uses UTF-8 encoding.
+	 *
+	 * @param uri The string to convert to a URI.
+	 * @return A URI object created from the given string
+	 */
+	public static URI create( String uri ) {
+		if( uri == null ) return null;
+		try {
+			return new URI( URLEncoder.encode( uri, StandardCharsets.UTF_8 ) );
+		} catch( URISyntaxException exception ) {
+			log.atWarn().withCause( exception ).log( "Error creating URI: %s", uri );
+			return null;
+		}
+	}
 
 	/**
 	 * Appends a path segment to the given URI and returns a new normalized URI.
