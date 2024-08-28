@@ -3,6 +3,9 @@ package com.avereon.util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.*;
 import java.nio.file.DirectoryStream;
@@ -505,6 +508,24 @@ class FileUtilTest {
 		Path path = Paths.get( System.getProperty( "java.io.tmpdir" ), "not-a-valid-path" );
 		assertThat( Files.exists( path ) ).isFalse();
 		assertThat( FileUtil.delete( path ) ).isTrue();
+	}
+
+	@ParameterizedTest
+	@MethodSource( "getNextIndexedNameTestData" )
+	void testGetNextIndexedName( String name, List<String> names, String expected ) {
+		//		String name = "test";
+		//		List<String> names = Arrays.asList( "test", "test(1)", "test(3)", "test(4)" );
+
+		assertThat( FileUtil.getNextIndexedName( name, names ) ).isEqualTo( expected );
+	}
+
+	private static Stream<Arguments> getNextIndexedNameTestData() {
+		return Stream.of(
+			Arguments.of( "test", List.of(), "test" ),
+			Arguments.of( "test", List.of( "test" ), "test(1)" ),
+			Arguments.of( "test.txt", List.of( "test.txt", "test(1).txt" ), "test(2).txt" ),
+			Arguments.of( "test", List.of( "test", "test(1)", "test(3)", "test(4)" ), "test(5)" )
+		);
 	}
 
 	private void assertFileCopy( long time, Path source, Path target ) throws IOException {

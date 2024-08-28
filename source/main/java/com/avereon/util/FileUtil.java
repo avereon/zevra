@@ -585,7 +585,7 @@ public class FileUtil {
 		// Fix Windows paths
 		path = path.replace( '\\', '/' );
 
-		if( path.startsWith( "file:" ) ) return findValidFolder( new File(URI.create( path )) );
+		if( path.startsWith( "file:" ) ) return findValidFolder( new File( URI.create( path ) ) );
 
 		return findValidFolder( new File( path ) );
 	}
@@ -610,6 +610,32 @@ public class FileUtil {
 			path = path.getParent();
 		}
 		return path;
+	}
+
+	public static String getNextIndexedName( List<String> existingNames, String name ) {
+		String extension = FileUtil.getExtension( name );
+		String base = FileUtil.removeExtension( name );
+
+		String startDelim = "(";
+		String endDelim = ")";
+
+		String regex = "^" + base + "\\" + startDelim + "\\d+\\" + endDelim + (extension.isEmpty() ? "" : "\\." + extension) + "$";
+
+		int index = -1;
+		for( String existing : existingNames ) {
+			if( existing.matches( regex ) ) {
+				int start = existing.indexOf( startDelim, base.length() ) + 1;
+				int end = existing.indexOf( endDelim, start );
+				index = Integer.parseInt( existing.substring( start, end ) );
+			} else {
+				if( existing.equals( name ) ) index = 0;
+			}
+		}
+
+		if( index < 0 ) return name;
+
+		base = base + "(" + (index + 1) + ")";
+		return base + (extension.isEmpty() ? "" : "." + extension);
 	}
 
 	private static String sanitize( String path ) {
