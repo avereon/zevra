@@ -516,7 +516,7 @@ class FileUtilTest {
 		//		String name = "test";
 		//		List<String> names = Arrays.asList( "test", "test(1)", "test(3)", "test(4)" );
 
-		assertThat( FileUtil.getNextIndexedName( name, names ) ).isEqualTo( expected );
+		assertThat( FileUtil.getNextIndexedName( names, name ) ).isEqualTo( expected );
 	}
 
 	private static Stream<Arguments> getNextIndexedNameTestData() {
