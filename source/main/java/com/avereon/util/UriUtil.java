@@ -129,7 +129,7 @@ public final class UriUtil {
 
 		// Try to create a URI directly from the string.
 		try {
-			uri = new URI( string );
+			uri = new URI( string.replace( " ", "%20" ) );
 		} catch( URISyntaxException exception ) {
 			// Intentionally ignore exception.
 		}
@@ -151,6 +151,31 @@ public final class UriUtil {
 		}
 
 		return uri;
+	}
+
+	/**
+	 * Convenience method to resolve a string against a URI. This method URL
+	 * encodes the string before resolving it.
+	 *
+	 * @param uri The URI to resolve against
+	 * @param string The string to resolve
+	 * @return The resolved URI
+	 */
+	public static URI resolve( URI uri, String string ) {
+		return uri.resolve( encode( string ) );
+	}
+
+	/**
+	 * Convenience method to resolve a string against a URI and return the result
+	 * as a string. This method URL encodes the string before resolving it and
+	 * URL decodes the result before returning it.
+	 *
+	 * @param uri The URI to resolve against
+	 * @param string The string to resolve
+	 * @return The resolved URI as a string
+	 */
+	public static String resolveToString( URI uri, String string ) {
+		return decode( resolve( uri, string ).toString() );
 	}
 
 	/**

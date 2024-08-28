@@ -108,8 +108,8 @@ class UriUtilTest {
 		URI relative = URI.create( "relative" );
 		URI jar = URI.create( "jar:file:/test/folder%20with%20spaces/file.jar!/path/to/resource" );
 
-		assertThat( UriUtil.resolve( null, null ) ).isNull();
-		assertThat( UriUtil.resolve( base, null ) ).isNull();
+		assertThat( UriUtil.resolve( null, (URI)null ) ).isNull();
+		assertThat( UriUtil.resolve( base, (URI)null ) ).isNull();
 		assertThat( UriUtil.resolve( null, relative ) ).isEqualTo( URI.create( "relative" ) );
 		assertThat( UriUtil.resolve( null, absolute ) ).isEqualTo( URI.create( "file:/test/folder/absolute" ) );
 
@@ -183,7 +183,7 @@ class UriUtilTest {
 
 	@Test
 	void testParseFragmentWithUri() {
-		assertThat( UriUtil.parseFragment( (URI)null ) ).isNull();
+		assertThat( UriUtil.parseFragment( null ) ).isNull();
 
 		URI uri = URI.create( "test:///path#fragment" );
 		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );

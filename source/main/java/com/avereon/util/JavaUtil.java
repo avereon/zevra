@@ -18,7 +18,7 @@ public final class JavaUtil {
 		String version = System.getProperty( "java.version" );
 		String[] parts = version.split( "\\." );
 		int majorVersion = Integer.parseInt( parts[ 0 ] );
-		if( majorVersion == 1 ) 			majorVersion = Integer.parseInt( parts[ 1 ] );
+		if( majorVersion == 1 ) majorVersion = Integer.parseInt( parts[ 1 ] );
 		return majorVersion;
 	}
 
@@ -181,7 +181,7 @@ public final class JavaUtil {
 		ArrayList<URI> list = new ArrayList<>();
 		if( paths == null ) return list;
 
-		URI uri = null;
+		URI uri;
 		String token;
 		StringTokenizer tokenizer = new StringTokenizer( paths, separator );
 		while( tokenizer.hasMoreTokens() ) {
@@ -204,7 +204,7 @@ public final class JavaUtil {
 	 * Parse the relative URLs from the specified classpath in JAR file manifest format. See <a href= "http://java.sun.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes"
 	 * >Setting the JAR Manifest Class-Path Attribute</a>
 	 */
-	public static List<URL> parseManifestClasspath( URI base, String classpath ) throws IOException, URISyntaxException {
+	public static List<URL> parseManifestClasspath( URI base, String classpath ) throws IOException {
 		List<URL> urls = new ArrayList<>();
 
 		if( base == null || classpath == null ) return urls;
