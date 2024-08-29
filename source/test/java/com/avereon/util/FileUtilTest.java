@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -499,6 +500,21 @@ class FileUtilTest {
 		String pathString = folderWithSpace.toString();
 
 		Path valid = FileUtil.findValidFolder( pathString );
+		assertThat( Files.exists( valid ) ).isTrue();
+		assertThat( Files.isDirectory( valid ) ).isTrue();
+	}
+
+	@Test
+	void testFindValidFolderWithUriWithSpaceInPath() throws IOException {
+		Path path = FileUtil.getTempFolder();
+		assertThat( Files.exists( path ) ).isTrue();
+
+		URI uri = URI.create( "file:" + path + "/test%20folder/" );
+		Path folderWithSpace = Paths.get( uri );
+		Files.createDirectories( folderWithSpace );
+		assertThat( Files.exists( folderWithSpace ) ).isTrue();
+
+		Path valid = FileUtil.findValidFolder( uri.getPath() );
 		assertThat( Files.exists( valid ) ).isTrue();
 		assertThat( Files.isDirectory( valid ) ).isTrue();
 	}
