@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @CustomLog
@@ -188,7 +186,7 @@ public final class JavaUtil {
 			token = tokenizer.nextToken();
 
 			try {
-				uri = new URI( URLDecoder.decode( token, StandardCharsets.UTF_8 ) );
+				uri = new URI( UriUtil.decode( token ) );
 			} catch( URISyntaxException exception ) {
 				uri = new File( token ).toURI();
 			}
