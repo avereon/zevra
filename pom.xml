@@ -49,7 +49,7 @@
 		<java.version>17</java.version>
 
 		<!-- Runtime dependencies -->
-		<jackson.version>[2.17.2]</jackson.version>
+		<jackson.version>[2.18.0]</jackson.version>
 		<fuzzywuzzy.version>[1.4.0]</fuzzywuzzy.version>
 		<jsoup.version>1.18.1</jsoup.version>
 		<google.findbugs.version>3.0.2</google.findbugs.version>
