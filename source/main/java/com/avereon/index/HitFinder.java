@@ -42,7 +42,7 @@ public class HitFinder {
 		try {
 			hits.addAll( source
 				.index()
-				.map( t -> new Hit().setDocument( document ).setContext( t.context() ).setWord( t.word() ).setLength( t.length() ).coordinates( t.coordinates() ).setPriority( priority ) )
+				.map( t -> new Hit().setDocument( document ).setContext( t.context() ).setWord( t.word() ).setLength( t.length() ).setCoordinates( t.coordinates() ).setPriority( priority ) )
 				.toList() );
 		} catch( IOException exception ) {
 			log.atWarn( exception );

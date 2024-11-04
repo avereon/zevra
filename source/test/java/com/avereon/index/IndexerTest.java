@@ -64,54 +64,42 @@ public class IndexerTest {
 		// Check the hits
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( new Hit()
 			.setContext( title )
-			.coordinates( List.of( 0, 0 ) )
-			.setLine( 0 )
-			.setIndex( 0 )
+			.setCoordinates( List.of( 0, 0 ) )
 			.setWord( "document" )
 			.setLength( 8 )
 			.setDocument( document )
 			.setPriority( Hit.TITLE_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains( new Hit()
 			.setContext( text )
-			.coordinates( List.of( 0, 0 ) )
-			.setLine( 0 )
-			.setIndex( 0 )
+			.setCoordinates( List.of( 0, 0 ) )
 			.setWord( "this" )
 			.setLength( 4 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( new Hit()
 			.setContext( text )
-			.coordinates( List.of( 0, 5 ) )
-			.setLine( 0 )
-			.setIndex( 5 )
+			.setCoordinates( List.of( 0, 5 ) )
 			.setWord( "is" )
 			.setLength( 2 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( new Hit()
 			.setContext( text )
-			.coordinates( List.of( 0, 8 ) )
-			.setLine( 0 )
-			.setIndex( 8 )
+			.setCoordinates( List.of( 0, 8 ) )
 			.setWord( "some" )
 			.setLength( 4 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( new Hit()
 			.setContext( text )
-			.coordinates( List.of( 0, 13 ) )
-			.setLine( 0 )
-			.setIndex( 13 )
+			.setCoordinates( List.of( 0, 13 ) )
 			.setWord( "arbitrary" )
 			.setLength( 9 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( new Hit()
 			.setContext( text )
-			.coordinates( List.of( 0, 23 ) )
-			.setLine( 0 )
-			.setIndex( 23 )
+			.setCoordinates( List.of( 0, 23 ) )
 			.setWord( "content" )
 			.setLength( 7 )
 			.setDocument( document )
@@ -138,49 +126,39 @@ public class IndexerTest {
 		// Check the hits
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "document" ) ).contains( new Hit()
 			.setContext( name.trim() )
-			.coordinates( List.of( 0, 10 ) )
-			.setLine( 0 )
-			.setIndex( 10 )
+			.setCoordinates( List.of( 0, 10 ) )
 			.setWord( "document" )
 			.setLength( 8 )
 			.setDocument( document )
 			.setPriority( Hit.TITLE_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "this" ) ).contains(
-			new Hit().setContext( name.trim() ).coordinates( List.of( 0, 0 ) ).setLine( 0 ).setIndex( 0 ).setWord( "this" ).setLength( 4 ).setDocument( document ).setPriority( Hit.TITLE_PRIORITY ),
-			new Hit().setContext( line0.trim() ).coordinates( List.of( 0, 0 ) ).setLine( 0 ).setIndex( 0 ).setWord( "this" ).setLength( 4 ).setDocument( document ).setPriority( Hit.CONTENT_PRIORITY )
+			new Hit().setContext( name.trim() ).setCoordinates( List.of( 0, 0 ) ).setWord( "this" ).setLength( 4 ).setDocument( document ).setPriority( Hit.TITLE_PRIORITY ),
+			new Hit().setContext( line0.trim() ).setCoordinates( List.of( 0, 0 ) ).setWord( "this" ).setLength( 4 ).setDocument( document ).setPriority( Hit.CONTENT_PRIORITY )
 		);
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "is" ) ).contains( new Hit()
 			.setContext( line0.trim() )
-			.coordinates( List.of( 0, 6 ) )
-			.setLine( 0 )
-			.setIndex( 6 )
+			.setCoordinates( List.of( 0, 6 ) )
 			.setWord( "is" )
 			.setLength( 2 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "some" ) ).contains( new Hit()
 			.setContext( line1.trim() )
-			.coordinates( List.of( 1, 0 ) )
-			.setLine( 1 )
-			.setIndex( 0 )
+			.setCoordinates( List.of( 1, 0 ) )
 			.setWord( "some" )
 			.setLength( 4 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "arbitrary" ) ).contains( new Hit()
 			.setContext( line1.trim() )
-			.coordinates( List.of( 1, 6 ) )
-			.setLine( 1 )
-			.setIndex( 6 )
+			.setCoordinates( List.of( 1, 6 ) )
 			.setWord( "arbitrary" )
 			.setLength( 9 )
 			.setDocument( document )
 			.setPriority( Hit.CONTENT_PRIORITY ) );
 		assertThat( indexer.getIndex( Index.DEFAULT ).orElseThrow().getHits( "content" ) ).contains( new Hit()
 			.setContext( line1.trim() )
-			.coordinates( List.of( 1, 16 ) )
-			.setLine( 1 )
-			.setIndex( 16 )
+			.setCoordinates( List.of( 1, 16 ) )
 			.setWord( "content" )
 			.setLength( 7 )
 			.setDocument( document )
@@ -325,18 +303,23 @@ public class IndexerTest {
 		assertThat( indexA.getDictionary().size() ).isEqualTo( 5 );
 		assertThat( indexB.getDictionary().size() ).isEqualTo( 4 );
 
+		// Search for "document" and "about"
 		Search search = new FuzzySearch( 80 );
 		IndexQuery query = IndexQuery.builder().terms( List.of( "document", "about" ) ).build();
 		List<Hit> hits = Indexer.search( search, query, indexer.allIndexes() ).get();
-
-		// FIXME This will fail because the results come out of order on occasion
-		//		assertThat( hits.get( 0 ).getDocument() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, new StringReader( textA ) ) );
-		//		assertThat( hits.get( 0 ).getPriority() ).isEqualTo( Hit.CONTENT_PRIORITY );
-		//		assertThat( hits.get( 1 ).getDocument() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, new StringReader( textB ) ) );
-		//		assertThat( hits.get( 1 ).getPriority() ).isEqualTo( Hit.CONTENT_PRIORITY );
-
-		// There should only be one hit that matched on both terms
+		assertThat( hits.get( 0 ).getDocument() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, textA ) );
+		assertThat( hits.get( 0 ).getPriority() ).isEqualTo( Hit.CONTENT_PRIORITY );
 		assertThat( hits.size() ).isEqualTo( 1 );
+
+		// Search for "document"
+		Search search2 = new FuzzySearch( 80 );
+		IndexQuery query2 = IndexQuery.builder().terms( List.of( "document" ) ).build();
+		List<Hit> hits2 = Indexer.search( search2, query2, indexer.allIndexes() ).get();
+		assertThat( hits2.get( 0 ).getDocument() ).isEqualTo( new Document( URI.create( "" ), icon, nameA, textA ) );
+		assertThat( hits2.get( 0 ).getPriority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+		assertThat( hits2.get( 1 ).getDocument() ).isEqualTo( new Document( URI.create( "" ), icon, nameB, textB ) );
+		assertThat( hits2.get( 1 ).getPriority() ).isEqualTo( Hit.CONTENT_PRIORITY );
+		assertThat( hits2.size() ).isEqualTo( 2 );
 	}
 
 }

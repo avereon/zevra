@@ -14,7 +14,6 @@ import java.util.List;
  * hits with more information regarding the search match.
  */
 @Data
-//@Builder( toBuilder = true )
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors( chain = true )
@@ -40,34 +39,14 @@ public class Hit {
 
 	private List<Integer> coordinates;
 
-	/**
-	 * @deprecated Use coordinates instead
-	 */
-	@Deprecated (since = "0.9")
-	private int line;
-
-	/**
-	 * @deprecated Use coordinates instead
-	 */
-	@Deprecated (since = "0.9")
-	private int index;
-
 	// This is used for search hits
 	private int points;
 
 	private int priority;
 
-	public Hit coordinates( List<Integer> coordinates ) {
-		this.coordinates = coordinates;
-		int count = coordinates.size();
-		if( count > 0 ) line = coordinates.get( 0 );
-		if( count > 1 ) index = coordinates.get( 1 );
-		return this;
-	}
-
 	@Override
 	public String toString() {
-		return "{" + "title=" + document.title() + " length=" + length + " term=" + word + " context=" + context+ " line=" + line+ " index=" + index + " coords=" + coordinates + "}";
+		return "{" + "title=" + document.title() + " length=" + length + " term=" + word + " context=" + context + " coords=" + coordinates + "}";
 	}
 
 }

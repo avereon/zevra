@@ -35,9 +35,9 @@ public class IndexTest {
 		Index b = new StandardIndex();
 
 		a.push( Set.of( new Hit().setWord( "a" ) ) );
-		a.push( Set.of( new Hit().setWord( "b" ).coordinates( List.of( 0 ) ).setLine( 0 ) ) );
+		a.push( Set.of( new Hit().setWord( "b" ).setCoordinates( List.of( 0 ) ) ) );
 
-		b.push( Set.of( new Hit().setWord( "b" ).coordinates( List.of( 1 ) ).setLine( 1 ) ) );
+		b.push( Set.of( new Hit().setWord( "b" ).setCoordinates( List.of( 1 ) ) ) );
 		b.push( Set.of( new Hit().setWord( "c" ) ) );
 
 		// When merged, the word "b" will have two hits since they are on separate lines
