@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,6 +14,7 @@ class UriUtilTest {
 
 	@Test
 	void understandUriParts() {
+		// Opaque URI with scheme and fragment
 		URI uri = URI.create( "program:product#updates" );
 		assertThat( uri.isOpaque() ).isEqualTo( true );
 		assertThat( uri.isAbsolute() ).isEqualTo( true );
@@ -24,6 +27,7 @@ class UriUtilTest {
 		assertThat( uri.getFragment() ).isEqualTo( "updates" );
 		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "product" );
 
+		// Normal URI with scheme and fragment
 		uri = URI.create( "https://avereon.com/download/xenon/product/card?version=latest&refresh=false#name" );
 		assertThat( uri.isOpaque() ).isEqualTo( false );
 		assertThat( uri.isAbsolute() ).isEqualTo( true );
@@ -36,6 +40,7 @@ class UriUtilTest {
 		assertThat( uri.getFragment() ).isEqualTo( "name" );
 		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//avereon.com/download/xenon/product/card?version=latest&refresh=false" );
 
+		// Normal URI with user info
 		uri = URI.create( "ssh://user@avereon.com/tmp" );
 		assertThat( uri.isOpaque() ).isEqualTo( false );
 		assertThat( uri.isAbsolute() ).isEqualTo( true );
@@ -48,15 +53,40 @@ class UriUtilTest {
 		assertThat( uri.getFragment() ).isNull();
 		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//user@avereon.com/tmp" );
 
+		// Files with spaces
+		Path path = Path.of( "/home/user/My Documents" );
+		uri = path.toUri();
+		assertThat( uri.isOpaque() ).isEqualTo( false );
+		assertThat( uri.isAbsolute() ).isEqualTo( true );
+		assertThat( uri.getScheme() ).isEqualTo( "file" );
+		assertThat( uri.getUserInfo() ).isNull();
+		assertThat( uri.getHost() ).isNull();
+		assertThat( uri.getAuthority() ).isNull();
+		assertThat( uri.getPath() ).isEqualTo( "/home/user/My Documents" );
+		assertThat( uri.getRawPath() ).isEqualTo( "/home/user/My%20Documents" );
+		assertThat( uri.getQuery() ).isNull();
+		assertThat( uri.getFragment() ).isNull();
+		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "///home/user/My Documents" );
+		assertThat( uri.getRawSchemeSpecificPart() ).isEqualTo( "///home/user/My%20Documents" );
+		assertThat( uri.toString() ).isEqualTo( "file:///home/user/My%20Documents" );
+		assertThat( uri.toASCIIString() ).isEqualTo( "file:///home/user/My%20Documents" );
+		// converted back to path
+		assertThat( Paths.get( uri ).toString() ).isEqualTo( "/home/user/My Documents" );
+
 		URI a = URI.create( "program:help" );
 		URI b = URI.create( "program:help#detail" );
 		assertThat( a.compareTo( b ) ).isLessThan( 0 );
 
-		assertThat( b.getScheme()).isNotEqualTo( "program:help" );
-		assertThat( b.getScheme()).isEqualTo( "program" );
+		// Opaque URI with scheme and scheme specific part
+		assertThat( b.getScheme() ).isNotEqualTo( "program:help" );
+		assertThat( b.getScheme() ).isEqualTo( "program" );
+		assertThat( b.getSchemeSpecificPart() ).isEqualTo( "help" );
 
-		URI c = URI.create( b.getSchemeSpecificPart() );
-		assertThat( c.getScheme()).isNotEqualTo( "help");
+		// Name only URI
+		URI c = URI.create( "help" );
+		assertThat( c.getScheme() ).isNotEqualTo( "help" );
+		assertThat( c.getPath() ).isEqualTo( "help" );
+		assertThat( b.getSchemeSpecificPart() ).isEqualTo( "help" );
 	}
 
 	@Test
@@ -209,7 +239,7 @@ class UriUtilTest {
 
 		uri = URI.create( "test:///path?attr1=value1&attr2=value2#fragment" );
 		parameters = UriUtil.parseQuery( uri.getQuery() );
-		assertThat( UriUtil.parseFragment( uri )).isEqualTo( "fragment" );
+		assertThat( UriUtil.parseFragment( uri ) ).isEqualTo( "fragment" );
 		assertThat( parameters.get( "attr1" ) ).isEqualTo( "value1" );
 		assertThat( parameters.get( "attr2" ) ).isEqualTo( "value2" );
 	}
