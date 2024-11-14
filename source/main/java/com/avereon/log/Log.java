@@ -35,9 +35,9 @@ public class Log {
 	 * @param source The object configuring the logging
 	 * @param parameters Command line parameters that may contain log parameters
 	 * @param logFolder The folder where to publish log files
-	 * @param defaultFile The default log file name pattern
+	 * @param logFile The default log file name pattern
 	 */
-	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String defaultFile ) {
+	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String logFile ) {
 		// Logging level conversion
 		//
 		// SLF4J -> Java
@@ -50,7 +50,7 @@ public class Log {
 
 		StringBuilder builder = new StringBuilder();
 		String level = LogFlag.toLogLevel( parameters.get( LogFlag.LOG_LEVEL, LogFlag.INFO ) ).getName();
-		String filePattern = parameters.get( LogFlag.LOG_FILE, defaultFile );
+		String filePattern = parameters.get( LogFlag.LOG_FILE, logFile );
 
 		boolean nameOnly = filePattern != null && !filePattern.contains( File.separator );
 		if( nameOnly && logFolder != null ) filePattern = new File( logFolder.toFile(), filePattern ).toString();
@@ -83,7 +83,7 @@ public class Log {
 			Path path = Paths.get( expandFilePattern( filePattern ) );
 			Path folder = path.getParent();
 			try {
-				Files.createDirectories( path );
+				Files.createDirectories( folder );
 			} catch( IOException exception ) {
 				throw new RuntimeException( "Unable to create log folder: " + folder );
 			}
