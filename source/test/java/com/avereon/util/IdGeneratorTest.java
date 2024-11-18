@@ -13,12 +13,29 @@ class IdGeneratorTest {
 	}
 
 	@Test
-	void testGetIdWithInt() {
+	void testSlugWithInt() {
 		assertThat( IdGenerator.slug( 0x00000000 ) ).isEqualTo( "mmmmmmmm" );
 		assertThat( IdGenerator.slug( 0x55555555 ) ).isEqualTo( "cccccccc" );
 		assertThat( IdGenerator.slug( 0xaaaaaaaa ) ).isEqualTo( "xxxxxxxx" );
 		assertThat( IdGenerator.slug( 0xffffffff ) ).isEqualTo( "ssssssss" );
 	}
+
+	@Test
+	void testSlugWithLong() {
+		assertThat( IdGenerator.slug( 0x0000000000000000L ) ).isEqualTo( "mmmmmmmm" );
+		assertThat( IdGenerator.slug( 0x5555555555555555L ) ).isEqualTo( "mmmmmmmm" );
+		assertThat( IdGenerator.slug( 0xaaaaaaaaaaaaaaaaL ) ).isEqualTo( "mmmmmmmm" );
+		assertThat( IdGenerator.slug( 0xffffffffffffffffL ) ).isEqualTo( "mmmmmmmm" );
+	}
+
+	@Test
+	void testGetIdWithInt() {
+		assertThat( IdGenerator.getId( 0x00000000 ) ).isEqualTo( "mmmmmmmmmmmmmmmm" );
+		assertThat( IdGenerator.getId( 0x55555555 ) ).isEqualTo( "ccccccccmmmmmmmm" );
+		assertThat( IdGenerator.getId( 0xaaaaaaaa ) ).isEqualTo( "xxxxxxxxssssssss" );
+		assertThat( IdGenerator.getId( 0xffffffff ) ).isEqualTo( "ssssssssssssssss" );
+	}
+
 
 	@Test
 	void testGetIdWithLong() {
