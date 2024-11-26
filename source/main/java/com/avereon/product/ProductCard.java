@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.CustomLog;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,66 +33,109 @@ import java.util.*;
  */
 @CustomLog
 @JsonIgnoreProperties( ignoreUnknown = true )
+@Accessors( chain = true )
 public class ProductCard extends BaseCard {
 
 	private static final String CARD = "META-INF/product.card";
 
 	private static final String INFO = "META-INF/product.info";
 
+	@Getter
 	@JsonIgnore
 	private String productKey;
 
+	@Getter
 	private String group;
 
+	@Getter
 	private String artifact;
 
+	@Getter
 	private String version;
 
+	@Getter
 	private String timestamp;
 
+	@Getter
 	private String packaging;
 
+	@Getter
 	private String packagingVersion;
 
+	@Getter
 	@JsonIgnore
 	private Release release;
 
+	@Getter
 	private List<String> icons;
 
+	@Getter
+	@Setter
 	private String name;
 
+	@Getter
+	@Setter
 	private String provider;
 
+	@Getter
+	@Setter
 	private String providerUrl;
 
+	@Getter
+	@Setter
 	private int inception;
 
+	@Getter
+	@Setter
 	private String summary;
 
+	@Getter
+	@Setter
 	private String description;
 
+	@Getter
+	@Setter
 	private String copyrightSummary;
 
+	@Getter
+	@Setter
 	private String licenseSummary;
 
+	@Getter
+	@Setter
 	@JsonIgnore
 	private String productUri;
 
+	@Getter
+	@Setter
 	private String javaVersion;
 
+	@Getter
+	@Setter
 	private Path installFolder;
 
+	@Getter
+	@Setter
 	private List<Maintainer> maintainers;
 
+	@Getter
+	@Setter
 	private List<Contributor> contributors;
 
+	@Getter
+	@Setter
 	private boolean enabled;
 
+	@Getter
+	@Setter
 	private boolean removable;
 
+	@Getter
+	@Setter
 	@JsonIgnore
 	private RepoCard repo;
 
+	@JsonIgnore
 	private Map<String, String> resources;
 
 	public ProductCard() {}
@@ -227,23 +273,10 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	@JsonIgnore
-	public String getProductKey() {
-		return productKey;
-	}
-
-	public String getGroup() {
-		return group;
-	}
-
 	public ProductCard setGroup( String group ) {
 		this.group = group;
 		updateKey();
 		return this;
-	}
-
-	public String getArtifact() {
-		return artifact;
 	}
 
 	public ProductCard setArtifact( String artifact ) {
@@ -252,18 +285,10 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	public String getPackaging() {
-		return packaging;
-	}
-
 	public ProductCard setVersion( String version ) {
 		this.version = version;
 		updateRelease();
 		return this;
-	}
-
-	public String getTimestamp() {
-		return timestamp;
 	}
 
 	public ProductCard setTimestamp( String timestamp ) {
@@ -277,173 +302,13 @@ public class ProductCard extends BaseCard {
 		return this;
 	}
 
-	public String getVersion() {
-		return version;
-	}
-
 	public ProductCard setPackagingVersion( String version ) {
 		this.packagingVersion = version;
 		return this;
 	}
 
-	public String getPackagingVersion() {
-		return packagingVersion;
-	}
-
-	public Release getRelease() {
-		return release;
-	}
-
-	public List<String> getIcons() {
-		return icons;
-	}
-
 	public ProductCard setIcons( List<String> icons ) {
 		this.icons = Collections.unmodifiableList( icons == null ? List.of() : icons );
-		return this;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public ProductCard setName( String name ) {
-		this.name = name;
-		return this;
-	}
-
-	public String getProvider() {
-		return provider;
-	}
-
-	public ProductCard setProvider( String provider ) {
-		this.provider = provider;
-		return this;
-	}
-
-	public String getProviderUrl() {
-		return providerUrl;
-	}
-
-	public ProductCard setProviderUrl( String providerUrl ) {
-		this.providerUrl = providerUrl;
-		return this;
-	}
-
-	public int getInception() {
-		return inception;
-	}
-
-	public ProductCard setInception( int inception ) {
-		this.inception = inception;
-		return this;
-	}
-
-	public String getSummary() {
-		return summary;
-	}
-
-	public ProductCard setSummary( String summary ) {
-		this.summary = summary;
-		return this;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public ProductCard setDescription( String description ) {
-		this.description = description;
-		return this;
-	}
-
-	public String getCopyrightSummary() {
-		return copyrightSummary;
-	}
-
-	public ProductCard setCopyrightSummary( String copyrightSummary ) {
-		this.copyrightSummary = copyrightSummary;
-		return this;
-	}
-
-	public String getLicenseSummary() {
-		return licenseSummary;
-	}
-
-	public ProductCard setLicenseSummary( String licenseSummary ) {
-		this.licenseSummary = licenseSummary;
-		return this;
-	}
-
-	public String getProductUri() {
-		return productUri;
-	}
-
-	public ProductCard setProductUri( String productUri ) {
-		this.productUri = productUri;
-		return this;
-	}
-
-	public String getJavaVersion() {
-		return javaVersion;
-	}
-
-	public ProductCard setJavaVersion( String javaVersion ) {
-		this.javaVersion = javaVersion;
-		return this;
-	}
-
-	public Path getInstallFolder() {
-		return installFolder;
-	}
-
-	public ProductCard setInstallFolder( Path installFolder ) {
-		this.installFolder = installFolder;
-		return this;
-	}
-
-	public List<Maintainer> getMaintainers() {
-		return maintainers;
-	}
-
-	public ProductCard setMaintainers( List<Maintainer> maintainers ) {
-		this.maintainers = Collections.unmodifiableList( maintainers );
-		return this;
-	}
-
-	public List<Contributor> getContributors() {
-		return contributors;
-	}
-
-	public ProductCard setContributors( List<Contributor> contributors ) {
-		this.contributors = Collections.unmodifiableList( contributors );
-		return this;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public ProductCard setEnabled( boolean enabled ) {
-		this.enabled = enabled;
-		return this;
-	}
-
-	public boolean isRemovable() {
-		return removable;
-	}
-
-	public ProductCard setRemovable( boolean removable ) {
-		this.removable = removable;
-		return this;
-	}
-
-	public RepoCard getRepo() {
-		return repo;
-	}
-
-	public ProductCard setRepo( RepoCard repo ) {
-		this.repo = repo;
 		return this;
 	}
 
@@ -514,14 +379,12 @@ public class ProductCard extends BaseCard {
 
 	@Override
 	public boolean equals( Object object ) {
-		if( !(object instanceof ProductCard) ) return false;
-		ProductCard that = (ProductCard)object;
+		if( !(object instanceof ProductCard that) ) return false;
 		return this.getProductKey().equals( that.getProductKey() );
 	}
 
 	public boolean deepEquals( Object object ) {
-		if( !(object instanceof ProductCard) ) return false;
-		ProductCard that = (ProductCard)object;
+		if( !(object instanceof ProductCard that) ) return false;
 
 		boolean equals = this.group.equals( that.group );
 		equals = equals && this.artifact.equals( that.artifact );
