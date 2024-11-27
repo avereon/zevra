@@ -26,7 +26,9 @@ public class Rb {
 	}
 
 	public static void init( Product product ) {
-		products.put( product.getClass().getModule().getName(), product );
+		String name = product.getClass().getModule().getName();
+		if( name == null ) name = product.getClass().getName();
+		products.put( name, product );
 		productPaths.put( product, product.getClass().getPackageName().replace( ".", "/" ) );
 	}
 
