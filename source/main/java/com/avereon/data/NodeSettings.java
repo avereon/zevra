@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The NodeSettings class links data {@link Node} properties to the {@link
+ * Settings} interface. In particular, this allows any property on a data node
+ * to be treated as a setting.
+ */
 public class NodeSettings implements Settings {
 
 	private final Node node;
