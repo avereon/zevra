@@ -16,7 +16,7 @@ public interface ProgramFlag extends LogFlag {
 	 * Start the program normally even if the daemon flag is specified. This is
 	 * most commonly used when restarting after an update.
 	 */
-	String NODAEMON = "--nodaemon";
+	String NO_DAEMON = "--no-daemon";
 
 	/**
 	 * Disable a specific mod. May be specified more than once.
@@ -47,12 +47,12 @@ public interface ProgramFlag extends LogFlag {
 	 * Don't show the splash screen at startup. Useful in combination with the
 	 * DAEMON flag.
 	 */
-	String NOSPLASH = "--nosplash";
+	String NO_SPLASH = "--no-splash";
 
 	/**
 	 * Explicitly turn off automated updates.
 	 */
-	String NOUPDATE = "--noupdate";
+	String NO_UPDATES = "--no-updates";
 
 	/**
 	 * Specify an execution profile. Execution profiles are used to change the
