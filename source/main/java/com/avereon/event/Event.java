@@ -4,6 +4,8 @@ import com.avereon.util.JavaUtil;
 
 import java.util.EventObject;
 
+// NOTE Events that go down the tree to children "cascade"
+// NOTE Events that go up the tree to parents "bubble"
 public class Event extends EventObject {
 
 	public static final EventType<Event> ANY = EventType.ROOT;
