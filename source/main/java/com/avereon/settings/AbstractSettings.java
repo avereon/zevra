@@ -112,13 +112,13 @@ public abstract class AbstractSettings implements Settings {
 
 	@Override
 	public Settings set( String key, Object value ) {
+		// Get the marshalled old value
 		String oldValue = get( key );
-		String newValue = null;
 
 		if( value == null ) {
 			setValue( key, null );
 		} else if( outboundConverters.containsKey( value.getClass() ) ) {
-			setValue( key, newValue = outboundConverters.get( value.getClass() ).convert( value ) );
+			setValue( key, outboundConverters.get( value.getClass() ).convert( value ) );
 		} else if( value instanceof Collection ) {
 			setCollection( key, (Collection<?>)value );
 		} else if( value instanceof Map ) {
@@ -128,6 +128,9 @@ public abstract class AbstractSettings implements Settings {
 		} else {
 			setBean( key, value );
 		}
+
+		// Get the marshalled new value
+		String newValue = get( key );
 
 		// Settings change event should only be fired if the values are different
 		if( !Objects.equals( oldValue, newValue ) ) getEventHub().dispatch( new SettingsEvent( this, SettingsEvent.CHANGED, getPath(), key, value ) );
