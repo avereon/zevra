@@ -169,7 +169,13 @@ public abstract class AbstractSettings implements Settings {
 	 * @return The unmarshalled collection value
 	 */
 	protected <S> S getBean( String key, TypeReference<S> type ) {
-		return unmarshallValue( getValue( key ), type );
+		String value = getValue( key );
+		if( value != null && type.getTypeClass().isEnum() ) {
+			value = value.toUpperCase();
+			if( !value.startsWith( "\"" ) ) value = "\"" + value;
+			if( !value.endsWith( "\"" ) ) value = value + "\"";
+		}
+		return unmarshallValue( value, type );
 	}
 
 	/**
