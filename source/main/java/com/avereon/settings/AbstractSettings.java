@@ -10,6 +10,7 @@ import com.avereon.util.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.CustomLog;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public abstract class AbstractSettings implements Settings {
 
 	private boolean deleted;
 
+	@Getter
 	private final EventHub eventHub;
 
 	private final Map<String, Set<EventHandler<SettingsEvent>>> valueChangeHandlers;
@@ -156,7 +158,7 @@ public abstract class AbstractSettings implements Settings {
 	 * Override this method to optimize retrieving simple values.
 	 *
 	 * @param key The value key
-	 * @return The marshalled simple value
+	 * @return The unmarshalled simple value
 	 */
 	protected abstract String getValue( String key );
 
@@ -164,7 +166,7 @@ public abstract class AbstractSettings implements Settings {
 	 * Override this method to optimize retrieving map values.
 	 *
 	 * @param key The value key
-	 * @return The marshalled collection value
+	 * @return The unmarshalled collection value
 	 */
 	protected <S> S getBean( String key, TypeReference<S> type ) {
 		return unmarshallValue( getValue( key ), type );
@@ -174,7 +176,7 @@ public abstract class AbstractSettings implements Settings {
 	 * Override this method to optimize retrieving array values.
 	 *
 	 * @param key The value key
-	 * @return The marshalled array value
+	 * @return The unmarshalled array value
 	 */
 	protected <S> Object[] getArray( String key, TypeReference<S> type ) {
 		return (Object[])unmarshallValue( getValue( key ), type );
@@ -184,7 +186,7 @@ public abstract class AbstractSettings implements Settings {
 	 * Override this method to optimize retrieving collection values.
 	 *
 	 * @param key The value key
-	 * @return The marshalled collection value
+	 * @return The unmarshalled collection value
 	 */
 	protected <S> Collection<?> getCollection( String key, TypeReference<S> type ) {
 		return (Collection<?>)unmarshallValue( getValue( key ), type );
@@ -318,10 +320,6 @@ public abstract class AbstractSettings implements Settings {
 	@Override
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
 		return eventHub.getEventHandlers();
-	}
-
-	public EventHub getEventHub() {
-		return eventHub;
 	}
 
 	String getNodePath( String root, String path ) {

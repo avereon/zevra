@@ -310,6 +310,18 @@ public abstract class BaseSettingsTest {
 	}
 
 	@Test
+	void testSetEnumAndGetEnum() {
+		assertThat( settings.get( "enum", MockEnum.class ) ).isNull();
+		assertThat( settings.get( "enum", MockEnum.class, MockEnum.A ) ).isEqualTo( MockEnum.A );
+		settings.set( "enum", MockEnum.A );
+		assertThat( settings.get( "enum", MockEnum.class ) ).isEqualTo( MockEnum.A );
+		settings.set( "enum", MockEnum.B );
+		assertThat( settings.get( "enum", MockEnum.class ) ).isEqualTo( MockEnum.B );
+		settings.set( "enum", null );
+		assertThat( settings.get( "enum", MockEnum.class ) ).isNull();
+	}
+
+	@Test
 	void testGetUsingDefaultValue() {
 		assertThat( settings.get( "missing", "default" ) ).isEqualTo( "default" );
 	}
