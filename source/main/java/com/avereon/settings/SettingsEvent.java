@@ -2,7 +2,9 @@ package com.avereon.settings;
 
 import com.avereon.event.Event;
 import com.avereon.event.EventType;
+import lombok.Getter;
 
+@Getter
 public class SettingsEvent extends Event {
 
 	public static final EventType<SettingsEvent> SETTINGS = new EventType<>( Event.ANY, "SETTINGS" );
@@ -41,22 +43,6 @@ public class SettingsEvent extends Event {
 
 	public Settings getSettings() {
 		return (Settings)getSource();
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public Object getOldValue() {
-		return oldValue;
-	}
-
-	public Object getNewValue() {
-		return newValue;
 	}
 
 	@SuppressWarnings( "unchecked" )

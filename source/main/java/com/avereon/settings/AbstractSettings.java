@@ -311,10 +311,14 @@ public abstract class AbstractSettings implements Settings {
 	}
 
 	@Override
-	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {return eventHub.register( type, handler );}
+	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
+		return eventHub.register( type, handler );
+	}
 
 	@Override
-	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {return eventHub.unregister( type, handler );}
+	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
+		return eventHub.unregister( type, handler );
+	}
 
 	@Override
 	public void register( String key, EventHandler<SettingsEvent> handler ) {
