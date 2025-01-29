@@ -32,6 +32,8 @@ public abstract class AbstractSettings implements Settings {
 
 	private boolean deleted;
 
+	// FIXME The settings event hubs are not linked to their parents
+	//  ...but should they?
 	@Getter
 	private final EventHub eventHub;
 
