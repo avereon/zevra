@@ -31,7 +31,7 @@ public class EventWatcher implements EventHandler<Event> {
 	@Override
 	@SuppressWarnings( "java:S106" )
 	public synchronized void handle( Event event ) {
-		if( printEventCapture ) System.out.println( "Captured event: " + event.getEventType() );
+		if( printEventCapture ) System.out.println( "Captured event: type=" + event.getEventType() );
 		events.offer( event );
 		notifyAll();
 	}
