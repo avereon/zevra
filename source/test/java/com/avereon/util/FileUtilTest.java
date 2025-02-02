@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
@@ -533,6 +534,25 @@ class FileUtilTest {
 		//		List<String> names = Arrays.asList( "test", "test(1)", "test(3)", "test(4)" );
 
 		assertThat( FileUtil.getNextIndexedName( names, name ) ).isEqualTo( expected );
+	}
+
+	@Test
+	void testWaitToExist() throws Exception {
+		Path path = Files.createTempFile( getClass().getSimpleName(), "test" );
+		Files.deleteIfExists( path );
+		assertThat( path ).doesNotExist();
+
+		new Thread( () -> {
+			try {
+				Thread.sleep( 200 );
+				Files.createFile( path );
+			} catch( Exception exception ) {
+				exception.printStackTrace( System.err );
+			}
+		} ).start();
+
+		FileUtil.waitToExist( path, 400, TimeUnit.MILLISECONDS );
+		assertThat( path ).exists();
 	}
 
 	private static Stream<Arguments> getNextIndexedNameTestData() {

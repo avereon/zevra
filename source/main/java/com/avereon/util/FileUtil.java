@@ -12,6 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
@@ -636,6 +637,24 @@ public class FileUtil {
 
 		base = base + "(" + (index + 1) + ")";
 		return base + (extension.isEmpty() ? "" : "." + extension);
+	}
+
+	public static void waitToExist( Path path, long duration, TimeUnit unit ) throws IOException, InterruptedException {
+		if( Files.exists( path ) ) return;
+		if( !Files.exists( path.getParent() ) ) throw new IOException( "Cannot wait for path without parent" );
+
+		try( WatchService watcher = FileSystems.getDefault().newWatchService() ) {
+			path.getParent().register( watcher, java.nio.file.StandardWatchEventKinds.ENTRY_CREATE );
+			WatchKey key;
+			while( (key = watcher.poll( duration, unit )) != null ) {
+				for( WatchEvent<?> event : key.pollEvents() ) {
+					if( event.kind() == StandardWatchEventKinds.ENTRY_CREATE ) {
+						if( event.context().equals( path.getFileName() ) ) return;
+					}
+				}
+				key.reset();
+			}
+		}
 	}
 
 	private static String sanitize( String path ) {
