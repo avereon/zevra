@@ -15,6 +15,12 @@ public abstract class BaseSettingsTest {
 	protected Settings settings;
 
 	@Test
+	void testGetName() {
+		Settings deep = settings.getNode( "deep" );
+		assertThat( deep.getName() ).isEqualTo( "deep" );
+	}
+
+	@Test
 	void testNodeExists() {
 		assertThat( settings.nodeExists( "/" ) ).isTrue();
 
