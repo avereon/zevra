@@ -13,6 +13,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
@@ -343,11 +344,13 @@ public class FileUtil {
 				} else {
 					zip.putNextEntry( new ZipEntry( zipEntryPath ) );
 					try( FileInputStream input = new FileInputStream( sourcePath.toFile() ) ) {
-						IoUtil.copy( input, zip, ( value ) -> {
-							long diff = value - last.get();
-							if( progressCallback != null && diff > 0 ) progressCallback.accept( total.addAndGet( diff ) );
-							last.set( value );
-						} );
+						IoUtil.copy(
+							input, zip, ( value ) -> {
+								long diff = value - last.get();
+								if( progressCallback != null && diff > 0 ) progressCallback.accept( total.addAndGet( diff ) );
+								last.set( value );
+							}
+						);
 					}
 				}
 				zip.closeEntry();
@@ -432,22 +435,24 @@ public class FileUtil {
 	public static boolean delete( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return true;
 
-		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+		Files.walkFileTree(
+			path, new SimpleFileVisitor<>() {
 
-			@Override
-			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) throws IOException {
-				Files.delete( file );
-				return FileVisitResult.CONTINUE;
+				@Override
+				public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) throws IOException {
+					Files.delete( file );
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
+					if( exception != null ) throw exception;
+
+					Files.delete( folder );
+					return FileVisitResult.CONTINUE;
+				}
 			}
-
-			@Override
-			public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
-				if( exception != null ) throw exception;
-
-				Files.delete( folder );
-				return FileVisitResult.CONTINUE;
-			}
-		} );
+		);
 
 		return !Files.exists( path );
 	}
@@ -455,24 +460,26 @@ public class FileUtil {
 	public static void deleteOnExit( Path path ) throws IOException {
 		if( !Files.exists( path ) ) return;
 
-		Files.walkFileTree( path, new SimpleFileVisitor<>() {
+		Files.walkFileTree(
+			path, new SimpleFileVisitor<>() {
 
-			@Override
-			public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) {
-				file.toFile().deleteOnExit();
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
-				if( exception == null ) {
-					folder.toFile().deleteOnExit();
+				@Override
+				public FileVisitResult visitFile( Path file, BasicFileAttributes attributes ) {
+					file.toFile().deleteOnExit();
 					return FileVisitResult.CONTINUE;
-				} else {
-					throw exception;
+				}
+
+				@Override
+				public FileVisitResult postVisitDirectory( Path folder, IOException exception ) throws IOException {
+					if( exception == null ) {
+						folder.toFile().deleteOnExit();
+						return FileVisitResult.CONTINUE;
+					} else {
+						throw exception;
+					}
 				}
 			}
-		} );
+		);
 	}
 
 	public static Path getTempFolder() {
@@ -639,21 +646,32 @@ public class FileUtil {
 		return base + (extension.isEmpty() ? "" : "." + extension);
 	}
 
-	public static void waitToExist( Path path, long duration, TimeUnit unit ) throws IOException, InterruptedException {
+	public static void waitToExist( Path path, long duration, TimeUnit unit ) throws IOException, TimeoutException, InterruptedException {
 		if( Files.exists( path ) ) return;
 		if( !Files.exists( path.getParent() ) ) throw new IOException( "Cannot wait for path without parent" );
+
+		long maxDuration = unit.toMillis( duration );
+		long checkDelay = 100;
 
 		try( WatchService watcher = FileSystems.getDefault().newWatchService() ) {
 			path.getParent().register( watcher, java.nio.file.StandardWatchEventKinds.ENTRY_CREATE );
 			WatchKey key;
-			while( (key = watcher.poll( duration, unit )) != null ) {
-				for( WatchEvent<?> event : key.pollEvents() ) {
-					if( event.kind() == StandardWatchEventKinds.ENTRY_CREATE ) {
-						if( event.context().equals( path.getFileName() ) ) return;
+			long checkDuration = 0;
+			while( checkDuration < maxDuration ) {
+				key = watcher.poll( checkDelay, TimeUnit.MILLISECONDS );
+				if( key != null ) {
+					for( WatchEvent<?> event : key.pollEvents() ) {
+						if( event.kind() == StandardWatchEventKinds.ENTRY_CREATE ) {
+							if( event.context().equals( path.getFileName() ) ) {
+								return;
+							}
+						}
 					}
+					key.reset();
 				}
-				key.reset();
+				checkDuration += checkDelay;
 			}
+			throw new TimeoutException( "Timed out waiting for path to exist: " + path );
 		}
 	}
 
