@@ -153,6 +153,22 @@ public class StoredSettings extends AbstractSettings {
 		return keys;
 	}
 
+	public long getMinFlushLimit() {
+		return action.getMinTriggerLimit();
+	}
+
+	public void setMinFlushLimit( long limit ) {
+		action.setMinTriggerLimit( limit );
+	}
+
+	public long getMaxFlushLimit() {
+		return action.getMaxTriggerLimit();
+	}
+
+	public void setMaxFlushLimit( long limit ) {
+		action.setMaxTriggerLimit( limit );
+	}
+
 	@Override
 	protected void setValue( String key, String value ) {
 		if( value == null ) {
