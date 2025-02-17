@@ -15,8 +15,7 @@ public class DelayedActionTest {
 
 	@Test
 	void testAction() throws Exception {
-		DelayedAction action = new DelayedAction();
-		action.setAction( this::doAction );
+		DelayedAction action = new DelayedAction( this::doAction );
 		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		long before = System.currentTimeMillis();
@@ -37,10 +36,9 @@ public class DelayedActionTest {
 		long minTriggerLimit = 50;
 		long maxTriggerLimit = minTriggerLimit * 2;
 
-		DelayedAction action = new DelayedAction();
+		DelayedAction action = new DelayedAction( this::doAction );
 		action.setMinTriggerLimit( minTriggerLimit );
 		action.setMaxTriggerLimit( maxTriggerLimit );
-		action.setAction( this::doAction );
 		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		long before = System.currentTimeMillis();
@@ -72,10 +70,9 @@ public class DelayedActionTest {
 		long minTriggerLimit = 50;
 		long maxTriggerLimit = minTriggerLimit * 2;
 
-		DelayedAction action = new DelayedAction();
+		DelayedAction action = new DelayedAction( this::doAction );
 		action.setMinTriggerLimit( minTriggerLimit );
 		action.setMaxTriggerLimit( maxTriggerLimit );
-		action.setAction( this::doAction );
 		assertThat( actionTimestamp.get() ).isEqualTo( 0L );
 
 		action.trigger();

@@ -1,5 +1,8 @@
 package com.avereon.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -32,15 +35,21 @@ public class DelayedAction {
 
 	private final Object scheduleLock = new Object();
 
+	@Getter
+	private final ExecutorService executor;
+
+	@Getter
+	private final Runnable action;
+
+	@Setter
+	@Getter
 	private long minTriggerLimit = DEFAULT_MIN_TRIGGER_LIMIT;
 
+	@Setter
+	@Getter
 	private long maxTriggerLimit = DEFAULT_MAX_TRIGGER_LIMIT;
 
-	private ExecutorService executor;
-
 	private ActionTask task;
-
-	private Runnable action;
 
 	public DelayedAction() {
 		this( null, null );
@@ -56,38 +65,6 @@ public class DelayedAction {
 
 	public DelayedAction( ExecutorService executor, Runnable action ) {
 		this.executor = executor;
-		this.action = action;
-	}
-
-	public long getMinTriggerLimit() {
-		return minTriggerLimit;
-	}
-
-	public void setMinTriggerLimit( long minTriggerLimit ) {
-		this.minTriggerLimit = minTriggerLimit;
-	}
-
-	public long getMaxTriggerLimit() {
-		return maxTriggerLimit;
-	}
-
-	public void setMaxTriggerLimit( long maxTriggerLimit ) {
-		this.maxTriggerLimit = maxTriggerLimit;
-	}
-
-	public ExecutorService getExecutor() {
-		return executor;
-	}
-
-	public void setExecutor( ExecutorService executor ) {
-		this.executor = executor;
-	}
-
-	public Runnable getAction() {
-		return action;
-	}
-
-	public void setAction( Runnable action ) {
 		this.action = action;
 	}
 
