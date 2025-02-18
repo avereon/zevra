@@ -90,7 +90,11 @@ public class StoredSettings extends AbstractSettings {
 	@Override
 	public boolean nodeExists( String path ) {
 		String nodePath = getNodePath( this.path, path );
-		return root.settings.get( nodePath ) != null;
+		if( root.settings.get( nodePath ) != null ) return true;
+
+		// Check the file system
+		Path folder = root.folder.resolve( nodePath.substring( 1 ) );
+		return Files.exists( folder );
 	}
 
 	@Override
@@ -277,7 +281,7 @@ public class StoredSettings extends AbstractSettings {
 			}
 
 			// Delete the folder if empty
-			if( getNodes().size() == 0 ) FileUtil.delete( folder );
+			if( getNodes().isEmpty() ) FileUtil.delete( folder );
 		} catch( IOException exception ) {
 			log.atSevere().withCause( exception ).log( "Unable to delete settings folder=%s", folder );
 		} finally {
