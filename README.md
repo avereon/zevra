@@ -1,4 +1,4 @@
-[build-status]: https://github.com/avereon/zevra/workflows/Avereon%20Zevra%20Continuous/badge.svg "Build status"
+[build-status]: https://github.com/avereon/zevra/workflows/CI/badge.svg "Build status"
 
 # Zevra [![][build-status]](https://github.com/avereon/zevra/actions)
 
@@ -6,11 +6,11 @@ A non-UX utility library used in many Avereon projects.
 
 ## Utilites
 
-* Repo, Catalog and Product metadata
+* Product Repository, Catalog and Artifact metadata
 * Settings API - Similar to Java preferences with a simpler implementation
 * Utility classes for:
-  * Dates
-  * Files and Paths
+  * Instants and Dates
+  * Paths and Files
   * Text
   * Hashes
   * ID Generation
