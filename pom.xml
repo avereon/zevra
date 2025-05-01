@@ -38,7 +38,7 @@
 	</repositories>
 
 	<properties>
-		<!-- Version numbers updated 07 Mar 2023 -->
+		<!-- Version numbers updated 01 May 2025 -->
 
 		<product-name>${project.name}</product-name>
 		<product-identifier>${project.artifactId}</product-identifier>
@@ -49,9 +49,9 @@
 		<java.version>21</java.version>
 
 		<!-- Runtime dependencies -->
-		<jackson.version>[2.19.0]</jackson.version>
-		<fuzzywuzzy.version>[1.4.0]</fuzzywuzzy.version>
-		<jsoup.version>1.19.1</jsoup.version>
+		<jackson.version>2.19.0</jackson.version>
+		<fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
+		<jsoup.version>1.20.1</jsoup.version>
 		<google.findbugs.version>3.0.2</google.findbugs.version>
 	</properties>
 

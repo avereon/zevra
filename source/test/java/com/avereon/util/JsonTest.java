@@ -3,6 +3,8 @@ package com.avereon.util;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -24,6 +26,8 @@ class JsonTest {
 		assertThat( item.getSite() ).isEqualTo( URI.create( "http://www.avereon.com" ) );
 	}
 
+	@Setter
+	@Getter
 	@SuppressWarnings( { "WeakerAccess", "unused" } )
 	static class Item {
 
@@ -34,29 +38,6 @@ class JsonTest {
 
 		private URI site;
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName( String name ) {
-			this.name = name;
-		}
-
-		public Date getTimestamp() {
-			return timestamp;
-		}
-
-		public void setTimestamp( Date timestamp ) {
-			this.timestamp = timestamp;
-		}
-
-		public URI getSite() {
-			return site;
-		}
-
-		public void setSite( URI site ) {
-			this.site = site;
-		}
 	}
 
 }

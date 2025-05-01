@@ -49,7 +49,7 @@ class NonBlockingReaderTest {
 
 		NonBlockingReader reader = new NonBlockingReader( System.in );
 
-		// Setup a thread that will close the reader before the read times out
+		// Set up a thread that will close the reader before the read times out
 		new Thread( () -> {
 			ThreadUtil.pause( time );
 			try {

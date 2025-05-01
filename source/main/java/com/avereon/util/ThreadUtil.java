@@ -77,6 +77,7 @@ public class ThreadUtil {
 
 		for( StackTraceElement element : trace ) {
 			if( element.getClassName().equals( className ) && element.getMethodName().equals( methodName ) ) return true;
+			// This only compares class name and method name, not the package
 			if( JavaUtil.getClassName( element.getClassName() ).equals( JavaUtil.getClassName( className ) ) && element.getMethodName().equals( methodName ) ) return true;
 		}
 

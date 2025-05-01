@@ -15,9 +15,9 @@
 	</list>
 	<nodes>
 		<node>one</node>
-		<notthisone>notone</notthisone>
+		<not-this-one>notone</not-this-one>
 		<node>two</node>
-		<notthisone>nottwo</notthisone>
+		<not-this-one>nottwo</not-this-one>
 		<node>three</node>
 	</nodes>
 	<summary>This summary needs to span multiple lines in order for the test to

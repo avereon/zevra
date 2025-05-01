@@ -23,7 +23,7 @@ class ThreadUtilTest {
 	void testCalledFrom() {
 		assertThat( ThreadUtil.calledFrom( "ThreadUtilTest", "notHere" ) ).isFalse();
 		assertThat( ThreadUtil.calledFrom( "ThreadUtilTest", "testCalledFrom" ) ).isTrue();
-		assertThat( ThreadUtil.calledFrom( "com.parallelsymmetry.utility.ThreadUtilTest", "testCalledFrom" ) ).isTrue();
+		assertThat( ThreadUtil.calledFrom( "some.random.package.ThreadUtilTest", "testCalledFrom" ) ).isTrue();
 	}
 
 	@Test

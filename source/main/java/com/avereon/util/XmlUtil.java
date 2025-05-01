@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 @SuppressWarnings( "WeakerAccess" )
 public class XmlUtil {
 
+	private static final String INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
+
 	private static final int DEFAULT_INDENT = 2;
 
 	/**
@@ -260,7 +262,7 @@ public class XmlUtil {
 			transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
 			transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
 			transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-			transformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", String.valueOf( indent ) );
+			transformer.setOutputProperty( INDENT_AMOUNT, String.valueOf( indent ) );
 			transformer.transform( source, result );
 		} catch( TransformerException exception ) {
 			throw new IOException( exception );

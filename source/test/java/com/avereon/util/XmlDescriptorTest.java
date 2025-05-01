@@ -167,9 +167,9 @@ class XmlDescriptorTest {
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/path/value" );
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/integer" );
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/node" );
-		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/notthisone" );
+		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/not-this-one" );
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/node" );
-		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/notthisone" );
+		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/not-this-one" );
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/nodes/node" );
 		assertThat( paths.get( count++ ) ).isEqualTo( "/test/summary" );
 		assertThat( paths.size() ).isEqualTo( count );
