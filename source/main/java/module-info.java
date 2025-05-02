@@ -21,6 +21,7 @@ module com.avereon.zevra {
 	exports com.avereon.event;
 	exports com.avereon.index;
 	exports com.avereon.log;
+	exports com.avereon.log.provider;
 	exports com.avereon.product;
 	exports com.avereon.result;
 	exports com.avereon.settings;

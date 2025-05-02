@@ -91,7 +91,7 @@ public class Log {
 			builder.append( "java.util.logging.FileHandler.level=" ).append( level ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.pattern=" ).append( filePattern ).append( "\n" );
 			builder.append( "java.util.logging.FileHandler.encoding=utf-8\n" );
-			builder.append( "java.util.logging.FileHandler.limit=50000\n" );
+			builder.append( "java.util.logging.FileHandler.limit=5000000\n" );
 			builder.append( "java.util.logging.FileHandler.count=1\n" );
 			builder.append( "java.util.logging.FileHandler.formatter=" ).append( ProgramFormatter.class.getName() ).append( "\n" );
 			if( parameters.isSet( LogFlag.LOG_APPEND ) ) builder.append( "java.util.logging.FileHandler.append=true\n" );
