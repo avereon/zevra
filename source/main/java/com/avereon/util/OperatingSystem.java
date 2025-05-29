@@ -318,10 +318,11 @@ public class OperatingSystem {
 	public static Path getUserFolder( UserFolder folder ) {
 		if( userFolderCache.containsKey( folder ) ) return userFolderCache.get( folder );
 
-		Path userFolder;
-		if( family == Family.LINUX ) {
-			userFolder = getXdgUserFolder( folder );
-		} else {
+		Path userFolder = null;
+
+		if( family == Family.LINUX ) userFolder = getXdgUserFolder( folder );
+
+		if( userFolder == null ) {
 			userFolder = switch( folder ) {
 				case DESKTOP -> userHomeFolder.resolve( "Desktop" );
 				case DOCUMENTS -> userHomeFolder.resolve( "Documents" );
@@ -332,7 +333,7 @@ public class OperatingSystem {
 			};
 		}
 
-		if( userFolder != null ) userFolderCache.put( folder, userFolder );
+		userFolderCache.put( folder, userFolder );
 
 		return userFolder;
 	}
@@ -699,7 +700,10 @@ public class OperatingSystem {
 			process.waitFor();
 			String result = writer.toString().trim();
 			if( result.isEmpty() ) return null;
+			// Replace the system property home with the defined user home folder
 			result = result.replace( System.getProperty( "user.home" ), userHomeFolder.toString() );
+			// If the result is the same as the user home folder, return null
+			if( result.equals( userHomeFolder.toString() ) ) return null;
 			return Paths.get( result );
 		} catch( IOException exception ) {
 			log.atDebug().log( "IO error getting XDG user folder for {}", folder, exception );
