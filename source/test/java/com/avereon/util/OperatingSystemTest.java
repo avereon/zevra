@@ -2,27 +2,37 @@ package com.avereon.util;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
 class OperatingSystemTest {
 
-	private static final String WINDOWS_USER_DATA = "C:\\Users\\user\\AppData\\Roaming";
+	private static final String MACOSX_USER_HOME = "/home/user";
 
-	private static final String MACOSX_USER_DATA = "/home/user/Library/Application Support";
-
-	private static final String UNIX_USER_DATA = "/home/user/.config";
-
-	private static final String WINDOWS_SHARED_DATA = "C:\\ProgramData";
+	private static final String MACOSX_USER_DATA = MACOSX_USER_HOME + "/Library/Application Support";
 
 	private static final String MACOSX_SHARED_DATA = "/Library/Application Support";
 
+	private static final String UNIX_USER_HOME = "/home/user";
+
+	private static final String UNIX_USER_DATA = UNIX_USER_HOME + "/.config";
+
 	private static final String UNIX_SHARED_DATA = "/usr/local/share/data";
+
+	private static final String WINDOWS_USER_HOME = "C:\\Users\\user";
+
+	private static final String WINDOWS_USER_DATA = WINDOWS_USER_HOME + "\\AppData\\Roaming";
+
+	private static final String WINDOWS_SHARED_DATA = "C:\\ProgramData";
 
 	@BeforeEach
 	void setup() {
@@ -323,6 +333,36 @@ class OperatingSystemTest {
 
 		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
 		assertThat( OperatingSystem.resolveNativeLibPath( "rxtxSerial" ) ).isEqualTo( "linux/x86_64/librxtxSerial.so" );
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void getUserFolder(String family, String arch, String version, String userHome, String userData, String sharedData, OperatingSystem.UserFolder folder, String expected) {
+		OperatingSystem.init( family, arch, version, userHome, userData, sharedData );
+		assertThat( OperatingSystem.getUserFolder( folder ) ).isEqualTo( Paths.get( expected ) );
+	}
+
+	static Stream<Arguments> getUserFolder() {
+		return Stream.of(
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.DESKTOP, WINDOWS_USER_HOME + "/Desktop" ),
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.DOWNLOAD, WINDOWS_USER_HOME + "/Downloads" ),
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.DOCUMENTS, WINDOWS_USER_HOME + "/Documents" ),
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.MUSIC, WINDOWS_USER_HOME + "/Music" ),
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.PHOTOS, WINDOWS_USER_HOME + "/Pictures" ),
+			Arguments.of( "Windows 10", "x86", "10.0", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, OperatingSystem.UserFolder.VIDEOS, WINDOWS_USER_HOME + "/Videos" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.DESKTOP, MACOSX_USER_HOME + "/Desktop" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.DOWNLOAD, MACOSX_USER_HOME + "/Downloads" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.DOCUMENTS, MACOSX_USER_HOME + "/Documents" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.MUSIC, MACOSX_USER_HOME + "/Music" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.PHOTOS, MACOSX_USER_HOME + "/Pictures" ),
+			Arguments.of( "Mac OS X", "x86_64", "14", MACOSX_USER_HOME, MACOSX_USER_DATA, MACOSX_SHARED_DATA, OperatingSystem.UserFolder.VIDEOS, MACOSX_USER_HOME + "/Videos" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.DESKTOP, UNIX_USER_HOME + "/Desktop" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.DOWNLOAD, UNIX_USER_HOME + "/Downloads" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.DOCUMENTS, UNIX_USER_HOME + "/Documents" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.MUSIC, UNIX_USER_HOME + "/Music" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.PHOTOS, UNIX_USER_HOME + "/Pictures" ),
+			Arguments.of( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, OperatingSystem.UserFolder.VIDEOS, UNIX_USER_HOME + "/Videos" )
+		);
 	}
 
 	@Test

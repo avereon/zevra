@@ -4,11 +4,10 @@ import lombok.CustomLog;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @CustomLog
 public class OperatingSystem {
@@ -30,17 +29,26 @@ public class OperatingSystem {
 		PPC
 	}
 
-	public static String CUSTOM_LAUNCHER_NAME = "java.launcher.name";
+	public enum UserFolder {
+		DESKTOP,
+		DOCUMENTS,
+		DOWNLOAD,
+		MUSIC,
+		PHOTOS,
+		VIDEOS
+	}
 
-	public static String CUSTOM_LAUNCHER_PATH = "java.launcher.path";
+	public static final String CUSTOM_LAUNCHER_NAME = "java.launcher.name";
 
-	public static String JPACKAGE_APP_PATH = "jpackage.app-path";
+	public static final String CUSTOM_LAUNCHER_PATH = "java.launcher.path";
 
-	public static String PROCESS_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
+	public static final String JPACKAGE_APP_PATH = "jpackage.app-path";
 
-	public static String NORMAL_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-normal";
+	public static final String PROCESS_PRIVILEGE_KEY = OperatingSystem.class.getName() + ":process-privilege-key";
 
-	public static String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
+	public static final String NORMAL_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-normal";
+
+	public static final String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
 
 	private static Architecture architecture;
 
@@ -56,9 +64,13 @@ public class OperatingSystem {
 
 	private static boolean fileSystemCaseSensitive;
 
+	private static Path userHomeFolder;
+
 	private static Path userProgramDataFolder;
 
 	private static Path sharedProgramDataFolder;
+
+	private static final Map<UserFolder, Path> userFolderCache = new EnumMap<>( UserFolder.class );
 
 	/*
 	 * Initialize the class.
@@ -68,7 +80,7 @@ public class OperatingSystem {
 	}
 
 	public static void reset() {
-		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null );
+		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null, null );
 	}
 
 	public static String getName() {
@@ -249,7 +261,7 @@ public class OperatingSystem {
 		// JPackage launcher
 		if( System.getProperty( JPACKAGE_APP_PATH ) != null ) {
 			// This might have the EXE suffix
-			Path jPackageAppPath = Path.of( System.getProperty( JPACKAGE_APP_PATH ).replace( "\\", "//" ));
+			Path jPackageAppPath = Path.of( System.getProperty( JPACKAGE_APP_PATH ).replace( "\\", "//" ) );
 			launcherName = FileUtil.removeExtension( jPackageAppPath.getFileName().toString() );
 		}
 
@@ -257,10 +269,10 @@ public class OperatingSystem {
 	}
 
 	public static Path getJPackageAppPath() {
-		return getJPackageAppPath(System.getProperty( JPACKAGE_APP_PATH ));
+		return getJPackageAppPath( System.getProperty( JPACKAGE_APP_PATH ) );
 	}
 
-	static Path getJPackageAppPath(String property) {
+	static Path getJPackageAppPath( String property ) {
 		if( property == null ) return null;
 		return Path.of( property );
 	}
@@ -301,6 +313,28 @@ public class OperatingSystem {
 			// Intentionally ignore exception.
 		}
 		return memory;
+	}
+
+	public static Path getUserFolder( UserFolder folder ) {
+		if( userFolderCache.containsKey( folder ) ) return userFolderCache.get( folder );
+
+		Path userFolder;
+		if( family == Family.LINUX ) {
+			userFolder = getXdgUserFolder( folder );
+		} else {
+			userFolder = switch( folder ) {
+				case DESKTOP -> userHomeFolder.resolve( "Desktop" );
+				case DOCUMENTS -> userHomeFolder.resolve( "Documents" );
+				case DOWNLOAD -> userHomeFolder.resolve( "Downloads" );
+				case MUSIC -> userHomeFolder.resolve( "Music" );
+				case PHOTOS -> userHomeFolder.resolve( "Pictures" );
+				case VIDEOS -> userHomeFolder.resolve( "Videos" );
+			};
+		}
+
+		if( userFolder != null ) userFolderCache.put( folder, userFolder );
+
+		return userFolder;
 	}
 
 	/**
@@ -401,19 +435,26 @@ public class OperatingSystem {
 		elevated = null;
 	}
 
+	static void init( String name, String arch, String version, String userData, String sharedData ) {
+		init( name, arch, version, null, userData, sharedData );
+	}
+
 	/**
 	 * The init() method is intentionally package private, and separate from the
 	 * static initializer, so the initialization logic can be tested.
 	 *
-	 * @param name The os name from System.getProperty( "os.name" ).
-	 * @param arch The os arch from System.getProperty( "os.arch" ).
-	 * @param version The os version from System.getProperty( "os.version" ).
+	 * @param name The os name from System.getProperty( "os.name" )
+	 * @param arch The os arch from System.getProperty( "os.arch" )
+	 * @param version The os version from System.getProperty( "os.version" )
+	 * @param userHome The user home folder from System.getProperty( "user.home" )
 	 * @param userData The program user data folder
 	 * @param sharedData The program shared data folder
 	 */
-	static void init( String name, String arch, String version, String userData, String sharedData ) {
+	static void init( String name, String arch, String version, String userHome, String userData, String sharedData ) {
 		OperatingSystem.name = name;
 		OperatingSystem.arch = arch;
+
+		userFolderCache.clear();
 
 		// Determine the OS family
 		if( name.contains( "Linux" ) ) {
@@ -447,23 +488,26 @@ public class OperatingSystem {
 
 		// Store the version
 		if( version == null ) {
-			switch( family ) {
-				case WINDOWS: {
-					OperatingSystem.version = getExtendedWindowsVersion();
-					break;
-				}
-				default: {
-					OperatingSystem.version = System.getProperty( "os.version" );
-				}
+			if( family == Family.WINDOWS ) {
+				OperatingSystem.version = getExtendedWindowsVersion();
+			} else {
+				OperatingSystem.version = System.getProperty( "os.version" );
 			}
 		} else {
 			OperatingSystem.version = version;
 		}
 
-		// Case sensitive file system
+		// Case-sensitive file system
 		File fileOne = new File( "TeStFiLe" );
 		File fileTwo = new File( "tEsTfIlE" );
 		fileSystemCaseSensitive = !fileOne.equals( fileTwo );
+
+		// User home folder
+		if( userHome == null ) {
+			userHomeFolder = Paths.get( System.getProperty( "user.home" ) );
+		} else {
+			userHomeFolder = Paths.get( userHome );
+		}
 
 		// User program data folder
 		if( userData == null ) {
@@ -523,7 +567,7 @@ public class OperatingSystem {
 			BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
 			String line;
 			while( (line = reader.readLine()) != null ) {
-				if( "".equals( line.trim() ) ) continue;
+				if( line.trim().isEmpty() ) continue;
 				return line.substring( "Microsoft Windows [Version ".length(), line.length() - 1 );
 			}
 		} catch( Exception exception ) {
@@ -533,34 +577,20 @@ public class OperatingSystem {
 	}
 
 	private static String mapLibraryName( String libname ) {
-		switch( family ) {
-			case LINUX: {
-				return "lib" + libname + ".so";
-			}
-			case MACOSX: {
-				return "lib" + libname + ".jnilib";
-			}
-			case WINDOWS: {
-				return libname + ".dll";
-			}
-			default: {
-				return System.mapLibraryName( libname );
-			}
-		}
+		return switch( family ) {
+			case LINUX -> "lib" + libname + ".so";
+			case MACOSX -> "lib" + libname + ".jnilib";
+			case WINDOWS -> libname + ".dll";
+			default -> System.mapLibraryName( libname );
+		};
 	}
 
 	private static String getArchitectureFolder() {
-		switch( architecture ) {
-			case X86: {
-				return "x86";
-			}
-			case X64: {
-				return "x86_64";
-			}
-			default: {
-				return architecture.name().toLowerCase();
-			}
-		}
+		return switch( architecture ) {
+			case X86 -> "x86";
+			case X64 -> "x86_64";
+			default -> architecture.name().toLowerCase();
+		};
 	}
 
 	private static String getPlatformFolder() {
@@ -656,6 +686,28 @@ public class OperatingSystem {
 		}
 		if( !elevator.setExecutable( true ) ) throw new IOException( "Failed to set execute permission on " + elevator );
 		return elevator;
+	}
+
+	private static Path getXdgUserFolder( UserFolder folder ) {
+		String xdgName = folder.name();
+		if( folder == UserFolder.PHOTOS ) xdgName = "PICTURES";
+		ProcessBuilder builder = new ProcessBuilder( "xdg-user-dir", xdgName );
+		try {
+			Process process = builder.start();
+			StringWriter writer = new StringWriter();
+			IoUtil.copy( process.getInputStream(), writer, StandardCharsets.UTF_8 );
+			process.waitFor();
+			String result = writer.toString().trim();
+			if( result.isEmpty() ) return null;
+			result = result.replace( System.getProperty( "user.home" ), userHomeFolder.toString() );
+			return Paths.get( result );
+		} catch( IOException exception ) {
+			log.atDebug().log( "IO error getting XDG user folder for {}", folder, exception );
+			return null;
+		} catch( InterruptedException exception ) {
+			log.atDebug().log( "Interrupted getting XDG user folder for {}", folder, exception );
+			return null;
+		}
 	}
 
 }
