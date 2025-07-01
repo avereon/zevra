@@ -553,10 +553,10 @@ public class NodeApiTest extends BaseNodeTest {
 	@Test
 	void testSetClearSetValueInTransaction() throws Exception {
 		data.setValue( "x", 1 );
-		Txn.create();
-		data.setValue( "x", null );
-		data.setValue( "x", 1 );
-		Txn.commit();
+		try (Txn _ = Txn.create() ) {
+			data.setValue( "x", null );
+			data.setValue( "x", 1 );
+		}
 		assertThat( data.<Integer> getValue( "x" ) ).isEqualTo( 1 );
 	}
 
