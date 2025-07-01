@@ -31,20 +31,61 @@ public class NodeApiTest extends BaseNodeTest {
 	}
 
 	@Test
-	void testEventSpreadOnValueChangeEvents() {
+	void testValueChangeEventsNotBubbledToParentValueListeners() {
 		MockNode a = new MockNode( "a" );
 		MockNode b = new MockNode( "b" );
 		a.setValue( "child", b );
 
-		// This shows the problem with listeners on the same key and the nodes
-		// related to each other. The event from b is also propagated to a and
-		// now a receives the value change event from b...unknowingly.
 		AtomicInteger count = new AtomicInteger();
-		a.register( "key", e -> count.incrementAndGet() );
-		b.register( "key", e -> count.incrementAndGet() );
+		a.register( "key", _ -> count.incrementAndGet() );
+		b.register( "key", _ -> count.incrementAndGet() );
 
 		b.setValue( "key", "b" );
 		assertThat( count.get() ).isEqualTo( 1 );
+	}
+
+	@Test
+	void testMultipleEventHandlers() {
+		AtomicInteger counterA = new AtomicInteger();
+		AtomicInteger counterB = new AtomicInteger();
+
+		MockNode node = new MockNode( "node" );
+		node.register( "key", _ -> counterA.incrementAndGet() );
+		node.register( "key", _ -> counterB.incrementAndGet() );
+
+		assertThat( counterA.get() ).isEqualTo( 0 );
+		assertThat( counterB.get() ).isEqualTo( 0 );
+
+		// when
+		node.setValue( "key", "value" );
+
+		// then
+		assertThat( counterA.get() ).isEqualTo( 1 );
+		assertThat( counterB.get() ).isEqualTo( 1 );
+	}
+
+	@Test
+	void testEventHandlerWithOwner() {
+		// given
+		Object owner = new Object();
+		MockNode node = new MockNode( "node" );
+		AtomicInteger counter = new AtomicInteger();
+
+		node.register(owner, "key", _ -> counter.incrementAndGet() );
+		assertThat( counter.get() ).isEqualTo( 0 );
+
+		node.setValue( "key", "value1" );
+		assertThat( counter.get() ).isEqualTo( 1 );
+
+		owner = null;
+		assertThat(owner).isNull();
+
+		// when
+		System.gc();
+
+		// then
+		node.setValue( "key", "value2" );
+		assertThat( counter.get() ).isEqualTo( 1 );
 	}
 
 	@Test

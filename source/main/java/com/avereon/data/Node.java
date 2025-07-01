@@ -136,7 +136,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	/**
 	 * The node value change handlers, a special set of handlers for value changes.
 	 */
-	private final Map<String, Map<EventHandler<NodeEvent>, EventHandler<NodeEvent>>> valueChangeHandlers;
+	private final Map<Object, Map<String, Set<EventHandler<NodeEvent>>>> valueChangeHandlers;
 
 	/**
 	 * The node id.
@@ -189,9 +189,9 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * The internally calculated modified flag used to allow for fast read rates.
 	 * This is updated when the self modified flag, values or children are changed.
 	 * -- GETTER --
-	 *  Is the node modified. The node is modified if any data value has been
-	 *  modified or any child node has been modified since the last time the
-	 *  modified flag was cleared.
+	 * Is the node modified. The node is modified if any data value has been
+	 * modified or any child node has been modified since the last time the
+	 * modified flag was cleared.
 	 */
 	@Getter
 	private boolean modified;
@@ -332,7 +332,26 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param handler The value changed handler
 	 */
 	public void register( String key, EventHandler<NodeEvent> handler ) {
-		valueChangeHandlers.computeIfAbsent( key, ( k ) -> new WeakHashMap<>() ).put( handler, handler );
+		register( this, key, handler );
+	}
+
+	/**
+	 * Register a value changed event handler for a specific value key. This is
+	 * useful to register lambda style event handlers for specific value changes.
+	 * <p>
+	 * NOTE: These handlers only receive value changed events that happen on this
+	 * node not on any child nodes like normal listeners.
+	 * </p>
+	 * @param owner The owner of the handler, used to remove the handler when the owner is garbage collected
+	 * @param key The value key
+	 * @param handler The value changed handler
+	 */
+	public void register( Object owner, String key, EventHandler<NodeEvent> handler ) {
+		// The owner is the "owner" of the handler. When the owner is garbage
+		// collected the handler will be removed from the valueChangeHandlers map.
+		Map<String, Set<EventHandler<NodeEvent>>> keyHandlers = valueChangeHandlers.computeIfAbsent( owner, ( _ ) -> new HashMap<>() );
+		Set<EventHandler<NodeEvent>> handlers = keyHandlers.computeIfAbsent( key, ( _ ) -> new CopyOnWriteArraySet<>() );
+		handlers.add( handler );
 	}
 
 	/**
@@ -342,7 +361,24 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @param handler The value changed handler
 	 */
 	public void unregister( String key, EventHandler<NodeEvent> handler ) {
-		valueChangeHandlers.getOrDefault( key, Map.of() ).remove( handler );
+		unregister( this, key, handler );
+	}
+
+	/**
+	 * Unregister a value changed event handler for a specific value key.
+	 *
+	 * @param owner The owner of the handler, used to remove the handler when the owner is garbage collected
+	 * @param key The value key
+	 * @param handler The value changed handler
+	 */
+	public void unregister( Object owner, String key, EventHandler<NodeEvent> handler ) {
+		Map<String, Set<EventHandler<NodeEvent>>> keyHandlers = valueChangeHandlers.get( owner );
+		if( keyHandlers == null ) return;
+		Set<EventHandler<NodeEvent>> handlers = keyHandlers.get( key );
+		if( handlers == null ) return;
+		handlers.remove( handler );
+		if( handlers.isEmpty() ) keyHandlers.remove( key );
+		if( keyHandlers.isEmpty() ) valueChangeHandlers.remove( owner );
 	}
 
 	/**
@@ -1040,8 +1076,18 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			do {
 				try {
 					exception = null;
-					var valueHandlers = new HashMap<>( valueChangeHandlers.getOrDefault( event.getKey(), Map.of() ) );
-					valueHandlers.forEach( ( k, v ) -> v.handle( event ) );
+
+					// Determine the value key
+					String key = event.getKey();
+
+					// Collect all handlers for the key
+					Set<EventHandler<NodeEvent>> valueHandlers = new HashSet<>();
+					valueChangeHandlers.values().forEach( map -> {
+						if( map.containsKey( key ) ) valueHandlers.addAll( map.get( key ) );
+					} );
+
+					// Dispatch the event to all handlers
+					valueHandlers.forEach( v -> v.handle( event ) );
 				} catch( ConcurrentModificationException cme ) {
 					exception = cme;
 				}
@@ -1304,6 +1350,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 		protected RefreshOperation revert() {
 			return this;
 		}
+
 	}
 
 	static class UpdateModifiedOperation extends NodeTxnOperation {
