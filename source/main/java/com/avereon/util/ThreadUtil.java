@@ -23,7 +23,7 @@ public class ThreadUtil {
 
 	/**
 	 * Pause a thread for a specific amount of time with the given unit. If an
-	 * InterruptedException occurs the method returns immediately.
+	 * InterruptedException occurs, the method returns immediately.
 	 *
 	 * @param duration The pause duration in TimeUnits
 	 */
