@@ -291,6 +291,19 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	/**
+	 * Register an event handler with this data node.
+	 *
+	 * @param owner The owner of the handler, used to remove the handler when the owner is garbage collected
+	 * @param type The event type
+	 * @param handler The event handler
+	 * @param <T> The type of event to handle
+	 * @return The data node's {@link EventHub}
+	 */
+	public <T extends Event> EventHub register( Object owner, EventType<? super T> type, EventHandler<? super T> handler ) {
+		return hub.register( owner, type, handler );
+	}
+
+	/**
 	 * Unregister an event handler from this data node.
 	 *
 	 * @param type The event type
@@ -300,6 +313,19 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 */
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
 		return hub.unregister( type, handler );
+	}
+
+	/**
+	 * Unregister an event handler from this data node.
+	 *
+	 * @param owner The owner of the handler, used to remove the handler when the owner is garbage collected
+	 * @param type The event type
+	 * @param handler The event handler
+	 * @param <T> The type of event to handle
+	 * @return The data node's {@link EventHub}
+	 */
+	public <T extends Event> EventHub unregister( Object owner, EventType<? super T> type, EventHandler<? super T> handler ) {
+		return hub.unregister( owner, type, handler );
 	}
 
 	/**

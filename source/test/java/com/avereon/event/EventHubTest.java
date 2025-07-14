@@ -12,21 +12,6 @@ import static org.assertj.core.api.Fail.fail;
 class EventHubTest {
 
 	@Test
-	void testRemovingEventHandlerFromItself() {
-		EventHub bus = new EventHub();
-
-		EventHandler<TestEvent> handler = e -> {};
-		bus.register( Event.ANY, handler );
-		bus.register( Event.ANY, e -> bus.unregister( Event.ANY, handler ) );
-
-		try {
-			bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
-		} catch( ConcurrentModificationException exception ) {
-			fail( "EventBus.dispatch() not implemented in a way that prevents ConcurrentModificationException" );
-		}
-	}
-
-	@Test
 	void testHandle() {
 		List<Event> rootEvents = new ArrayList<>();
 		List<Event> testEvents1 = new ArrayList<>();
@@ -84,6 +69,43 @@ class EventHubTest {
 		bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
 		assertThat( peerEvents.size() ).isEqualTo( 1 );
 		assertThat( testEvents.size() ).isEqualTo( 1 );
+	}
+
+	@Test
+	void testRemovingEventHandlerFromItself() {
+		EventHub bus = new EventHub();
+
+		EventHandler<TestEvent> handler = e -> {};
+		bus.register( Event.ANY, handler );
+		bus.register( Event.ANY, e -> bus.unregister( Event.ANY, handler ) );
+
+		try {
+			bus.dispatch( new TestEvent( this, TestEvent.ANY ) );
+		} catch( ConcurrentModificationException exception ) {
+			fail( "EventBus.dispatch() not implemented in a way that prevents ConcurrentModificationException" );
+		}
+	}
+
+	@Test
+	void testWeaklyMappedEventHandler() {
+		// given
+		EventHub bus = new EventHub();
+		List<Event> events = new ArrayList<>();
+
+		Object owner = new Object();
+		EventHandler<TestEvent> handler = events::add;
+		bus.register( owner, Event.ANY, handler );
+		assertThat( bus.getEventHandlers( Event.ANY ) ).isNotEmpty();
+		assertThat( events ).isEmpty();
+
+		// when
+		// Set owner to null to allow for garbage collected
+		owner = null;
+		System.gc();
+
+		// then
+		assertThat( bus.getEventHandlers( Event.ANY ) ).isEmpty();
+		assertThat( events ).isEmpty();
 	}
 
 	private static class TestEvent extends Event {

@@ -5,7 +5,6 @@ import lombok.CustomLog;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 @CustomLog
 public class EventHub {
@@ -14,7 +13,7 @@ public class EventHub {
 
 	private final Set<EventHub> peers;
 
-	private final Map<EventType<? extends Event>, Map<EventHandler<Event>, EventHandler<Event>>> handlers;
+	private final Map<Object, Map<EventType<? extends Event>, Set<EventHandler<? extends Event>>>> eventTypeHandlers;
 
 	private final Map<Class<? extends Event>, Event> priorEvent;
 
@@ -22,7 +21,7 @@ public class EventHub {
 
 	public EventHub() {
 		this.peers = new CopyOnWriteArraySet<>();
-		this.handlers = new ConcurrentHashMap<>();
+		this.eventTypeHandlers = new WeakHashMap<>();
 		this.priorEvent = new ConcurrentHashMap<>();
 	}
 
@@ -44,8 +43,8 @@ public class EventHub {
 				try {
 					exception = null;
 
-					var typeHandlers = new HashMap<>( handlers.getOrDefault( type, Map.of() ) );
-					typeHandlers.forEach( ( k, v ) -> {
+					Collection<? extends EventHandler<Event>> typeHandlers = new HashSet<>( getEventHandlers( type ) );
+					typeHandlers.forEach( v -> {
 						try {
 							v.handle( event );
 						} catch( RuntimeException handlerException ) {
@@ -86,23 +85,53 @@ public class EventHub {
 		this.peers.remove( peer );
 	}
 
-	@SuppressWarnings( "unchecked" )
 	public <T extends Event> EventHub register( EventType<? super T> type, EventHandler<? super T> handler ) {
-		EventHandler<Event> eventHandler = (EventHandler<Event>)handler;
-		handlers.computeIfAbsent( type, ( k ) -> new WeakHashMap<>() ).put( eventHandler, eventHandler );
+		return register( this, type, handler );
+	}
+
+	public <T extends Event> EventHub register( Object owner, EventType<? super T> type, EventHandler<? super T> handler ) {
+		Map<EventType<? extends Event>, Set<EventHandler<? extends Event>>> typeHandlers = eventTypeHandlers.computeIfAbsent( owner, ( _ ) -> new HashMap<>() );
+		Set<EventHandler<? extends Event>> handlers = typeHandlers.computeIfAbsent( type, ( _ ) -> new CopyOnWriteArraySet<>() );
+		handlers.add( handler );
 		return this;
 	}
 
 	public <T extends Event> EventHub unregister( EventType<? super T> type, EventHandler<? super T> handler ) {
-		handlers.computeIfPresent( type, ( t, m ) -> {
-			m.remove( handler );
-			return m.isEmpty() ? null : m;
-		} );
+		return unregister( this, type, handler );
+	}
+
+	public <T extends Event> EventHub unregister( Object owner, EventType<? super T> type, EventHandler<? super T> handler ) {
+		Map<EventType<? extends Event>, Set<EventHandler<? extends Event>>> typeHandlers = eventTypeHandlers.get( owner );
+		if( typeHandlers == null ) return this;
+		Set<EventHandler<? extends Event>> handlers = typeHandlers.get( type );
+		if( handlers == null ) return this;
+		handlers.remove( handler );
+		if( handlers.isEmpty() ) typeHandlers.remove( type );
+		if( typeHandlers.isEmpty() ) eventTypeHandlers.remove( owner, typeHandlers );
+
 		return this;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> getEventHandlers() {
-		return handlers.keySet().stream().collect( Collectors.toMap( k -> k, k -> handlers.get( k ).values() ) );
+		Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> result = new HashMap<>();
+
+		eventTypeHandlers.values().forEach( v -> v.keySet().forEach( k -> {
+			Collection<? extends EventHandler<? extends Event>> handlers = result.computeIfAbsent( k, _ -> new CopyOnWriteArraySet<>() );
+			((Collection<EventHandler<? extends Event>>)handlers).addAll( v.get( k ) );
+		} ) );
+
+		return result;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public Collection<? extends EventHandler<Event>> getEventHandlers( EventType<? extends Event> type ) {
+		Collection<EventHandler<Event>> result = new HashSet<>();
+		eventTypeHandlers.values().forEach( m -> {
+			Set<EventHandler<? extends Event>> handlers = m.getOrDefault( type, Set.of() );
+			handlers.forEach( h -> result.add( (EventHandler<Event>)h ) );
+		} );
+		return result;
 	}
 
 	@SuppressWarnings( "unchecked" )
