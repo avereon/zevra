@@ -26,6 +26,7 @@ module com.avereon.zevra {
 	exports com.avereon.result;
 	exports com.avereon.settings;
 	exports com.avereon.skill;
+	exports com.avereon.test;
 	exports com.avereon.transaction;
 	exports com.avereon.util;
 
