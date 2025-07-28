@@ -17,6 +17,7 @@ module com.avereon.zevra {
 
 	opens com.avereon.util to com.fasterxml.jackson.databind;
 
+	exports com.avereon.annotation;
 	exports com.avereon.data;
 	exports com.avereon.event;
 	exports com.avereon.index;
