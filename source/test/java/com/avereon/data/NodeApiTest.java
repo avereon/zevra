@@ -37,8 +37,8 @@ public class NodeApiTest extends BaseNodeTest {
 		a.setValue( "child", b );
 
 		AtomicInteger count = new AtomicInteger();
-		a.register( "key", _ -> count.incrementAndGet() );
-		b.register( "key", _ -> count.incrementAndGet() );
+		a.register( "key", e -> count.incrementAndGet() );
+		b.register( "key", e -> count.incrementAndGet() );
 
 		b.setValue( "key", "b" );
 		assertThat( count.get() ).isEqualTo( 1 );
@@ -50,8 +50,8 @@ public class NodeApiTest extends BaseNodeTest {
 		AtomicInteger counterB = new AtomicInteger();
 
 		MockNode node = new MockNode( "node" );
-		node.register( "key", _ -> counterA.incrementAndGet() );
-		node.register( "key", _ -> counterB.incrementAndGet() );
+		node.register( "key", e -> counterA.incrementAndGet() );
+		node.register( "key", e -> counterB.incrementAndGet() );
 
 		assertThat( counterA.get() ).isEqualTo( 0 );
 		assertThat( counterB.get() ).isEqualTo( 0 );
@@ -71,7 +71,7 @@ public class NodeApiTest extends BaseNodeTest {
 		MockNode node = new MockNode( "node" );
 		AtomicInteger counter = new AtomicInteger();
 
-		node.register(owner, "key", _ -> counter.incrementAndGet() );
+		node.register(owner, "key", e -> counter.incrementAndGet() );
 		assertThat( counter.get() ).isEqualTo( 0 );
 
 		node.setValue( "key", "value1" );
@@ -553,7 +553,7 @@ public class NodeApiTest extends BaseNodeTest {
 	@Test
 	void testSetClearSetValueInTransaction() throws Exception {
 		data.setValue( "x", 1 );
-		try (Txn _ = Txn.create() ) {
+		try (Txn t = Txn.create() ) {
 			data.setValue( "x", null );
 			data.setValue( "x", 1 );
 		}

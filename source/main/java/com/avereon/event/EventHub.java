@@ -90,8 +90,8 @@ public class EventHub {
 	}
 
 	public <T extends Event> EventHub register( Object owner, EventType<? super T> type, EventHandler<? super T> handler ) {
-		Map<EventType<? extends Event>, Set<EventHandler<? extends Event>>> typeHandlers = eventTypeHandlers.computeIfAbsent( owner, ( _ ) -> new HashMap<>() );
-		Set<EventHandler<? extends Event>> handlers = typeHandlers.computeIfAbsent( type, ( _ ) -> new CopyOnWriteArraySet<>() );
+		Map<EventType<? extends Event>, Set<EventHandler<? extends Event>>> typeHandlers = eventTypeHandlers.computeIfAbsent( owner, ( k ) -> new HashMap<>() );
+		Set<EventHandler<? extends Event>> handlers = typeHandlers.computeIfAbsent( type, ( k ) -> new CopyOnWriteArraySet<>() );
 		handlers.add( handler );
 		return this;
 	}
@@ -117,7 +117,7 @@ public class EventHub {
 		Map<EventType<? extends Event>, Collection<? extends EventHandler<? extends Event>>> result = new HashMap<>();
 
 		eventTypeHandlers.values().forEach( v -> v.keySet().forEach( k -> {
-			Collection<? extends EventHandler<? extends Event>> handlers = result.computeIfAbsent( k, _ -> new CopyOnWriteArraySet<>() );
+			Collection<? extends EventHandler<? extends Event>> handlers = result.computeIfAbsent( k, y -> new CopyOnWriteArraySet<>() );
 			((Collection<EventHandler<? extends Event>>)handlers).addAll( v.get( k ) );
 		} ) );
 

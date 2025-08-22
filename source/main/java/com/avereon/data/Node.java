@@ -375,8 +375,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	public void register( Object owner, String key, EventHandler<NodeEvent> handler ) {
 		// The owner is the "owner" of the handler. When the owner is garbage
 		// collected the handler will be removed from the valueChangeHandlers map.
-		Map<String, Set<EventHandler<NodeEvent>>> keyHandlers = valueChangeHandlers.computeIfAbsent( owner, ( _ ) -> new HashMap<>() );
-		Set<EventHandler<NodeEvent>> handlers = keyHandlers.computeIfAbsent( key, ( _ ) -> new CopyOnWriteArraySet<>() );
+		Map<String, Set<EventHandler<NodeEvent>>> keyHandlers = valueChangeHandlers.computeIfAbsent( owner, ( k ) -> new HashMap<>() );
+		Set<EventHandler<NodeEvent>> handlers = keyHandlers.computeIfAbsent( key, ( k ) -> new CopyOnWriteArraySet<>() );
 		handlers.add( handler );
 	}
 
