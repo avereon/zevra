@@ -23,7 +23,7 @@ public class JvmSureStop extends Thread {
 	 * The amount of time to give the JVM to exit cleanly. After this amount of
 	 * time the JVM is halted by calling Runtime.getRuntime().halt().
 	 */
-	public static final int DEFAULT_WAIT_DELAY = 10000;
+	public static final int DEFAULT_WAIT_DELAY = 15000;
 
 	private final int delay;
 
