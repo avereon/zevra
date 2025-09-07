@@ -44,7 +44,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testLinux() {
-		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		OperatingSystem.init( "Linux", "x86_64", "2.6.32_45", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, "KDE" );
 		assertThat( OperatingSystem.isPosix() ).isTrue();
 		assertThat( OperatingSystem.isLinux() ).isTrue();
 		assertThat( OperatingSystem.isMac() ).isFalse();
@@ -56,11 +56,12 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Community" );
 		assertThat( OperatingSystem.getExeSuffix() ).isEmpty();
+		assertThat( OperatingSystem.getDesktop() ).isEqualTo( "KDE" );
 	}
 
 	@Test
 	void testMac() {
-		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_DATA, UNIX_SHARED_DATA );
+		OperatingSystem.init( "Mac OS X", "ppc", "10", UNIX_USER_HOME, UNIX_USER_DATA, UNIX_SHARED_DATA, "MAC" );
 		assertThat( OperatingSystem.isPosix() ).isTrue();
 		assertThat( OperatingSystem.isLinux() ).isFalse();
 		assertThat( OperatingSystem.isMac() ).isTrue();
@@ -72,6 +73,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Apple" );
 		assertThat( OperatingSystem.getExeSuffix() ).isEmpty();
+		assertThat( OperatingSystem.getDesktop() ).isEqualTo( "MAC" );
 
 		// Test the process launch workaround
 		assertThat( System.getProperty( "jdk.lang.Process.launchMechanism" ) ).isEqualTo( "FORK" );
@@ -79,7 +81,7 @@ class OperatingSystemTest {
 
 	@Test
 	void testWindows7() {
-		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_DATA, WINDOWS_SHARED_DATA );
+		OperatingSystem.init( "Windows 7", "x86", "6.1", WINDOWS_USER_HOME, WINDOWS_USER_DATA, WINDOWS_SHARED_DATA, "WINDOWS" );
 		assertThat( OperatingSystem.isPosix() ).isFalse();
 		assertThat( OperatingSystem.isLinux() ).isFalse();
 		assertThat( OperatingSystem.isMac() ).isFalse();
@@ -91,6 +93,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "javaw.exe" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Microsoft" );
 		assertThat( OperatingSystem.getExeSuffix() ).isEqualTo( ".exe" );
+		assertThat( OperatingSystem.getDesktop() ).isEqualTo( "WINDOWS" );
 	}
 
 	@Test

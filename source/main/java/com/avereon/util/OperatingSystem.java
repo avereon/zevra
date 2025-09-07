@@ -1,6 +1,7 @@
 package com.avereon.util;
 
 import lombok.CustomLog;
+import lombok.Getter;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -50,24 +51,54 @@ public class OperatingSystem {
 
 	public static final String ELEVATED_PRIVILEGE_VALUE = OperatingSystem.class.getName() + ":process-privilege-elevated";
 
+	@Getter
 	private static Architecture architecture;
 
+	@Getter
 	private static Family family;
 
+	@Getter
 	private static String version;
 
+	@Getter
 	private static String name;
 
 	private static String arch;
 
+	@Getter
+	private static String desktop;
+
 	private static Boolean elevated;
 
+	@Getter
 	private static boolean fileSystemCaseSensitive;
 
 	private static Path userHomeFolder;
 
+	/**
+	 * -- GETTER --
+	 * Get the program data folder for the operating system. On Windows systems
+	 * this is the %APPDATA% location. On other systems this is $HOME.
+	 * <p>
+	 * Exapmles:
+	 * <p>
+	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming
+	 * <br/> Linux: /home/&lt;username&gt;
+	 */
+	@Getter
 	private static Path userProgramDataFolder;
 
+	/**
+	 * -- GETTER --
+	 * Get the shared program data folder for the operating system. On Windows
+	 * systems this is the %ALLUSERSPROFILE% location. On Linux systems this is
+	 * /usr/local/share/data.
+	 * <p>
+	 * Examples:
+	 * <p>
+	 * Windows 7: C:/ProgramData/<br/> Linux: /usr/local/share/data/
+	 */
+	@Getter
 	private static Path sharedProgramDataFolder;
 
 	private static final Map<UserFolder, Path> userFolderCache = new EnumMap<>( UserFolder.class );
@@ -80,44 +111,17 @@ public class OperatingSystem {
 	}
 
 	public static void reset() {
-		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null, null );
-	}
-
-	public static String getName() {
-		return name;
-	}
-
-	public static Family getFamily() {
-		return family;
+		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null, null, null );
 	}
 
 	public static String getProvider() {
-		switch( family ) {
-			case WINDOWS: {
-				return "Microsoft";
-			}
-			case MAC:
-			case MACOSX: {
-				return "Apple";
-			}
-			case LINUX: {
-				return "Community";
-			}
-			case OS2: {
-				return "IBM";
-			}
-			default: {
-				return "Unknown";
-			}
-		}
-	}
-
-	public static String getVersion() {
-		return version;
-	}
-
-	public static Architecture getArchitecture() {
-		return architecture;
+		return switch( family ) {
+			case WINDOWS -> "Microsoft";
+			case MAC, MACOSX -> "Apple";
+			case LINUX -> "Community";
+			case OS2 -> "IBM";
+			default -> "Unknown";
+		};
 	}
 
 	public static String getSystemArchitecture() {
@@ -189,13 +193,6 @@ public class OperatingSystem {
 
 	public static boolean isReduceProcessSupported() {
 		return OperatingSystem.isMac() || OperatingSystem.isUnix();
-	}
-
-	/**
-	 * Test the file system for case sensitivity.
-	 */
-	public static boolean isFileSystemCaseSensitive() {
-		return fileSystemCaseSensitive;
 	}
 
 	public static Process startProcessElevated( String title, ProcessBuilder builder ) throws IOException {
@@ -339,21 +336,6 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Get the program data folder for the operating system. On Windows systems
-	 * this is the %APPDATA% location. On other systems this is $HOME.
-	 * <p>
-	 * Exapmles:
-	 * <p>
-	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming
-	 * <br/> Linux: /home/&lt;username&gt;
-	 *
-	 * @return
-	 */
-	public static Path getUserProgramDataFolder() {
-		return userProgramDataFolder;
-	}
-
-	/**
 	 * Get the program data folder for the operating system using the program
 	 * identifier and/or name. The program identifier is normally all lower case
 	 * with no spaces. The name can be mixed case with spaces. Windows systems
@@ -380,21 +362,6 @@ public class OperatingSystem {
 	}
 
 	/**
-	 * Get the shared program data folder for the operating system. On Windows
-	 * systems this is the %ALLUSERSPROFILE% location. On Linux systems this is
-	 * /usr/local/share/data.
-	 * <p>
-	 * Examples:
-	 * <p>
-	 * Windows 7: C:/ProgramData/<br/> Linux: /usr/local/share/data/
-	 *
-	 * @return The shared program data folder
-	 */
-	public static Path getSharedProgramDataFolder() {
-		return sharedProgramDataFolder;
-	}
-
-	/**
 	 * Get the shared program data folder for the operating system using the
 	 * program identifier and/or name. The program identifier is normally all
 	 * lower case with no spaces. The name can be mixed case with spaces.
@@ -406,18 +373,11 @@ public class OperatingSystem {
 	 * @return The shared program data folder
 	 */
 	public static Path getSharedProgramDataFolder( String identifier, String name ) {
-		switch( family ) {
-			case MACOSX:
-			case WINDOWS: {
-				return getSharedProgramDataFolder().resolve( name );
-			}
-			case LINUX: {
-				return getSharedProgramDataFolder().resolve( identifier );
-			}
-			default: {
-				return getSharedProgramDataFolder().resolve( "." + identifier );
-			}
-		}
+		return switch( family ) {
+			case MACOSX, WINDOWS -> getSharedProgramDataFolder().resolve( name );
+			case LINUX -> getSharedProgramDataFolder().resolve( identifier );
+			default -> getSharedProgramDataFolder().resolve( "." + identifier );
+		};
 	}
 
 	public static String resolveNativeLibPath( String libname ) {
@@ -440,6 +400,10 @@ public class OperatingSystem {
 		init( name, arch, version, null, userData, sharedData );
 	}
 
+	static void init( String name, String arch, String version, String userHome, String userData, String sharedData ) {
+		init( name, arch, version, userHome, userData, sharedData, null );
+	}
+
 	/**
 	 * The init() method is intentionally package private, and separate from the
 	 * static initializer, so the initialization logic can be tested.
@@ -450,8 +414,9 @@ public class OperatingSystem {
 	 * @param userHome The user home folder from System.getProperty( "user.home" )
 	 * @param userData The program user data folder
 	 * @param sharedData The program shared data folder
+	 * @param desktop The desktop environment
 	 */
-	static void init( String name, String arch, String version, String userHome, String userData, String sharedData ) {
+	static void init( String name, String arch, String version, String userHome, String userData, String sharedData, String desktop ) {
 		OperatingSystem.name = name;
 		OperatingSystem.arch = arch;
 
@@ -556,6 +521,20 @@ public class OperatingSystem {
 			}
 		} else {
 			sharedProgramDataFolder = Paths.get( sharedData );
+		}
+
+		if( desktop == null ) {
+			if( isLinux() ) {
+				OperatingSystem.desktop = System.getenv( "XDG_CURRENT_DESKTOP" ).toUpperCase();
+			} else if( isMac() ) {
+				OperatingSystem.desktop = "MAC";
+			} else if( isWindows() ) {
+				OperatingSystem.desktop = "WINDOWS";
+			} else {
+				OperatingSystem.desktop = "UNKNOWN";
+			}
+		} else {
+			OperatingSystem.desktop = desktop;
 		}
 
 		// Execution workaround
