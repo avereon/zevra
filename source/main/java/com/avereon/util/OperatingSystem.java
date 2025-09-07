@@ -525,7 +525,8 @@ public class OperatingSystem {
 
 		if( desktop == null ) {
 			if( isLinux() ) {
-				OperatingSystem.desktop = System.getenv( "XDG_CURRENT_DESKTOP" ).toUpperCase();
+				String xdgDesktop = System.getenv( "XDG_CURRENT_DESKTOP" );
+				OperatingSystem.desktop = xdgDesktop == null ? "UNKNOWN" : xdgDesktop.toUpperCase();
 			} else if( isMac() ) {
 				OperatingSystem.desktop = "MAC";
 			} else if( isWindows() ) {
