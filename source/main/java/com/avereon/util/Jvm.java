@@ -4,6 +4,6 @@ import java.security.SecureRandom;
 
 public class Jvm {
 
-	public static final long ID = new SecureRandom().nextLong();
+	public static final long ID = Math.abs( new SecureRandom().nextLong() );
 
 }
