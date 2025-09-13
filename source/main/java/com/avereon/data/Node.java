@@ -7,6 +7,7 @@ import com.avereon.event.EventType;
 import com.avereon.transaction.*;
 import lombok.CustomLog;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,7 +70,7 @@ import java.util.stream.Collectors;
  *
  * <h2>Modifying Values</h2>
  * By default, no values will cause the modified flag to change. In order for a
- * change in a value to cause a change in the modified flag it must be
+ * change in a value to cause a change in the modified flag, it must be
  * configured as a modifying value with the {@link #addModifyingKeys(String...)}
  * method. Note in the example above that the "name" value was set as a
  * modifying key. This means that a change to the name value will cause the
@@ -79,7 +80,7 @@ import java.util.stream.Collectors;
  * <h2>Events</h2>
  * Events are produced for almost any action on a data node. Exactly what events
  * are produced can be rather complex depending on the data structure, the
- * transaction state and the actions taken. However, simple situations should be
+ * transaction state, and the actions taken. However, simple situations should be
  * straightforward. For example, setting a value will cause a
  * {@link NodeEvent#VALUE_CHANGED} event and a {@link NodeEvent#NODE_CHANGED}
  * event. If the value was a modifying value then a {@link NodeEvent#MODIFIED}
@@ -169,25 +170,25 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	private Set<String> hashEqualsKeyList;
 
 	/**
-	 * The set of value keys intentionally allowed to modify the node.
+	 * The set of value keys explicitly allowed to modify the node.
 	 */
 	private Set<String> includedModifyingKeySet;
 
 	/**
-	 * The set of value keys intentionally not allowed to modify the node.
+	 * The set of value keys explicitly not allowed to modify the node.
 	 */
 	private Set<String> excludedModifyingKeySet;
 
 	private boolean allKeysModify;
 
 	/**
-	 * The set of value keys that are read only.
+	 * The set of value keys that are read-only.
 	 */
 	private Set<String> readOnlySet;
 
 	/**
 	 * The internally calculated modified flag used to allow for fast read rates.
-	 * This is updated when the self modified flag, values or children are changed.
+	 * This is updated when the self-modified flag, values, or children are changed.
 	 * -- GETTER --
 	 * Is the node modified. The node is modified if any data value has been
 	 * modified or any child node has been modified since the last time the
@@ -215,8 +216,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	/**
 	 * Create a new, generic, empty data node. It is generally expected that the
-	 * Node class will be inherited, instead of used directly, but there is no
-	 * restriction creating "generic" nodes.
+	 * Node class will be inherited instead of used directly, but there is no
+	 * restriction on creating "generic" nodes.
 	 */
 	public Node() {
 		this.collectionId = UUID.randomUUID().toString();
@@ -242,8 +243,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	/**
 	 * Subclasses may implement extra rules regarding the modification of this
-	 * node. For example, if a particular value in a field would not allow the
-	 * node to be modified then that can be implemented here.
+	 * node. For example, if a particular value in a field does not allow the
+	 * node to be modified, then that can be implemented here.
 	 *
 	 * @param value The node value to use for checking if modify is allowed
 	 * @return True if the node can be modified, false otherwise
@@ -256,8 +257,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * Request that a {@link NodeEvent#NODE_CHANGED} event occur. This is usually
 	 * used to cause the node handlers to run if they were added after the node
 	 * was changed. This is common during node initialization where the state is
-	 * set, the modified flag cleared, the handlers added and then this method is
-	 * called.
+	 * set, the modified flag is cleared, the handlers added, and then this method
+	 * is called.
 	 */
 	public void refresh() {
 		fireHoppingEvent( new NodeEvent( this, NodeEvent.NODE_CHANGED ) );
@@ -351,7 +352,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * useful to register lambda style event handlers for specific value changes.
 	 * <p>
 	 * NOTE: These handlers only receive value changed events that happen on this
-	 * node not on any child nodes like normal listeners.
+	 * node, not on any child nodes like normal listeners.
 	 * </p>
 	 *
 	 * @param key The value key
@@ -366,7 +367,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * useful to register lambda style event handlers for specific value changes.
 	 * <p>
 	 * NOTE: These handlers only receive value changed events that happen on this
-	 * node not on any child nodes like normal listeners.
+	 * node, not on any child nodes like normal listeners.
 	 * </p>
 	 * @param owner The owner of the handler, used to remove the handler when the owner is garbage collected
 	 * @param key The value key
@@ -418,13 +419,13 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	/**
-	 * Copy the values and resources from the specified node. If overwrite is true
-	 * this method will replace any values or resources with the specified nodes
-	 * values and resources. Otherwise, this method will only fill in missing
-	 * values and resources from the specified node.
+	 * Copy the values and resources from the specified node. If overwrite is
+	 * true, this method will replace any values or resources with the specified
+	 * nodes values and resources. Otherwise, this method will only fill in
+	 * missing values and resources from the specified node.
 	 *
 	 * @param node The node from which to copy values and resources
-	 * @param overwrite Should the new values overwrite existing values
+	 * @param overwrite Should the new values overwrite existing values?
 	 */
 	@SuppressWarnings( "unchecked" )
 	public <T extends Node> T copyFrom( Node node, boolean overwrite ) {
@@ -573,7 +574,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	}
 
 	@Override
-	public int compareTo( Node that ) {
+	public int compareTo( @NonNull Node that ) {
 		if( comparator == null ) comparator = getNaturalComparator();
 		return comparator.compare( this, that );
 	}
@@ -585,7 +586,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 * @return A node comparator
 	 */
 	public <T extends Node> Comparator<T> getNaturalComparator() {
-		return new NodeComparator<>( getNaturalKey() );
+		return NodeComparator.of( getNaturalKey() );
 	}
 
 	protected List<String> getPrimaryKey() {
@@ -744,7 +745,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 	 *
 	 * @param clazz The type of value to find
 	 * @param <T> The value type
-	 * @return A collection of the values of the specific type
+	 * @return A collection of the specific type values
 	 */
 	@SuppressWarnings( "unchecked" )
 	protected <T> Collection<T> getValues( Class<T> clazz ) {
@@ -949,8 +950,8 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 
 	/**
 	 * Gets the number of parents in the tree between this node and the specified
-	 * node inclusive. If the specified node is this node then it returns 0. If
-	 * The specified node is not a parent of this node then it returns -1.
+	 * node inclusive. If the specified node is this node, then it returns 0. If
+	 * The specified node is not a parent of this node, then it returns -1.
 	 */
 	int distanceTo( Node target ) {
 		if( this == target ) return 0;
@@ -1309,7 +1310,7 @@ public class Node implements TxnEventTarget, Cloneable, Comparable<Node> {
 			if( newValue instanceof Node && ((Node)newValue).getTrueParent() == null ) throw new RuntimeException( "Node parent not set correctly" );
 
 			if( modifyAllowed && getNode().isModifyingKey( key ) ) {
-				// If the preValue is null that means the value for this key has not been modified since the last transaction
+				// If the preValue is null, that means the value for this key has not been modified since the last transaction
 				Object preValue = getNode().modifiedValues == null ? null : getNode().modifiedValues.get( key );
 
 				boolean previouslyUnmodified = preValue == null;

@@ -9,17 +9,7 @@ import java.util.List;
  *
  * @param <T> The node type
  */
-public class NodeComparator<T extends Node> implements Comparator<T> {
-
-	private final List<String> keys;
-
-	public NodeComparator( String... keys ) {
-		this( List.of( keys ) );
-	}
-
-	public NodeComparator( List<String> keys ) {
-		this.keys = keys;
-	}
+public record NodeComparator<T extends Node>(List<String> keys) implements Comparator<T> {
 
 	@Override
 	public int compare( T a, T b ) {
@@ -33,6 +23,14 @@ public class NodeComparator<T extends Node> implements Comparator<T> {
 			if( comparison != 0 ) return comparison;
 		}
 		return 0;
+	}
+
+	public static <T extends Node> NodeComparator<T> of( String... keys ) {
+		return new NodeComparator<>( List.of( keys ) );
+	}
+
+	public static <T extends Node> NodeComparator<T> of( List<String> keys ) {
+		return new NodeComparator<>( keys );
 	}
 
 }

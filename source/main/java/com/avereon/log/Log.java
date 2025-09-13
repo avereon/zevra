@@ -37,6 +37,7 @@ public class Log {
 	 * @param logFolder The folder where to publish log files
 	 * @param logFile The default log file name pattern
 	 */
+	@SuppressWarnings( "unused" )
 	public static void configureLogging( Object source, com.avereon.util.Parameters parameters, Path logFolder, String logFile ) {
 		// Logging level conversion
 		//
@@ -164,6 +165,7 @@ public class Log {
 		java.util.logging.Logger.getLogger( "" ).setLevel( level );
 	}
 
+	@SuppressWarnings( "unused" )
 	public static void setBaseLogLevel( String levelName ) {
 		setBaseLogLevel( LogFlag.toLogLevel( levelName ) );
 	}

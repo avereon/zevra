@@ -78,6 +78,7 @@ public abstract class AbstractLogger<API extends LogApi<API>> {
 	}
 
 	/** A convenience method for at({@link Level#FINEST}). */
+	@SuppressWarnings( "unused" )
 	public final API atFinest() {
 		return at( Level.FINEST );
 	}

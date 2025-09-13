@@ -10,7 +10,7 @@ public class NodeComparatorTest {
 	void testCompareTo() {
 		NamedNode a = new NamedNode();
 		NamedNode b = new NamedNode();
-		NodeComparator<MockNode> comparator = new NodeComparator<>( "name" );
+		NodeComparator<MockNode> comparator = NodeComparator.of( "name" );
 
 		a.setName( "a" );
 		b.setName( "b" );
@@ -26,7 +26,7 @@ public class NodeComparatorTest {
 	void testCompareToWithMissingValues() {
 		NamedNode a = new NamedNode();
 		NamedNode b = new NamedNode();
-		NodeComparator<MockNode> comparator = new NodeComparator<>( "name" );
+		NodeComparator<MockNode> comparator = NodeComparator.of( "name" );
 
 		assertThat( comparator.compare( a, b ) ).isEqualTo( 0 );
 	}
@@ -35,7 +35,7 @@ public class NodeComparatorTest {
 	void testCompareToWithNullValues() {
 		NamedNode a = new NamedNode();
 		NamedNode b = new NamedNode();
-		NodeComparator<MockNode> comparator = new NodeComparator<>( "name" );
+		NodeComparator<MockNode> comparator = NodeComparator.of( "name" );
 
 		a.setName( "a" );
 		b.setName( null );

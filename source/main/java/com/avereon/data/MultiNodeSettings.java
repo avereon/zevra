@@ -14,8 +14,9 @@ import lombok.CustomLog;
 import java.util.*;
 
 /**
- * This class is mainly used to set the values of multiple nodes at the same time. It also has the ability to detect when all nodes have the same value for a particular key. I will also return the
- * keys common to all nodes, if any.
+ * This class is mainly used to set the values of multiple nodes at the same
+ * time. It can also detect when all nodes have the same value for a particular
+ * key. It will also return the keys common to all nodes, if any.
  */
 @CustomLog
 public class MultiNodeSettings implements Settings {

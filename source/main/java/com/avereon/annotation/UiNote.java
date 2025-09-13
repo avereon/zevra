@@ -1,6 +1,6 @@
 package com.avereon.annotation;
 
-public interface CommonNote {
+public interface UiNote {
 
 	/**
 	 * Indicates that any thread may safely access this method and assumptions
@@ -10,6 +10,6 @@ public interface CommonNote {
 	 * note that this method is safe for any thread to call because it will ensure
 	 * the state modifications will be delegated to the correct thread.
 	 */
-	String ANY_THREAD = "any-thread";
+	String THREAD_SAFE = "any-thread";
 
 }
