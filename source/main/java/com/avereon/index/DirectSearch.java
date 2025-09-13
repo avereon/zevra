@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * The direct search implementation will find hits on for an exact match of the
  * search term on the index. Since all hits are an exact match to the search
- * term the hits are returned in undefined order, and it is up to the requester
+ * term, the hits are returned in undefined order, and it is up to the requester
  * to sort the resulting hit documents.
  */
 public class DirectSearch implements Search {

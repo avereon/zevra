@@ -8,8 +8,8 @@ import lombok.experimental.Accessors;
 import java.util.List;
 
 /**
- * This class represents both index and search hits since both of these types
- * of hits are very similar and have very similar uses. Index hits have all
+ * This class represents both index and search hits since both of these hit
+ * types are very similar and have very similar uses. Index hits have all
  * the information regarding hits while indexing. Search hits can augment index
  * hits with more information regarding the search match.
  */

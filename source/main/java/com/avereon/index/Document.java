@@ -42,7 +42,7 @@ public class Document {
 	/**
 	 * The document URI. The URI is a unique identifier for this document,
 	 * regardless of language, replacement values, or the location of the content.
-	 * The uri is not the same as the {@link #url}, but are often related.
+	 * The uri is different from the {@link #url}, but is often related.
 	 */
 	private URI uri;
 
@@ -62,8 +62,8 @@ public class Document {
 	private Set<String> tags;
 
 	/**
-	 * The URL from where to load the document content. The url is not the same as
-	 * the {@link #uri}, but are often related.
+	 * The URL from where to load the document content. The url is different from
+	 * the {@link #uri}, but is often related.
 	 */
 	private URL url;
 
@@ -74,7 +74,7 @@ public class Document {
 	private String content;
 
 	/**
-	 * The replacement values for the content. These are be replaced in the
+	 * The replacement values for the content. These are to be replaced in the
 	 * content before the content is indexed.
 	 */
 	private Map<String, String> values;

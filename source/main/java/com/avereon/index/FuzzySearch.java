@@ -15,7 +15,7 @@ public class FuzzySearch implements Search {
 
 	/**
 	 * Levenshtein distance cutoff value (0-100). Using zero would return
-	 * everything in the index (probably not desired) and using 100 would
+	 * everything in the index (probably not desired), and using 100 would
 	 * return only exact matches.
 	 */
 	private static final int DEFAULT_CUTOFF = 80;

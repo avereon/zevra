@@ -38,7 +38,7 @@ public class Terms {
 			// At the end of a word store a hit and reset the word start index
 			if( endOfWord ) {
 				//System.out.println( "start=" + start + " end=" + ((wordChar && lastChar) ? length : index) );
-				terms.add( consumer.apply( start, (wordChar && lastChar) ? length : index ) );
+				terms.add( consumer.apply( start, wordChar ? length : index ) );
 				start = -1;
 			}
 
