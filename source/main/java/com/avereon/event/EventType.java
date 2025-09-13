@@ -1,11 +1,14 @@
 package com.avereon.event;
 
+import lombok.Getter;
+
 public final class EventType<T extends Event> {
 
 	public static final EventType<Event> ROOT = new EventType<>( null, "EVENT" );
 
 	private final EventType<? super T> parent;
 
+	@Getter
 	private final String name;
 
 	public EventType( final String name ) {
@@ -23,10 +26,6 @@ public final class EventType<T extends Event> {
 
 	public EventType<? super T> getParentEventType() {
 		return parent;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	@Override

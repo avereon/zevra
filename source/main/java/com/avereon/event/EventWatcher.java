@@ -40,14 +40,15 @@ public class EventWatcher implements EventHandler<Event> {
 		waitForEvent( type, timeout );
 	}
 
+	@SuppressWarnings( "unused" )
 	public void waitForNextEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
 		waitForNextEvent( type, timeout );
 	}
 
 	/**
 	 * Wait for an event of a specific class to occur. If the event has already
-	 * occurred this method will return immediately. If the event has not
-	 * already occurred then this method waits until the next event occurs, or
+	 * occurred, this method will return immediately. If the event has not
+	 * already occurred, then this method waits until the next event occurs, or
 	 * the specified timeout, whichever comes first.
 	 *
 	 * @param type The event type to wait for

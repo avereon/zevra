@@ -26,9 +26,9 @@ public class EventHub {
 	}
 
 	public Event dispatch( Event event ) {
-		// While the type of the incoming event is known, the parent event types,
-		// used later in the method are not well known. They could be of any event
-		// type and therefore this variable needs to allow any event type.
+		// While the type of the incoming event is known, the parent event types
+		// used later in the method are not well-known. They could be of any event
+		// type, and therefore this variable needs to allow any event type.
 		EventType<?> type = event.getEventType();
 
 		priorEvent.put( event.getClass(), event );
