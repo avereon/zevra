@@ -9,12 +9,12 @@ module com.avereon.zevra {
 	requires static jdk.management;
 	requires static jsr305;
 	requires static lombok;
+	requires static org.jspecify;
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.core;
 	requires me.xdrop.fuzzywuzzy;
 	requires org.jsoup;
-	requires org.jspecify;
 
 	opens com.avereon.util to com.fasterxml.jackson.databind;
 
