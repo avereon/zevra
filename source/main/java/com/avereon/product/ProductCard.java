@@ -3,6 +3,7 @@ package com.avereon.product;
 import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.CustomLog;
@@ -32,6 +33,7 @@ import java.util.*;
  * </p>
  */
 @CustomLog
+@JsonInclude( JsonInclude.Include.NON_NULL )
 @JsonIgnoreProperties( ignoreUnknown = true )
 @Accessors( chain = true )
 public class ProductCard extends BaseCard {

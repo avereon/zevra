@@ -1,5 +1,9 @@
 package com.avereon.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serial;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * versions. This class provides methods for creating, parsing and comparing
  * versions.
  */
+@JsonInclude( JsonInclude.Include.NON_NULL )
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class Version implements Comparable<Version> {
 
 	private static final String UNKNOWN = "unknown";
@@ -78,7 +84,7 @@ public class Version implements Comparable<Version> {
 	}
 
 	/**
-	 * Is this version a SNAPSHOT version. The version is a SNAPSHOT version if
+	 * Is this version a SNAPSHOT version? The version is a SNAPSHOT version if
 	 * it has the SNAPSHOT qualifier.
 	 *
 	 * @return True if this version is a SNAPSHOT, false otherwise
@@ -88,7 +94,7 @@ public class Version implements Comparable<Version> {
 	}
 
 	/**
-	 * Does this version have a specific qualifier.
+	 * Does this version have a specific qualifier?
 	 *
 	 * @param qualifier The qualifier in question
 	 * @return True if this version has the qualifier, false otherwise
@@ -98,9 +104,9 @@ public class Version implements Comparable<Version> {
 	}
 
 	/**
-	 * Format the version as a human friendly string.
+	 * Format the version as a human-friendly string.
 	 *
-	 * @return The version in human friendly format
+	 * @return The version in human-friendly format
 	 */
 	public String toHumanString() {
 		return this.human;
@@ -154,10 +160,10 @@ public class Version implements Comparable<Version> {
 	/**
 	 * Compare two versions.
 	 *
-	 * @see #compareTo(Version)
 	 * @param version1 The first version
 	 * @param version2 The second version
 	 * @return -1, 0 or 1
+	 * @see #compareTo(Version)
 	 */
 	public static int compare( String version1, String version2 ) {
 		return new Version( version1 ).compareTo( new Version( version2 ) );
@@ -166,10 +172,10 @@ public class Version implements Comparable<Version> {
 	/**
 	 * Compare two versions.
 	 *
-	 * @see #compareTo(Version)
 	 * @param version1 The first version
 	 * @param version2 The second version
 	 * @return -1, 0 or 1
+	 * @see #compareTo(Version)
 	 */
 	public static int compare( Version version1, Version version2 ) {
 		return version1.compareTo( version2 );
@@ -354,18 +360,11 @@ public class Version implements Comparable<Version> {
 				return BigInteger_ZERO.equals( value ) ? 0 : 1;
 			}
 
-			switch( item.getType() ) {
-				case INTEGER_ITEM: {
-					return value.compareTo( ((IntegerItem)item).value );
-				}
-				case STRING_ITEM:
-				case LIST_ITEM: {
-					return 1;
-				}
-				default: {
-					throw new RuntimeException( "Invalid item: " + item.getClass() );
-				}
-			}
+			return switch( item.getType() ) {
+				case INTEGER_ITEM -> value.compareTo( ((IntegerItem)item).value );
+				case STRING_ITEM, LIST_ITEM -> 1;
+				default -> throw new RuntimeException( "Invalid item: " + item.getClass() );
+			};
 		}
 
 		@Override
@@ -443,12 +442,12 @@ public class Version implements Comparable<Version> {
 
 		/**
 		 * Returns a comparable value for a qualifier. This method takes into
-		 * account both the ordering of known qualifiers as well as lexical ordering
+		 * account both the ordering of known qualifiers and lexical ordering
 		 * for unknown qualifiers. Just returning an Integer with the index here is
-		 * faster, but requires a lot of if/then/else to check for -1 or
+		 * faster but requires a lot of if/then/else to check for -1 or
 		 * QUALIFIERS.size and then resort to lexical ordering. Most comparisons are
 		 * decided by the first character, so this is still fast. If more characters
-		 * are needed then it requires a lexical sort anyway.
+		 * are needed, then it requires a lexical sort anyway.
 		 *
 		 * @param qualifier The qualifier for which to find an equivalent
 		 * @return An equivalent value that can be used with lexical comparison
@@ -463,18 +462,11 @@ public class Version implements Comparable<Version> {
 			if( item == null ) {
 				return comparableQualifier( value ).compareTo( RELEASE_VERSION_INDEX );
 			}
-			switch( item.getType() ) {
-				case INTEGER_ITEM:
-				case LIST_ITEM: {
-					return -1;
-				}
-				case STRING_ITEM: {
-					return comparableQualifier( value ).compareTo( comparableQualifier( ((StringItem)item).value ) );
-				}
-				default: {
-					throw new RuntimeException( "Invalid item: " + item.getClass() );
-				}
-			}
+			return switch( item.getType() ) {
+				case INTEGER_ITEM, LIST_ITEM -> -1;
+				case STRING_ITEM -> comparableQualifier( value ).compareTo( comparableQualifier( ((StringItem)item).value ) );
+				default -> throw new RuntimeException( "Invalid item: " + item.getClass() );
+			};
 		}
 
 		@Override
@@ -485,6 +477,7 @@ public class Version implements Comparable<Version> {
 
 	private static class ListItem extends ArrayList<Item> implements Item {
 
+		@Serial
 		private static final long serialVersionUID = -4773402270598497998L;
 
 		@Override

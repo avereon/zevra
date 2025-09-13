@@ -25,34 +25,34 @@ class ReleaseTest {
 	@Test
 	void testConstructorWithStringAndTimestamp() throws Exception {
 		Release release = new Release( versionString, timestampFormat.parse( "1970-01-01 00:00:00" ) );
-		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
-		assertThat( release.getTimestamp() ).isEqualTo( new Date( 0 ) );
+		assertThat( release.version().toString() ).isEqualTo( versionString );
+		assertThat( release.timestamp() ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test
 	void testConstructorWithStringStringAndNullTimestamp() {
 		Release release = new Release( versionString, null );
-		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
-		assertThat( release.getTimestamp() ).isNull();
+		assertThat( release.version().toString() ).isEqualTo( versionString );
+		assertThat( release.timestamp() ).isNull();
 	}
 
 	@Test
 	void testCreateWithBadTimestampString() {
 		Release release = Release.create( versionString, "bad date string" );
-		assertThat( release.getVersion().toString() ).isEqualTo( versionString );
-		assertThat( release.getTimestamp() ).isNull();
+		assertThat( release.version().toString() ).isEqualTo( versionString );
+		assertThat( release.timestamp() ).isNull();
 	}
 
 	@Test
 	void testGetVersion() {
 		Release release = new Release( versionString );
-		assertThat( new Version( "1.2.3-u-04" ).compareTo( release.getVersion() ) ).isEqualTo( 0 );
+		assertThat( new Version( "1.2.3-u-04" ).compareTo( release.version() ) ).isEqualTo( 0 );
 	}
 
 	@Test
 	void testGetTimestamp() {
-		assertThat( new Release( versionString ).getTimestamp() ).isNull();
-		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).getTimestamp() ).isEqualTo( new Date( 0 ) );
+		assertThat( new Release( versionString ).timestamp() ).isNull();
+		assertThat( new Release( new Version( versionString ), new Date( 0 ) ).timestamp() ).isEqualTo( new Date( 0 ) );
 	}
 
 	@Test

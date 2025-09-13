@@ -2,6 +2,7 @@ package com.avereon.product;
 
 import com.avereon.util.UriUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Accessors( chain = true )
+@JsonInclude( JsonInclude.Include.NON_NULL )
 @JsonIgnoreProperties( ignoreUnknown = true )
 public class RepoCard extends BaseCard {
 
