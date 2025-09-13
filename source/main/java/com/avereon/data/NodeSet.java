@@ -3,6 +3,7 @@ package com.avereon.data;
 import com.avereon.transaction.Txn;
 import com.avereon.transaction.TxnException;
 import lombok.CustomLog;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -50,7 +51,6 @@ import java.util.stream.Stream;
  * @param <E> The type of {@link Node}s in the {@link NodeSet}
  */
 @CustomLog
-@SuppressWarnings( { "SuspiciousToArrayCall" } )
 class NodeSet<E extends Node> extends Node implements Set<E> {
 
 	private static final String NODE_SET_MODIFY_FILTER = "node-set-modify-filter";
@@ -106,6 +106,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		return getSetValues().contains( object );
 	}
 
+	@NonNull
 	@Override
 	public Iterator<E> iterator() {
 		return getSetValues().iterator();
@@ -117,17 +118,17 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public Object[] toArray() {
+	public Object @NonNull [] toArray() {
 		return getSetValues().toArray();
 	}
 
 	@Override
-	public <T> T[] toArray( T[] array ) {
+	public <T> T @NonNull [] toArray( T @NonNull [] array ) {
 		return getSetValues().toArray( array );
 	}
 
 	@Override
-	public <T> T[] toArray( IntFunction<T[]> generator ) {
+	public <T> T[] toArray( @NonNull IntFunction<T[]> generator ) {
 		return getSetValues().toArray( generator );
 	}
 
@@ -143,7 +144,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public boolean addAll( Collection<? extends E> collection ) {
+	public boolean addAll( @NonNull Collection<? extends E> collection ) {
 		boolean modified = addNodes( key, collection );
 		if( modified ) dirtyCache = true;
 		return modified;
@@ -167,7 +168,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public boolean removeAll( Collection<?> collection ) {
+	public boolean removeAll( @NonNull Collection<?> collection ) {
 		boolean modified = removeNodes( key, collection );
 		if( modified ) dirtyCache = true;
 		return modified;
@@ -191,8 +192,8 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public boolean retainAll( Collection<?> c ) {
-		boolean modified = retainNodes( key, c );
+	public boolean retainAll( @NonNull Collection<?> collection ) {
+		boolean modified = retainNodes( key, collection );
 		if( modified ) dirtyCache = true;
 		return modified;
 	}
@@ -208,7 +209,7 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 	}
 
 	@Override
-	public boolean containsAll( Collection<?> collection ) {
+	public boolean containsAll( @NonNull Collection<?> collection ) {
 		return getValues().containsAll( collection );
 	}
 
@@ -218,16 +219,19 @@ class NodeSet<E extends Node> extends Node implements Set<E> {
 		Txn.run( () -> getValueKeys().stream().sorted().forEach( k -> setValue( key, k, null ) ) );
 	}
 
+	@NonNull
 	@Override
 	public Spliterator<E> spliterator() {
 		return getSetValues().spliterator();
 	}
 
+	@NonNull
 	@Override
 	public Stream<E> stream() {
 		return getSetValues().stream();
 	}
 
+	@NonNull
 	@Override
 	public Stream<E> parallelStream() {
 		return getSetValues().parallelStream();

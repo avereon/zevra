@@ -2,6 +2,7 @@ package com.avereon.data;
 
 import com.avereon.event.EventType;
 import com.avereon.transaction.TxnEvent;
+import lombok.Getter;
 
 import java.util.Objects;
 
@@ -27,8 +28,10 @@ public class NodeEvent extends TxnEvent {
 
 	public static final EventType<NodeEvent> VALUE_CHANGED = new EventType<>( ANY, "VALUE_CHANGED" );
 
+	@Getter
 	private final String setKey;
 
+	@Getter
 	private final String key;
 
 	private final Object oldValue;
@@ -62,14 +65,6 @@ public class NodeEvent extends TxnEvent {
 	@SuppressWarnings( "unchecked" )
 	public <T extends Node> T getNode() {
 		return (T)getSource();
-	}
-
-	public String getSetKey() {
-		return setKey;
-	}
-
-	public String getKey() {
-		return key;
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -125,9 +120,7 @@ public class NodeEvent extends TxnEvent {
 
 	@Override
 	public boolean equals( Object object ) {
-		if( !(object instanceof NodeEvent) ) return false;
-
-		NodeEvent that = (NodeEvent)object;
+		if( !(object instanceof NodeEvent that) ) return false;
 		return Objects.equals( this.getNode(), that.getNode() ) && Objects.equals( this.getEventType(), that.getEventType() ) && Objects.equals( this.key, that.key );
 	}
 
