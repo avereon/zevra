@@ -77,19 +77,21 @@
 			<version>${jackson.annotations.version}</version>
 		</dependency>
 
+		<!-- For the document indexer to provide fuzzy work comparison -->
 		<dependency>
 			<groupId>me.xdrop</groupId>
 			<artifactId>fuzzywuzzy</artifactId>
 			<version>${fuzzywuzzy.version}</version>
 		</dependency>
 
+		<!-- For the HTML document indexer -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>${jsoup.version}</version>
 		</dependency>
 
-		<!-- Required by jsoup when running curex to patch the module -->
+		<!-- Required by jsoup. Needed when running curex to patch the jsoup module. -->
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
