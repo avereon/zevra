@@ -58,16 +58,17 @@ public class EventWatcher implements EventHandler<Event> {
 	public synchronized void waitForEvent( EventType<? extends Event> type, long timeout ) throws InterruptedException, TimeoutException {
 		boolean shouldWait = timeout > 0;
 		long start = System.currentTimeMillis();
-		long duration = 0;
+		long expiration = start + timeout;
+		long duration = expiration - System.currentTimeMillis();
 
-		while( shouldWait && findNext( type ) == null ) {
-			wait( timeout - duration );
-			duration = System.currentTimeMillis() - start;
-			shouldWait = duration < timeout;
+		while( findNext( type ) == null & shouldWait ) {
+			wait( duration );
+			duration = expiration - System.currentTimeMillis();
+			shouldWait = duration > 0;
 		}
-		duration = System.currentTimeMillis() - start;
+		duration = expiration - System.currentTimeMillis();
 
-		if( duration >= timeout ) throw new TimeoutException( "Timeout waiting for event " + type.getParentEventType() + "." + type );
+		if( duration < 0 ) throw new TimeoutException( "Timeout waiting for event " + type.getParentEventType() + "." + type );
 	}
 
 	/**
