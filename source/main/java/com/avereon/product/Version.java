@@ -71,7 +71,7 @@ public class Version implements Comparable<Version> {
 	 * Create an empty version.
 	 */
 	public Version() {
-		this( null );
+		this( UNKNOWN );
 	}
 
 	/**

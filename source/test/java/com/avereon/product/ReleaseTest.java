@@ -23,6 +23,13 @@ class ReleaseTest {
 	}
 
 	@Test
+	void constructor() {
+		assertThat( new Release().toHumanString() ).isEqualTo( "UNKNOWN" );
+		assertThat( new Release( "" ).toHumanString() ).isEqualTo( "" );
+		assertThat( new Release( "1" ).toString() ).isEqualTo( "1" );
+	}
+
+	@Test
 	void testConstructorWithStringAndTimestamp() throws Exception {
 		Release release = new Release( versionString, timestampFormat.parse( "1970-01-01 00:00:00" ) );
 		assertThat( release.version().toString() ).isEqualTo( versionString );
@@ -96,7 +103,7 @@ class ReleaseTest {
 
 	@Test
 	void testDecode() {
-		assertThat( Release.decode( null ) ).isNull();
+		assertThat( Release.decode( null ) ).isEqualTo( new Release() );
 		assertThat( Release.decode( "" ) ).isEqualTo( new Release( "" ) );
 		assertThat( Release.decode( "1.2.3-u-04" ) ).isEqualTo( new Release( versionString ) );
 		assertThat( Release.decode( "1.2.3-u-04  0" ) ).isEqualTo( new Release( versionString, new Date( 0 ) ) );

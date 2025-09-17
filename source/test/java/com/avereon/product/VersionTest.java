@@ -45,6 +45,14 @@ class VersionTest {
 	private final Version snapshot = new Version( "3.4.5-SNAPSHOT" );
 
 	@Test
+	void constructor() {
+		assertThat( new Version().toHumanString() ).isEqualTo( "UNKNOWN" );
+		assertThat( new Version( null ).toHumanString() ).isEqualTo( "UNKNOWN" );
+		assertThat( new Version( "" ).toHumanString() ).isEqualTo( "" );
+		assertThat( new Version( "1" ).toString() ).isEqualTo( "1" );
+	}
+
+	@Test
 	void testIsSnapshot() {
 		assertThat( (new Version( "1-alpha2snapshot" ).isSnapshot()) ).isTrue();
 		assertThat( (new Version( "1-alpha2" ).isSnapshot()) ).isFalse();

@@ -4,7 +4,6 @@ import com.avereon.util.DateUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -19,6 +18,10 @@ import java.util.TimeZone;
 public record Release(Version version, Date timestamp) implements Comparable<Release> {
 
 	private static final String ENCODE_DELIMITER = "  ";
+
+	public Release() {
+		this( new Version() );
+	}
 
 	public Release( String version ) {
 		this( new Version( version ), null );
@@ -76,9 +79,9 @@ public record Release(Version version, Date timestamp) implements Comparable<Rel
 		return builder.toString();
 	}
 
-	@Nullable
+	@NonNull
 	public static Release decode( String release ) {
-		if( release == null ) return null;
+		if( release == null ) return new Release( new Version() );
 
 		int index = release.indexOf( ENCODE_DELIMITER );
 		if( index < 0 ) return new Release( new Version( release ) );
