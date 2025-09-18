@@ -270,12 +270,17 @@ public class OperatingSystem {
 		return launcherName + getExeSuffix();
 	}
 
+	/**
+	 * Convenience method to get the JPackage application path.
+	 *
+	 * @return The JPackage application path.
+	 */
 	@SuppressWarnings( "unused" )
 	public static Path getJPackageAppPath() {
-		return getJPackageAppPath( System.getProperty( JPACKAGE_APP_PATH ) );
+		return toPath( System.getProperty( JPACKAGE_APP_PATH ) );
 	}
 
-	static Path getJPackageAppPath( String property ) {
+	static Path toPath( String property ) {
 		if( property == null ) return null;
 		return Path.of( property );
 	}
