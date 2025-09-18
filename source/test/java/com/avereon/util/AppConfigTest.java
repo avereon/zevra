@@ -42,6 +42,8 @@ public class AppConfigTest {
 		assertThat( config.getJvmHeapMax() ).isEqualTo( 0 );
 		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
 		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "" );
+		assertThat( config.getJvmMinHeapIndex() ).isEqualTo( -1 );
+		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( -1 );
 	}
 
 	@Test
@@ -53,6 +55,8 @@ public class AppConfigTest {
 		assertThat( config.getJvmHeapMax() ).isEqualTo( 0 );
 		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
 		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "" );
+		assertThat( config.getJvmMinHeapIndex() ).isEqualTo( -1 );
+		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( -1 );
 	}
 
 	@Test
@@ -65,6 +69,8 @@ public class AppConfigTest {
 		assertThat( config.getJvmHeapMax() ).isEqualTo( 0 );
 		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
 		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "" );
+		assertThat( config.getJvmMinHeapIndex() ).isEqualTo( 7 );
+		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( -1 );
 	}
 
 	@Test
@@ -77,6 +83,23 @@ public class AppConfigTest {
 		assertThat( config.getJvmHeapMax() ).isEqualTo( 2 );
 		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
 		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "g" );
+		assertThat( config.getJvmMinHeapIndex() ).isEqualTo( -1 );
+		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( 7 );
+	}
+
+	@Test
+	void loadWithBothHeapValues() {
+		AppConfig config = new AppConfig( path );
+		List<String> lines = getDefaultConfigLines();
+		lines.add( "java-options=-Xms512" );
+		lines.add( "java-options=-Xmx2G" );
+		config.load( lines );
+		assertThat( config.getJvmHeapMin() ).isEqualTo( 512 );
+		assertThat( config.getJvmHeapMax() ).isEqualTo( 2 );
+		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
+		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "g" );
+		assertThat( config.getJvmMinHeapIndex() ).isEqualTo( 7 );
+		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( 8 );
 	}
 
 	@ParameterizedTest

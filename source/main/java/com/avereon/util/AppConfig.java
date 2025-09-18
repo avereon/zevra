@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +21,15 @@ import java.util.List;
 @Setter
 public class AppConfig {
 
+	public static final List<String> HEAP_UNITS = List.of( "B", "K", "M", "G" );
+
 	@Setter( AccessLevel.NONE )
 	private Path path;
+
+	/**
+	 * The configuration file lines.
+	 */
+	private List<String> lines;
 
 	/**
 	 * The minimum heap size. Zero will be interpreted as automatic, and the JVM
@@ -49,6 +57,10 @@ public class AppConfig {
 	@NonNull
 	private String jvmHeapMaxUnit = "";
 
+	private int jvmMinHeapIndex = -1;
+
+	private int jvmMaxHeapIndex = -1;
+
 	AppConfig( Path path ) {
 		this.path = path;
 	}
@@ -57,7 +69,7 @@ public class AppConfig {
 		if( !Files.exists( path ) ) throw new FileNotFoundException( "Application configuration file does not exist: " + path );
 		if( !Files.isRegularFile( path ) ) throw new IOException( "Application configuration file is not a regular file: " + path );
 		if( !Files.isReadable( path ) ) throw new IOException( "Application configuration file is not readable: " + path );
-		if( !Files.isWritable( path ) ) throw new IOException( "Application configuration file is not writable: " + path );
+		//if( !Files.isWritable( path ) ) throw new IOException( "Application configuration file is not writable: " + path );
 
 		return new AppConfig( path ).load();
 	}
@@ -76,13 +88,17 @@ public class AppConfig {
 			String[] minOptions = parseHeapOptions( minLine );
 			this.setJvmHeapMin( Integer.parseInt( minOptions[ 0 ] ) );
 			this.setJvmHeapMinUnit( minOptions[ 1 ] );
+			jvmMinHeapIndex = lines.indexOf( minLine );
 		}
 
 		if( maxLine != null ) {
 			String[] maxOptions = parseHeapOptions( maxLine );
 			this.setJvmHeapMax( Integer.parseInt( maxOptions[ 0 ] ) );
 			this.setJvmHeapMaxUnit( maxOptions[ 1 ] );
+			jvmMaxHeapIndex = lines.indexOf( maxLine );
 		}
+
+		this.lines = new ArrayList<>( lines );
 
 		return this;
 	}
