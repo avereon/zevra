@@ -69,7 +69,7 @@ class OperatingSystemTest {
 		assertThat( OperatingSystem.isWindows() ).isFalse();
 		assertThat( OperatingSystem.getVersion() ).isEqualTo( "10" );
 		assertThat( OperatingSystem.getSystemArchitecture() ).isEqualTo( "ppc" );
-		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.MACOSX );
+		assertThat( OperatingSystem.getFamily() ).isEqualTo( OperatingSystem.Family.MACOS );
 		assertThat( OperatingSystem.getJavaLauncherName() ).isEqualTo( "java" );
 		assertThat( OperatingSystem.getProvider() ).isEqualTo( "Apple" );
 		assertThat( OperatingSystem.getExeSuffix() ).isEmpty();

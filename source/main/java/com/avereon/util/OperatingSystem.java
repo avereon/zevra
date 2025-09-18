@@ -14,20 +14,19 @@ import java.util.*;
 public class OperatingSystem {
 
 	public enum Family {
-		UNKNOWN,
 		LINUX,
-		UNIX,
+		MACOS,
 		WINDOWS,
+		UNIX,
 		OS2,
-		MACOSX,
-		MAC
+		UNKNOWN
 	}
 
 	public enum Architecture {
-		UNKNOWN,
 		X86,
 		X64,
-		PPC
+		PPC,
+		UNKNOWN
 	}
 
 	public enum UserFolder {
@@ -80,7 +79,7 @@ public class OperatingSystem {
 	 * Get the program data folder for the operating system. On Windows systems
 	 * this is the %APPDATA% location. On other systems this is $HOME.
 	 * <p>
-	 * Exapmles:
+	 * Examples:
 	 * <p>
 	 * Windows 7: C:\Users\&lt;username&gt;\AppData\Roaming
 	 * <br/> Linux: /home/&lt;username&gt;
@@ -117,7 +116,7 @@ public class OperatingSystem {
 	public static String getProvider() {
 		return switch( family ) {
 			case WINDOWS -> "Microsoft";
-			case MAC, MACOSX -> "Apple";
+			case MACOS -> "Apple";
 			case LINUX -> "Community";
 			case OS2 -> "IBM";
 			default -> "Unknown";
@@ -129,7 +128,7 @@ public class OperatingSystem {
 	}
 
 	public static boolean isPosix() {
-		return family == Family.LINUX || family == Family.MACOSX || family == Family.UNIX;
+		return family == Family.LINUX || family == Family.MACOS || family == Family.UNIX;
 	}
 
 	public static boolean isLinux() {
@@ -137,11 +136,11 @@ public class OperatingSystem {
 	}
 
 	public static boolean isMac() {
-		return family == Family.MACOSX;
+		return family == Family.MACOS;
 	}
 
 	public static boolean isUnix() {
-		return family == Family.LINUX || family == Family.MACOSX || family == Family.UNIX;
+		return family == Family.LINUX || family == Family.MACOS || family == Family.UNIX;
 	}
 
 	public static boolean isWindows() {
@@ -164,12 +163,12 @@ public class OperatingSystem {
 	/**
 	 * Determine if user has elevated privileges.
 	 *
-	 * @return true if user has elevated privileges.
+	 * @return true if the user has elevated privileges.
 	 */
 	public static boolean isAdminUser() {
 		if( isWindows() ) {
 			try {
-				Process process = Runtime.getRuntime().exec( "reg query \"HKU\\S-1-5-19\"" );
+				Process process = Runtime.getRuntime().exec( new String[]{ "reg", "query", "\"HKU\\S-1-5-19\"" } );
 				process.waitFor();
 				return (process.exitValue() == 0);
 			} catch( Exception exception ) {
@@ -177,7 +176,7 @@ public class OperatingSystem {
 			}
 		}
 		try {
-			Process process = Runtime.getRuntime().exec( "id -u" );
+			Process process = Runtime.getRuntime().exec( new String[]{ "id", "-u" } );
 			process.waitFor();
 
 			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
@@ -187,19 +186,23 @@ public class OperatingSystem {
 		}
 	}
 
+	@SuppressWarnings( "unused" )
 	public static boolean isElevateProcessSupported() {
 		return OperatingSystem.isMac() || OperatingSystem.isUnix() || OperatingSystem.isWindows();
 	}
 
+	@SuppressWarnings( "unused" )
 	public static boolean isReduceProcessSupported() {
 		return OperatingSystem.isMac() || OperatingSystem.isUnix();
 	}
 
+	@SuppressWarnings( "unused" )
 	public static Process startProcessElevated( String title, ProcessBuilder builder ) throws IOException {
 		if( !OperatingSystem.isProcessElevated() ) elevateProcessBuilder( title, builder );
 		return builder.start();
 	}
 
+	@SuppressWarnings( "unused" )
 	public static Process startProcessReduced( ProcessBuilder builder ) throws IOException {
 		if( OperatingSystem.isProcessElevated() ) reduceProcessBuilder( builder );
 		return builder.start();
@@ -214,6 +217,7 @@ public class OperatingSystem {
 	 * @return The process builder with elevate privilege commands
 	 * @throws IOException if an error occurs
 	 */
+	@SuppressWarnings( "UnusedReturnValue" )
 	public static ProcessBuilder elevateProcessBuilder( String title, ProcessBuilder builder ) throws IOException {
 		List<String> command = getElevateCommands( title );
 		command.addAll( builder.command() );
@@ -230,6 +234,7 @@ public class OperatingSystem {
 	 * @return The process builder with reduce privilege commands
 	 * @throws IOException if an error occurs
 	 */
+	@SuppressWarnings( "UnusedReturnValue" )
 	public static ProcessBuilder reduceProcessBuilder( ProcessBuilder builder ) throws IOException {
 		List<String> command = getReduceCommands();
 
@@ -265,6 +270,7 @@ public class OperatingSystem {
 		return launcherName + getExeSuffix();
 	}
 
+	@SuppressWarnings( "unused" )
 	public static Path getJPackageAppPath() {
 		return getJPackageAppPath( System.getProperty( JPACKAGE_APP_PATH ) );
 	}
@@ -279,7 +285,7 @@ public class OperatingSystem {
 	 * java launcher that comes with the runtime. Starting with Java 14, if the
 	 * java.launcher.path (set by the launcher) and the java.launcher.name (set
 	 * by the application) are both set, then this returns the path to the
-	 * custom launcher. Starting with Java 17 the java launcher path is now in
+	 * custom launcher. Starting with Java 17, the java launcher path is now in
 	 * jpackage.app-path and can be returned directly.
 	 *
 	 * @return The Java VM launcher path
@@ -301,7 +307,7 @@ public class OperatingSystem {
 	 *
 	 * @return The total system memory in bytes or -1 if it cannot be determined.
 	 */
-	@SuppressWarnings( "restriction" )
+	@SuppressWarnings( "unused" )
 	public static long getTotalSystemMemory() {
 		long memory = -1;
 		try {
@@ -337,7 +343,7 @@ public class OperatingSystem {
 
 	/**
 	 * Get the program data folder for the operating system using the program
-	 * identifier and/or name. The program identifier is normally all lower case
+	 * identifier and/or name. The program identifier is normally all lower-case
 	 * with no spaces. The name can be mixed case with spaces. Windows systems
 	 * use the name instead of the identifier to generate the program data folder
 	 * path.
@@ -347,24 +353,17 @@ public class OperatingSystem {
 	 * @return The user program data folder
 	 */
 	public static Path getUserProgramDataFolder( String identifier, String name ) {
-		switch( family ) {
-			case MACOSX:
-			case WINDOWS: {
-				return getUserProgramDataFolder().resolve( name );
-			}
-			case LINUX: {
-				return getUserProgramDataFolder().resolve( identifier );
-			}
-			default: {
-				return getUserProgramDataFolder().resolve( "." + identifier );
-			}
-		}
+		return switch( family ) {
+			case MACOS, WINDOWS -> getUserProgramDataFolder().resolve( name );
+			case LINUX -> getUserProgramDataFolder().resolve( identifier );
+			default -> getUserProgramDataFolder().resolve( "." + identifier );
+		};
 	}
 
 	/**
 	 * Get the shared program data folder for the operating system using the
 	 * program identifier and/or name. The program identifier is normally all
-	 * lower case with no spaces. The name can be mixed case with spaces.
+	 * lower-case with no spaces. The name can be mixed case with spaces.
 	 * Windows systems use the name instead of the identifier to generate the
 	 * program data folder path.
 	 *
@@ -374,7 +373,7 @@ public class OperatingSystem {
 	 */
 	public static Path getSharedProgramDataFolder( String identifier, String name ) {
 		return switch( family ) {
-			case MACOSX, WINDOWS -> getSharedProgramDataFolder().resolve( name );
+			case MACOS, WINDOWS -> getSharedProgramDataFolder().resolve( name );
 			case LINUX -> getSharedProgramDataFolder().resolve( identifier );
 			default -> getSharedProgramDataFolder().resolve( "." + identifier );
 		};
@@ -388,6 +387,7 @@ public class OperatingSystem {
 		return isWindows() ? ".exe" : "";
 	}
 
+	@SuppressWarnings( "unused" )
 	public static String asString() {
 		return getName() + " " + getArchitecture() + " " + getVersion();
 	}
@@ -432,11 +432,7 @@ public class OperatingSystem {
 		} else if( name.contains( "SunOS" ) | name.contains( "Solaris" ) | name.contains( "HP-UX" ) | name.contains( "AIX" ) | name.contains( "FreeBSD" ) ) {
 			family = Family.UNIX;
 		} else if( name.contains( "Mac OS" ) ) {
-			if( name.contains( "Mac OS X" ) ) {
-				family = Family.MACOSX;
-			} else {
-				family = Family.MAC;
-			}
+			family = Family.MACOS;
 		} else {
 			family = Family.UNKNOWN;
 		}
@@ -482,7 +478,7 @@ public class OperatingSystem {
 					userProgramDataFolder = Paths.get( System.getenv( "appdata" ) );
 					break;
 				}
-				case MACOSX: {
+				case MACOS: {
 					userProgramDataFolder = Paths.get( System.getProperty( "user.home" ), "/Library/Application Support" );
 					break;
 				}
@@ -506,7 +502,7 @@ public class OperatingSystem {
 					sharedProgramDataFolder = Paths.get( System.getenv( "allusersprofile" ) );
 					break;
 				}
-				case MACOSX: {
+				case MACOS: {
 					sharedProgramDataFolder = Paths.get( "/Library/Application Support" );
 					break;
 				}
@@ -560,7 +556,7 @@ public class OperatingSystem {
 	private static String mapLibraryName( String libname ) {
 		return switch( family ) {
 			case LINUX -> "lib" + libname + ".so";
-			case MACOSX -> "lib" + libname + ".jnilib";
+			case MACOS -> "lib" + libname + ".jnilib";
 			case WINDOWS -> libname + ".dll";
 			default -> System.mapLibraryName( libname );
 		};
@@ -627,11 +623,11 @@ public class OperatingSystem {
 	private static List<String> getReduceCommands() {
 		List<String> commands = new ArrayList<>();
 
-		if( isWindows() ) {
-			// NOTE It is not possible to reduce the process privilege on Windows
-			//commands.add( "runas" );
-			//commands.add( "/trustlevel:0x20000" );
-		} else {
+		// NOTE It is not possible to reduce the process privilege on Windows
+		// > commands.add( "runas" );
+		// > commands.add( "/trustlevel:0x20000" );
+
+		if( isPosix() ) {
 			commands.add( "su" );
 			commands.add( "-" );
 			commands.add( System.getenv( "SUDO_USER" ) );
@@ -645,6 +641,7 @@ public class OperatingSystem {
 		return extractWinElevate( "elevate.js" );
 	}
 
+	@SuppressWarnings( "SameParameterValue" )
 	private static File extractWinElevate( String name ) throws IOException {
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/win/elevate.js" );
 		File elevator = new File( System.getProperty( "java.io.tmpdir" ), name ).getCanonicalFile();
@@ -655,6 +652,7 @@ public class OperatingSystem {
 		return extractMacElevate( "elevate" );
 	}
 
+	@SuppressWarnings( "SameParameterValue" )
 	private static File extractMacElevate( String name ) throws IOException {
 		InputStream source = OperatingSystem.class.getResourceAsStream( "/elevate/mac/elevate" );
 		File elevator = new File( System.getProperty( "java.io.tmpdir" ), name ).getCanonicalFile();
