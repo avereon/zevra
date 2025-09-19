@@ -9,6 +9,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -75,33 +76,19 @@ public class AppConfig {
 		this.path = path;
 	}
 
-	public static AppConfig of( Path path ) throws IOException {
-		if( !Files.exists( path ) ) throw new FileNotFoundException( "Application configuration file does not exist: " + path );
-		if( !Files.isRegularFile( path ) ) throw new IOException( "Application configuration file is not a regular file: " + path );
-		if( !Files.isReadable( path ) ) throw new IOException( "Application configuration file is not readable: " + path );
-
-		return new AppConfig( path ).load();
+	public static AppConfig of( Path path ) {
+		return new AppConfig( path );
 	}
 
 	public AppConfig save() throws IOException {
 		List<String> updatedLines = save( this.lines );
 
-		// FIXME This won't work without elevated privileges
-		//try {
+		try {
 			Files.write( path, updatedLines, StandardCharsets.UTF_8 );
-//		} catch( IOException exception ) {
-//			log.atWarn().withCause( exception).log("Unable to write file:")
-			//if access denied, try again with elevated privileges
-//			if( exception.getMessage().contains( "Access is denied" ) ) {
-//				try {
-//					Files.write( path, updatedLines, StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.WRITE );
-//				} catch( IOException exception2 ) {
-//					throw exception2;
-//				}
-//			} else {
-//				throw exception;
-//			}
-//		}
+		} catch( AccessDeniedException exception ) {
+			log.atWarn().withCause( exception ).log( "NEED BETTER PRIVS");
+			// NEXT At this point, need to try the save to temp and copy with elevated privs approach
+		}
 		return this;
 	}
 
@@ -166,7 +153,10 @@ public class AppConfig {
 		return 3;
 	}
 
-	private AppConfig load() throws IOException {
+	public AppConfig load() throws IOException {
+		if( !Files.exists( path ) ) throw new FileNotFoundException( "Application configuration file does not exist: " + path );
+		if( !Files.isRegularFile( path ) ) throw new IOException( "Application configuration file is not a regular file: " + path );
+		if( !Files.isReadable( path ) ) throw new IOException( "Application configuration file is not readable: " + path );
 		return load( Files.readAllLines( path, StandardCharsets.UTF_8 ) );
 	}
 

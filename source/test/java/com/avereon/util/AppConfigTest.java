@@ -27,6 +27,15 @@ public class AppConfigTest {
 	@Test
 	void of() throws IOException {
 		AppConfig config = AppConfig.of( path );
+		assertThat( config.getJvmHeapMin() ).isEqualTo( 0 );
+		assertThat( config.getJvmHeapMax() ).isEqualTo( 0 );
+		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "" );
+		assertThat( config.getJvmHeapMaxUnit() ).isEqualTo( "" );
+	}
+
+	@Test
+	void load() throws IOException {
+		AppConfig config = AppConfig.of( path ).load();
 		assertThat( config.getJvmHeapMin() ).isEqualTo( 128 );
 		assertThat( config.getJvmHeapMax() ).isEqualTo( 2048 );
 		assertThat( config.getJvmHeapMinUnit() ).isEqualTo( "m" );
