@@ -102,6 +102,88 @@ public class AppConfigTest {
 		assertThat( config.getJvmMaxHeapIndex() ).isEqualTo( 8 );
 	}
 
+	@Test
+	void saveWithNoLinesAndBothHeapValuesAdded() {
+		AppConfig config = new AppConfig( path );
+		config.load( new ArrayList<>() );
+		assertThat( config.getLines() ).isEmpty();
+
+		// when
+		config.setJvmHeapMin( 512 );
+		config.setJvmHeapMax( 2 );
+		config.setJvmHeapMinUnit( "b" );
+		config.setJvmHeapMaxUnit( "g" );
+		List<String> updatedLines = config.save( config.getLines() );
+
+		// then
+		assertThat( updatedLines ).contains( "[JavaOptions]" );
+		assertThat( updatedLines ).contains( "java-options=-Xms512" );
+		assertThat( updatedLines ).contains( "java-options=-Xmx2g" );
+	}
+
+	@Test
+	void saveWithBothHeapValuesRemoved() {
+		AppConfig config = new AppConfig( path );
+		List<String> lines = getDefaultConfigLines();
+		lines.add( "java-options=-Xms512" );
+		lines.add( "java-options=-Xmx2G" );
+		config.load( lines );
+
+		// when
+		config.setJvmHeapMin( -1 );
+		config.setJvmHeapMax( -1 );
+		config.setJvmHeapMinUnit( "g" );
+		config.setJvmHeapMaxUnit( "g" );
+		List<String> updatedLines = config.save( config.getLines() );
+
+		// then
+		assertThat( updatedLines ).contains( "[JavaOptions]" );
+		assertThat( updatedLines ).doesNotContain( "java-options=-Xms512" );
+		assertThat( updatedLines ).doesNotContain( "java-options=-Xmx2G" );
+	}
+
+	@Test
+	void saveWithNeitherHeapValueChanged() {
+		AppConfig config = new AppConfig( path );
+		List<String> lines = getDefaultConfigLines();
+		lines.add( "java-options=-Xms512" );
+		lines.add( "java-options=-Xmx2G" );
+		config.load( lines );
+
+		// when
+		config.setJvmHeapMin( 512 );
+		config.setJvmHeapMax( 2 );
+		config.setJvmHeapMinUnit( "b" );
+		config.setJvmHeapMaxUnit( "g" );
+		List<String> updatedLines = config.save( config.getLines() );
+
+		// then
+		assertThat( updatedLines ).contains( "[JavaOptions]" );
+		assertThat( updatedLines ).contains( "java-options=-Xms512" );
+		assertThat( updatedLines ).contains( "java-options=-Xmx2g" );
+	}
+
+	@Test
+	void saveWithBothHeapValuesChanged() {
+		AppConfig config = new AppConfig( path );
+		List<String> lines = getDefaultConfigLines();
+		lines.add( "java-options=-Xms512" );
+		lines.add( "java-options=-Xmx2G" );
+		config.load( lines );
+
+		// when
+		config.setJvmHeapMin( 1 );
+		config.setJvmHeapMax( 4 );
+		config.setJvmHeapMinUnit( "g" );
+		config.setJvmHeapMaxUnit( "g" );
+		List<String> updatedLines = config.save( config.getLines() );
+
+		// then
+		assertThat( updatedLines ).contains( "[JavaOptions]" );
+		assertThat( updatedLines ).contains( "java-options=-Xms1g" );
+		assertThat( updatedLines ).contains( "java-options=-Xmx4g" );
+	}
+
 	@ParameterizedTest
 	@MethodSource
 	void parseHeapOptions( String line, int expectedValue, String expectedUnit ) {

@@ -1,6 +1,7 @@
 package com.avereon.util;
 
 import lombok.AccessLevel;
+import lombok.CustomLog;
 import lombok.Getter;
 import lombok.Setter;
 import org.jspecify.annotations.NonNull;
@@ -19,9 +20,18 @@ import java.util.List;
  */
 @Getter
 @Setter
+@CustomLog
 public class AppConfig {
 
 	public static final List<String> HEAP_UNITS = List.of( "B", "K", "M", "G" );
+
+	public static final String JAVA_OPTIONS_HEADER = "[JavaOptions]";
+
+	public static final String JAVA_OPTIONS = "java-options=";
+
+	public static final String MX = "-Xmx";
+
+	public static final String MS = "-Xms";
 
 	@Setter( AccessLevel.NONE )
 	private Path path;
@@ -32,14 +42,14 @@ public class AppConfig {
 	private List<String> lines;
 
 	/**
-	 * The minimum heap size. Zero will be interpreted as automatic, and the JVM
-	 * option will not be set.
+	 * The minimum heap size. Less than zero will be interpreted as automatic,
+	 * and the JVM option will not be set.
 	 */
 	private int jvmHeapMin;
 
 	/**
-	 * The maximum heap size. Zero will be interpreted as automatic, and the JVM
-	 * option will not be set.
+	 * The maximum heap size. Less than zero will be interpreted as automatic,
+	 * and the JVM option will not be set.
 	 */
 	private int jvmHeapMax;
 
@@ -69,9 +79,91 @@ public class AppConfig {
 		if( !Files.exists( path ) ) throw new FileNotFoundException( "Application configuration file does not exist: " + path );
 		if( !Files.isRegularFile( path ) ) throw new IOException( "Application configuration file is not a regular file: " + path );
 		if( !Files.isReadable( path ) ) throw new IOException( "Application configuration file is not readable: " + path );
-		//if( !Files.isWritable( path ) ) throw new IOException( "Application configuration file is not writable: " + path );
 
 		return new AppConfig( path ).load();
+	}
+
+	public AppConfig save() throws IOException {
+		List<String> updatedLines = save( this.lines );
+
+		// FIXME This won't work without elevated privileges
+		//try {
+			Files.write( path, updatedLines, StandardCharsets.UTF_8 );
+//		} catch( IOException exception ) {
+//			log.atWarn().withCause( exception).log("Unable to write file:")
+			//if access denied, try again with elevated privileges
+//			if( exception.getMessage().contains( "Access is denied" ) ) {
+//				try {
+//					Files.write( path, updatedLines, StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.WRITE );
+//				} catch( IOException exception2 ) {
+//					throw exception2;
+//				}
+//			} else {
+//				throw exception;
+//			}
+//		}
+		return this;
+	}
+
+	List<String> save( List<String> lines ) {
+		int minAction = getAction( jvmMinHeapIndex, jvmHeapMin < 0 ? -1 : 0 );
+		int maxAction = getAction( jvmMaxHeapIndex, jvmHeapMax < 0 ? -1 : 0 );
+
+		if( minAction == 0 && maxAction == 0 ) new ArrayList<>( lines );
+
+		if( jvmMaxHeapIndex > jvmMinHeapIndex ) {
+			applyAction( maxAction, lines, jvmMaxHeapIndex, MX, jvmHeapMax, jvmHeapMaxUnit );
+			applyAction( minAction, lines, jvmMinHeapIndex, MS, jvmHeapMin, jvmHeapMinUnit );
+		} else {
+			applyAction( minAction, lines, jvmMinHeapIndex, MS, jvmHeapMin, jvmHeapMinUnit );
+			applyAction( maxAction, lines, jvmMaxHeapIndex, MX, jvmHeapMax, jvmHeapMaxUnit );
+		}
+
+		if( minAction == 2 ) jvmMinHeapIndex = -1;
+		if( maxAction == 2 ) jvmMaxHeapIndex = -1;
+
+		return new ArrayList<>( lines );
+	}
+
+	private void applyAction( int action, List<String> lines, int index, String option, int value, String unit ) {
+		int javaOptionsIndex = lines.indexOf( JAVA_OPTIONS_HEADER );
+		if( javaOptionsIndex < 0 ) {
+			lines.add( JAVA_OPTIONS_HEADER );
+			javaOptionsIndex = lines.size() - 1;
+		}
+
+		if( unit.equalsIgnoreCase( HEAP_UNITS.getFirst() ) ) unit = "";
+
+		switch( action ) {
+			case 0:
+				// Nothing
+				lines.set( index, JAVA_OPTIONS + option + value + unit.toLowerCase() );
+				break;
+			case 1:
+				// Insert
+				if( index < 0 ) index = javaOptionsIndex + 1;
+				lines.add( index, JAVA_OPTIONS + option + value + unit.toLowerCase() );
+				break;
+			case 2:
+				// Remove
+				if( index >= 0 ) lines.remove( index );
+				break;
+			case 3:
+				// Update
+				lines.set( index, JAVA_OPTIONS + option + value + unit.toLowerCase() );
+				break;
+		}
+	}
+
+	private int getAction( int incoming, int outgoing ) {
+		// Nothing
+		if( incoming < 0 && outgoing < 0 ) return 0;
+		// Insert (no incoming, adding the outgoing)
+		if( incoming < 0 ) return 1;
+		// Remove (has incoming, removing the outgoing)
+		if( outgoing < 0 ) return 2;
+		// Update (has both incoming and outgoing)
+		return 3;
 	}
 
 	private AppConfig load() throws IOException {
@@ -80,9 +172,9 @@ public class AppConfig {
 
 	AppConfig load( List<String> lines ) {
 		// Find the min line
-		String minLine = lines.stream().filter( line -> line.startsWith( "java-options=-Xms" ) ).findFirst().orElse( null );
+		String minLine = lines.stream().filter( line -> line.startsWith( JAVA_OPTIONS + MS ) ).findFirst().orElse( null );
 		// Find the max line
-		String maxLine = lines.stream().filter( line -> line.startsWith( "java-options=-Xmx" ) ).findFirst().orElse( null );
+		String maxLine = lines.stream().filter( line -> line.startsWith( JAVA_OPTIONS + MX ) ).findFirst().orElse( null );
 
 		if( minLine != null ) {
 			String[] minOptions = parseHeapOptions( minLine );
@@ -105,7 +197,7 @@ public class AppConfig {
 
 	String[] parseHeapOptions( String line ) {
 		// This is just for sizing
-		String prefix = "java-options=-Xmm";
+		String prefix = JAVA_OPTIONS + MS;
 
 		int index = prefix.length();
 		while( index < line.length() && Character.isDigit( line.charAt( index ) ) ) index++;
