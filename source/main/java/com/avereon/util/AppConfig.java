@@ -86,8 +86,7 @@ public class AppConfig {
 		try {
 			Files.write( path, updatedLines, StandardCharsets.UTF_8 );
 		} catch( AccessDeniedException exception ) {
-			log.atWarn().withCause( exception ).log( "NEED BETTER PRIVS");
-			// NEXT At this point, need to try the save to temp and copy with elevated privs approach
+			log.atWarn().withCause( exception ).log( "Unable to save the application configuration" );
 		}
 		return this;
 	}
