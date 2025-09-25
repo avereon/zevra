@@ -6,8 +6,14 @@ A non-UX utility library used in many Avereon projects.
 
 ## Utilites
 
+* Annotations
+* Data Objects
+* Events, Hubs and Handlers
+* Logging
 * Product Repository, Catalog and Artifact metadata
-* Settings API - Similar to Java preferences with a simpler implementation
+* Settings — Similar to Java preferences with a more capable API
+* Skills Interfaces
+* Lightweight Transactions
 * Utility classes for:
   * Instants and Dates
   * Paths and Files
