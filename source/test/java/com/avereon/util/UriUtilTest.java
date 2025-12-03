@@ -14,6 +14,9 @@ class UriUtilTest {
 
 	@Test
 	void understandUriParts() {
+		String fsRoot = "/";
+		if( OperatingSystem.isWindows() ) fsRoot = "/C:/";
+
 		// Opaque URI with scheme and fragment
 		URI uri = URI.create( "program:product#updates" );
 		assertThat( uri.isOpaque() ).isEqualTo( true );
@@ -62,16 +65,20 @@ class UriUtilTest {
 		assertThat( uri.getUserInfo() ).isNull();
 		assertThat( uri.getHost() ).isNull();
 		assertThat( uri.getAuthority() ).isNull();
-		assertThat( uri.getPath() ).isEqualTo( "/home/user/My Documents" );
-		assertThat( uri.getRawPath() ).isEqualTo( "/home/user/My%20Documents" );
+		assertThat( uri.getPath() ).isEqualTo( fsRoot + "home/user/My Documents" );
+		assertThat( uri.getRawPath() ).isEqualTo( fsRoot + "home/user/My%20Documents" );
 		assertThat( uri.getQuery() ).isNull();
 		assertThat( uri.getFragment() ).isNull();
-		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "///home/user/My Documents" );
-		assertThat( uri.getRawSchemeSpecificPart() ).isEqualTo( "///home/user/My%20Documents" );
-		assertThat( uri.toString() ).isEqualTo( "file:///home/user/My%20Documents" );
-		assertThat( uri.toASCIIString() ).isEqualTo( "file:///home/user/My%20Documents" );
+		assertThat( uri.getSchemeSpecificPart() ).isEqualTo( "//" + fsRoot + "home/user/My Documents" );
+		assertThat( uri.getRawSchemeSpecificPart() ).isEqualTo( "//" + fsRoot + "home/user/My%20Documents" );
+		assertThat( uri.toString() ).isEqualTo( "file://" + fsRoot + "home/user/My%20Documents" );
+		assertThat( uri.toASCIIString() ).isEqualTo( "file://" + fsRoot + "home/user/My%20Documents" );
 		// converted back to path
-		assertThat( Paths.get( uri ).toString() ).isEqualTo( "/home/user/My Documents" );
+		if( OperatingSystem.isWindows() ) {
+			assertThat( Paths.get( uri ).toString() ).isEqualTo( "C:\\home\\user\\My Documents" );
+		} else {
+			assertThat( Paths.get( uri ).toString() ).isEqualTo( "/home/user/My Documents" );
+		}
 
 		URI a = URI.create( "program:help" );
 		URI b = URI.create( "program:help#detail" );

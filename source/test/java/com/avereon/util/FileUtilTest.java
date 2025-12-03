@@ -509,8 +509,7 @@ class FileUtilTest {
 	void testFindValidFolderWithUriWithSpaceInPath() throws IOException {
 		Path path = FileUtil.getTempFolder();
 		assertThat( Files.exists( path ) ).isTrue();
-
-		URI uri = URI.create( "file:" + path + "/test%20folder/" );
+		URI uri = URI.create( path.toUri() + "test%20folder/" );
 		Path folderWithSpace = Paths.get( uri );
 		Files.createDirectories( folderWithSpace );
 		assertThat( Files.exists( folderWithSpace ) ).isTrue();
