@@ -16,6 +16,7 @@ class UriUtilTest {
 	void understandUriParts() {
 		String fsRoot = "/";
 		if( OperatingSystem.isWindows() ) fsRoot = "/C:/";
+		System.out.println( "OS=" + OperatingSystem.info() );
 
 		// Opaque URI with scheme and fragment
 		URI uri = URI.create( "program:product#updates" );

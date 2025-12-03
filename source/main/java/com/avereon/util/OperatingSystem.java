@@ -109,6 +109,18 @@ public class OperatingSystem {
 		reset();
 	}
 
+	public static String info() {
+		StringBuilder builder = new StringBuilder();
+		if( name != null ) builder.append( "name=" ).append( name );
+		if( arch != null ) builder.append( "arch=" ).append( arch );
+		if( version != null ) builder.append( "version=" ).append( version );
+		if( userHomeFolder != null ) builder.append( "userHome=" ).append( userHomeFolder );
+		if( userProgramDataFolder != null ) builder.append( "userData=" ).append( userProgramDataFolder );
+		if( sharedProgramDataFolder != null ) builder.append( "sharedData=" ).append( sharedProgramDataFolder );
+		if( desktop != null ) builder.append( "desktop=" ).append( desktop );
+		return builder.toString();
+	}
+
 	public static void reset() {
 		init( System.getProperty( "os.name" ), System.getProperty( "os.arch" ), null, null, null, null, null );
 	}
